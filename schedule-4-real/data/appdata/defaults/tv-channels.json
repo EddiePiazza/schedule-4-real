@@ -1,0 +1,680 @@
+[
+  {
+    "name": "24 Horas",
+    "url": "https://d32rw80ytx9uxs.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-vlldndmow4yre/24HES.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "2GB Sydney",
+    "url": "https://2gblive.akamaized.net/hls/live/2033805/2GB/index.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "3AW Melbourne",
+    "url": "https://3awlive.akamaized.net/hls/live/2032295/3AW/index.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "ABC 7 Los Angeles C.",
+    "url": "https://content.uplynk.com/channel/ext/2118d9222a87420ab69223af9cfa0a0f/kabc_24x7_news.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "Al Jazeera English",
+    "url": "https://live-hls-web-aje.getaj.net/AJE/01.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "Bloomberg US",
+    "url": "https://www.bloomberg.com/media-manifest/streams/us.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "CGTN News",
+    "url": "https://news.cgtn.com/resource/live/english/cgtn-news.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "DW News",
+    "url": "https://dwamdstream104.akamaized.net/hls/live/2015525/dwstream104/index.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "France 24 English",
+    "url": "https://live.france24.com/hls/live/2037218/F24_EN_LO_HLS/master.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "France 24 French",
+    "url": "https://live.france24.com/hls/live/2037219/F24_FR_LO_HLS/master.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "France 24 Spanish",
+    "url": "https://live.france24.com/hls/live/2037220/F24_ES_LO_HLS/master.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "NHK World",
+    "url": "https://nhkworld.webcdn.stream.ne.jp/www11/nhkworld-tv/bmcc-vh/1.3m/chunklist.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "TRT World",
+    "url": "https://tv-trtworld.medya.trt.com.tr/master.m3u8",
+    "category": "News",
+    "color": "#60a5fa"
+  },
+  {
+    "name": "20 Mediaset",
+    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(lb)/index.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "9Gem",
+    "url": "https://9now-livestreams.akamaized.net/hls/live/2008311/gem-syd/master.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "9Go!",
+    "url": "https://9now-livestreams.akamaized.net/hls/live/2008312/go-syd/master.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "American Crime Chan.",
+    "url": "https://d39g1vxj2ef6in.cloudfront.net/v1/master/3fec3e5cac39a52b2132f9c66c83dae043dc17d4/prod-rakuten-stitched/master.m3u8?ads.xumo_channelId=88883104",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Amrita TV",
+    "url": "https://ddash74r36xqp.cloudfront.net/master.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "ARTE",
+    "url": "https://artesimulcast.akamaized.net/hls/live/2030993/artelive_de/index.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Arte",
+    "url": "https://artesimulcast.akamaized.net/hls/live/2031003/artelive_fr/index.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "BBC America",
+    "url": "https://bcovlive-a.akamaihd.net/7f5ec16d102f4b5d92e8e27bc95ff424/us-east-1/6240731308001/playlist.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Canale 5",
+    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(C5)/index.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Channel 200",
+    "url": "https://d1jlnqid3sfc6m.cloudfront.net/out/v1/3fc2254c865a457c8d7fbbce227a2aae/index.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Dangal 2",
+    "url": "https://live-dangal2.akamaized.net/liveabr/playlist.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Enterr 10 Bangla [N.",
+    "url": "https://live-bangla.akamaized.net/liveabr/playlist.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "Epic TV",
+    "url": "https://epiconvh.akamaized.net/live/epic/master.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "ETV Josh",
+    "url": "https://cc-uyh1ow5zouoio.akamaized.net/WWBI/Amagi/ETV_Josh_IN/playlist.m3u8",
+    "category": "Entertainment",
+    "color": "#fb923c"
+  },
+  {
+    "name": "24 Hour Free Movies",
+    "url": "https://d1j2u714xk898n.cloudfront.net/scheduler/scheduleMaster/145.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Abzy Dhakad",
+    "url": "https://d2lk5u59tns74c.cloudfront.net/out/v1/4fe6ab07a13543d6bdb2ec63b3e2df44/index.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Abzy Movies",
+    "url": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/db8d4eca72d64748a00d0631debf542d/index.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Afriwood Blockbuster",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/afriwood-blockbuster/video.m3u8?ads.vf=W6V4C1LsfJK",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Bhojpuri Cinema",
+    "url": "https://live-bhojpuri.akamaized.net/liveabr/playlist.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Bollywood Classic",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/manifest.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Bollywood HD",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-hd/manifest.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Box Cinema",
+    "url": "https://d3s7x6kmqcnb6b.cloudfront.net/d/distro001a/QK2TKFREGRYXDI8IJGHW/hls3/now,-1m/m.m3u8?ads.vf=kU8ru-Yl4zG",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Cine 34",
+    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(b6)/index.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Cine Adrenalina",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5d8d164d92e97a5e107638d2/master.m3u8?advertisingId=&appName=web&appStoreUrl=&appVersion=DNT&app_name=&architecture=&buildVersion=&deviceDNT=0&deviceId=5d8d164d92e97a5e107638d2&deviceLat=&deviceLon=&deviceMake=web&deviceModel=web&deviceType=web&deviceVersion=DNT&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false&sid=904&terminate=false&userId=",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Cine Premiere",
+    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5cf968040ab7d8f181e6a68b/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&channel_id=channel&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&genre=ROKU_ADS_CONTENT_GENRE&is_lat=1&platform=web&rdid=channel&studio_id=viacom&tags=ROKU_CONTENT_TAGS",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Cine Terror LATAM",
+    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5dcddf1ed95e740009fef7ab/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&channel_id=channel&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&genre=ROKU_ADS_CONTENT_GENRE&is_lat=1&platform=web&rdid=channel&studio_id=viacom&tags=ROKU_CONTENT_TAGS",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Cinema Hausa",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/cinema-hausa/video.m3u8?ads.vf=v-YPzZubeoG",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "ETV Cinema HD",
+    "url": "https://d1q7j6ha51ro6f.cloudfront.net/v1/master/9d43eacaed199f8d5883927e7aef514a8a08e108/ETV_CINEMA_H264-3_cloud_in/index.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Filamchi Bhojpuri",
+    "url": "https://epiconvh.akamaized.net/live/filamchi/master.m3u8",
+    "category": "Movies",
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Abdulmajeed Abdullah",
+    "url": "https://d2hng5r56zpsbw.cloudfront.net/out/v1/9c4c990f44bb4767bb46271f326dd574/index.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "AMusic Channel",
+    "url": "https://d3s7x6kmqcnb6b.cloudfront.net/d/distro001a/LVP8DMYRYH6F6Y5UUO8J/hls3/now,-1m/m.m3u8?ads.vf=tu4Zldf1m04",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "Bel RTL",
+    "url": "https://bel-live-hls.akamaized.net/hls/live/2038650/BEL-Live-HLS/master.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "Clubbing TV France",
+    "url": "https://d1j2csarxnwazk.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-uze1m6xh4fiyr-ssai-prd/master.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "Couleur 3",
+    "url": "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "DASDING 90.8",
+    "url": "https://swrdasdingvr-hls.akamaized.net/hls/live/2018681/dasdingvr/master.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "ETV Music",
+    "url": "https://cc-szivnms4rlah6.akamaized.net/WWBI/Amagi/ETV_Music_IN/playlist.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "Fame95 FM",
+    "url": "https://rjr-fame.akamaized.net/hls/live/2033820/RJR_FAME/master.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "GMTV",
+    "url": "https://livechannel.mdc.akamaized.net/stitch/livechannel/1341/master1400000.m3u8;session=live_stream_1341",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "La Bocina Latina",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/la-bocina-latina/master.m3u8?ads.vf=l7gGrGmJwf4",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "M+",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/m-plus/master.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "Majid Al Mohandis",
+    "url": "https://shls-live-mood-ak.akamaized.net/out/v1/8e2419c6c7494dbba478be025af490ee/index.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "MBC America",
+    "url": "https://cdn-us-east-prod-ingest-infra-dacast-com.akamaized.net/624ff8f9-db18-da92-4d42-896fa2ff3eb3/source/index.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "MBC FM",
+    "url": "https://dbbv9umqcd7cs.cloudfront.net/out/v1/db15b75c3cc0400c91961468d6a232ac/index.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "MBC Loud",
+    "url": "https://d2lfa0y84k5bwn.cloudfront.net/out/v1/86dd4506a70c4d7fb35e2ab50296d9a3/index.m3u8",
+    "category": "Music",
+    "color": "#f472b6"
+  },
+  {
+    "name": "ACL Cornhole TV",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/acl-cornhole-tv/aclco.m3u8?ads.vf=NbEpkTCqk8a",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Adventure Sports TV",
+    "url": "https://d3rl6ns7c3ilda.cloudfront.net/scheduler/scheduleMaster/438.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "ATG Live",
+    "url": "https://kanal75xto-llhls.akamaized.net/live/Data/atg-kanal-15-02a-rr/HLS-Legacy-HL/atg-kanal-15-02a-rr.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Awapa Sports TV [No.",
+    "url": "https://mgv-awapa.akamaized.net/hls/live/2104282/MGV_CHANNEL15/master.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "FanDuel Racing",
+    "url": "https://d3ehq1uaxory6w.cloudfront.net/out/v1/35c05f080f4e49a4b4eb031b5a14e505/TVG2index_2.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "FanDuel TV",
+    "url": "https://d2jl8r92tdc3f1.cloudfront.net/out/v1/59419700344b4625b7cb0693ba265ea3/TVGindex_1.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "FIFA+ United States",
+    "url": "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Fight Network",
+    "url": "https://d12a2vxqkkh1bo.cloudfront.net/hls/main.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "FITE 24/7",
+    "url": "https://d3d85c7qkywguj.cloudfront.net/scheduler/scheduleMaster/263.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Gol Classics",
+    "url": "https://d71gqtnep83vb.cloudfront.net/gol_classics/gol_classics.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Hard Knocks",
+    "url": "https://d3uyzhwvmemdyf.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/Hard-Knocks-DistroTV/109.m3u8?ads.vf=nRzKBGmPlgS",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "Horizon Sports",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/horizon-sports/master.m3u8?ads.vf=yqVv-4q1FVG",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "KOZOOM TV",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/kozoom-tv/manifest.m3u8?ads.vf=gPEEXzG-WvO",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "L'Equipe",
+    "url": "https://dshn8inoshngm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-gac2i63dmu8b7/LEquipe_FR.m3u8",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "MMA Junkie",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/mma-junkie/master.m3u8?ads.vf=h5aUSvZnJu4",
+    "category": "Sports",
+    "color": "#4ade80"
+  },
+  {
+    "name": "ABC Entertains",
+    "url": "https://c.mjh.nz/abc-me.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "ABC Kids",
+    "url": "https://c.mjh.nz/abc-kids.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Bob Esponja LATAM",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/6254598f5083f800076d8563/master.m3u8?advertisingId=&appName=web&appStoreUrl=&appVersion=unknown&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId=94b33a50-52dc-11ed-8a57-a7949f30f39c&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=c32ca8be-d69f-4d5d-af36-5defdd524167&userId=",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Cartoon Classics",
+    "url": "https://d3s7x6kmqcnb6b.cloudfront.net/d/distro001a/D6NOXKW7TYP8TG7YMYZH/hls3/now,-1m/m.m3u8?ads.vf=7TNIxrkadpW",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Clan",
+    "url": "https://dum8zv1rbdjj2.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-x6uutpgph4tpt/ClanES.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Cúla4",
+    "url": "https://d3eq0jseza7fm5.cloudfront.net/tg4_vod_3.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "DR Ramasjang",
+    "url": "https://drlive03hls.akamaized.net/hls/live/2014190/drlive03/master.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Gubbare",
+    "url": "https://epiconvh.akamaized.net/live/gubbare/master.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "KiKA",
+    "url": "https://kikageohls.akamaized.net/hls/live/2022693/livetvkika_de/master.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Knowledge Network",
+    "url": "https://d1wal6k3d7ssin.cloudfront.net/out/v1/ea91db0906c847a4931b46a9ec36e77b/index.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "MCN6 Music Channel.",
+    "url": "https://d18fcxaqfnwjhj.cloudfront.net/CDN_Ingest/MCN6_MUSIC.smil/Playlist.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Nick Pluto TV",
+    "url": "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca673e0d0bd6c2689c94ce3livestitch/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2a5108-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&profilesFromStream=true&serverSideAds=false&sid=5730720c-9e54-41d9-b73d-eab8fdac7291",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "NRK Super (1080i)",
+    "url": "https://nrk-live-no.akamaized.net/nrksuper/muxed.m3u8",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Pluto TV Bob Esponja",
+    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f1aca0b4e448e00075e7c5e/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&is_lat=1&platform=web&rdid=channel&tags=ROKU_CONTENT_TAGS",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Pluto TV Kids [Not.",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5dd6dae8ce788b0009eaf77b/master.m3u8?advertisingId=&appName=web&appVersion=5.14.0-0f5ca04c21649b8c8aad4e56266a23b96d73b83a&app_name=web&clientDeviceType=0&clientID=6fbead95-26b1-415d-998f-1bdef62d10be&clientModelNumber=na&deviceDNT=false&deviceId=6fbead95-26b1-415d-998f-1bdef62d10be&deviceLat=19.4358&deviceLon=-99.1441&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=88.0.4324.150&marketingRegion=VE&serverSideAds=false&sessionID=b8e5a857-714a-11eb-b532-0242ac110002&sid=b8e5a857-714a-11eb-b532-0242ac110002&userId=",
+    "category": "Kids",
+    "color": "#facc15"
+  },
+  {
+    "name": "Comedia Made in Spa.",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f1abce155a03d0007718834/master.m3u8?advertisingId=&appName=web&appStoreUrl=&appVersion=DNT&app_name=&architecture=&buildVersion=&deviceDNT=0&deviceId=5f1abce155a03d0007718834&deviceLat=41.1167&deviceLon=1.2500&deviceMake=web&deviceModel=web&deviceType=web&deviceVersion=DNT&includeExtendedEvents=false&marketingRegion=ES&serverSideAds=false&sid=505&terminate=false&userId=",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "ETV Comedy",
+    "url": "https://cc-wie8j8y69d2uy.akamaized.net/WWBI/Amagi/ETV_Comedy_IN/playlist.m3u8",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Humor Mill",
+    "url": "https://damkf751d85s1.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/HumorMill-DistroTV/152.m3u8?ads.vf=KMZbGFYpI_q",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Just for Laughs Ita.",
+    "url": "https://stitcher-ipv4.pluto.tv/v1/stitch/embed/hls/channel/6093f48c95132a00075fd859/master.m3u8?advertisingId={PSID}&appVersion=unknown&deviceDNT={TARGETOPT}&deviceId={PSID}&deviceLat=0&deviceLon=0&deviceMake=samsung&deviceModel=samsung&deviceType=samsung-tvplus&deviceVersion=unknown&embedPartner=samsung-tvplus&profileFloor=&profileLimit=&samsung_app_domain={APP_DOMAIN}&samsung_app_name={APP_NAME}&us_privacy=1YNY",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Novo Comedy",
+    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/novo-comedy/video.m3u8?ads.vf=WY7qC3DIF58",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Pluto TV Classic TV",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5e46ae801f347500099d461a/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=35f76fb0-e986-11eb-a0af-c3b401f46211&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=2fac39a7-56bc-492e-ae1e-3f6fb6cef1bc",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Pluto TV Comedy Cen.",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5cf96dad1652631e36d43320/master.m3u8?advertisingId=&appName=web&appStoreUrl=&appVersion=DNT&app_name=&architecture=&buildVersion=&deviceDNT=0&deviceId=5cf96dad1652631e36d43320&deviceLat=&deviceLon=&deviceMake=web&deviceModel=web&deviceType=web&deviceVersion=DNT&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false&sid=967&terminate=false&userId=",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Pluto TV Kenan y Kel",
+    "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5fcea93ffcf94500071c4b2f/master.m3u8?advertisingId=&appName=web&appVersion=5.14.0-0f5ca04c21649b8c8aad4e56266a23b96d73b83a&app_name=web&clientDeviceType=0&clientID=6fbead95-26b1-415d-998f-1bdef62d10be&clientModelNumber=na&deviceDNT=false&deviceId=6fbead95-26b1-415d-998f-1bdef62d10be&deviceLat=19.4358&deviceLon=-99.1441&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=88.0.4324.150&marketingRegion=VE&serverSideAds=false&sessionID=b8e5a857-714a-11eb-b532-0242ac110002&sid=b8e5a857-714a-11eb-b532-0242ac110002&userId=",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Pluto TV Series Com.",
+    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f9853138d19af0007104a8d/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&is_lat=1&platform=web&rdid=channel&tags=ROKU_CONTENT_TAGS",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Pluto TV Vaya seman.",
+    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f28009b150b2500077766b8/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&is_lat=1&platform=web&rdid=channel&tags=ROKU_CONTENT_TAGS",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "Scherzi e risate It.",
+    "url": "https://stitcher-ipv4.pluto.tv/v1/stitch/embed/hls/channel/609404b0a8ec810007d8de9d/master.m3u8?advertisingId={PSID}&appVersion=unknown&deviceDNT={TARGETOPT}&deviceId={PSID}&deviceLat=0&deviceLon=0&deviceMake=samsung&deviceModel=samsung&deviceType=samsung-tvplus&deviceVersion=unknown&embedPartner=samsung-tvplus&profileFloor=&profileLimit=&samsung_app_domain={APP_DOMAIN}&samsung_app_name={APP_NAME}&us_privacy=1YNY",
+    "category": "Comedy",
+    "color": "#ef4444"
+  },
+  {
+    "name": "1Almere TV",
+    "url": "https://d3472rjicrodic.cloudfront.net/nlpo/clr-nlpo/709d5260/index.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "23 ABC Bakersfield.",
+    "url": "https://content.uplynk.com/channel/ff809e6d9ec34109abfb333f0d4444b5.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "2M Monde",
+    "url": "https://cdn-globecast.akamaized.net/live/eds/2m_monde/hls_video_ts_tuhawxpiemz257adfc/2m_monde.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "2M Monde +1",
+    "url": "https://d2qh3gh0k5vp3v.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-n6pess5lwbghr/2M_ES.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "3sat",
+    "url": "https://zdf-hls-18.akamaized.net/hls/live/2016501/dach/high/master.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "A Punt",
+    "url": "https://bcovlive-a.akamaihd.net/8499d938ef904e39b58a4adec2ddeada/eu-west-1/6057955885001/playlist_dvr.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC 13 Las Vegas NV.",
+    "url": "https://content.uplynk.com/channel/39919d3f7a074eefa8bf579214e952f9.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC 15 Phoenix AZ (.",
+    "url": "https://content.uplynk.com/channel/9deaf22aaa33461f9cac22e030ed00ec.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC 25 News Central.",
+    "url": "https://content.uplynk.com/channel/9d4e02c9c3544c269d32e6b316792c8f.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC 5",
+    "url": "https://d3svnrf3rmq619.cloudfront.net/krgv-live/smil:krgv-live.smil/playlist.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC 7 Denver CO (KM.",
+    "url": "https://content.uplynk.com/channel/64ca339f04964a5e961c3207a7771bf1.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "ABC TV NSW",
+    "url": "https://c.mjh.nz/abc-nsw.m3u8",
+    "category": "General",
+    "color": "#94a3b8"
+  },
+  {
+    "name": "Mux Big Buck Bunny",
+    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    "category": "Test",
+    "color": "#06b6d4"
+  },
+  {
+    "name": "Mux Sintel",
+    "url": "https://test-streams.mux.dev/sintel/index.m3u8",
+    "category": "Test",
+    "color": "#06b6d4"
+  },
+  {
+    "name": "Unified Streaming",
+    "url": "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
+    "category": "Test",
+    "color": "#06b6d4"
+  }
+]

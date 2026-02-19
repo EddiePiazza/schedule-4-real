@@ -1,0 +1,703 @@
+{
+  "autoUpdate": false,
+  "lastCheck": "2026-02-19T01:31:15.824Z",
+  "lastUpdate": "2026-01-24T04:29:52Z",
+  "schemaVersion": 6,
+  "components": {
+    "web": {
+      "version": "1.60.0",
+      "installedAt": "2026-02-19T01:37:32Z"
+    },
+    "ingest": {
+      "version": "1.7.0",
+      "installedAt": "2026-02-19T01:37:32Z"
+    },
+    "retention": {
+      "version": "1.0.4",
+      "installedAt": "2026-02-17T23:19:31Z"
+    },
+    "supervisor": {
+      "version": "1.12.0",
+      "installedAt": "2026-02-19T01:37:32Z"
+    },
+    "proxy": {
+      "version": "1.2.1",
+      "installedAt": "2026-02-17T23:19:31Z"
+    },
+    "mosquitto": {
+      "version": "1.2.1",
+      "installedAt": "2026-02-17T23:19:31Z"
+    },
+    "schema": {
+      "version": "6",
+      "installedAt": "2026-02-17T23:19:31Z"
+    },
+    "relay": {
+      "version": "1.3.1",
+      "installedAt": "2026-02-18T16:57:09Z"
+    }
+  },
+  "updateHistory": [],
+  "pending": [],
+  "manifestChangelogs": {
+    "web": [
+      {
+        "version": "1.59.1",
+        "changes": [
+          "Fix authenticated users having full edit rights in public rooms they don't own"
+        ]
+      },
+      {
+        "version": "1.59.0",
+        "changes": [
+          "Replace lobby title text with Schedule 4 Real logo",
+          "Redesign lobby room cards with compact toggle bar and expandable settings",
+          "Fix custom port changes not applying after save or service restart",
+          "Add password-protected rooms with inline prompts for public and guest joins"
+        ]
+      },
+      {
+        "version": "1.58.2",
+        "changes": [
+          "Fix lobby toggle labels: Public Visible/Hidden and Invite Only lobby text"
+        ]
+      },
+      {
+        "version": "1.58.1",
+        "changes": [
+          "Remove duplicate invite token input from public rooms browser"
+        ]
+      },
+      {
+        "version": "1.58.0",
+        "changes": [
+          "Add per-room public/invite-only settings with custom public name and description"
+        ]
+      },
+      {
+        "version": "1.57.0",
+        "changes": [
+          "Fix WebSocket proxy through relay for single-host tunnels",
+          "Fix public room discovery with HTTP fallback when circuit fails",
+          "Add room publisher service for automatic tracker registration"
+        ]
+      },
+      {
+        "version": "1.56.1",
+        "changes": [
+          "Fix onion circuit packet format for multi-hop relay communication"
+        ]
+      },
+      {
+        "version": "1.56.0",
+        "changes": [
+          "Fix onion circuit extension failing due to SFPK magic prefix in handshake reply",
+          "Add tracker federation for cross-relay public room discovery"
+        ]
+      },
+      {
+        "version": "1.55.2",
+        "changes": [
+          "Fix relay public URL not persisting on page reload"
+        ]
+      },
+      {
+        "version": "1.55.0",
+        "changes": [
+          "Add relay proxy configuration guides and connection limits to install modal",
+          "Enable Public rooms visibility by default in 3D room lobby"
+        ]
+      },
+      {
+        "version": "1.54.0",
+        "changes": [
+          "Add relay proxy configuration guides and connection limits to install modal",
+          "Enable Public rooms visibility by default in 3D room lobby"
+        ]
+      },
+      {
+        "version": "1.53.0",
+        "changes": [
+          "Add relay node management UI with tracker toggle and live stats"
+        ]
+      },
+      {
+        "version": "1.52.1",
+        "changes": [
+          "Fix E key interaction distance to match proximity glow range",
+          "Fix lighting preset cycle showing wrong brightness on room load",
+          "Fix proximity glow staying stuck on objects after moving away"
+        ]
+      },
+      {
+        "version": "1.52.0",
+        "changes": [
+          "Fix IP cameras not loading from external networks with MSE fallback",
+          "Add push-to-talk button for mobile in 3D rooms",
+          "Fix 3D room pointer not working after re-entering a room",
+          "Update proxy configuration guides with all WebSocket endpoints",
+          "Add O key shortcut for voice settings and Exit to Lobby option in 3D rooms",
+          "Fix voice chat not working between devices on different networks",
+          "Fix voice chat pitch distortion between devices with different sample rates"
+        ]
+      },
+      {
+        "version": "1.51.0",
+        "changes": [
+          "Block guests from editing or moving owner objects in radial menu",
+          "Add sound effects for keypad interactions (key press, unlock, wrong code)"
+        ]
+      },
+      {
+        "version": "1.50.0",
+        "changes": [
+          "Block guests from editing or modifying owner-placed objects in 3D room",
+          "Add sound effects for keypad interactions (key press, unlock, wrong code)"
+        ]
+      },
+      {
+        "version": "1.49.1",
+        "changes": [
+          "Fix HA fan 0% turning on at max speed and preserve oscillation on speed change"
+        ]
+      },
+      {
+        "version": "1.49.0",
+        "changes": [
+          "Add fan gear level chart on dashboard"
+        ]
+      },
+      {
+        "version": "1.48.3",
+        "changes": [
+          "Fix HA Bridge fan default speed fallback using wrong scale"
+        ]
+      },
+      {
+        "version": "1.48.2",
+        "changes": [
+          "Fix fan speed range to 1-10 matching official app"
+        ]
+      },
+      {
+        "version": "1.48.1",
+        "changes": [
+          "Fix chain forwarding sending remote machine data to downstream servers",
+          "Fix step-up collision allowing player to walk over carpets and low objects"
+        ]
+      },
+      {
+        "version": "1.48.0",
+        "changes": [
+          "Fix door objects flickering green constantly, now glow subtly on proximity",
+          "Add door/portal toggle in model editor inventory",
+          "Fix environment editor save button not persisting lighting changes",
+          "Fix keyboard shortcuts interfering with text input in inventory editor",
+          "Fix MQTT connection crash when broker drops unexpectedly",
+          "Fix socket control not responding when source filter is active",
+          "Fix Data Sources list flickering when messages arrive",
+          "Add dedicated voice WebSocket relay with binary audio and AudioWorklet playback"
+        ]
+      },
+      {
+        "version": "1.47.7",
+        "changes": [
+          "Fix voice relay quality: remove chipmunk effect, add jitter buffer, boost volume"
+        ]
+      },
+      {
+        "version": "1.47.6",
+        "changes": [
+          "Improve 3D room mobile performance with reduced GPU load and throttled raycasts",
+          "Fix players getting stuck when touching, now softly push apart",
+          "Fix static assets and API returning 404/500 in preview mode",
+          "Fix voice chat outside LAN with WebSocket relay fallback when P2P fails",
+          "Fix wall collision blocking instead of sliding along surfaces"
+        ]
+      },
+      {
+        "version": "1.47.5",
+        "changes": [
+          "Separate blower and fan as independent entities in Home Assistant bridge"
+        ]
+      },
+      {
+        "version": "1.47.4",
+        "changes": [
+          "Fix light settings save not applying when planting plan is active"
+        ]
+      },
+      {
+        "version": "1.47.3",
+        "changes": [
+          "Fix timezone consistency, security validations, and error handling in camera endpoints"
+        ]
+      },
+      {
+        "version": "1.47.2",
+        "changes": [
+          "Fix brightness slider showing stale device config instead of active plan values"
+        ]
+      },
+      {
+        "version": "1.47.1",
+        "changes": [
+          "Fix light brightness not applying when planting plan is active"
+        ]
+      },
+      {
+        "version": "1.47.0",
+        "changes": [
+          "Add timelapse gallery with multi-day selection, bulk cleanup, and photo browser",
+          "Add auto-generated daily timelapse videos with sequential playback and full export"
+        ]
+      },
+      {
+        "version": "1.46.0",
+        "changes": [
+          "Add Camera Service and Video Streaming to services panel",
+          "Fix environment editor loading user presets instead of system-only presets",
+          "Add model metadata editor with display name, category, and animation settings",
+          "Show textured model during placement instead of green ghost material"
+        ]
+      },
+      {
+        "version": "1.45.0",
+        "changes": [
+          "Add Cameras tab in Laboratory with live feeds, IP Webcam controls, and photo capture",
+          "Add Camera Service and Video Streaming to services panel",
+          "Fix environment editor loading user presets instead of system-only presets",
+          "Add model metadata editor with display name, category, and animation settings",
+          "Add customizable server-side photo overlay with day counter, date, time, and custom text",
+          "Show textured model during placement instead of green ghost material",
+          "Add timelapse photo scheduling with daily video generation via ffmpeg"
+        ]
+      },
+      {
+        "version": "1.44.0",
+        "changes": [
+          "Fix animated GLB models not playing - add reset() and mixer.update(0)",
+          "Add IP camera streaming with go2rtc WebRTC bridge"
+        ]
+      },
+      {
+        "version": "1.43.1",
+        "changes": [
+          "Fix room code input rejecting letters O/I and cursor jumping, save code on room enter"
+        ]
+      },
+      {
+        "version": "1.43.0",
+        "changes": [
+          "Add Home Assistant MQTT Discovery bridge with bidirectional control",
+          "Allow Home Assistant control in Trigger mode with warning about active triggers",
+          "Hide sprint indicator and object counter from HUD in normal play mode",
+          "Reduce mobile TV streaming quality to prevent stuttering",
+          "Fix ambient menu not opening from radial wheel and F12 DevTools key being blocked",
+          "Redesign all Room 3D UI with game-style visuals: keycap buttons, color-coded joysticks, glass panels, gradient controls",
+          "Redesign System panel layout and unify text sizes across all components"
+        ]
+      },
+      {
+        "version": "1.42.3",
+        "changes": [
+          "Fix TV pausing by distance, Tab not closing inventory, and env editor click-outside"
+        ]
+      },
+      {
+        "version": "1.42.2",
+        "changes": [
+          "Fix environment Reset to restore editor defaults, hide Reset in editor mode"
+        ]
+      },
+      {
+        "version": "1.42.1",
+        "changes": [
+          "Fix TV pausing when walking away and improve mobile stream quality"
+        ]
+      },
+      {
+        "version": "1.42.0",
+        "changes": [
+          "Redesign lobby with video background, remove platform, fade carousel transitions, and mobile swipe",
+          "Fix skybox seam line with GLSL 300 textureGrad shader"
+        ]
+      },
+      {
+        "version": "1.41.3",
+        "changes": [
+          "Fix mobile GPU crash with dynamic pixel ratio cap and WebGL context recovery"
+        ]
+      },
+      {
+        "version": "1.41.2",
+        "changes": [
+          "Fix mobile crash caused by per-frame memory allocations during movement"
+        ]
+      },
+      {
+        "version": "1.41.1",
+        "changes": [
+          "Fix mobile crash by disabling fullscreen API and reducing pixel ratio"
+        ]
+      },
+      {
+        "version": "1.41.0",
+        "changes": [
+          "Fix Firefox Quick Find stealing all key input in room",
+          "Fix mobile crash when entering room in fullscreen mode",
+          "Remove voice chat from invite lobby, keep it room-only",
+          "Add mobile TV control bar with channel/volume buttons"
+        ]
+      },
+      {
+        "version": "1.40.12",
+        "changes": [
+          "Fix TV stream pausing before player walks to TV"
+        ]
+      },
+      {
+        "version": "1.40.11",
+        "changes": [
+          "Fix TV stream stopping seconds after starting due to distance check"
+        ]
+      },
+      {
+        "version": "1.40.10",
+        "changes": [
+          "Reduce IPTV stream buffer from 15s to 6s and pause streams when player is far from TV"
+        ]
+      },
+      {
+        "version": "1.40.9",
+        "changes": [
+          "Fix Firefox keyboard/mouse control, remove dashboard demo data, suppress Weedlix modal on room3d"
+        ]
+      },
+      {
+        "version": "1.40.8",
+        "changes": [
+          "Fix TV broken in windowed mode, hover effects, and Chrome video pausing"
+        ]
+      },
+      {
+        "version": "1.40.7",
+        "changes": [
+          "Fix TV video paused by Chrome power-saving, suppress pointer lock errors, return null for missing sensors"
+        ]
+      },
+      {
+        "version": "1.40.6",
+        "changes": [
+          "Fix TV hover/buttons not working and video swapping to canvas during buffering"
+        ]
+      }
+    ],
+    "ingest": [
+      {
+        "version": "1.6.2",
+        "changes": [
+          "Only forward allowed source data to remote servers"
+        ]
+      },
+      {
+        "version": "1.6.1",
+        "changes": [
+          "Block remote device data from being stored when source filter is active"
+        ]
+      },
+      {
+        "version": "1.6.0",
+        "changes": [
+          "Add relay command handler and version sync for bidirectional remote control"
+        ]
+      },
+      {
+        "version": "1.5.0",
+        "changes": [
+          "Subscribe to and forward server-to-device commands to remote servers"
+        ]
+      },
+      {
+        "version": "1.4.0",
+        "changes": [
+          "Support MQTT over WebSocket (WSS) for domain-based remote forwarding"
+        ]
+      },
+      {
+        "version": "1.3.0",
+        "changes": [
+          "Add config topic forwarding and heartbeat for clone server passive mode"
+        ]
+      },
+      {
+        "version": "1.2.0",
+        "changes": [
+          "Add fan state ingestion for Control Box devices"
+        ]
+      },
+      {
+        "version": "1.1.0",
+        "changes": [
+          "Add remote MQTT forwarding for Send Data to Your Server feature"
+        ]
+      }
+    ],
+    "retention": [
+      {
+        "version": "1.0.3",
+        "changes": [
+          "Fix data retention service crash loop under PM2"
+        ]
+      },
+      {
+        "version": "1.0.2",
+        "changes": [
+          "Fix Data Cleanup service restart loop by adding auto-start when run standalone"
+        ]
+      }
+    ],
+    "supervisor": [
+      {
+        "version": "1.11.0",
+        "changes": [
+          "Add room publisher auto-start migration on update"
+        ]
+      },
+      {
+        "version": "1.10.3",
+        "changes": [
+          "Auto-install npm dependencies when deploying web updates"
+        ]
+      },
+      {
+        "version": "1.10.2",
+        "changes": [
+          "Auto-install sodium-native when deploying relay component"
+        ]
+      },
+      {
+        "version": "1.10.0",
+        "changes": [
+          "Add relay component to auto-updater with post-update migration for tunnel and relay services"
+        ]
+      },
+      {
+        "version": "1.9.7",
+        "changes": [
+          "Fix supervisor self-update hanging by saving state before restart and adding 2-minute timeout"
+        ]
+      },
+      {
+        "version": "1.9.6",
+        "changes": [
+          "Auto-install ffmpeg and ImageMagick on update for camera features"
+        ]
+      },
+      {
+        "version": "1.9.5",
+        "changes": [
+          "Fix appdata sync not completing before web restart after update"
+        ]
+      },
+      {
+        "version": "1.9.4",
+        "changes": [
+          "Fix supervisor self-update hanging by saving state before restart and adding 2-minute timeout"
+        ]
+      },
+      {
+        "version": "1.9.3",
+        "changes": [
+          "Reduce update check interval from 2 hours to 10 minutes"
+        ]
+      },
+      {
+        "version": "1.9.2",
+        "changes": [
+          "Fix update-checker not deployed with supervisor updates and appdata sync after web updates"
+        ]
+      },
+      {
+        "version": "1.9.1",
+        "changes": [
+          "Add APPDATA_SYNC_ENABLED toggle and run asset sync every 10 minutes"
+        ]
+      },
+      {
+        "version": "1.9.0",
+        "changes": [
+          "Add automatic sync of 3D assets and media files from server"
+        ]
+      },
+      {
+        "version": "1.8.3",
+        "changes": [
+          "Remove download timeout that was aborting large archive downloads"
+        ]
+      },
+      {
+        "version": "1.8.2",
+        "changes": [
+          "Fix update lock not released when no updates available"
+        ]
+      },
+      {
+        "version": "1.8.1",
+        "changes": [
+          "Fix race condition: only supervisor auto-applies updates, not API check endpoint"
+        ]
+      },
+      {
+        "version": "1.8.0",
+        "changes": [
+          "Add architecture detection for ARM64 proxy binary selection"
+        ]
+      },
+      {
+        "version": "1.7.0",
+        "changes": [
+          "Add Control Box device detection for blower automation"
+        ]
+      },
+      {
+        "version": "1.6.1",
+        "changes": [
+          "Fix update system blocked on production installs due to false dev detection"
+        ]
+      },
+      {
+        "version": "1.6.0",
+        "changes": [
+          "Store manifest changelogs locally for Version Info display",
+          "VPD automation reads plant stage from Laboratory plants"
+        ]
+      },
+      {
+        "version": "1.5.0",
+        "changes": [
+          "Store manifest changelogs locally for Version Info display",
+          "VPD automation reads plant stage from Laboratory plants"
+        ]
+      },
+      {
+        "version": "1.4.0",
+        "changes": [
+          "Store manifest changelogs locally for Version Info display",
+          "VPD automation reads plant stage from Laboratory plants"
+        ]
+      },
+      {
+        "version": "1.3.0",
+        "changes": [
+          "Support versioned changelog format in update checker"
+        ]
+      }
+    ],
+    "proxy": [
+      {
+        "version": "1.2.0",
+        "changes": [
+          "Forward server-to-device commands to local MQTT for remote streaming"
+        ]
+      },
+      {
+        "version": "1.1.0",
+        "changes": [
+          "Add ARM64 binary for Raspberry Pi 4/5 compatibility"
+        ]
+      },
+      {
+        "version": "1.0.2",
+        "changes": [
+          "Fix hardcoded ports in MQTT proxy to read from environment variables"
+        ]
+      }
+    ],
+    "mosquitto": [
+      {
+        "version": "1.2.0",
+        "changes": [
+          "Add WebSocket listener on port 9001 for remote MQTT connections"
+        ]
+      },
+      {
+        "version": "1.1.0",
+        "changes": [
+          "Add WebSocket listener on port 9001 for MQTT over WS proxy support"
+        ]
+      }
+    ],
+    "schema": [
+      {
+        "version": "5",
+        "changes": [
+          "Add fan_ai_mode table for fan trigger automation"
+        ]
+      },
+      {
+        "version": "4",
+        "changes": [
+          "Add cameras table for IP camera configuration storage"
+        ]
+      },
+      {
+        "version": "3",
+        "changes": [
+          "Add fan_states table for Control Box fan data"
+        ]
+      }
+    ],
+    "relay": [
+      {
+        "version": "1.3.1",
+        "changes": [
+          "Room publisher re-registers immediately when room name or settings change"
+        ]
+      },
+      {
+        "version": "1.3.0",
+        "changes": [
+          "Room publisher filters by per-room public setting and uses custom names"
+        ]
+      },
+      {
+        "version": "1.2.0",
+        "changes": [
+          "Add room publisher to relay package for automatic tracker registration"
+        ]
+      },
+      {
+        "version": "1.1.5",
+        "changes": [
+          "Add debug logging for tracker registration flow"
+        ]
+      },
+      {
+        "version": "1.1.4",
+        "changes": [
+          "Fix multi-hop circuit forwarding and post-encryption padding"
+        ]
+      },
+      {
+        "version": "1.1.3",
+        "changes": [
+          "Fix circuit extension failure caused by padPacket truncating encrypted data"
+        ]
+      },
+      {
+        "version": "1.1.2",
+        "changes": [
+          "Fix gossip peer discovery with immediate bootstrap and self-key population"
+        ]
+      },
+      {
+        "version": "1.1.0",
+        "changes": [
+          "Add decentralized relay node with onion routing, room tracker, and gossip protocol"
+        ]
+      }
+    ]
+  },
+  "advertDismissed": true
+}

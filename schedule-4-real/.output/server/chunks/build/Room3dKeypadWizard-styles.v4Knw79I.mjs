@@ -1,0 +1,1 @@
+const a=[".slide-right-enter-active[data-v-c76153a6],.slide-right-leave-active[data-v-c76153a6]{transition:transform .3s ease,opacity .3s ease}.slide-right-enter-from[data-v-c76153a6],.slide-right-leave-to[data-v-c76153a6]{opacity:0;transform:translate(100%)}"];export{a as default};

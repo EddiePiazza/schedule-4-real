@@ -1,0 +1,14 @@
+{
+  "Zombie.glb": {"scaleMultiplier": 2.2522, "yOffset": -1.5, "labelOffset": 0.25},
+  "Stylish Man.glb": {"scaleMultiplier": 2.3767, "yOffset": -1.8, "labelOffset": 0.65},
+  "Allison.glb": {"scaleMultiplier": 2.2749, "yOffset": -1.75, "labelOffset": 0.3},
+  "Chinese Girl.glb": {"scaleMultiplier": 2.2692, "yOffset": -1.7, "labelOffset": 0.3},
+  "Farmer.glb": {"scaleMultiplier": 2.3767, "yOffset": -1.65, "labelOffset": 0.3},
+  "Hazmat Zombie.glb": {"scaleMultiplier": 2.4893, "yOffset": -1.65, "labelOffset": 0.15},
+  "Katherine Langford.glb": {"scaleMultiplier": 2.2579, "yOffset": -1.65, "labelOffset": 0.25},
+  "Male Cop.glb": {"scaleMultiplier": 2.3946, "yOffset": -1.75, "labelOffset": 0.4},
+  "Mask Warrior.glb": {"scaleMultiplier": 2.4006, "yOffset": -1.75, "labelOffset": 0.35},
+  "Natalia.glb": {"scaleMultiplier": 2.4893, "yOffset": -1.7, "labelOffset": 0.3},
+  "Stylish Executive.glb": {"scaleMultiplier": 2.2806, "yOffset": -1.75, "labelOffset": 0.5},
+  "Thug.glb": {"scaleMultiplier": 2.2749, "yOffset": -1.75, "labelOffset": 0.3}
+}

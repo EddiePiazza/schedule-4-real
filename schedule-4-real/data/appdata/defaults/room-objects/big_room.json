@@ -1,0 +1,3718 @@
+[
+  {
+    "id": "c699d7da-93ed-431e-be1f-3cd65d2852c7",
+    "assetFile": "/models/assets/fourniture/simple_basic_office__work_desk.glb",
+    "position": {
+      "x": 622.4863,
+      "y": 39.3406,
+      "z": -236.3242
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.7045,
+      "z": 0,
+      "w": 0.7097
+    },
+    "scale": 17.0309,
+    "name": "simple basic office  work desk",
+    "locked": false
+  },
+  {
+    "id": "bdcd2584-90ac-4d66-9ecd-d8c2882955ed",
+    "assetFile": "/models/assets/parafernalia/lsd_drug_lab_kit.glb",
+    "position": {
+      "x": 620.5222,
+      "y": 40.6863,
+      "z": -254.7892
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.6862,
+      "z": 0,
+      "w": -0.7275
+    },
+    "scale": 27.4207,
+    "name": "lsd drug lab kit",
+    "locked": false
+  },
+  {
+    "id": "2c156a89-26c4-4191-a62c-38c5108dae6a",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 797.3534,
+      "y": 20.3625,
+      "z": -498.7277
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0072,
+      "z": 0,
+      "w": 1
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "447479e3-1ca7-476b-8286-5f5d5328b6ec",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 792.8452,
+      "y": 0.1316,
+      "z": -360.047
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0207,
+      "z": 0,
+      "w": 0.9998
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "a97c88fd-cbe5-4a92-99f7-0641701d5e2a",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 795.2125,
+      "y": 0.1316,
+      "z": -409.803
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0432,
+      "z": 0,
+      "w": 0.9991
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "bde69274-ca83-414a-8db8-b8462e1e7f3f",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 796.2265,
+      "y": 0.1316,
+      "z": -457.0841
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0082,
+      "z": 0,
+      "w": 1
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "4fc49834-66f2-433a-bce9-bc8d53e4cc7d",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 805.0557,
+      "y": 20.3591,
+      "z": -454.2987
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.0103,
+      "z": 0,
+      "w": 0.9999
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "ef6ed0d9-77a9-4da5-b8af-9d2ff3331835",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 799.7041,
+      "y": 23.1727,
+      "z": -408.4309
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9999,
+      "z": 0,
+      "w": -0.01
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "a17522a9-f58b-4d45-9d5d-f7939c3eeff1",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 800.5166,
+      "y": 21.224,
+      "z": -361.7325
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0018,
+      "z": 0,
+      "w": 1
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "7ac9a305-f1cb-4bae-97ad-51ecbe24aeaa",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 799.915,
+      "y": 40.1573,
+      "z": -510.4635
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "w": 0.0055
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "78ea956b-cc2c-4c9a-a5d1-8bd45c1ecf26",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 797.7882,
+      "y": 42.078,
+      "z": -462.4115
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9986,
+      "z": 0,
+      "w": -0.0525
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "fb28b944-237e-498c-9d3f-edb24478a91f",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 798.2053,
+      "y": 43.4915,
+      "z": -414.6775
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.991,
+      "z": 0,
+      "w": 0.1341
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "fe50d075-8da3-4032-bd75-58353054bed3",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 798.7273,
+      "y": 42.8124,
+      "z": -365.0781
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0407,
+      "z": 0,
+      "w": 0.9992
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "1ca3f4df-8344-422d-9fbe-a448f4fbba0c",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 796.2068,
+      "y": 60.3627,
+      "z": -506.8315
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.1006,
+      "z": 0,
+      "w": -0.9949
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "6c713607-fc2c-4370-aa86-9c7f3bec3a2c",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 792.3479,
+      "y": 61.7336,
+      "z": -462.2992
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "w": -0.0037
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "dc7be682-3a0b-4ce6-b793-13b22ae305de",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 794.2329,
+      "y": 63.8455,
+      "z": -416.6497
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9905,
+      "z": 0,
+      "w": -0.1372
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "3e7ff5d1-4776-4454-8c8a-d001a2a15d1a",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 790.9822,
+      "y": 62.4998,
+      "z": -369.3275
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.2626,
+      "z": 0,
+      "w": 0.9649
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "ec891e0d-9f53-4085-9e76-99d6745aedf9",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 799.7141,
+      "y": 77.4573,
+      "z": -502.637
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "w": 0.0098
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "8e907ca6-a192-4063-91c1-872694a3d778",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 796.1786,
+      "y": 80.2806,
+      "z": -457.0772
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.1013,
+      "z": 0,
+      "w": -0.9949
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 795.5642,
+      "y": 81.261,
+      "z": -411.7467
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.1171,
+      "z": 0,
+      "w": -0.9931
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "59486e4c-02c3-486c-a134-60fdb9ca25aa",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 797.2826,
+      "y": 82.0986,
+      "z": -363.7282
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9979,
+      "z": 0,
+      "w": -0.0642
+    },
+    "scale": 129.6261,
+    "name": "weed brick 2",
+    "locked": true
+  },
+  {
+    "id": "fd73c997-2e19-41d8-b4dc-dc8b5a8b86ae",
+    "assetFile": "/models/assets/plants/weed_brick_open.glb",
+    "position": {
+      "x": 754.1155,
+      "y": -1.8474,
+      "z": -465.5226
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.1493,
+      "z": 0,
+      "w": 0.9888
+    },
+    "scale": 187.4817,
+    "name": "weed brick open",
+    "locked": false
+  },
+  {
+    "id": "b89aff59-1d92-4b99-b1d0-52c8ae6cf000",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 728.03,
+      "y": 8.4155,
+      "z": -509.1036
+    },
+    "quaternion": {
+      "x": 0.1596,
+      "y": -0.7605,
+      "z": 0.2038,
+      "w": 0.5955
+    },
+    "scale": 117.2316,
+    "name": "weed brick 2",
+    "locked": false
+  },
+  {
+    "id": "30d5b59d-5c63-43df-8933-4269a93b14c4",
+    "assetFile": "/models/assets/parafernalia/joint.glb",
+    "position": {
+      "x": 614.1256,
+      "y": 41.1337,
+      "z": -223.4927
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9096,
+      "z": 0,
+      "w": 0.4154
+    },
+    "scale": 97.295,
+    "name": "joint",
+    "locked": false
+  },
+  {
+    "id": "f11c9ad6-9aed-49bf-a99e-835b37230488",
+    "assetFile": "/models/assets/parafernalia/joint.glb",
+    "position": {
+      "x": 412.7598,
+      "y": 16.705,
+      "z": -246.261
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.5256,
+      "z": 0,
+      "w": -0.8507
+    },
+    "scale": 97.295,
+    "name": "joint",
+    "locked": false
+  },
+  {
+    "id": "941f72f2-3f5c-4e37-8179-46f07bdcfcf8",
+    "assetFile": "/models/assets/plants/compost_bag.glb",
+    "position": {
+      "x": 738.5086,
+      "y": -0.9953,
+      "z": -358.2362
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.2565,
+      "z": 0,
+      "w": 0.9665
+    },
+    "scale": 108.6801,
+    "name": "compost bag",
+    "locked": false
+  },
+  {
+    "id": "28d524cf-7888-40bf-8d8c-0d3bf9026426",
+    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "position": {
+      "x": 414.5536,
+      "y": 15.0544,
+      "z": -245.3091
+    },
+    "quaternion": {
+      "x": 0.5929,
+      "y": -0.3289,
+      "z": 0.2885,
+      "w": 0.6761
+    },
+    "scale": 4.3369,
+    "name": "weed in a bag",
+    "locked": false
+  },
+  {
+    "id": "3a45e961-97f6-4562-b8fe-432beea62321",
+    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "position": {
+      "x": 401.6282,
+      "y": 16.2576,
+      "z": -247.5207
+    },
+    "quaternion": {
+      "x": 0.6522,
+      "y": 0.1106,
+      "z": -0.097,
+      "w": 0.7437
+    },
+    "scale": 4.3369,
+    "name": "weed in a bag",
+    "locked": false
+  },
+  {
+    "id": "25e3c933-5eb7-4bd5-ac3f-1a87be8a2702",
+    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "position": {
+      "x": 422.9655,
+      "y": 16.2576,
+      "z": -245.2096
+    },
+    "quaternion": {
+      "x": 0.4174,
+      "y": -0.582,
+      "z": 0.5104,
+      "w": 0.476
+    },
+    "scale": 4.3369,
+    "name": "weed in a bag",
+    "locked": false
+  },
+  {
+    "id": "76637be8-8af0-4ff5-b003-65199690544e",
+    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "position": {
+      "x": 458.8049,
+      "y": 16.2576,
+      "z": -244.8795
+    },
+    "quaternion": {
+      "x": 0.6585,
+      "y": -0.0374,
+      "z": 0.0328,
+      "w": 0.7509
+    },
+    "scale": 4.3369,
+    "name": "weed in a bag",
+    "locked": false
+  },
+  {
+    "id": "5368adbd-f2f3-458d-bde6-d6350e20223f",
+    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "position": {
+      "x": 630.7261,
+      "y": 40.6863,
+      "z": -192.3945
+    },
+    "quaternion": {
+      "x": 0.0116,
+      "y": 0.7517,
+      "z": -0.6592,
+      "w": 0.0132
+    },
+    "scale": 4.3369,
+    "name": "weed in a bag",
+    "locked": false
+  },
+  {
+    "id": "e6e24990-f656-4b24-98fa-a732402baec2",
+    "assetFile": "/models/assets/plants/compost_bags.glb",
+    "position": {
+      "x": 751.314,
+      "y": 3.059,
+      "z": -404.145
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.5573,
+      "z": 0,
+      "w": 0.8303
+    },
+    "scale": 40.1646,
+    "name": "compost bags",
+    "locked": false
+  },
+  {
+    "id": "3b2b9942-96e0-4992-a909-ca955ef52846",
+    "assetFile": "/models/assets/parafernalia/joint.glb",
+    "position": {
+      "x": 355.579,
+      "y": 0.9165,
+      "z": -156.2258
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.2531,
+      "z": 0,
+      "w": 0.9674
+    },
+    "scale": 130.8077,
+    "name": "joint",
+    "locked": false
+  },
+  {
+    "id": "44985502-8c99-4d56-b6ec-a6c986d2ca96",
+    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "position": {
+      "x": 435.4386,
+      "y": 21.2571,
+      "z": -233.1308
+    },
+    "quaternion": {
+      "x": -0.1433,
+      "y": -0.8043,
+      "z": -0.2155,
+      "w": 0.5349
+    },
+    "scale": 54.1578,
+    "name": "weed brick 2",
+    "locked": false
+  },
+  {
+    "id": "12365543-4a5f-413a-bcaf-8dbcb1d97acd",
+    "assetFile": "/models/assets/plants/weed_brick_open.glb",
+    "position": {
+      "x": 428.0249,
+      "y": 16.5379,
+      "z": -243.1302
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9661,
+      "z": 0,
+      "w": -0.2582
+    },
+    "scale": 54.8553,
+    "name": "weed brick open",
+    "locked": false
+  },
+  {
+    "id": "8e284582-fc82-4f8b-b533-e41a5d27d451",
+    "assetFile": "/models/assets/parafernalia/super_bong_haze.glb",
+    "position": {
+      "x": 454.3999,
+      "y": 16.4,
+      "z": -246.4202
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.8364,
+      "z": 0,
+      "w": 0.5481
+    },
+    "scale": 72.6017,
+    "name": "super bong haze",
+    "locked": false
+  },
+  {
+    "id": "f3e96d2c-f11f-44fd-8426-40f2280d4616",
+    "assetFile": "/models/assets/parafernalia/super_bong_haze.glb",
+    "position": {
+      "x": 230.9504,
+      "y": 0.6745,
+      "z": -74.8689
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9046,
+      "z": 0,
+      "w": -0.4263
+    },
+    "scale": 343.8143,
+    "name": "super bong haze",
+    "locked": false
+  },
+  {
+    "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
+    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 681.3363,
+      "y": 0.8021,
+      "z": -508.6747
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9864,
+      "z": 0,
+      "w": 0.1647
+    },
+    "scale": 52.0324,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "3f3b1613-7260-4ba1-b2d8-b298c61a7915",
+    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 650.1847,
+      "y": 0.8021,
+      "z": -509.675
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.33,
+      "z": 0,
+      "w": -0.944
+    },
+    "scale": 56.6633,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
+    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 619.1562,
+      "y": 0.8021,
+      "z": -499.1467
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.0059,
+      "z": 0,
+      "w": -1
+    },
+    "scale": 45.4383,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
+    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 612.1478,
+      "y": 1.4186,
+      "z": -454.3059
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.915,
+      "z": 0,
+      "w": -0.4035
+    },
+    "scale": 56.6633,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "3462f252-d701-47d4-a7e2-a9c4749b6fa6",
+    "assetFile": "/models/assets/fourniture/game_ready_light.glb",
+    "position": {
+      "x": 640.4202,
+      "y": 157.1311,
+      "z": -473.915
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9999,
+      "z": 0,
+      "w": 0.0105
+    },
+    "scale": 76.191,
+    "name": "game ready light",
+    "locked": false
+  },
+  {
+    "id": "be069ee3-6f2e-478a-9fc7-a4a6a96117dd",
+    "assetFile": "/models/assets/parafernalia/microscope.glb",
+    "position": {
+      "x": 616.4295,
+      "y": 40.6863,
+      "z": -210.0733
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7009,
+      "z": 0,
+      "w": 0.7133
+    },
+    "scale": 12.217,
+    "name": "microscope",
+    "locked": false
+  },
+  {
+    "id": "b91ac89f-d556-4211-814c-cfd5f5f4a707",
+    "assetFile": "/models/assets/fourniture/carpets_from_asia.glb",
+    "position": {
+      "x": 635.8351,
+      "y": 0.9654,
+      "z": -211.8578
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.702,
+      "z": 0,
+      "w": 0.7122
+    },
+    "scale": 89.6554,
+    "name": "carpets from asia",
+    "locked": true
+  },
+  {
+    "id": "aa6d22ea-966f-48f4-bb79-e2e4fe9e0fb0",
+    "assetFile": "/models/assets/keypad_codelock.glb",
+    "position": {
+      "x": 347.102,
+      "y": 74.8209,
+      "z": -49.4241
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 90.5818,
+    "name": "keypad codelock",
+    "locked": false,
+    "keypadData": {
+      "id": "mlmwbo8v0bjv",
+      "display": {
+        "id": "mlmwbzd2uvta",
+        "polygon": {
+          "id": "mlmwbzd2uvta",
+          "vertices": [
+            {
+              "x": 0.022295359483294086,
+              "y": 0.08231048310419242,
+              "z": 0.048624071024971904,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            },
+            {
+              "x": 0.022295359483294086,
+              "y": 0.08231048310419242,
+              "z": -0.042509409611954485,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            },
+            {
+              "x": 0.0222953594832942,
+              "y": 0.04874139434147884,
+              "z": -0.042509409611954485,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -4.795268589716417e-21
+            },
+            {
+              "x": 0.0222953594832942,
+              "y": 0.04874139434147884,
+              "z": 0.048624071024971904,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            }
+          ],
+          "normalOffset": 0.005,
+          "planeNormal": {
+            "x": -1,
+            "y": -3.321206298419949e-15,
+            "z": 1.4977170106332022e-17
+          },
+          "planeCenter": {
+            "x": 0.02229535948329414,
+            "y": 0.06650422926075081,
+            "z": 0.002971118097712333
+          },
+          "basisU": {
+            "x": 1.4977170106332022e-17,
+            "y": 4.974227168965689e-32,
+            "z": 1
+          },
+          "basisV": {
+            "x": -3.321206298419949e-15,
+            "y": 1,
+            "z": 0
+          },
+          "bounds2D": {
+            "minU": -0.04548052770966682,
+            "maxU": 0.04565295292725957,
+            "minV": -0.01676283491927197,
+            "maxV": 0.016806253843441615
+          }
+        },
+        "config": {
+          "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+          "fontSize": 0.72,
+          "textColor": "#00ff11",
+          "backgroundColor": "#000000",
+          "backgroundOpacity": 1,
+          "backgroundTransparent": false,
+          "surfaceType": "glossy",
+          "roughness": 0.25,
+          "metalness": 0.7,
+          "textAlign": "center",
+          "uppercase": false,
+          "maxChars": 4,
+          "padding": 0.003,
+          "letterSpacing": -0.016,
+          "lineHeight": 1.2,
+          "wrapMode": "wrap",
+          "mode": "static",
+          "previewText": "CODE"
+        }
+      },
+      "buttons": [
+        {
+          "id": "mln1ha8nkmht",
+          "polygon": {
+            "id": "mln1ha8nkmht",
+            "vertices": [
+              {
+                "x": 0.027116642907776684,
+                "y": 0.02982962050315174,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776628,
+                "y": 0.02982962050315174,
+                "z": 0.041282032676194014,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776572,
+                "y": 0.01663990119700076,
+                "z": 0.041282032676194014,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776628,
+                "y": 0.01663990119700076,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.365774359723703e-15,
+              "z": 4.1284815947316785e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776628,
+              "y": 0.023225255555571728,
+              "z": 0.048014753697561696
+            },
+            "basisU": {
+              "x": 4.1284815947316785e-15,
+              "y": -1.8024019090870787e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.365774359723703e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.0067327210213676825,
+              "maxU": 0.006878388885656728,
+              "minV": -0.006585354358570966,
+              "maxV": 0.006604364947580016
+            }
+          },
+          "type": "character",
+          "value": "1",
+          "label": "1",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8gnu9xjbq",
+          "polygon": {
+            "id": "mln8gnu9gzij",
+            "vertices": [
+              {
+                "x": 0.027116642907776503,
+                "y": 0.029829620503151744,
+                "z": 0.01189314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.029829620503151744,
+                "z": -0.0017179673238059716,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776392,
+                "y": 0.016639901197000765,
+                "z": -0.0017179673238059716,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.016639901197000765,
+                "z": 0.01189314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 3.925495968369701e-15,
+              "z": 4.078370655328389e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777671,
+              "y": 0.023234760850076253,
+              "z": 0.06808758762970622
+            },
+            "basisU": {
+              "x": 3.925495968369701e-15,
+              "y": 1,
+              "z": -1.6009627565008887e-29
+            },
+            "basisV": {
+              "x": -4.078370655328389e-15,
+              "y": 0,
+              "z": -1
+            },
+            "bounds2D": {
+              "minU": -0.006594859653075491,
+              "maxU": 0.006594859653075488,
+              "minV": -0.006805554953512205,
+              "maxV": 0.006805554953512205
+            }
+          },
+          "type": "character",
+          "value": "3",
+          "label": "3",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8hrcaon9w",
+          "polygon": {
+            "id": "mln8hrcacqhm",
+            "vertices": [
+              {
+                "x": 0.02711664290777659,
+                "y": 0.029829620503151744,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776534,
+                "y": 0.029829620503151744,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777648,
+                "y": 0.016639901197000765,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776534,
+                "y": 0.016639901197000765,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "2",
+          "label": "2",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8icvcg91q",
+          "polygon": {
+            "id": "mln8icvcls9j",
+            "vertices": [
+              {
+                "x": 0.027116642907776597,
+                "y": 0.008829620503151739,
+                "z": 0.05489314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777654,
+                "y": 0.008829620503151739,
+                "z": 0.04128203267619402,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776486,
+                "y": -0.004360098802999236,
+                "z": 0.04128203267619402,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777654,
+                "y": -0.004360098802999236,
+                "z": 0.05489314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.22745719670583e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776618,
+              "y": 0.023234760850076253,
+              "z": 0.04608758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770186e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.22745719670583e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512205,
+              "maxU": 0.006805554953512205,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "4",
+          "label": "4",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8jkq8uibc",
+          "polygon": {
+            "id": "mln8jkq817rz",
+            "vertices": [
+              {
+                "x": 0.027116642907776503,
+                "y": 0.008829620503151735,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.008829620503151735,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776392,
+                "y": -0.004360098802999236,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": -0.004360098802999236,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "5",
+          "label": "5",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8khmk4eih",
+          "polygon": {
+            "id": "mln8khmkupze",
+            "vertices": [
+              {
+                "x": 0.027116642907776507,
+                "y": -0.012170379496848266,
+                "z": 0.05489314258321844,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777645,
+                "y": -0.012170379496848266,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776396,
+                "y": -0.02536009880299924,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777645,
+                "y": -0.02536009880299924,
+                "z": 0.05489314258321844,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328386e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.0022347608500762495,
+              "z": 0.04608758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328386e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512205,
+              "maxU": 0.006805554953512205,
+              "minV": -0.006594859653075486,
+              "maxV": 0.006594859653075486
+            }
+          },
+          "type": "character",
+          "value": "A",
+          "label": "A",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8lmurevty",
+          "polygon": {
+            "id": "mln8lmur78tm",
+            "vertices": [
+              {
+                "x": 0.027116642907776416,
+                "y": 0.008829620503151739,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777636,
+                "y": 0.008829620503151739,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776305,
+                "y": -0.004360098802999236,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777636,
+                "y": -0.004360098802999236,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "6",
+          "label": "6",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8mao1gr89",
+          "polygon": {
+            "id": "mln8mao1qodv",
+            "vertices": [
+              {
+                "x": 0.02711664290777642,
+                "y": -0.012170379496848262,
+                "z": 0.032893142583218425,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.012170379496848262,
+                "z": 0.019282032676194025,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777631,
+                "y": -0.02536009880299924,
+                "z": 0.019282032676194025,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.02536009880299924,
+                "z": 0.032893142583218425,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776444,
+              "y": 0.0022347608500762513,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770187e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "b",
+          "label": "b",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8na988aa4",
+          "polygon": {
+            "id": "mln8na984y15",
+            "vertices": [
+              {
+                "x": 0.02711664290777633,
+                "y": -0.012170379496848262,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776274,
+                "y": -0.012170379496848262,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777622,
+                "y": -0.02536009880299924,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776274,
+                "y": -0.02536009880299924,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776444,
+              "y": 0.0022347608500762513,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770187e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "C",
+          "label": "C",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8nvvam7pe",
+          "polygon": {
+            "id": "mln8nvva5m4o",
+            "vertices": [
+              {
+                "x": 0.027116642907776326,
+                "y": -0.034170379496848265,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777627,
+                "y": -0.034170379496848265,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776215,
+                "y": -0.04736009880299924,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777627,
+                "y": -0.04736009880299924,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776357,
+              "y": -0.01876523914992375,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "e",
+          "label": "e",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8ogts1qmu",
+          "polygon": {
+            "id": "mln8ogtssynw",
+            "vertices": [
+              {
+                "x": 0.02711664290777642,
+                "y": -0.034170379496848265,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.034170379496848265,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777631,
+                "y": -0.04736009880299924,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.04736009880299924,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705834e-15,
+              "z": 4.078370655328391e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776448,
+              "y": -0.01876523914992375,
+              "z": 0.046087587629706224
+            },
+            "basisU": {
+              "x": 4.078370655328391e-15,
+              "y": -1.7241137377701897e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705834e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512198,
+              "maxU": 0.006805554953512198,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "d",
+          "label": "d",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8p8id9xjw",
+          "polygon": {
+            "id": "mln8p8id1ymq",
+            "vertices": [
+              {
+                "x": 0.02711664290777624,
+                "y": -0.034170379496848265,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776184,
+                "y": -0.034170379496848265,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777613,
+                "y": -0.04736009880299924,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776184,
+                "y": -0.04736009880299924,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776357,
+              "y": -0.01876523914992375,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "f",
+          "label": "f",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        }
+      ],
+      "logic": {
+        "secretCode": "1111",
+        "verificationMode": "auto",
+        "feedbackDuration": 5000,
+        "onTrue": {
+          "text": "OPEN",
+          "textColor": "#00ff00",
+          "bgColor": "#003300",
+          "bgTransparent": false
+        },
+        "onFalse": {
+          "text": "WRONG",
+          "textColor": "#ff0000",
+          "bgColor": "#330000",
+          "bgTransparent": false
+        },
+        "behavior": "single",
+        "action": {
+          "type": "door",
+          "doorAccessMode": "per-player",
+          "targetId": "/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
+        }
+      }
+    },
+    "behavior": {
+      "type": "keypad",
+      "config": {
+        "keypadData": {
+          "id": "mlmwbo8v0bjv",
+          "display": {
+            "id": "mlmwbzd2uvta",
+            "polygon": {
+              "id": "mlmwbzd2uvta",
+              "vertices": [
+                {
+                  "x": 0.022295359483294086,
+                  "y": 0.08231048310419242,
+                  "z": 0.048624071024971904,
+                  "nx": 1,
+                  "ny": 3.5824185316933285e-28,
+                  "nz": -2.397634294858209e-21
+                },
+                {
+                  "x": 0.022295359483294086,
+                  "y": 0.08231048310419242,
+                  "z": -0.042509409611954485,
+                  "nx": 1,
+                  "ny": 3.5824185316933285e-28,
+                  "nz": -2.397634294858209e-21
+                },
+                {
+                  "x": 0.0222953594832942,
+                  "y": 0.04874139434147884,
+                  "z": -0.042509409611954485,
+                  "nx": 1,
+                  "ny": 3.5824185316933285e-28,
+                  "nz": -4.795268589716417e-21
+                },
+                {
+                  "x": 0.0222953594832942,
+                  "y": 0.04874139434147884,
+                  "z": 0.048624071024971904,
+                  "nx": 1,
+                  "ny": 3.5824185316933285e-28,
+                  "nz": -2.397634294858209e-21
+                }
+              ],
+              "normalOffset": 0.005,
+              "planeNormal": {
+                "x": -1,
+                "y": -3.321206298419949e-15,
+                "z": 1.4977170106332022e-17
+              },
+              "planeCenter": {
+                "x": 0.02229535948329414,
+                "y": 0.06650422926075081,
+                "z": 0.002971118097712333
+              },
+              "basisU": {
+                "x": 1.4977170106332022e-17,
+                "y": 4.974227168965689e-32,
+                "z": 1
+              },
+              "basisV": {
+                "x": -3.321206298419949e-15,
+                "y": 1,
+                "z": 0
+              },
+              "bounds2D": {
+                "minU": -0.04548052770966682,
+                "maxU": 0.04565295292725957,
+                "minV": -0.01676283491927197,
+                "maxV": 0.016806253843441615
+              }
+            },
+            "config": {
+              "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+              "fontSize": 0.72,
+              "textColor": "#00ff11",
+              "backgroundColor": "#000000",
+              "backgroundOpacity": 1,
+              "backgroundTransparent": false,
+              "surfaceType": "glossy",
+              "roughness": 0.25,
+              "metalness": 0.7,
+              "textAlign": "center",
+              "uppercase": false,
+              "maxChars": 4,
+              "padding": 0.003,
+              "letterSpacing": -0.016,
+              "lineHeight": 1.2,
+              "wrapMode": "wrap",
+              "mode": "static",
+              "previewText": "CODE"
+            }
+          },
+          "buttons": [
+            {
+              "id": "mln1ha8nkmht",
+              "polygon": {
+                "id": "mln1ha8nkmht",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776684,
+                    "y": 0.02982962050315174,
+                    "z": 0.054893142583218424,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776628,
+                    "y": 0.02982962050315174,
+                    "z": 0.041282032676194014,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776572,
+                    "y": 0.01663990119700076,
+                    "z": 0.041282032676194014,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776628,
+                    "y": 0.01663990119700076,
+                    "z": 0.054893142583218424,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.365774359723703e-15,
+                  "z": 4.1284815947316785e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776628,
+                  "y": 0.023225255555571728,
+                  "z": 0.048014753697561696
+                },
+                "basisU": {
+                  "x": 4.1284815947316785e-15,
+                  "y": -1.8024019090870787e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.365774359723703e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.0067327210213676825,
+                  "maxU": 0.006878388885656728,
+                  "minV": -0.006585354358570966,
+                  "maxV": 0.006604364947580016
+                }
+              },
+              "type": "character",
+              "value": "1",
+              "label": "1",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8gnu9xjbq",
+              "polygon": {
+                "id": "mln8gnu9gzij",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776503,
+                    "y": 0.029829620503151744,
+                    "z": 0.01189314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776448,
+                    "y": 0.029829620503151744,
+                    "z": -0.0017179673238059716,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776392,
+                    "y": 0.016639901197000765,
+                    "z": -0.0017179673238059716,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776448,
+                    "y": 0.016639901197000765,
+                    "z": 0.01189314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 3.925495968369701e-15,
+                  "z": 4.078370655328389e-15
+                },
+                "planeCenter": {
+                  "x": 0.02711664290777671,
+                  "y": 0.023234760850076253,
+                  "z": 0.06808758762970622
+                },
+                "basisU": {
+                  "x": 3.925495968369701e-15,
+                  "y": 1,
+                  "z": -1.6009627565008887e-29
+                },
+                "basisV": {
+                  "x": -4.078370655328389e-15,
+                  "y": 0,
+                  "z": -1
+                },
+                "bounds2D": {
+                  "minU": -0.006594859653075491,
+                  "maxU": 0.006594859653075488,
+                  "minV": -0.006805554953512205,
+                  "maxV": 0.006805554953512205
+                }
+              },
+              "type": "character",
+              "value": "3",
+              "label": "3",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8hrcaon9w",
+              "polygon": {
+                "id": "mln8hrcacqhm",
+                "vertices": [
+                  {
+                    "x": 0.02711664290777659,
+                    "y": 0.029829620503151744,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776534,
+                    "y": 0.029829620503151744,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777648,
+                    "y": 0.016639901197000765,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776534,
+                    "y": 0.016639901197000765,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705831e-15,
+                  "z": 4.0783706553283885e-15
+                },
+                "planeCenter": {
+                  "x": 0.02711664290777653,
+                  "y": 0.023234760850076253,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.0783706553283885e-15,
+                  "y": -1.7241137377701875e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705831e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075491
+                }
+              },
+              "type": "character",
+              "value": "2",
+              "label": "2",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8icvcg91q",
+              "polygon": {
+                "id": "mln8icvcls9j",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776597,
+                    "y": 0.008829620503151739,
+                    "z": 0.05489314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777654,
+                    "y": 0.008829620503151739,
+                    "z": 0.04128203267619402,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776486,
+                    "y": -0.004360098802999236,
+                    "z": 0.04128203267619402,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777654,
+                    "y": -0.004360098802999236,
+                    "z": 0.05489314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.22745719670583e-15,
+                  "z": 4.078370655328387e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776618,
+                  "y": 0.023234760850076253,
+                  "z": 0.04608758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328387e-15,
+                  "y": -1.724113737770186e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.22745719670583e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512205,
+                  "maxU": 0.006805554953512205,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075491
+                }
+              },
+              "type": "character",
+              "value": "4",
+              "label": "4",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8jkq8uibc",
+              "polygon": {
+                "id": "mln8jkq817rz",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776503,
+                    "y": 0.008829620503151735,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776448,
+                    "y": 0.008829620503151735,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776392,
+                    "y": -0.004360098802999236,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776448,
+                    "y": -0.004360098802999236,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705831e-15,
+                  "z": 4.0783706553283885e-15
+                },
+                "planeCenter": {
+                  "x": 0.02711664290777653,
+                  "y": 0.023234760850076253,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.0783706553283885e-15,
+                  "y": -1.7241137377701875e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705831e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075491
+                }
+              },
+              "type": "character",
+              "value": "5",
+              "label": "5",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8khmk4eih",
+              "polygon": {
+                "id": "mln8khmkupze",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776507,
+                    "y": -0.012170379496848266,
+                    "z": 0.05489314258321844,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777645,
+                    "y": -0.012170379496848266,
+                    "z": 0.04128203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776396,
+                    "y": -0.02536009880299924,
+                    "z": 0.04128203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777645,
+                    "y": -0.02536009880299924,
+                    "z": 0.05489314258321844,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705832e-15,
+                  "z": 4.078370655328386e-15
+                },
+                "planeCenter": {
+                  "x": 0.02711664290777653,
+                  "y": 0.0022347608500762495,
+                  "z": 0.04608758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328386e-15,
+                  "y": -1.7241137377701866e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705832e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512205,
+                  "maxU": 0.006805554953512205,
+                  "minV": -0.006594859653075486,
+                  "maxV": 0.006594859653075486
+                }
+              },
+              "type": "character",
+              "value": "A",
+              "label": "A",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8lmurevty",
+              "polygon": {
+                "id": "mln8lmur78tm",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776416,
+                    "y": 0.008829620503151739,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777636,
+                    "y": 0.008829620503151739,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776305,
+                    "y": -0.004360098802999236,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777636,
+                    "y": -0.004360098802999236,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705831e-15,
+                  "z": 4.0783706553283885e-15
+                },
+                "planeCenter": {
+                  "x": 0.02711664290777653,
+                  "y": 0.023234760850076253,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.0783706553283885e-15,
+                  "y": -1.7241137377701875e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705831e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075491
+                }
+              },
+              "type": "character",
+              "value": "6",
+              "label": "6",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8mao1gr89",
+              "polygon": {
+                "id": "mln8mao1qodv",
+                "vertices": [
+                  {
+                    "x": 0.02711664290777642,
+                    "y": -0.012170379496848262,
+                    "z": 0.032893142583218425,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776364,
+                    "y": -0.012170379496848262,
+                    "z": 0.019282032676194025,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777631,
+                    "y": -0.02536009880299924,
+                    "z": 0.019282032676194025,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776364,
+                    "y": -0.02536009880299924,
+                    "z": 0.032893142583218425,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705832e-15,
+                  "z": 4.078370655328387e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776444,
+                  "y": 0.0022347608500762513,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328387e-15,
+                  "y": -1.724113737770187e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705832e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075488
+                }
+              },
+              "type": "character",
+              "value": "b",
+              "label": "b",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8na988aa4",
+              "polygon": {
+                "id": "mln8na984y15",
+                "vertices": [
+                  {
+                    "x": 0.02711664290777633,
+                    "y": -0.012170379496848262,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776274,
+                    "y": -0.012170379496848262,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777622,
+                    "y": -0.02536009880299924,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776274,
+                    "y": -0.02536009880299924,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705832e-15,
+                  "z": 4.078370655328387e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776444,
+                  "y": 0.0022347608500762513,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328387e-15,
+                  "y": -1.724113737770187e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705832e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075488,
+                  "maxV": 0.006594859653075488
+                }
+              },
+              "type": "character",
+              "value": "C",
+              "label": "C",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8nvvam7pe",
+              "polygon": {
+                "id": "mln8nvva5m4o",
+                "vertices": [
+                  {
+                    "x": 0.027116642907776326,
+                    "y": -0.034170379496848265,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777627,
+                    "y": -0.034170379496848265,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776215,
+                    "y": -0.04736009880299924,
+                    "z": 0.01928203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777627,
+                    "y": -0.04736009880299924,
+                    "z": 0.03289314258321843,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705831e-15,
+                  "z": 4.078370655328387e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776357,
+                  "y": -0.01876523914992375,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328387e-15,
+                  "y": -1.7241137377701866e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705831e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075491,
+                  "maxV": 0.006594859653075488
+                }
+              },
+              "type": "character",
+              "value": "e",
+              "label": "e",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8ogts1qmu",
+              "polygon": {
+                "id": "mln8ogtssynw",
+                "vertices": [
+                  {
+                    "x": 0.02711664290777642,
+                    "y": -0.034170379496848265,
+                    "z": 0.054893142583218424,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776364,
+                    "y": -0.034170379496848265,
+                    "z": 0.04128203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777631,
+                    "y": -0.04736009880299924,
+                    "z": 0.04128203267619403,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776364,
+                    "y": -0.04736009880299924,
+                    "z": 0.054893142583218424,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705834e-15,
+                  "z": 4.078370655328391e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776448,
+                  "y": -0.01876523914992375,
+                  "z": 0.046087587629706224
+                },
+                "basisU": {
+                  "x": 4.078370655328391e-15,
+                  "y": -1.7241137377701897e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705834e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512198,
+                  "maxU": 0.006805554953512198,
+                  "minV": -0.006594859653075491,
+                  "maxV": 0.006594859653075488
+                }
+              },
+              "type": "character",
+              "value": "d",
+              "label": "d",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            },
+            {
+              "id": "mln8p8id9xjw",
+              "polygon": {
+                "id": "mln8p8id1ymq",
+                "vertices": [
+                  {
+                    "x": 0.02711664290777624,
+                    "y": -0.034170379496848265,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776184,
+                    "y": -0.034170379496848265,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.02711664290777613,
+                    "y": -0.04736009880299924,
+                    "z": -0.0017179673238059742,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  },
+                  {
+                    "x": 0.027116642907776184,
+                    "y": -0.04736009880299924,
+                    "z": 0.011893142583218427,
+                    "nx": 1,
+                    "ny": 3.5824185316933285e-28,
+                    "nz": -2.397634294858209e-21
+                  }
+                ],
+                "normalOffset": 0.001,
+                "planeNormal": {
+                  "x": -1,
+                  "y": 4.227457196705831e-15,
+                  "z": 4.078370655328387e-15
+                },
+                "planeCenter": {
+                  "x": 0.027116642907776357,
+                  "y": -0.01876523914992375,
+                  "z": 0.02508758762970623
+                },
+                "basisU": {
+                  "x": 4.078370655328387e-15,
+                  "y": -1.7241137377701866e-29,
+                  "z": 1
+                },
+                "basisV": {
+                  "x": 4.227457196705831e-15,
+                  "y": 1,
+                  "z": 0
+                },
+                "bounds2D": {
+                  "minU": -0.006805554953512202,
+                  "maxU": 0.006805554953512202,
+                  "minV": -0.006594859653075491,
+                  "maxV": 0.006594859653075488
+                }
+              },
+              "type": "character",
+              "value": "f",
+              "label": "f",
+              "labelConfig": {
+                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontSize": 1,
+                "textColor": "#ffffff",
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0,
+                "backgroundTransparent": true,
+                "surfaceType": "matte",
+                "roughness": 0.25,
+                "metalness": 0.75,
+                "textAlign": "center",
+                "uppercase": false,
+                "maxChars": 0,
+                "padding": 0,
+                "letterSpacing": -0.02,
+                "lineHeight": 1.2,
+                "wrapMode": "nowrap",
+                "mode": "static",
+                "previewText": ""
+              },
+              "areaColor": "#000000",
+              "areaTransparent": false,
+              "areaOpacity": 1
+            }
+          ],
+          "logic": {
+            "secretCode": "1111",
+            "verificationMode": "auto",
+            "feedbackDuration": 5000,
+            "onTrue": {
+              "text": "OPEN",
+              "textColor": "#00ff00",
+              "bgColor": "#003300",
+              "bgTransparent": false
+            },
+            "onFalse": {
+              "text": "WRONG",
+              "textColor": "#ff0000",
+              "bgColor": "#330000",
+              "bgTransparent": false
+            },
+            "behavior": "single",
+            "action": {
+              "type": "door",
+              "doorAccessMode": "per-player",
+              "targetId": "/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "78595326-7c16-4c0e-8eb3-c3069c640003",
+    "assetFile": "/models/assets/construction/door2.glb",
+    "position": {
+      "x": 301.5957,
+      "y": 69.4863,
+      "z": -50.197
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "w": 0
+    },
+    "scale": 9.0173,
+    "name": "door2",
+    "locked": false,
+    "doorTarget": {
+      "envId": "gallery"
+    },
+    "keypadLock": "/models/assets/keypad_codelock.glb|347.102,74.8209,-49.4241",
+    "keypadLockMode": "per-player",
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "portal",
+        "targetRoomId": "gallery",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": false,
+        "travelDelay": 500,
+        "requiresUnlock": true,
+        "lockKeypadId": "aa6d22ea-966f-48f4-bb79-e2e4fe9e0fb0",
+        "lockMode": "per-player"
+      }
+    }
+  },
+  {
+    "id": "003d5397-c97b-4c8b-bc5f-e8559d15d131",
+    "assetFile": "/models/assets/construction/door.glb",
+    "position": {
+      "x": 675.0653,
+      "y": 110.7459,
+      "z": -48.0875
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "w": 0
+    },
+    "scale": 0.5257,
+    "name": "door",
+    "locked": false,
+    "doorTarget": {
+      "envId": "vr_room"
+    },
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "both",
+        "targetRoomId": "vr_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": true,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockMode": "everyone"
+      }
+    }
+  },
+  {
+    "id": "a2359506-cabe-408d-bcc5-756a616c131d",
+    "assetFile": "/models/assets/digital/tv_plasma.glb",
+    "position": {
+      "x": 202.1305,
+      "y": 17.7399,
+      "z": -221.8783
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "scale": 168.5275,
+    "name": "tv plasma",
+    "locked": false,
+    "tvConfig": {
+      "widgets": [
+        "tv_channel"
+      ],
+      "channelUrl": "https://d1j2csarxnwazk.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-uze1m6xh4fiyr-ssai-prd/master.m3u8"
+    }
+  },
+  {
+    "id": "acff7f3a-6a6d-49ac-8c99-7015268f2de0",
+    "assetFile": "/models/assets/digital/tv_plasma.glb",
+    "position": {
+      "x": 505.576,
+      "y": 26.8241,
+      "z": -47.9282
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 127.6223,
+    "name": "tv plasma",
+    "locked": false,
+    "tvConfig": {
+      "widgets": [
+        "air_sensors",
+        "soil_sensor",
+        "sockets",
+        "lights",
+        "blower",
+        "power"
+      ]
+    }
+  },
+  {
+    "id": "216415b8-686e-4910-9c7e-d3a8d0f70273",
+    "assetFile": "/models/assets/fourniture/carpets_from_asia.glb",
+    "position": {
+      "x": 282.6529,
+      "y": 0.9654,
+      "z": -237.7629
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7085,
+      "z": 0,
+      "w": 0.7057
+    },
+    "scale": 76.3635,
+    "name": "carpets from asia",
+    "locked": true
+  },
+  {
+    "id": "febe4433-735e-4294-b64f-6cbc9baa1776",
+    "assetFile": "/models/assets/fourniture/realistic_blackboard.glb",
+    "position": {
+      "x": 722.4515,
+      "y": 60.4061,
+      "z": -195.0981
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 76.2124,
+    "name": "realistic blackboard",
+    "locked": false,
+    "behavior": {
+      "type": "screen",
+      "config": {
+        "displayZones": [
+          {
+            "id": "mlq4zuyez4q0",
+            "polygon": {
+              "id": "mlq4zuyez4q0",
+              "vertices": [
+                {
+                  "x": -1.7431826735641054,
+                  "y": 0.737862158693466,
+                  "z": -0.01847190409898758,
+                  "nx": 0,
+                  "ny": 0,
+                  "nz": 1
+                },
+                {
+                  "x": 1.7409813513508856,
+                  "y": 0.7391462614400292,
+                  "z": -0.01847190409898758,
+                  "nx": 0,
+                  "ny": 0,
+                  "nz": 1
+                },
+                {
+                  "x": 1.7302557019285039,
+                  "y": -0.7210913678560962,
+                  "z": -0.01847190409898758,
+                  "nx": 0,
+                  "ny": 0,
+                  "nz": 1
+                },
+                {
+                  "x": -1.7382868503475097,
+                  "y": -0.7256123185980591,
+                  "z": -0.01847190409898758,
+                  "nx": 0,
+                  "ny": 0,
+                  "nz": 1
+                }
+              ],
+              "normalOffset": 0.005,
+              "planeNormal": {
+                "x": 6.827040172399061e-19,
+                "y": 0,
+                "z": -1
+              },
+              "planeCenter": {
+                "x": -0.0025581176580564136,
+                "y": 0.0075761834198349864,
+                "z": -0.01847190409898758
+              },
+              "basisU": {
+                "x": 0,
+                "y": 1,
+                "z": 0
+              },
+              "basisV": {
+                "x": 1,
+                "y": 0,
+                "z": 6.827040172399061e-19
+              },
+              "bounds2D": {
+                "minU": -0.7331885020178941,
+                "maxU": 0.7315700780201941,
+                "minV": -1.740624555906049,
+                "maxV": 1.743539469008942
+              }
+            },
+            "elements": [
+              {
+                "id": "el_1771304556524_2vet",
+                "type": "text",
+                "x": 26,
+                "y": 39,
+                "width": 17,
+                "height": 10,
+                "config": {
+                  "text": "New Text",
+                  "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                  "fontSize": 24,
+                  "color": "#ffffff",
+                  "align": "left",
+                  "bold": false,
+                  "italic": false,
+                  "opacity": 1
+                }
+              },
+              {
+                "id": "el_1771304843112_gdm0",
+                "type": "clock",
+                "x": 47,
+                "y": 44.5,
+                "width": 6,
+                "height": 6,
+                "config": {
+                  "format": "24h",
+                  "showSeconds": false,
+                  "color": "#ffffff",
+                  "fontSize": 32,
+                  "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                  "align": "center"
+                }
+              },
+              {
+                "id": "el_1771304849589_baly",
+                "type": "text",
+                "x": 70,
+                "y": 5,
+                "width": 9,
+                "height": 7.5,
+                "config": {
+                  "text": "New Text",
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontSize": 24,
+                  "color": "#ffffff",
+                  "align": "left",
+                  "bold": false,
+                  "italic": false,
+                  "opacity": 1
+                }
+              },
+              {
+                "id": "el_1771305134782_dqxe",
+                "type": "divider",
+                "x": 0,
+                "y": 49,
+                "width": 100,
+                "height": 3,
+                "config": {
+                  "color": "#555555",
+                  "thickness": 2
+                }
+              },
+              {
+                "id": "el_1771344702256_je3k",
+                "type": "video",
+                "x": 70,
+                "y": 13,
+                "width": 17.5,
+                "height": 26.5,
+                "config": {
+                  "src": "/api/cameras/stream/6298adc5af87efc3",
+                  "srcType": "camera",
+                  "fit": "cover",
+                  "loop": true,
+                  "autoplay": true,
+                  "muted": true,
+                  "opacity": 1,
+                  "cameraId": "6298adc5af87efc3"
+                }
+              }
+            ],
+            "backgroundColor": "#111111",
+            "backgroundOpacity": 0,
+            "polygonWidth": 3.4841640249149908,
+            "polygonHeight": 1.4647585800380882,
+            "contentRotation": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "e243ebcc-baf8-4d5d-8f87-69034ca77856",
+    "assetFile": "/models/assets/picture_frame_2.glb",
+    "position": {
+      "x": 558.0285,
+      "y": 68.3029,
+      "z": -433.753
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 90.0083,
+    "name": "picture frame 2",
+    "locked": false,
+    "behavior": {
+      "type": "screen",
+      "config": {
+        "displayZones": [
+          {
+            "id": "mlqnwcgkvy0f",
+            "polygon": {
+              "id": "mlqnwcgkvy0f",
+              "vertices": [
+                {
+                  "x": 0.019258808463813448,
+                  "y": 0.3650763807501705,
+                  "z": 0.24976530996303747,
+                  "nx": 0.9999999999999972,
+                  "ny": 9.921200635606555e-10,
+                  "nz": 7.622301506417456e-8
+                },
+                {
+                  "x": 0.01925884642324638,
+                  "y": 0.3668834082170043,
+                  "z": -0.2482630968250641,
+                  "nx": 0.9999999999999972,
+                  "ny": 9.921200635606555e-10,
+                  "nz": 7.622301506417456e-8
+                },
+                {
+                  "x": 0.01925884713962489,
+                  "y": -0.3551853536190902,
+                  "z": -0.24826309646197142,
+                  "nx": 0.9999999999999972,
+                  "ny": 9.921181257158397e-10,
+                  "nz": 7.62230123317331e-8
+                },
+                {
+                  "x": 0.019258809135143995,
+                  "y": -0.35863409798123363,
+                  "z": 0.25037768120388915,
+                  "nx": 0.9999999999999972,
+                  "ny": 9.921200635606555e-10,
+                  "nz": 7.622301506417456e-8
+                }
+              ],
+              "normalOffset": 0.005,
+              "planeNormal": {
+                "x": -0.9999999999999971,
+                "y": -9.921195667385239e-10,
+                "z": -7.622301297655105e-8
+              },
+              "planeCenter": {
+                "x": 0.019258827790457178,
+                "y": 0.00453508434171275,
+                "z": 0.0009041994699727773
+              },
+              "basisU": {
+                "x": -9.92119566738521e-10,
+                "y": 1,
+                "z": -7.56223426098007e-17
+              },
+              "basisV": {
+                "x": 7.622301297655105e-8,
+                "y": 0,
+                "z": -0.9999999999999971
+              },
+              "bounds2D": {
+                "minU": -0.36316918232294637,
+                "maxU": 0.3623483238752916,
+                "minV": -0.24947348173391706,
+                "maxV": 0.24916729629503756
+              }
+            },
+            "elements": [
+              {
+                "id": "el_1771336302610_i2um",
+                "type": "image",
+                "x": 0,
+                "y": 0,
+                "width": 100,
+                "height": 100,
+                "config": {
+                  "src": "/room3d-display-images/our-strains-bolo-runtz.jpg",
+                  "fit": "cover",
+                  "borderRadius": 0,
+                  "opacity": 1
+                }
+              }
+            ],
+            "polygonWidth": 0.4986407780289546,
+            "polygonHeight": 0.725517506198238,
+            "backgroundColor": "#111111",
+            "backgroundOpacity": 1,
+            "contentRotation": 0
+          }
+        ]
+      }
+    }
+  }
+]

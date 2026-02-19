@@ -1,0 +1,23 @@
+{
+  "error": true,
+  "url": "https://schedule4real.com/dist/install/appdata/fonts/GloriaHallelujah-Regular.ttf",
+  "statusCode": 404,
+  "statusMessage": "Page not found: /dist/install/appdata/fonts/GloriaHallelujah-Regular.ttf",
+  "message": "Page not found: /dist/install/appdata/fonts/GloriaHallelujah-Regular.ttf",
+  "data": {
+    "path": "/dist/install/appdata/fonts/GloriaHallelujah-Regular.ttf"
+  },
+  "stack": [
+    "Page not found: /dist/install/appdata/fonts/GloriaHallelujah-Regular.ttf",
+    "at createError (/home/schedule-4-real/node_modules/h3/dist/index.mjs:71:15)",
+    "at createError (/home/schedule-4-real/node_modules/nuxt/dist/app/composables/error.js:45:58)",
+    "at /home/schedule-4-real/node_modules/nuxt/dist/pages/runtime/plugins/router.js:220:118)",
+    "at fn (/home/schedule-4-real/node_modules/nuxt/dist/app/nuxt.js:238:44)",
+    "at Object.callAsync (/home/schedule-4-real/node_modules/unctx/dist/index.mjs:68:55)",
+    "at /home/schedule-4-real/node_modules/nuxt/dist/app/nuxt.js:241:56)",
+    "at Object.runWithContext (/home/schedule-4-real/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:4242:18)",
+    "at callWithNuxt (/home/schedule-4-real/node_modules/nuxt/dist/app/nuxt.js:241:24)",
+    "at /home/schedule-4-real/node_modules/nuxt/dist/app/nuxt.js:55:41)",
+    "at EffectScope.run (/home/schedule-4-real/node_modules/@vue/reactivity/dist/reactivity.cjs.js:87:16)"
+  ]
+}

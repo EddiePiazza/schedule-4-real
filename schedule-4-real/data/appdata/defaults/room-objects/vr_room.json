@@ -1,0 +1,38 @@
+[
+  {
+    "id": "758e049a-4ea6-4d0b-a966-d8d2674f0690",
+    "assetFile": "/models/assets/construction/door.glb",
+    "position": {
+      "x": -3.3099,
+      "y": 1.2269,
+      "z": 6.4504
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9724,
+      "z": 0,
+      "w": 0.2334
+    },
+    "scale": 0.0058,
+    "name": "door",
+    "locked": true,
+    "doorTarget": {
+      "envId": "big_room"
+    },
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "both",
+        "targetRoomId": "big_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": true,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockMode": "everyone"
+      }
+    }
+  }
+]
