@@ -382,6 +382,7 @@ PORT_DEFS=(
     "API_PORT:3000:Web App (HTTP)"
     "MQTT_PORT:1883:MQTT Broker (internal)"
     "MQTT_LAN_PORT:1884:MQTT Broker (LAN)"
+    "MQTT_WS_PORT:9001:MQTT WebSocket"
     "QUESTDB_PG_PORT:8812:QuestDB Database"
     "QUESTDB_HTTP_PORT:9000:QuestDB Console"
     "QUESTDB_ILP_PORT:9009:QuestDB Writer"
@@ -490,7 +491,7 @@ cat > proxy/mosquitto.conf << MOSQ_EOF
 listener ${MQTT_PORT:-1883} 127.0.0.1
 listener ${MQTT_LAN_PORT:-1884} 0.0.0.0
 
-listener 9001 0.0.0.0
+listener ${MQTT_WS_PORT:-9001} 0.0.0.0
 protocol websockets
 
 allow_anonymous true
@@ -503,7 +504,7 @@ persistence_location proxy/mosquitto_data/
 
 retain_available true
 MOSQ_EOF
-success "Mosquitto config generated (ports ${MQTT_PORT:-1883}/${MQTT_LAN_PORT:-1884}/9001-ws)"
+success "Mosquitto config generated (ports ${MQTT_PORT:-1883}/${MQTT_LAN_PORT:-1884}/${MQTT_WS_PORT:-9001}-ws)"
 
 # ═══════════════════════════════════════════
 # 8. Start QuestDB

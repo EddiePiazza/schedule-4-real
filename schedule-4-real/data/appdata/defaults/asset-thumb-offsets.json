@@ -1,0 +1,92 @@
+{
+  "power_switch_1.glb": {
+    "x": -36.503,
+    "y": 81.9432,
+    "z": 5.7512,
+    "zoom": 0.8681,
+    "light": 3.05,
+    "camX": 0.4381,
+    "camY": 0.1328,
+    "camZ": 0.889
+  },
+  "anime_girl_mia_ter_excited.glb": {
+    "x": -0.1189,
+    "y": 1.0776,
+    "z": 0.0222,
+    "zoom": 1.3322,
+    "light": 1,
+    "camX": 0.226,
+    "camY": 0.1551,
+    "camZ": 0.9617
+  },
+  "realistic_blackboard.glb": {
+    "x": 0.335,
+    "y": -0.2132,
+    "z": -0.239,
+    "zoom": 1.3516,
+    "light": 3,
+    "camX": 0.5936,
+    "camY": 0.0314,
+    "camZ": 0.8041
+  },
+  "sci_fi_door.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "zoom": 0.9439,
+    "light": 3,
+    "camX": 0,
+    "camY": 0.3304,
+    "camZ": 0.9439
+  },
+  "elevator-door.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "zoom": 0.9439,
+    "light": 3,
+    "camX": 0.3597,
+    "camY": 0.0502,
+    "camZ": 0.9317
+  },
+  "door.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "zoom": 0.9439,
+    "light": 3,
+    "camX": 0,
+    "camY": 0.3304,
+    "camZ": 0.9438
+  },
+  "weed_brick_open.glb": {
+    "x": 0.0158,
+    "y": -0.0449,
+    "z": 0.0071,
+    "zoom": 1.5764,
+    "light": 3,
+    "camX": 0.4196,
+    "camY": 0.5153,
+    "camZ": 0.7473
+  },
+  "picture_frame_1.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "zoom": 0.9439,
+    "light": 3,
+    "camX": -0.8833,
+    "camY": -0.0952,
+    "camZ": 0.459
+  },
+  "picture_frame_2.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "zoom": 1.1199,
+    "light": 4.8,
+    "camX": 0.8042,
+    "camY": -0.1853,
+    "camZ": -0.5648
+  }
+}

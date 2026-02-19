@@ -1,0 +1,11 @@
+{
+  "power_switch_1.glb": {
+    "onIsEnd": true
+  },
+  "elevator-door.glb": {
+    "onIsEnd": true
+  },
+  "door.glb": {
+    "onIsEnd": true
+  }
+}

@@ -1309,93 +1309,118 @@ function runPostUpdateMigrations() {
 
     // ═══════════════════════════════════════════════════════════════════
     // REBRANDING MIGRATION: spiderfarmer-dream → schedule-4-real
-    // Renames PM2 processes, Docker container, nginx site, folder
+    // Renames PM2 processes, Docker container, nginx site, folder.
+    // Uses a background script to avoid killing itself (pm2 delete
+    // of the running supervisor would terminate this process mid-migration).
     // ═══════════════════════════════════════════════════════════════════
     const rebrandingFlag = path.join(PROJECT_ROOT, 'data', '.rebranding-done');
     if (!fs.existsSync(rebrandingFlag)) {
-      console.log('[Updater] Migration: Running rebranding (spiderfarmer → s4r)...');
-      try {
-        // 1. Delete all old PM2 processes (they'll be recreated with new names)
-        const oldPm2Names = [
-          'spiderapp-web', 'spiderapp-ingest', 'spiderapp-retention',
-          'spiderapp-supervisor', 'spiderapp-mosquitto', 'spiderapp-proxy',
-          'spiderapp-cameras', 'spiderapp-relay', 'spiderapp-tunnel',
-          'spiderapp-room-publisher'
-        ];
-        for (const name of oldPm2Names) {
-          try { execSync(`pm2 delete ${name}`, { stdio: 'pipe', timeout: 5000 }); } catch {}
-        }
-        console.log('[Updater] Migration: Deleted old PM2 processes');
-
-        // 2. Rename Docker container
+      // Also check in schedule-4-real if folder was already renamed but flag failed
+      const altFlag = path.join(path.dirname(PROJECT_ROOT), 'schedule-4-real', 'data', '.rebranding-done');
+      if (PROJECT_ROOT.endsWith('schedule-4-real') || !fs.existsSync(altFlag)) {
+        console.log('[Updater] Migration: Running rebranding (spiderfarmer → s4r)...');
         try {
-          execSync('docker rename spiderapp-questdb s4r-questdb', { stdio: 'pipe', timeout: 10000 });
-          console.log('[Updater] Migration: Renamed Docker container to s4r-questdb');
-        } catch {
-          // Already renamed or doesn't exist
-        }
+          // Determine the working directory (current or after rename)
+          const currentDir = PROJECT_ROOT;
+          const parentDir = path.dirname(currentDir);
+          const currentName = path.basename(currentDir);
+          const needsFolderRename = currentName === 'spiderfarmer-dream';
+          const finalDir = needsFolderRename ? path.join(parentDir, 'schedule-4-real') : currentDir;
 
-        // 3. Rename nginx site config
-        try {
-          if (fs.existsSync('/etc/nginx/sites-available/spiderfarmer')) {
-            execSync('mv /etc/nginx/sites-available/spiderfarmer /etc/nginx/sites-available/schedule4real', { stdio: 'pipe' });
-            try { execSync('rm -f /etc/nginx/sites-enabled/spiderfarmer', { stdio: 'pipe' }); } catch {}
-            execSync('ln -sf /etc/nginx/sites-available/schedule4real /etc/nginx/sites-enabled/', { stdio: 'pipe' });
-            try { execSync('nginx -t && systemctl reload nginx', { stdio: 'pipe', timeout: 10000 }); } catch {}
-            console.log('[Updater] Migration: Renamed nginx site to schedule4real');
-          }
-        } catch {}
-
-        // 4. Rename installation folder (Linux inodes allow this while running)
-        const currentDir = PROJECT_ROOT;
-        const parentDir = path.dirname(currentDir);
-        const currentName = path.basename(currentDir);
-        if (currentName === 'spiderfarmer-dream') {
-          const newDir = path.join(parentDir, 'schedule-4-real');
+          // 1. Rename Docker container (safe, idempotent)
           try {
-            fs.renameSync(currentDir, newDir);
-            console.log('[Updater] Migration: Renamed folder to schedule-4-real');
-            // Run pm2-start.sh from new path to create all processes with new names
-            execSync(`bash ${path.join(newDir, 'pm2-start.sh')}`, {
-              cwd: newDir, stdio: 'pipe', timeout: 60000
-            });
-            console.log('[Updater] Migration: Started all services from new path');
-          } catch (renameErr) {
-            console.warn('[Updater] Migration: Folder rename failed:', renameErr.message);
-            // Fallback: just run pm2-start.sh from current path
+            execSync('docker rename spiderapp-questdb s4r-questdb', { stdio: 'pipe', timeout: 10000 });
+            console.log('[Updater] Migration: Renamed Docker container to s4r-questdb');
+          } catch {
+            // Already renamed or doesn't exist — fine
+          }
+
+          // 2. Rename nginx site config
+          try {
+            if (fs.existsSync('/etc/nginx/sites-available/spiderfarmer')) {
+              execSync('mv /etc/nginx/sites-available/spiderfarmer /etc/nginx/sites-available/schedule4real', { stdio: 'pipe' });
+              try { execSync('rm -f /etc/nginx/sites-enabled/spiderfarmer', { stdio: 'pipe' }); } catch {}
+              execSync('ln -sf /etc/nginx/sites-available/schedule4real /etc/nginx/sites-enabled/', { stdio: 'pipe' });
+              try { execSync('nginx -t && systemctl reload nginx', { stdio: 'pipe', timeout: 10000 }); } catch {}
+              console.log('[Updater] Migration: Renamed nginx site to schedule4real');
+            }
+          } catch {}
+
+          // 3. Rename installation folder (Linux inodes allow this while process runs)
+          if (needsFolderRename) {
             try {
-              execSync(`bash ${path.join(currentDir, 'pm2-start.sh')}`, {
-                cwd: currentDir, stdio: 'pipe', timeout: 60000
-              });
-            } catch {}
+              fs.renameSync(currentDir, finalDir);
+              console.log('[Updater] Migration: Renamed folder to schedule-4-real');
+            } catch (renameErr) {
+              console.warn('[Updater] Migration: Folder rename failed:', renameErr.message);
+            }
           }
-        } else {
-          // Already renamed or fresh install — just ensure pm2-start.sh creates new names
+
+          // 4. Write flag BEFORE the destructive PM2 operations
+          //    (so if the process dies, we don't retry and double-rename things)
+          const flagDir = path.join(finalDir, 'data');
           try {
-            execSync(`bash ${path.join(currentDir, 'pm2-start.sh')}`, {
-              cwd: currentDir, stdio: 'pipe', timeout: 60000
+            fs.mkdirSync(flagDir, { recursive: true });
+            fs.writeFileSync(path.join(flagDir, '.rebranding-done'),
+              JSON.stringify({ date: new Date().toISOString() }));
+            console.log('[Updater] Migration: Flag written');
+          } catch (flagErr) {
+            console.warn('[Updater] Migration: Flag write failed:', flagErr.message);
+          }
+
+          // 5. Verify pm2-start.sh has new s4r-* names before using it
+          const pm2StartPath = path.join(finalDir, 'pm2-start.sh');
+          let pm2StartReady = false;
+          try {
+            const pm2StartContent = fs.readFileSync(pm2StartPath, 'utf-8');
+            pm2StartReady = pm2StartContent.includes('s4r-');
+          } catch {}
+
+          if (!pm2StartReady) {
+            console.warn('[Updater] Migration: pm2-start.sh not updated yet, skipping PM2 recreation');
+            console.log('[Updater] Migration: Rebranding partial (folder/docker/nginx done, PM2 will update next cycle)');
+          } else {
+            // 6. Create a background script that handles PM2 (avoids self-kill deadlock)
+            //    This script runs after the supervisor exits, recreating all processes with new names.
+            const migrateScript = '/tmp/s4r-pm2-migrate.sh';
+            const scriptContent = `#!/bin/bash
+# Auto-generated rebranding migration script — runs once then self-deletes
+sleep 3
+
+# Delete all old PM2 processes
+pm2 delete spiderapp-web spiderapp-ingest spiderapp-retention \\
+  spiderapp-supervisor spiderapp-mosquitto spiderapp-proxy \\
+  spiderapp-cameras spiderapp-relay spiderapp-tunnel \\
+  spiderapp-room-publisher 2>/dev/null || true
+
+# Start all services with new names
+cd "${finalDir}" && bash pm2-start.sh
+
+# Save PM2 state
+pm2 save 2>/dev/null || true
+
+rm -f "${migrateScript}"
+`;
+            fs.writeFileSync(migrateScript, scriptContent, { mode: 0o755 });
+
+            // Launch it detached so it survives our process death
+            const child = require('child_process').spawn('bash', [migrateScript], {
+              detached: true, stdio: 'ignore'
             });
-          } catch {}
+            child.unref();
+            console.log('[Updater] Migration: Background PM2 migration script launched');
+            console.log('[Updater] Migration: Rebranding complete');
+          }
+        } catch (err) {
+          console.error('[Updater] Migration: Rebranding error:', err.message);
         }
-
-        // 5. Save PM2 state
-        try { execSync('pm2 save', { stdio: 'pipe', timeout: 10000 }); } catch {}
-
-        // 6. Write flag (use PROJECT_ROOT which may still resolve via inode)
+      } else {
+        // altFlag exists — folder was renamed but flag in old PROJECT_ROOT is missing
+        // Write flag in current location too
         try {
-          const flagDir = path.join(PROJECT_ROOT, 'data');
-          fs.mkdirSync(flagDir, { recursive: true });
-          fs.writeFileSync(rebrandingFlag, JSON.stringify({ date: new Date().toISOString() }));
-        } catch {
-          // If PROJECT_ROOT moved, try the new path
-          try {
-            const newFlagPath = path.join(path.dirname(PROJECT_ROOT), 'schedule-4-real', 'data', '.rebranding-done');
-            fs.writeFileSync(newFlagPath, JSON.stringify({ date: new Date().toISOString() }));
-          } catch {}
-        }
-        console.log('[Updater] Migration: Rebranding complete');
-      } catch (err) {
-        console.error('[Updater] Migration: Rebranding error:', err.message);
+          fs.mkdirSync(path.join(PROJECT_ROOT, 'data'), { recursive: true });
+          fs.writeFileSync(rebrandingFlag, JSON.stringify({ date: new Date().toISOString(), note: 'retroactive' }));
+        } catch {}
       }
     }
 
@@ -1486,7 +1511,17 @@ function runPostUpdateMigrations() {
       console.warn('[Updater] Migration: Could not start tunnel:', err.message);
     }
 
-    // 5. Start room-publisher if TUNNEL_ENABLED and not running
+    // 5. Remove obsolete TUNNEL_RELAY_URL from .env (relay URL now comes from relay-config.json)
+    try {
+      const envForCleanup = fs.readFileSync(envFile, 'utf-8');
+      if (/^TUNNEL_RELAY_URL=/m.test(envForCleanup)) {
+        const cleaned = envForCleanup.split('\n').filter(line => !line.trim().startsWith('TUNNEL_RELAY_URL=')).join('\n');
+        fs.writeFileSync(envFile, cleaned);
+        console.log('[Updater] Migration: Removed obsolete TUNNEL_RELAY_URL from .env');
+      }
+    } catch {}
+
+    // 6. Start room-publisher if TUNNEL_ENABLED and not running
     try {
       const envContent2 = fs.readFileSync(envFile, 'utf-8');
       if (/^TUNNEL_ENABLED=true$/m.test(envContent2)) {

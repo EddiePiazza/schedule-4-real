@@ -41,7 +41,6 @@ if (fs.existsSync(envPath)) {
 }
 
 // ── Config ─────────────────────────────────────────────────────────
-const PRIMARY_RELAY_URL = process.env.TUNNEL_RELAY_URL || ''
 const ENABLED = process.env.TUNNEL_ENABLED === 'true'
 const LOCAL_PORT = parseInt(process.env.API_PORT || '3000', 10)
 const LOCAL_HOST = '127.0.0.1'
@@ -74,6 +73,16 @@ function getLocalRelayUrl() {
   return null
 }
 
+function getRelayPublicUrl() {
+  try {
+    if (fs.existsSync(RELAY_CONFIG_FILE)) {
+      const cfg = JSON.parse(fs.readFileSync(RELAY_CONFIG_FILE, 'utf-8'))
+      if (cfg.publicUrl) return cfg.publicUrl
+    }
+  } catch {}
+  return null
+}
+
 function loadRelayUrls() {
   const urls = new Set()
 
@@ -81,8 +90,9 @@ function loadRelayUrls() {
   const localUrl = getLocalRelayUrl()
   if (localUrl) urls.add(localUrl)
 
-  // 2. Primary from .env
-  if (PRIMARY_RELAY_URL) urls.add(PRIMARY_RELAY_URL)
+  // 2. Public URL from relay-config.json (set by user in UI)
+  const publicUrl = getRelayPublicUrl()
+  if (publicUrl) urls.add(publicUrl)
 
   // 3. Known peers from gossip
   try {
@@ -134,7 +144,7 @@ setInterval(() => {
 }, RELAY_ROTATE_INTERVAL)
 
 if (relayUrls.length === 0) {
-  console.error('[TUNNEL-AGENT] No relay URLs available (TUNNEL_RELAY_URL not set, no local relay, no peers). Exiting.')
+  console.error('[TUNNEL-AGENT] No relay URLs available (no local relay, no publicUrl in relay-config, no peers). Exiting.')
   process.exit(1)
 }
 

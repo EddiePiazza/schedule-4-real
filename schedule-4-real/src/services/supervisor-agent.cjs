@@ -303,10 +303,7 @@ async function loadSocketAiModes() {
     const rows = await query(`
       SELECT socket, ai_mode
       FROM socket_ai_mode
-      WHERE timestamp = (
-        SELECT max(timestamp) FROM socket_ai_mode s2
-        WHERE s2.socket = socket_ai_mode.socket
-      )
+      LATEST ON timestamp PARTITION BY socket
     `);
 
     socketAiModes = {};

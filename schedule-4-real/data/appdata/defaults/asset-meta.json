@@ -1,0 +1,1267 @@
+{
+  "sci_fi_door.glb": {
+    "category": "General",
+    "animType": "loop",
+    "loopMode": "pingpong"
+  },
+  "elevator-door.glb": {
+    "category": "animated / doors",
+    "animType": "toggle",
+    "defaultToggleState": false,
+    "onIsEnd": true,
+    "isDoor": true,
+    "animRange": "half"
+  },
+  "door.glb": {
+    "category": "construction",
+    "animType": "static",
+    "defaultToggleState": false,
+    "onIsEnd": true
+  },
+  "keypad_codelock.glb": {
+    "keypadDefaults": {
+      "id": "mlmwbo8v0bjv",
+      "display": {
+        "id": "mlmwbzd2uvta",
+        "polygon": {
+          "id": "mlmwbzd2uvta",
+          "vertices": [
+            {
+              "x": 0.022295359483294086,
+              "y": 0.08231048310419242,
+              "z": 0.048624071024971904,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            },
+            {
+              "x": 0.022295359483294086,
+              "y": 0.08231048310419242,
+              "z": -0.042509409611954485,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            },
+            {
+              "x": 0.0222953594832942,
+              "y": 0.04874139434147884,
+              "z": -0.042509409611954485,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -4.795268589716417e-21
+            },
+            {
+              "x": 0.0222953594832942,
+              "y": 0.04874139434147884,
+              "z": 0.048624071024971904,
+              "nx": 1,
+              "ny": 3.5824185316933285e-28,
+              "nz": -2.397634294858209e-21
+            }
+          ],
+          "normalOffset": 0.005,
+          "planeNormal": {
+            "x": -1,
+            "y": -3.321206298419949e-15,
+            "z": 1.4977170106332022e-17
+          },
+          "planeCenter": {
+            "x": 0.02229535948329414,
+            "y": 0.06650422926075081,
+            "z": 0.002971118097712333
+          },
+          "basisU": {
+            "x": 1.4977170106332022e-17,
+            "y": 4.974227168965689e-32,
+            "z": 1
+          },
+          "basisV": {
+            "x": -3.321206298419949e-15,
+            "y": 1,
+            "z": 0
+          },
+          "bounds2D": {
+            "minU": -0.04548052770966682,
+            "maxU": 0.04565295292725957,
+            "minV": -0.01676283491927197,
+            "maxV": 0.016806253843441615
+          }
+        },
+        "config": {
+          "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+          "fontSize": 0.72,
+          "textColor": "#00ff11",
+          "backgroundColor": "#000000",
+          "backgroundOpacity": 1,
+          "backgroundTransparent": false,
+          "surfaceType": "glossy",
+          "roughness": 0.25,
+          "metalness": 0.7,
+          "textAlign": "center",
+          "uppercase": false,
+          "maxChars": 4,
+          "padding": 0.003,
+          "letterSpacing": -0.016,
+          "lineHeight": 1.2,
+          "wrapMode": "wrap",
+          "mode": "static",
+          "previewText": "CODE"
+        }
+      },
+      "buttons": [
+        {
+          "id": "mln1ha8nkmht",
+          "polygon": {
+            "id": "mln1ha8nkmht",
+            "vertices": [
+              {
+                "x": 0.027116642907776684,
+                "y": 0.02982962050315174,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776628,
+                "y": 0.02982962050315174,
+                "z": 0.041282032676194014,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776572,
+                "y": 0.01663990119700076,
+                "z": 0.041282032676194014,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776628,
+                "y": 0.01663990119700076,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.365774359723703e-15,
+              "z": 4.1284815947316785e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776628,
+              "y": 0.023225255555571728,
+              "z": 0.048014753697561696
+            },
+            "basisU": {
+              "x": 4.1284815947316785e-15,
+              "y": -1.8024019090870787e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.365774359723703e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.0067327210213676825,
+              "maxU": 0.006878388885656728,
+              "minV": -0.006585354358570966,
+              "maxV": 0.006604364947580016
+            }
+          },
+          "type": "character",
+          "value": "1",
+          "label": "1",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8gnu9xjbq",
+          "polygon": {
+            "id": "mln8gnu9gzij",
+            "vertices": [
+              {
+                "x": 0.027116642907776503,
+                "y": 0.029829620503151744,
+                "z": 0.01189314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.029829620503151744,
+                "z": -0.0017179673238059716,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776392,
+                "y": 0.016639901197000765,
+                "z": -0.0017179673238059716,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.016639901197000765,
+                "z": 0.01189314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 3.925495968369701e-15,
+              "z": 4.078370655328389e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777671,
+              "y": 0.023234760850076253,
+              "z": 0.06808758762970622
+            },
+            "basisU": {
+              "x": 3.925495968369701e-15,
+              "y": 1,
+              "z": -1.6009627565008887e-29
+            },
+            "basisV": {
+              "x": -4.078370655328389e-15,
+              "y": 0,
+              "z": -1
+            },
+            "bounds2D": {
+              "minU": -0.006594859653075491,
+              "maxU": 0.006594859653075488,
+              "minV": -0.006805554953512205,
+              "maxV": 0.006805554953512205
+            }
+          },
+          "type": "character",
+          "value": "3",
+          "label": "3",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8hrcaon9w",
+          "polygon": {
+            "id": "mln8hrcacqhm",
+            "vertices": [
+              {
+                "x": 0.02711664290777659,
+                "y": 0.029829620503151744,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776534,
+                "y": 0.029829620503151744,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777648,
+                "y": 0.016639901197000765,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776534,
+                "y": 0.016639901197000765,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "2",
+          "label": "2",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8icvcg91q",
+          "polygon": {
+            "id": "mln8icvcls9j",
+            "vertices": [
+              {
+                "x": 0.027116642907776597,
+                "y": 0.008829620503151739,
+                "z": 0.05489314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777654,
+                "y": 0.008829620503151739,
+                "z": 0.04128203267619402,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776486,
+                "y": -0.004360098802999236,
+                "z": 0.04128203267619402,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777654,
+                "y": -0.004360098802999236,
+                "z": 0.05489314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.22745719670583e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776618,
+              "y": 0.023234760850076253,
+              "z": 0.04608758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770186e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.22745719670583e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512205,
+              "maxU": 0.006805554953512205,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "4",
+          "label": "4",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8jkq8uibc",
+          "polygon": {
+            "id": "mln8jkq817rz",
+            "vertices": [
+              {
+                "x": 0.027116642907776503,
+                "y": 0.008829620503151735,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": 0.008829620503151735,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776392,
+                "y": -0.004360098802999236,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776448,
+                "y": -0.004360098802999236,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "5",
+          "label": "5",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8khmk4eih",
+          "polygon": {
+            "id": "mln8khmkupze",
+            "vertices": [
+              {
+                "x": 0.027116642907776507,
+                "y": -0.012170379496848266,
+                "z": 0.05489314258321844,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777645,
+                "y": -0.012170379496848266,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776396,
+                "y": -0.02536009880299924,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777645,
+                "y": -0.02536009880299924,
+                "z": 0.05489314258321844,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328386e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.0022347608500762495,
+              "z": 0.04608758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328386e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512205,
+              "maxU": 0.006805554953512205,
+              "minV": -0.006594859653075486,
+              "maxV": 0.006594859653075486
+            }
+          },
+          "type": "character",
+          "value": "A",
+          "label": "A",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8lmurevty",
+          "polygon": {
+            "id": "mln8lmur78tm",
+            "vertices": [
+              {
+                "x": 0.027116642907776416,
+                "y": 0.008829620503151739,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777636,
+                "y": 0.008829620503151739,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776305,
+                "y": -0.004360098802999236,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777636,
+                "y": -0.004360098802999236,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.0783706553283885e-15
+            },
+            "planeCenter": {
+              "x": 0.02711664290777653,
+              "y": 0.023234760850076253,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.0783706553283885e-15,
+              "y": -1.7241137377701875e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075491
+            }
+          },
+          "type": "character",
+          "value": "6",
+          "label": "6",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8mao1gr89",
+          "polygon": {
+            "id": "mln8mao1qodv",
+            "vertices": [
+              {
+                "x": 0.02711664290777642,
+                "y": -0.012170379496848262,
+                "z": 0.032893142583218425,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.012170379496848262,
+                "z": 0.019282032676194025,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777631,
+                "y": -0.02536009880299924,
+                "z": 0.019282032676194025,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.02536009880299924,
+                "z": 0.032893142583218425,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776444,
+              "y": 0.0022347608500762513,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770187e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "b",
+          "label": "b",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8na988aa4",
+          "polygon": {
+            "id": "mln8na984y15",
+            "vertices": [
+              {
+                "x": 0.02711664290777633,
+                "y": -0.012170379496848262,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776274,
+                "y": -0.012170379496848262,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777622,
+                "y": -0.02536009880299924,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776274,
+                "y": -0.02536009880299924,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705832e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776444,
+              "y": 0.0022347608500762513,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.724113737770187e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705832e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075488,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "C",
+          "label": "C",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8nvvam7pe",
+          "polygon": {
+            "id": "mln8nvva5m4o",
+            "vertices": [
+              {
+                "x": 0.027116642907776326,
+                "y": -0.034170379496848265,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777627,
+                "y": -0.034170379496848265,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776215,
+                "y": -0.04736009880299924,
+                "z": 0.01928203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777627,
+                "y": -0.04736009880299924,
+                "z": 0.03289314258321843,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776357,
+              "y": -0.01876523914992375,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "e",
+          "label": "e",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8ogts1qmu",
+          "polygon": {
+            "id": "mln8ogtssynw",
+            "vertices": [
+              {
+                "x": 0.02711664290777642,
+                "y": -0.034170379496848265,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.034170379496848265,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777631,
+                "y": -0.04736009880299924,
+                "z": 0.04128203267619403,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776364,
+                "y": -0.04736009880299924,
+                "z": 0.054893142583218424,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705834e-15,
+              "z": 4.078370655328391e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776448,
+              "y": -0.01876523914992375,
+              "z": 0.046087587629706224
+            },
+            "basisU": {
+              "x": 4.078370655328391e-15,
+              "y": -1.7241137377701897e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705834e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512198,
+              "maxU": 0.006805554953512198,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "d",
+          "label": "d",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        },
+        {
+          "id": "mln8p8id9xjw",
+          "polygon": {
+            "id": "mln8p8id1ymq",
+            "vertices": [
+              {
+                "x": 0.02711664290777624,
+                "y": -0.034170379496848265,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776184,
+                "y": -0.034170379496848265,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.02711664290777613,
+                "y": -0.04736009880299924,
+                "z": -0.0017179673238059742,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              },
+              {
+                "x": 0.027116642907776184,
+                "y": -0.04736009880299924,
+                "z": 0.011893142583218427,
+                "nx": 1,
+                "ny": 3.5824185316933285e-28,
+                "nz": -2.397634294858209e-21
+              }
+            ],
+            "normalOffset": 0.001,
+            "planeNormal": {
+              "x": -1,
+              "y": 4.227457196705831e-15,
+              "z": 4.078370655328387e-15
+            },
+            "planeCenter": {
+              "x": 0.027116642907776357,
+              "y": -0.01876523914992375,
+              "z": 0.02508758762970623
+            },
+            "basisU": {
+              "x": 4.078370655328387e-15,
+              "y": -1.7241137377701866e-29,
+              "z": 1
+            },
+            "basisV": {
+              "x": 4.227457196705831e-15,
+              "y": 1,
+              "z": 0
+            },
+            "bounds2D": {
+              "minU": -0.006805554953512202,
+              "maxU": 0.006805554953512202,
+              "minV": -0.006594859653075491,
+              "maxV": 0.006594859653075488
+            }
+          },
+          "type": "character",
+          "value": "f",
+          "label": "f",
+          "labelConfig": {
+            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontSize": 1,
+            "textColor": "#ffffff",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 0,
+            "backgroundTransparent": true,
+            "surfaceType": "matte",
+            "roughness": 0.25,
+            "metalness": 0.75,
+            "textAlign": "center",
+            "uppercase": false,
+            "maxChars": 0,
+            "padding": 0,
+            "letterSpacing": -0.02,
+            "lineHeight": 1.2,
+            "wrapMode": "nowrap",
+            "mode": "static",
+            "previewText": ""
+          },
+          "areaColor": "#000000",
+          "areaTransparent": false,
+          "areaOpacity": 1
+        }
+      ],
+      "logic": {
+        "secretCode": "1111",
+        "verificationMode": "auto",
+        "feedbackDuration": 5000,
+        "onTrue": {
+          "text": "OPEN",
+          "textColor": "#00ff00",
+          "bgColor": "#003300",
+          "bgTransparent": false
+        },
+        "onFalse": {
+          "text": "WRONG",
+          "textColor": "#ff0000",
+          "bgColor": "#330000",
+          "bgTransparent": false
+        },
+        "behavior": "single",
+        "action": {
+          "type": "none"
+        }
+      }
+    }
+  },
+  "weed_brick_open.glb": {
+    "category": "plants",
+    "animType": "static",
+    "isDoor": false
+  },
+  "picture_frame_1.glb": {
+    "category": "fourniture",
+    "animType": "static",
+    "isDoor": false
+  },
+  "picture_frame_2.glb": {
+    "category": "General",
+    "animType": "static",
+    "isDoor": false
+  }
+}
