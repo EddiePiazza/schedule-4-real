@@ -1,9 +1,17 @@
 <p align="center">
-  <img src="https://schedule4real.com/dist/screenshots/logo.svg" alt="Schedule 4 Real" width="480" />
+  <img src="https://schedule4real.com/dist/screenshots/SCHEDULE-4-REAL-LOGO.svg" alt="Schedule 4 Real" width="480" />
+</p>
+
+<p align="center">
+  <em>WHERE REAL GROWERS COME TO PLAY</em>
 </p>
 
 <p align="center">
   <strong>Grow control system &bull; Plant genetics lab &bull; Encrypted multiplayer 3D game</strong>
+</p>
+
+<p align="center">
+  <a href="https://schedule4real.com">https://schedule4real.com</a>
 </p>
 
 <p align="center">
