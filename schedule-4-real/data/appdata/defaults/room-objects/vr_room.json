@@ -3,9 +3,9 @@
     "id": "758e049a-4ea6-4d0b-a966-d8d2674f0690",
     "assetFile": "/models/assets/construction/door.glb",
     "position": {
-      "x": -3.3099,
-      "y": 1.2269,
-      "z": 6.4504
+      "x": -3.3252,
+      "y": 0.5909,
+      "z": 6.4871
     },
     "quaternion": {
       "x": 0,
@@ -13,7 +13,7 @@
       "z": 0,
       "w": 0.2334
     },
-    "scale": 0.0058,
+    "scale": 0.0029,
     "name": "door",
     "locked": true,
     "doorTarget": {

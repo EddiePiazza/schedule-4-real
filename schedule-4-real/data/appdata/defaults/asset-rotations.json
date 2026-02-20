@@ -128,5 +128,20 @@
     "x": -1.5708,
     "y": -1.5708,
     "z": 0
+  },
+  "switch_keypad.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "keypad_codelock_2.glb": {
+    "x": -1.5708,
+    "y": -3.2725,
+    "z": 0
+  },
+  "door_metalic_keypad.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0
   }
 }

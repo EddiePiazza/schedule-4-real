@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-19T21:31:15.824Z",
+  "lastCheck": "2026-02-20T03:21:16.441Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.60.1",
-      "installedAt": "2026-02-19T21:36:55Z"
+      "version": "1.60.2",
+      "installedAt": "2026-02-20T03:25:36Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.60.1",
+        "changes": [
+          "Fix update system failing on rebranded PM2 installations"
+        ]
+      },
       {
         "version": "1.60.0",
         "changes": [
@@ -385,15 +391,15 @@
         "changes": [
           "Fix TV broken in windowed mode, hover effects, and Chrome video pausing"
         ]
-      },
-      {
-        "version": "1.40.7",
-        "changes": [
-          "Fix TV video paused by Chrome power-saving, suppress pointer lock errors, return null for missing sensors"
-        ]
       }
     ],
     "ingest": [
+      {
+        "version": "1.7.1",
+        "changes": [
+          "Update MQTT client ID prefix for rebranding compatibility"
+        ]
+      },
       {
         "version": "1.7.0",
         "changes": [
@@ -451,6 +457,12 @@
     ],
     "retention": [
       {
+        "version": "1.0.5",
+        "changes": [
+          "Update service compatibility for rebranding migration"
+        ]
+      },
+      {
         "version": "1.0.3",
         "changes": [
           "Fix data retention service crash loop under PM2"
@@ -464,6 +476,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.12.2",
+        "changes": [
+          "Fix relay URL reading from UI config instead of obsolete env variable"
+        ]
+      },
       {
         "version": "1.12.1",
         "changes": [
@@ -634,6 +652,12 @@
     ],
     "mosquitto": [
       {
+        "version": "1.2.2",
+        "changes": [
+          "Add configurable WebSocket listener port"
+        ]
+      },
+      {
         "version": "1.2.0",
         "changes": [
           "Add WebSocket listener on port 9001 for remote MQTT connections"
@@ -647,6 +671,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "7",
+        "changes": [
+          "Update service compatibility for rebranding migration"
+        ]
+      },
       {
         "version": "5",
         "changes": [
@@ -667,6 +697,12 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.3.2",
+        "changes": [
+          "Fix tunnel agent and room publisher using relay URL from UI settings"
+        ]
+      },
       {
         "version": "1.3.1",
         "changes": [

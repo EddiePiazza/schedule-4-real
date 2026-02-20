@@ -224,6 +224,21 @@
           },
           "distance": 175,
           "decay": 0.8
+        },
+        {
+          "id": "light_1771553244427",
+          "type": "point",
+          "name": "Point Light",
+          "enabled": true,
+          "color": "#ffffff",
+          "intensity": 293.04,
+          "position": {
+            "x": 624.1,
+            "y": 32,
+            "z": -210.1
+          },
+          "distance": 200,
+          "decay": 0.9
         }
       ],
       "skyRotation": 90,

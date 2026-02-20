@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-19T21:36:55Z",
+  "generatedAt": "2026-02-20T03:25:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.60.1",
-      "archive": "s4r-web-1.60.1.tar.gz",
-      "sha256": "6946fce714c771bd2208b8889fb63aca55681eae5858214c28ac8ef78932d26e",
-      "size": 10570849,
+      "version": "1.60.2",
+      "archive": "s4r-web-1.60.2.tar.gz",
+      "sha256": "5cb8a4c390f94051fd08293cf8a2c21908b4a5be75f4e63a40b0ea375ba0768d",
+      "size": 10574190,
       "changelog": [
+        {
+          "version": "1.60.2",
+          "changes": [
+            "Fix Tab key not closing inventory and display images not appearing after upload"
+          ]
+        },
         {
           "version": "1.60.1",
           "changes": [

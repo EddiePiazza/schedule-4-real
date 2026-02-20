@@ -1263,5 +1263,20 @@
     "category": "General",
     "animType": "static",
     "isDoor": false
+  },
+  "power_switch_1.glb": {
+    "category": "animated / switches",
+    "animType": "toggle",
+    "defaultToggleState": false,
+    "onIsEnd": true,
+    "isDoor": false,
+    "animRange": "full"
+  },
+  "elevator.glb": {
+    "category": "animated / doors",
+    "animType": "loop",
+    "loopMode": "continuous",
+    "isDoor": false,
+    "animRange": "full"
   }
 }

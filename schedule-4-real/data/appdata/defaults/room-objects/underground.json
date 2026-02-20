@@ -13,11 +13,26 @@
       "z": 0,
       "w": 0.7071
     },
-    "scale": 1.8801,
+    "scale": 1.8784,
     "name": "door2",
     "locked": true,
     "doorTarget": {
       "envId": "big_room"
+    },
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "both",
+        "targetRoomId": "big_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": true,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockMode": "everyone"
+      }
     }
   }
 ]

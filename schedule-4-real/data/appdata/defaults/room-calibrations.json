@@ -1,0 +1,34 @@
+{
+  "vr_room": {
+    "floorY": 0,
+    "unitPerMeter": 0.2381
+  },
+  "big_room": {
+    "floorY": -0.0001,
+    "unitPerMeter": 48.0701
+  },
+  "underground": {
+    "floorY": -15.8439,
+    "unitPerMeter": 9.9644
+  },
+  "mammoth_structure_062822_copy": {
+    "floorY": 0,
+    "unitPerMeter": 13.0926
+  },
+  "richards_art_gallery": {
+    "floorY": -0.0291,
+    "unitPerMeter": 0.6807
+  },
+  "room_blank": {
+    "floorY": 0.052,
+    "unitPerMeter": 0.755
+  },
+  "vr_gallery": {
+    "floorY": 0.0066,
+    "unitPerMeter": 0.9921
+  },
+  "art_gallery": {
+    "floorY": 0,
+    "unitPerMeter": 1.6207
+  }
+}

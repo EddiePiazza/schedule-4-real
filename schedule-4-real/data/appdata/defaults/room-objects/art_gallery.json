@@ -1,0 +1,36 @@
+[
+  {
+    "id": "f3e742ae-bb75-43f3-bcfa-63d46d8973ec",
+    "assetFile": "/models/assets/construction/door.glb",
+    "position": {
+      "x": -0.0809,
+      "y": 3.7022,
+      "z": 33.6961
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "w": 0
+    },
+    "scale": 0.0175,
+    "name": "door",
+    "locked": false,
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "portal",
+        "targetRoomId": "big_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": false,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockKeypadId": "",
+        "lockMode": "everyone"
+      }
+    }
+  }
+]

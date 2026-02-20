@@ -11,13 +11,40 @@
     "hidden": false
   },
   {
+    "id": "art_gallery",
+    "name": "Art Gallery",
+    "description": "",
+    "file": "/models/rooms/art_gallery.glb",
+    "size": "2 MB",
+    "icon": "CubeIcon",
+    "image": "/models/rooms/art_gallery.webp"
+  },
+  {
+    "id": "room_blank",
+    "name": "Room Blank",
+    "description": "",
+    "file": "/models/rooms/room_blank.glb",
+    "size": "12 MB",
+    "icon": "CubeIcon",
+    "image": "/models/rooms/room_blank.webp"
+  },
+  {
+    "id": "vr_gallery",
+    "name": "Vr Gallery",
+    "description": "",
+    "file": "/models/rooms/vr_gallery.glb",
+    "size": "45 MB",
+    "icon": "CubeIcon",
+    "image": "/models/rooms/vr_gallery.webp"
+  },
+  {
     "id": "vr_room",
     "name": "VR Room Baked",
     "description": "Interior environment with pre-baked lighting for smooth performance.",
     "file": "/models/rooms/vr_room_baked.glb",
     "size": "24 MB",
-    "icon": "SparklesIcon",
-    "image": "/models/rooms/vr_room_baked.webp"
+    "icon": "CubeIcon",
+    "image": "/models/rooms/vr_room.webp"
   },
   {
     "id": "underground",
@@ -26,7 +53,17 @@
     "file": "/models/rooms/underground.glb",
     "size": "29 MB",
     "icon": "CubeIcon",
+    "image": "/models/rooms/underground.webp",
     "animated": true,
     "hidden": false
+  },
+  {
+    "id": "mammoth_structure_062822_copy",
+    "name": "Mammoth Structure",
+    "description": "",
+    "file": "/models/rooms/mammoth_structure_062822.glb",
+    "size": "4 MB",
+    "icon": "CubeIcon",
+    "image": "/models/rooms/mammoth_structure_062822_copy.webp"
   }
 ]

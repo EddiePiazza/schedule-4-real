@@ -1,41 +1,5 @@
 [
   {
-    "id": "c699d7da-93ed-431e-be1f-3cd65d2852c7",
-    "assetFile": "/models/assets/fourniture/simple_basic_office__work_desk.glb",
-    "position": {
-      "x": 622.4863,
-      "y": 39.3406,
-      "z": -236.3242
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.7045,
-      "z": 0,
-      "w": 0.7097
-    },
-    "scale": 17.0309,
-    "name": "simple basic office  work desk",
-    "locked": false
-  },
-  {
-    "id": "bdcd2584-90ac-4d66-9ecd-d8c2882955ed",
-    "assetFile": "/models/assets/parafernalia/lsd_drug_lab_kit.glb",
-    "position": {
-      "x": 620.5222,
-      "y": 40.6863,
-      "z": -254.7892
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.6862,
-      "z": 0,
-      "w": -0.7275
-    },
-    "scale": 27.4207,
-    "name": "lsd drug lab kit",
-    "locked": false
-  },
-  {
     "id": "2c156a89-26c4-4191-a62c-38c5108dae6a",
     "assetFile": "/models/assets/plants/weed_brick_2.glb",
     "position": {
@@ -414,24 +378,6 @@
     "locked": false
   },
   {
-    "id": "30d5b59d-5c63-43df-8933-4269a93b14c4",
-    "assetFile": "/models/assets/parafernalia/joint.glb",
-    "position": {
-      "x": 614.1256,
-      "y": 41.1337,
-      "z": -223.4927
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.9096,
-      "z": 0,
-      "w": 0.4154
-    },
-    "scale": 97.295,
-    "name": "joint",
-    "locked": false
-  },
-  {
     "id": "f11c9ad6-9aed-49bf-a99e-835b37230488",
     "assetFile": "/models/assets/parafernalia/joint.glb",
     "position": {
@@ -537,42 +483,6 @@
     },
     "scale": 4.3369,
     "name": "weed in a bag",
-    "locked": false
-  },
-  {
-    "id": "5368adbd-f2f3-458d-bde6-d6350e20223f",
-    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
-    "position": {
-      "x": 630.7261,
-      "y": 40.6863,
-      "z": -192.3945
-    },
-    "quaternion": {
-      "x": 0.0116,
-      "y": 0.7517,
-      "z": -0.6592,
-      "w": 0.0132
-    },
-    "scale": 4.3369,
-    "name": "weed in a bag",
-    "locked": false
-  },
-  {
-    "id": "e6e24990-f656-4b24-98fa-a732402baec2",
-    "assetFile": "/models/assets/plants/compost_bags.glb",
-    "position": {
-      "x": 751.314,
-      "y": 3.059,
-      "z": -404.145
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.5573,
-      "z": 0,
-      "w": 0.8303
-    },
-    "scale": 40.1646,
-    "name": "compost bags",
     "locked": false
   },
   {
@@ -753,24 +663,6 @@
     },
     "scale": 76.191,
     "name": "game ready light",
-    "locked": false
-  },
-  {
-    "id": "be069ee3-6f2e-478a-9fc7-a4a6a96117dd",
-    "assetFile": "/models/assets/parafernalia/microscope.glb",
-    "position": {
-      "x": 616.4295,
-      "y": 40.6863,
-      "z": -210.0733
-    },
-    "quaternion": {
-      "x": 0,
-      "y": -0.7009,
-      "z": 0,
-      "w": 0.7133
-    },
-    "scale": 12.217,
-    "name": "microscope",
     "locked": false
   },
   {
@@ -3302,7 +3194,7 @@
       "type": "door",
       "config": {
         "doorType": "portal",
-        "targetRoomId": "gallery",
+        "targetRoomId": "art_gallery",
         "targetSpawnKey": "",
         "autoClose": false,
         "autoCloseDelay": 3000,
@@ -3510,28 +3402,10 @@
             },
             "elements": [
               {
-                "id": "el_1771304556524_2vet",
-                "type": "text",
-                "x": 26,
-                "y": 39,
-                "width": 17,
-                "height": 10,
-                "config": {
-                  "text": "New Text",
-                  "fontFamily": "/fonts/Silkscreen-Regular.ttf",
-                  "fontSize": 24,
-                  "color": "#ffffff",
-                  "align": "left",
-                  "bold": false,
-                  "italic": false,
-                  "opacity": 1
-                }
-              },
-              {
                 "id": "el_1771304843112_gdm0",
                 "type": "clock",
-                "x": 47,
-                "y": 44.5,
+                "x": 0,
+                "y": 0,
                 "width": 6,
                 "height": 6,
                 "config": {
@@ -3544,14 +3418,14 @@
                 }
               },
               {
-                "id": "el_1771304849589_baly",
+                "id": "el_1771522677922_q2u3",
                 "type": "text",
-                "x": 70,
-                "y": 5,
-                "width": 9,
-                "height": 7.5,
+                "x": 4.5,
+                "y": 3.5,
+                "width": 6.5,
+                "height": 8.5,
                 "config": {
-                  "text": "New Text",
+                  "text": "Temp",
                   "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
                   "fontSize": 24,
                   "color": "#ffffff",
@@ -3562,33 +3436,296 @@
                 }
               },
               {
-                "id": "el_1771305134782_dqxe",
-                "type": "divider",
-                "x": 0,
-                "y": 49,
-                "width": 100,
-                "height": 3,
+                "id": "el_1771522728799_563o",
+                "type": "chart",
+                "x": 4.5,
+                "y": 11,
+                "width": 30,
+                "height": 12,
                 "config": {
-                  "color": "#555555",
-                  "thickness": 2
+                  "metric": "temperature",
+                  "range": "24h",
+                  "lineColor": "#22c55e",
+                  "fillOpacity": 0.1,
+                  "showTitle": true,
+                  "showAxes": true,
+                  "theme": "default"
                 }
               },
               {
-                "id": "el_1771344702256_je3k",
-                "type": "video",
-                "x": 70,
-                "y": 13,
-                "width": 17.5,
-                "height": 26.5,
+                "id": "el_1771522746211_0jp4",
+                "type": "sensorCard",
+                "x": 11.5,
+                "y": 6,
+                "width": 4.5,
+                "height": 4.5,
                 "config": {
-                  "src": "/api/cameras/stream/6298adc5af87efc3",
-                  "srcType": "camera",
+                  "sensorType": "temperature",
+                  "showStats": false,
+                  "showStatusDot": false,
+                  "showLabel": false,
+                  "showUnit": true,
+                  "fontSize": 22,
+                  "titleFontSize": 13,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "valueColor": "#12d370",
+                  "labelColor": "",
+                  "theme": "default"
+                }
+              },
+              {
+                "id": "el_1771523127467_91qr",
+                "type": "sensorCard",
+                "x": 11.5,
+                "y": 27.5,
+                "width": 3.5,
+                "height": 4.5,
+                "config": {
+                  "sensorType": "humidity",
+                  "showStats": false,
+                  "showStatusDot": false,
+                  "showLabel": false,
+                  "showUnit": true,
+                  "fontSize": 22,
+                  "titleFontSize": 13,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "valueColor": "#12d370",
+                  "labelColor": "",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523401141_easj",
+                "type": "blowerStatus",
+                "x": 37.5,
+                "y": 71,
+                "width": 10,
+                "height": 22,
+                "config": {
+                  "style": "arc",
+                  "showSpeed": true,
+                  "showStatus": true,
+                  "fontSize": 24,
+                  "titleFontSize": 22,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "gaugeColor": "#06b6d4",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523430557_a344",
+                "type": "text",
+                "x": 4.5,
+                "y": 27,
+                "width": 5.5,
+                "height": 5.5,
+                "config": {
+                  "text": "Humi",
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontSize": 24,
+                  "color": "#ffffff",
+                  "align": "left",
+                  "bold": false,
+                  "italic": false,
+                  "opacity": 1
+                }
+              },
+              {
+                "id": "el_1771523464647_bne2",
+                "type": "chart",
+                "x": 4.5,
+                "y": 34.5,
+                "width": 30,
+                "height": 12,
+                "config": {
+                  "metric": "humidity",
+                  "range": "24h",
+                  "lineColor": "#22c55e",
+                  "fillOpacity": 0.1,
+                  "showTitle": true,
+                  "showAxes": true,
+                  "theme": "default"
+                }
+              },
+              {
+                "id": "el_1771523510164_f9gx",
+                "type": "eventLog",
+                "x": 37.5,
+                "y": 3.5,
+                "width": 15,
+                "height": 25,
+                "config": {
+                  "maxEntries": 10,
+                  "showTriggerSource": true,
+                  "fontSize": 20,
+                  "titleFontSize": 21,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "onColor": "#4ade80",
+                  "offColor": "#f87171",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523540555_7ziq",
+                "type": "lightStatus",
+                "x": 37.5,
+                "y": 35.5,
+                "width": 15,
+                "height": 7.5,
+                "config": {
+                  "lightId": "all",
+                  "showBrightnessBar": true,
+                  "showMode": true,
+                  "showWattage": true,
+                  "fontSize": 20,
+                  "titleFontSize": 14,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "barColor": "#facc15",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523600158_ach3",
+                "type": "socketStatus",
+                "x": 55.5,
+                "y": 35.5,
+                "width": 42,
+                "height": 5.5,
+                "config": {
+                  "layout": "horizontal",
+                  "showModeName": true,
+                  "showWattage": true,
+                  "fontSize": 25,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "onColor": "#52ff91",
+                  "offColor": "#a80000",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523691538_37b1",
+                "type": "text",
+                "x": 4.5,
+                "y": 50.5,
+                "width": 7,
+                "height": 6,
+                "config": {
+                  "text": "AIR VPD",
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontSize": 24,
+                  "color": "#ffffff",
+                  "align": "left",
+                  "bold": false,
+                  "italic": false,
+                  "opacity": 1
+                }
+              },
+              {
+                "id": "el_1771523725504_onbf",
+                "type": "sensorCard",
+                "x": 13,
+                "y": 51,
+                "width": 5,
+                "height": 5,
+                "config": {
+                  "sensorType": "temperature",
+                  "showStats": false,
+                  "showStatusDot": false,
+                  "showLabel": false,
+                  "showUnit": true,
+                  "fontSize": 22,
+                  "titleFontSize": 13,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "valueColor": "#12d370",
+                  "labelColor": "",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771523764722_wc7j",
+                "type": "chart",
+                "x": 4.5,
+                "y": 57.5,
+                "width": 30,
+                "height": 12,
+                "config": {
+                  "metric": "vpd",
+                  "range": "24h",
+                  "lineColor": "#22c55e",
+                  "fillOpacity": 0.1,
+                  "showTitle": true,
+                  "showAxes": true,
+                  "theme": "default"
+                }
+              },
+              {
+                "id": "el_1771523787676_20df",
+                "type": "chart",
+                "x": 4.5,
+                "y": 79.5,
+                "width": 30,
+                "height": 12.5,
+                "config": {
+                  "metric": "blower",
+                  "range": "24h",
+                  "lineColor": "#22c55e",
+                  "fillOpacity": 0.1,
+                  "showTitle": true,
+                  "showAxes": true,
+                  "theme": "default"
+                }
+              },
+              {
+                "id": "el_1771523839499_mx2e",
+                "type": "text",
+                "x": 4.5,
+                "y": 72.5,
+                "width": 18.5,
+                "height": 7,
+                "config": {
+                  "text": "Blower",
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontSize": 24,
+                  "color": "#ffffff",
+                  "align": "left",
+                  "bold": false,
+                  "italic": false,
+                  "opacity": 1
+                }
+              },
+              {
+                "id": "el_1771523923971_dpux",
+                "type": "powerSummary",
+                "x": 55.5,
+                "y": 3.5,
+                "width": 15,
+                "height": 25,
+                "config": {
+                  "range": "24h",
+                  "showBreakdown": true,
+                  "showCost": true,
+                  "fontSize": 20,
+                  "titleFontSize": 20,
+                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "accentColor": "#4ade80",
+                  "theme": "chalk"
+                }
+              },
+              {
+                "id": "el_1771553089781_ic85",
+                "type": "video",
+                "x": 56.5,
+                "y": 48.5,
+                "width": 39.5,
+                "height": 44.5,
+                "config": {
+                  "src": "/appdata-display-images/timelapse.mp4",
+                  "srcType": "upload",
                   "fit": "cover",
                   "loop": true,
                   "autoplay": true,
                   "muted": true,
-                  "opacity": 1,
-                  "cameraId": "6298adc5af87efc3"
+                  "opacity": 1
                 }
               }
             ],
@@ -3624,95 +3761,244 @@
       "config": {
         "displayZones": [
           {
-            "id": "mlqnwcgkvy0f",
+            "id": "mlu8yj9xmqtc",
             "polygon": {
-              "id": "mlqnwcgkvy0f",
+              "id": "mlu8yj9xmqtc",
               "vertices": [
                 {
-                  "x": 0.019258808463813448,
-                  "y": 0.3650763807501705,
-                  "z": 0.24976530996303747,
-                  "nx": 0.9999999999999972,
-                  "ny": 9.921200635606555e-10,
-                  "nz": 7.622301506417456e-8
+                  "x": 0.021223704921257358,
+                  "y": 0.3684758462994997,
+                  "z": 0.25479482274098686,
+                  "nx": 0.9999999999999981,
+                  "ny": -4.37097114888137e-8,
+                  "nz": 4.371138806469086e-8
                 },
                 {
-                  "x": 0.01925884642324638,
-                  "y": 0.3668834082170043,
-                  "z": -0.2482630968250641,
-                  "nx": 0.9999999999999972,
-                  "ny": 9.921200635606555e-10,
-                  "nz": 7.622301506417456e-8
+                  "x": 0.021223727165253337,
+                  "y": 0.3683809749353819,
+                  "z": -0.2541833566494649,
+                  "nx": 0.9999999999999981,
+                  "ny": -4.37097114888137e-8,
+                  "nz": 4.371138806469086e-8
                 },
                 {
-                  "x": 0.01925884713962489,
-                  "y": -0.3551853536190902,
-                  "z": -0.24826309646197142,
-                  "nx": 0.9999999999999972,
-                  "ny": 9.921181257158397e-10,
-                  "nz": 7.62230123317331e-8
+                  "x": 0.021223695033575574,
+                  "y": -0.36749959089939693,
+                  "z": -0.2549767867829278,
+                  "nx": 0.9999999999999981,
+                  "ny": -4.37097114888137e-8,
+                  "nz": 4.371138806469086e-8
                 },
                 {
-                  "x": 0.019258809135143995,
-                  "y": -0.35863409798123363,
-                  "z": 0.25037768120388915,
-                  "nx": 0.9999999999999972,
-                  "ny": 9.921200635606555e-10,
-                  "nz": 7.622301506417456e-8
+                  "x": 0.02108978188942956,
+                  "y": -0.3703497128661388,
+                  "z": 0.2553927985999449,
+                  "nx": 0.4058009473343135,
+                  "ny": 0.6462599339156411,
+                  "nz": 0.646276789740994
                 }
               ],
               "normalOffset": 0.005,
               "planeNormal": {
-                "x": -0.9999999999999971,
-                "y": -9.921195667385239e-10,
-                "z": -7.622301297655105e-8
+                "x": -0.9999999872730547,
+                "y": 0.00009085253861658199,
+                "z": -0.00013114765102306258
               },
               "planeCenter": {
-                "x": 0.019258827790457178,
-                "y": 0.00453508434171275,
-                "z": 0.0009041994699727773
+                "x": 0.021190227252378957,
+                "y": -0.0002481206326635371,
+                "z": 0.00025686947713476904
               },
               "basisU": {
-                "x": -9.92119566738521e-10,
-                "y": 1,
-                "z": -7.56223426098007e-17
+                "x": 0.00009085253783526347,
+                "y": 0.9999999958729081,
+                "z": 1.1915097078221513e-8
               },
               "basisV": {
-                "x": 7.622301297655105e-8,
-                "y": 0,
-                "z": -0.9999999999999971
+                "x": 0.00013114765156432097,
+                "y": 1.6543612251060553e-24,
+                "z": -0.9999999914001465
               },
               "bounds2D": {
-                "minU": -0.36316918232294637,
-                "maxU": 0.3623483238752916,
-                "minV": -0.24947348173391706,
-                "maxV": 0.24916729629503756
+                "minU": -0.37010159679177873,
+                "maxU": 0.36872397148478114,
+                "minV": -0.255135940101852,
+                "maxV": 0.25523365845431145
               }
             },
             "elements": [
               {
-                "id": "el_1771336302610_i2um",
+                "id": "el_1771553075089_6lgz",
                 "type": "image",
                 "x": 0,
                 "y": 0,
                 "width": 100,
                 "height": 100,
                 "config": {
-                  "src": "/room3d-display-images/our-strains-bolo-runtz.jpg",
+                  "src": "/appdata-display-images/our-strains-bolo-runtz.jpg",
                   "fit": "cover",
                   "borderRadius": 0,
                   "opacity": 1
                 }
               }
             ],
-            "polygonWidth": 0.4986407780289546,
-            "polygonHeight": 0.725517506198238,
+            "polygonWidth": 45.93661886492356,
+            "polygonHeight": 66.50043339707562,
             "backgroundColor": "#111111",
-            "backgroundOpacity": 1,
+            "backgroundOpacity": 0.9,
             "contentRotation": 0
           }
         ]
       }
     }
+  },
+  {
+    "id": "1b0ed828-6b55-4164-87a7-87fec4813d2e",
+    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "position": {
+      "x": 722.7891,
+      "y": 86.2333,
+      "z": -125.1305
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 0.0576,
+    "name": "power switch 1",
+    "locked": false,
+    "toggleState": false,
+    "deviceBinding": {
+      "deviceType": "socket",
+      "deviceId": "O3",
+      "invertAnimation": false
+    },
+    "behavior": {
+      "type": "switch",
+      "config": {
+        "mode": "toggle",
+        "interactRange": 3,
+        "interactPrompt": ""
+      }
+    }
+  },
+  {
+    "id": "26842ab2-ed3f-4931-8430-ca99e0f9b405",
+    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "position": {
+      "x": 722.7896,
+      "y": 86.1118,
+      "z": -102.012
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 0.0576,
+    "name": "power switch 1",
+    "locked": false,
+    "toggleState": false,
+    "deviceBinding": {
+      "deviceType": "socket",
+      "deviceId": "O4",
+      "invertAnimation": false
+    },
+    "behavior": {
+      "type": "switch",
+      "config": {
+        "mode": "toggle",
+        "interactRange": 3,
+        "interactPrompt": ""
+      }
+    }
+  },
+  {
+    "id": "4eb8cdca-b602-4fe1-ab09-cf12cc7b264a",
+    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "position": {
+      "x": 722.79,
+      "y": 86.0663,
+      "z": -80.8116
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 0.0576,
+    "name": "power switch 1",
+    "locked": false,
+    "toggleState": false,
+    "deviceBinding": {
+      "deviceType": "socket",
+      "deviceId": "O5",
+      "invertAnimation": false
+    },
+    "behavior": {
+      "type": "switch",
+      "config": {
+        "mode": "toggle",
+        "interactRange": 3,
+        "interactPrompt": ""
+      }
+    }
+  },
+  {
+    "id": "725caf95-fb3d-4b07-ad6a-868c3236273e",
+    "assetFile": "/models/assets/animated/switches/switch_keypad.glb",
+    "position": {
+      "x": 720.7462,
+      "y": 56.7717,
+      "z": -209.3963
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7071,
+      "z": 0,
+      "w": 0.7071
+    },
+    "scale": 3.6444,
+    "name": "switch keypad",
+    "locked": false,
+    "toggleState": true,
+    "deviceBinding": {
+      "deviceType": "light",
+      "deviceId": "light",
+      "invertAnimation": false
+    },
+    "behavior": {
+      "type": "switch",
+      "config": {
+        "mode": "toggle",
+        "interactRange": 3,
+        "interactPrompt": ""
+      }
+    },
+    "tags": [
+      "Panic"
+    ]
+  },
+  {
+    "id": "e6e24990-f656-4b24-98fa-a732402baec2",
+    "assetFile": "/models/assets/plants/compost_bags.glb",
+    "position": {
+      "x": 749.6136,
+      "y": 2.658,
+      "z": -404.877
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9332,
+      "z": 0,
+      "w": -0.3595
+    },
+    "scale": 40.1646,
+    "name": "compost bags",
+    "locked": false
   }
 ]

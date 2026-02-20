@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-19T21:37:12Z",
+  "generated": "2026-02-20T03:25:44Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -16,6 +16,14 @@
     "video/loby-background.mp4": {
       "hash": "d9e4bd629b8bd858982c5abb1c568043",
       "size": 5301395
+    },
+    "display-images/timelapse.mp4": {
+      "hash": "03c3efe4ace061b5b62db572d8dc2eb1",
+      "size": 6106535
+    },
+    "display-images/our-strains-bolo-runtz.jpg": {
+      "hash": "1b8581d0ef2bc8585c01cd036b471949",
+      "size": 477790
     },
     "models/plant_pot.glb": {
       "hash": "4c799fae66a7fd469c0cd528478d2cff",
@@ -49,29 +57,33 @@
       "hash": "7911ed2c387382db563019ef7feac2ac",
       "size": 15211644
     },
-    "models/rooms/dark_sci-fi_hallway.glb": {
-      "hash": "b4b359c98195ea2dbdcb781975c6bd89",
-      "size": 33975816
+    "models/rooms/art_gallery.webp": {
+      "hash": "bfc9c70d0ef4425ccb49c5514a1687c2",
+      "size": 114652
+    },
+    "models/rooms/vr_gallery.webp": {
+      "hash": "65c0d1bf517791f2122790697d96a7af",
+      "size": 298040
     },
     "models/rooms/vr_room_baked.webp": {
       "hash": "b7356df0a02f01ccb55de344d2415bc5",
       "size": 155518
     },
+    "models/rooms/room_blank.webp": {
+      "hash": "6d72916ec65168321ee09f840dbd0ba4",
+      "size": 114662
+    },
     "models/rooms/vr_gallery.glb": {
       "hash": "b122281ec559be607a67e6b8c284c400",
       "size": 47121744
     },
-    "models/rooms/richards_art_gallery.glb": {
-      "hash": "5933731ec02d121b3278f320b16d1b1a",
-      "size": 38874852
+    "models/rooms/underground.webp": {
+      "hash": "81362ba246c447566ae3f7ca1ebcfdcc",
+      "size": 581148
     },
     "models/rooms/big_room.webp": {
-      "hash": "5c1af60db6ec850a90757015fdca4a68",
-      "size": 168248
-    },
-    "models/rooms/richards_art_gallery_-_audio_tour.glb": {
-      "hash": "5933731ec02d121b3278f320b16d1b1a",
-      "size": 38874852
+      "hash": "322f5314d9e6cb070c51771588f961d2",
+      "size": 378758
     },
     "models/rooms/art_gallery.glb": {
       "hash": "7b9e6983763ed836aa302c1afb33cbb9",
@@ -82,12 +94,20 @@
       "size": 3797896
     },
     "models/rooms/rooms.json": {
-      "hash": "6e470bfe8677a6f98fdebe77a1e319e6",
-      "size": 1422
+      "hash": "f8f80fc599f9119a5c69dab3fd3b20b6",
+      "size": 1802
+    },
+    "models/rooms/mammoth_structure_062822_copy.webp": {
+      "hash": "3c4dbdbed2478e90c23e1f118e576b1c",
+      "size": 355586
     },
     "models/rooms/underground.glb": {
       "hash": "81ece1414438dd43420ac8e37a6d75c1",
       "size": 29926260
+    },
+    "models/rooms/vr_room.webp": {
+      "hash": "25d9535a338d6a9f9505f49cbd3ad7f7",
+      "size": 203476
     },
     "models/rooms/room_blank.glb": {
       "hash": "3c8e927fc9c910a218549bc820f11f22",
@@ -378,116 +398,104 @@
       "size": 144
     },
     "defaults/asset-scales.json": {
-      "hash": "b5d8691fae7ec4a53d0f4e718685f58b",
-      "size": 604
+      "hash": "47e407ba313cb87adab733238591db8e",
+      "size": 641
+    },
+    "defaults/room-calibrations.json": {
+      "hash": "91ef984c68ac391db7da9a6b0ff138c1",
+      "size": 593
     },
     "defaults/asset-rotations.json": {
-      "hash": "04eee258f2c000ef7c96704c79c00d52",
-      "size": 2018
+      "hash": "5fc6d65900ca991319d235339465d3c1",
+      "size": 2089
+    },
+    "defaults/room-hidden-meshes.json": {
+      "hash": "2e8d4e37ea66d78433a02066578bd14d",
+      "size": 38
     },
     "defaults/asset-thumb-offsets.json": {
-      "hash": "7cbec88b7e07bdf4c63e24a4d56a5e5b",
-      "size": 1527
+      "hash": "08ddc5b7862b6b8b7719e2cea2934cb5",
+      "size": 1686
     },
     "defaults/character-calibration.json": {
-      "hash": "5efe7545e5e0e5df8352b731e3d47e1a",
-      "size": 1236
+      "hash": "6300cb3d65e417c5968440015d23f7db",
+      "size": 1235
+    },
+    "defaults/room-mesh-simplifications.json": {
+      "hash": "99914b932bd37a50b983c5e7c90ae93b",
+      "size": 2
     },
     "defaults/asset-meta.json": {
-      "hash": "4386f00f6ed529ab8a4745f3f989d7ea",
-      "size": 39585
+      "hash": "2113a5e1ff40859953e007e5ca5b51af",
+      "size": 39745
     },
     "defaults/room-spawns.json": {
-      "hash": "487c7779e85d10eb3a78d33e2126d250",
-      "size": 587
+      "hash": "aef72378084cca086951ee9e4e0e52af",
+      "size": 1020
+    },
+    "defaults/room-lighting/vr_gallery.json": {
+      "hash": "389c31b1b13fe81cbb1e30414916a57a",
+      "size": 17973
     },
     "defaults/room-lighting/vr_room.json": {
       "hash": "a3543499f1395dfe031bc6d905884e48",
       "size": 11227
     },
-    "defaults/room-lighting/big_room.json": {
-      "hash": "df1ed15310437a0cb836c4bc1f299703",
+    "defaults/room-lighting/mammoth_structure_062822_copy.json": {
+      "hash": "926d3ab9b5e28d677f1d751667c8e401",
       "size": 19416
+    },
+    "defaults/room-lighting/underground.json": {
+      "hash": "e20c837f7ba8fa60f57e47e3a6d597e9",
+      "size": 11221
+    },
+    "defaults/room-lighting/big_room.json": {
+      "hash": "2b479fa7ba47497ace5a8beb345dd65e",
+      "size": 19780
     },
     "defaults/room-lighting/gallery.json": {
       "hash": "d5e35aad6149e5b000b405e6e568dba0",
       "size": 17988
     },
+    "defaults/room-lighting/room_blank.json": {
+      "hash": "296ea58a07d42aa85d1505f7d59c7260",
+      "size": 17641
+    },
+    "defaults/room-lighting/art_gallery.json": {
+      "hash": "00ece6faa271e29e1ae2d51c8a674253",
+      "size": 15255
+    },
+    "defaults/room-objects/vr_gallery.json": {
+      "hash": "d751713988987e9331980363e24189ce",
+      "size": 2
+    },
     "defaults/room-objects/vr_room.json": {
-      "hash": "afbe80787b2e00132690fe53e8457a39",
+      "hash": "abd2bc8ddd176348c71998d82c072778",
       "size": 804
+    },
+    "defaults/room-objects/richards_art_gallery.json": {
+      "hash": "d751713988987e9331980363e24189ce",
+      "size": 2
+    },
+    "defaults/room-objects/mammoth_structure_062822_copy.json": {
+      "hash": "d751713988987e9331980363e24189ce",
+      "size": 2
     },
     "defaults/room-objects/underground.json": {
-      "hash": "6423924cae3c08d3ba7de01d22b08b18",
-      "size": 411
+      "hash": "2b8f3e9e7590d1e956e6f44841160ca4",
+      "size": 810
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "188ea8a8201aee66f4d393ff279a9fe7",
-      "size": 120433
-    },
-    "defaults/room-objects/gallery.json": {
-      "hash": "001d64c69afadd864fffe7e11e54661e",
-      "size": 114893
-    },
-    "defaults/backup/tv-channels.json": {
-      "hash": "bf490fa2dd0244fcd5acc209652596ff",
-      "size": 26868
-    },
-    "defaults/backup/asset-anim-meta.json": {
-      "hash": "ddcb6457bf84b746259fadf04b4d0110",
-      "size": 144
-    },
-    "defaults/backup/asset-scales.json": {
-      "hash": "bef8a982af837383b92257b5e03f189c",
-      "size": 569
-    },
-    "defaults/backup/asset-rotations.json": {
-      "hash": "d10d4a4e335408144e1f768ac18edd06",
-      "size": 1937
-    },
-    "defaults/backup/asset-thumb-offsets.json": {
-      "hash": "7cbec88b7e07bdf4c63e24a4d56a5e5b",
-      "size": 1527
-    },
-    "defaults/backup/character-calibration.json": {
-      "hash": "5efe7545e5e0e5df8352b731e3d47e1a",
-      "size": 1236
-    },
-    "defaults/backup/asset-meta.json": {
-      "hash": "4386f00f6ed529ab8a4745f3f989d7ea",
-      "size": 39585
-    },
-    "defaults/backup/room-spawns.json": {
-      "hash": "06480a5ffa0e9e0597736c7c620559a3",
-      "size": 626
-    },
-    "defaults/backup/room-lighting/vr_room.json": {
-      "hash": "a3543499f1395dfe031bc6d905884e48",
-      "size": 11227
-    },
-    "defaults/backup/room-lighting/big_room.json": {
-      "hash": "df1ed15310437a0cb836c4bc1f299703",
-      "size": 19416
-    },
-    "defaults/backup/room-lighting/gallery.json": {
-      "hash": "d5e35aad6149e5b000b405e6e568dba0",
-      "size": 17988
-    },
-    "defaults/backup/room-objects/vr_room.json": {
-      "hash": "afbe80787b2e00132690fe53e8457a39",
-      "size": 804
-    },
-    "defaults/backup/room-objects/underground.json": {
-      "hash": "6423924cae3c08d3ba7de01d22b08b18",
-      "size": 411
-    },
-    "defaults/backup/room-objects/big_room.json": {
-      "hash": "2c221752171c0084006e13b6ea4dc21c",
+      "hash": "78f04a2401baa1611d24b0cfa45a49a3",
       "size": 120432
     },
-    "defaults/backup/room-objects/gallery.json": {
-      "hash": "001d64c69afadd864fffe7e11e54661e",
-      "size": 114893
+    "defaults/room-objects/room_blank.json": {
+      "hash": "0c5fe6eec3c91dc1da6471bb318123a1",
+      "size": 383
+    },
+    "defaults/room-objects/art_gallery.json": {
+      "hash": "1ed906fd7184e7307ddacbec71ff5a06",
+      "size": 774
     }
   }
 }

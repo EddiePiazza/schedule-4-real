@@ -1,0 +1,21 @@
+[
+  {
+    "id": "514bf040-b575-4c6f-bfb9-c4d60de3b825",
+    "assetFile": "/models/assets/animated/doors/elevator.glb",
+    "position": {
+      "x": 2.5069,
+      "y": 0.052,
+      "z": 4.05
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.7094,
+      "z": 0,
+      "w": 0.7048
+    },
+    "scale": 0.6724,
+    "name": "elevator",
+    "locked": true,
+    "toggleState": true
+  }
+]
