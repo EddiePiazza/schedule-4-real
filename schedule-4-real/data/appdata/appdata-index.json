@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-20T19:19:08Z",
+  "generated": "2026-02-20T21:23:01Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -390,8 +390,8 @@
       "size": 54232
     },
     "defaults/tv-channels.json": {
-      "hash": "bf490fa2dd0244fcd5acc209652596ff",
-      "size": 26868
+      "hash": "7141eaef2b48e9209776182f4f007dc0",
+      "size": 25628
     },
     "defaults/room-settings.json": {
       "hash": "167cc66e54fe90dd50806e80f3946c1d",
@@ -454,7 +454,7 @@
       "size": 11221
     },
     "defaults/room-lighting/big_room.json": {
-      "hash": "2b479fa7ba47497ace5a8beb345dd65e",
+      "hash": "99baacf8c0c84e9632b9f9d81d6f4baa",
       "size": 19780
     },
     "defaults/room-lighting/gallery.json": {
@@ -490,8 +490,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "35a4038fee0fcea9f8ccb5a475ab03ed",
-      "size": 121652
+      "hash": "b896587de3ed67462a9743bad477e3ca",
+      "size": 121617
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",

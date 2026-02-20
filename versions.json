@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T20:02:11Z",
+  "generatedAt": "2026-02-20T21:22:53Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.63.0",
-      "archive": "s4r-web-1.63.0.tar.gz",
-      "sha256": "d0a0262f719f833845a015305ad2c01e35a9af7d11786886ace57e6424f71d73",
-      "size": 10582727,
+      "version": "1.64.0",
+      "archive": "s4r-web-1.64.0.tar.gz",
+      "sha256": "3f72318831008d11b4598691f21dada13e24a2c2d5fd813ec5d24f3c9a5522df",
+      "size": 10585550,
       "changelog": [
+        {
+          "version": "1.64.0",
+          "changes": [
+            "Add voice init error tracking in debug overlay for cross-domain diagnostics",
+            "Add microphone permission indicator in lobby with re-request button"
+          ]
+        },
         {
           "version": "1.63.0",
           "changes": [

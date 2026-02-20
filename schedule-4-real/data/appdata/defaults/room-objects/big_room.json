@@ -3264,7 +3264,7 @@
       "widgets": [
         "tv_channel"
       ],
-      "channelUrl": "https://d1j2csarxnwazk.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-uze1m6xh4fiyr-ssai-prd/master.m3u8"
+      "channelUrl": "https://d2jl8r92tdc3f1.cloudfront.net/out/v1/59419700344b4625b7cb0693ba265ea3/TVGindex_1.m3u8"
     }
   },
   {
@@ -3869,7 +3869,7 @@
     "scale": 0.0576,
     "name": "power switch 1",
     "locked": false,
-    "toggleState": false,
+    "toggleState": true,
     "deviceBinding": {
       "deviceType": "socket",
       "deviceId": "O3",
@@ -3933,7 +3933,7 @@
     "scale": 0.0576,
     "name": "power switch 1",
     "locked": false,
-    "toggleState": false,
+    "toggleState": true,
     "deviceBinding": {
       "deviceType": "socket",
       "deviceId": "O5",

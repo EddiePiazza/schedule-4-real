@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T20:01:16.446Z",
+  "lastCheck": "2026-02-20T21:21:16.453Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.63.0",
-      "installedAt": "2026-02-20T20:02:11Z"
+      "version": "1.64.0",
+      "installedAt": "2026-02-20T21:22:53Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.63.0",
+        "changes": [
+          "Fix unified /data/ route not serving files correctly",
+          "Add debug overlay setting in Graphics tab (Off / FPS / Full)",
+          "Remove confusing capacity number from public room list and sort favorites first",
+          "Fix pointer lock SecurityError and compileAsync crash during room transitions",
+          "Fix TV mute button indistinguishable from volume, reduce default TV volume",
+          "Add voice chat debug overlay for cross-domain diagnostics"
+        ]
+      },
       {
         "version": "1.62.1",
         "changes": [
@@ -387,12 +398,6 @@
           "Fix mobile crash when entering room in fullscreen mode",
           "Remove voice chat from invite lobby, keep it room-only",
           "Add mobile TV control bar with channel/volume buttons"
-        ]
-      },
-      {
-        "version": "1.40.12",
-        "changes": [
-          "Fix TV stream pausing before player walks to TV"
         ]
       }
     ],

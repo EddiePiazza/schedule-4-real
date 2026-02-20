@@ -6,12 +6,6 @@
     "color": "#60a5fa"
   },
   {
-    "name": "2GB Sydney",
-    "url": "https://2gblive.akamaized.net/hls/live/2033805/2GB/index.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
     "name": "3AW Melbourne",
     "url": "https://3awlive.akamaized.net/hls/live/2032295/3AW/index.m3u8",
     "category": "News",
@@ -60,12 +54,6 @@
     "color": "#60a5fa"
   },
   {
-    "name": "France 24 Spanish",
-    "url": "https://live.france24.com/hls/live/2037220/F24_ES_LO_HLS/master.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
     "name": "NHK World",
     "url": "https://nhkworld.webcdn.stream.ne.jp/www11/nhkworld-tv/bmcc-vh/1.3m/chunklist.m3u8",
     "category": "News",
@@ -110,12 +98,6 @@
   {
     "name": "ARTE",
     "url": "https://artesimulcast.akamaized.net/hls/live/2030993/artelive_de/index.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Arte",
-    "url": "https://artesimulcast.akamaized.net/hls/live/2031003/artelive_fr/index.m3u8",
     "category": "Entertainment",
     "color": "#fb923c"
   },
@@ -170,12 +152,6 @@
   {
     "name": "Abzy Dhakad",
     "url": "https://d2lk5u59tns74c.cloudfront.net/out/v1/4fe6ab07a13543d6bdb2ec63b3e2df44/index.m3u8",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
-    "name": "Abzy Movies",
-    "url": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/db8d4eca72d64748a00d0631debf542d/index.m3u8",
     "category": "Movies",
     "color": "#a78bfa"
   },
@@ -312,12 +288,6 @@
     "color": "#f472b6"
   },
   {
-    "name": "M+",
-    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/m-plus/master.m3u8",
-    "category": "Music",
-    "color": "#f472b6"
-  },
-  {
     "name": "Majid Al Mohandis",
     "url": "https://shls-live-mood-ak.akamaized.net/out/v1/8e2419c6c7494dbba478be025af490ee/index.m3u8",
     "category": "Music",
@@ -380,12 +350,6 @@
   {
     "name": "FIFA+ United States",
     "url": "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
-    "category": "Sports",
-    "color": "#4ade80"
-  },
-  {
-    "name": "Fight Network",
-    "url": "https://d12a2vxqkkh1bo.cloudfront.net/hls/main.m3u8",
     "category": "Sports",
     "color": "#4ade80"
   },
@@ -596,12 +560,6 @@
   {
     "name": "23 ABC Bakersfield.",
     "url": "https://content.uplynk.com/channel/ff809e6d9ec34109abfb333f0d4444b5.m3u8",
-    "category": "General",
-    "color": "#94a3b8"
-  },
-  {
-    "name": "2M Monde",
-    "url": "https://cdn-globecast.akamaized.net/live/eds/2m_monde/hls_video_ts_tuhawxpiemz257adfc/2m_monde.m3u8",
     "category": "General",
     "color": "#94a3b8"
   },
