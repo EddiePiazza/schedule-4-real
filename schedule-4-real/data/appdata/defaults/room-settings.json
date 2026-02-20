@@ -1,0 +1,8 @@
+{
+  "rooms": {
+    "big_room": {
+      "inviteOnly": true,
+      "isPublic": false
+    }
+  }
+}

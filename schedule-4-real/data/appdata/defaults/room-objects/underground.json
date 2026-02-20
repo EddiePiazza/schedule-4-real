@@ -1,7 +1,7 @@
 [
   {
     "id": "5ce7b9e0-f02f-4e7a-bc03-fea12c10080a",
-    "assetFile": "/models/assets/construction/door2.glb",
+    "assetFile": "/data/appdata/models/assets/construction/door2.glb",
     "position": {
       "x": 21.5276,
       "y": -1.8976,
@@ -15,7 +15,7 @@
     },
     "scale": 1.8784,
     "name": "door2",
-    "locked": true,
+    "locked": false,
     "doorTarget": {
       "envId": "big_room"
     },

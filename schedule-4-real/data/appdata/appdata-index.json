@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-20T15:23:37Z",
+  "generated": "2026-02-20T19:19:08Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -393,6 +393,10 @@
       "hash": "bf490fa2dd0244fcd5acc209652596ff",
       "size": 26868
     },
+    "defaults/room-settings.json": {
+      "hash": "167cc66e54fe90dd50806e80f3946c1d",
+      "size": 94
+    },
     "defaults/asset-anim-meta.json": {
       "hash": "ddcb6457bf84b746259fadf04b4d0110",
       "size": 144
@@ -466,36 +470,36 @@
       "size": 15255
     },
     "defaults/room-objects/vr_gallery.json": {
-      "hash": "d751713988987e9331980363e24189ce",
-      "size": 2
+      "hash": "62b06a06d84958f976729819d46368ee",
+      "size": 819
     },
     "defaults/room-objects/vr_room.json": {
-      "hash": "abd2bc8ddd176348c71998d82c072778",
-      "size": 804
+      "hash": "c320092dd3511a6c61715d686dbad488",
+      "size": 817
     },
     "defaults/room-objects/richards_art_gallery.json": {
       "hash": "d751713988987e9331980363e24189ce",
       "size": 2
     },
     "defaults/room-objects/mammoth_structure_062822_copy.json": {
-      "hash": "d751713988987e9331980363e24189ce",
-      "size": 2
+      "hash": "89fd214fbc1c4ea232154a383b526ac1",
+      "size": 829
     },
     "defaults/room-objects/underground.json": {
-      "hash": "2b8f3e9e7590d1e956e6f44841160ca4",
-      "size": 810
+      "hash": "c57efcb32019e9c6994f60f97aa1913e",
+      "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "9751c0dc28a23f6409647375fe6fd753",
-      "size": 120433
+      "hash": "35a4038fee0fcea9f8ccb5a475ab03ed",
+      "size": 121652
     },
     "defaults/room-objects/room_blank.json": {
-      "hash": "0c5fe6eec3c91dc1da6471bb318123a1",
-      "size": 383
+      "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",
+      "size": 827
     },
     "defaults/room-objects/art_gallery.json": {
-      "hash": "1ed906fd7184e7307ddacbec71ff5a06",
-      "size": 774
+      "hash": "9bbecea45a6ac0b6c8558303d3735806",
+      "size": 787
     }
   }
 }

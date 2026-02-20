@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T17:11:16.479Z",
+  "lastCheck": "2026-02-20T19:11:16.484Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.62.0",
-      "installedAt": "2026-02-20T17:19:54Z"
+      "version": "1.62.1",
+      "installedAt": "2026-02-20T19:19:00Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.62.0",
+        "changes": [
+          "Add unified /data/ endpoint for all static asset serving"
+        ]
+      },
       {
         "version": "1.61.0",
         "changes": [
@@ -387,12 +393,6 @@
         "version": "1.40.11",
         "changes": [
           "Fix TV stream stopping seconds after starting due to distance check"
-        ]
-      },
-      {
-        "version": "1.40.10",
-        "changes": [
-          "Reduce IPTV stream buffer from 15s to 6s and pause streams when player is far from TV"
         ]
       }
     ],

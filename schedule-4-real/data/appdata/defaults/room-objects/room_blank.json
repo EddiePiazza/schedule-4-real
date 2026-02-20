@@ -1,7 +1,7 @@
 [
   {
     "id": "514bf040-b575-4c6f-bfb9-c4d60de3b825",
-    "assetFile": "/models/assets/animated/doors/elevator.glb",
+    "assetFile": "/data/appdata/models/assets/animated/doors/elevator.glb",
     "position": {
       "x": 2.5069,
       "y": 0.052,
@@ -15,7 +15,23 @@
     },
     "scale": 0.6724,
     "name": "elevator",
-    "locked": true,
-    "toggleState": true
+    "locked": false,
+    "toggleState": true,
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "portal",
+        "targetRoomId": "big_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": false,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockKeypadId": "",
+        "lockMode": "everyone"
+      }
+    }
   }
 ]

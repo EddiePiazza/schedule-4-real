@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "ff0bab97-bd83-4135-88d2-9f3b7364f7b2",
+    "assetFile": "/data/appdata/models/assets/construction/doors/door_metalic_keypad.glb",
+    "position": {
+      "x": 0.0061,
+      "y": 0.0125,
+      "z": 5.6782
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "w": 0
+    },
+    "scale": 1.127,
+    "name": "door metalic keypad",
+    "locked": true,
+    "behavior": {
+      "type": "door",
+      "config": {
+        "doorType": "portal",
+        "targetRoomId": "big_room",
+        "targetSpawnKey": "",
+        "autoClose": false,
+        "autoCloseDelay": 3000,
+        "disableCollisionWhenOpen": true,
+        "travelAfterAnimation": false,
+        "travelDelay": 500,
+        "requiresUnlock": false,
+        "lockKeypadId": "",
+        "lockMode": "everyone"
+      }
+    }
+  }
+]

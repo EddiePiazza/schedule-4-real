@@ -1,7 +1,7 @@
 [
   {
     "id": "2c156a89-26c4-4191-a62c-38c5108dae6a",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 797.3534,
       "y": 20.3625,
@@ -19,7 +19,7 @@
   },
   {
     "id": "447479e3-1ca7-476b-8286-5f5d5328b6ec",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 792.8452,
       "y": 0.1316,
@@ -37,7 +37,7 @@
   },
   {
     "id": "a97c88fd-cbe5-4a92-99f7-0641701d5e2a",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 795.2125,
       "y": 0.1316,
@@ -55,7 +55,7 @@
   },
   {
     "id": "bde69274-ca83-414a-8db8-b8462e1e7f3f",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 796.2265,
       "y": 0.1316,
@@ -73,7 +73,7 @@
   },
   {
     "id": "4fc49834-66f2-433a-bce9-bc8d53e4cc7d",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 805.0557,
       "y": 20.3591,
@@ -91,7 +91,7 @@
   },
   {
     "id": "ef6ed0d9-77a9-4da5-b8af-9d2ff3331835",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 799.7041,
       "y": 23.1727,
@@ -109,7 +109,7 @@
   },
   {
     "id": "a17522a9-f58b-4d45-9d5d-f7939c3eeff1",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 800.5166,
       "y": 21.224,
@@ -127,7 +127,7 @@
   },
   {
     "id": "7ac9a305-f1cb-4bae-97ad-51ecbe24aeaa",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 799.915,
       "y": 40.1573,
@@ -145,7 +145,7 @@
   },
   {
     "id": "78ea956b-cc2c-4c9a-a5d1-8bd45c1ecf26",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 797.7882,
       "y": 42.078,
@@ -163,7 +163,7 @@
   },
   {
     "id": "fb28b944-237e-498c-9d3f-edb24478a91f",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 798.2053,
       "y": 43.4915,
@@ -181,7 +181,7 @@
   },
   {
     "id": "fe50d075-8da3-4032-bd75-58353054bed3",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 798.7273,
       "y": 42.8124,
@@ -199,7 +199,7 @@
   },
   {
     "id": "1ca3f4df-8344-422d-9fbe-a448f4fbba0c",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 796.2068,
       "y": 60.3627,
@@ -217,7 +217,7 @@
   },
   {
     "id": "6c713607-fc2c-4370-aa86-9c7f3bec3a2c",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 792.3479,
       "y": 61.7336,
@@ -235,7 +235,7 @@
   },
   {
     "id": "dc7be682-3a0b-4ce6-b793-13b22ae305de",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 794.2329,
       "y": 63.8455,
@@ -253,7 +253,7 @@
   },
   {
     "id": "3e7ff5d1-4776-4454-8c8a-d001a2a15d1a",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 790.9822,
       "y": 62.4998,
@@ -271,7 +271,7 @@
   },
   {
     "id": "ec891e0d-9f53-4085-9e76-99d6745aedf9",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 799.7141,
       "y": 77.4573,
@@ -289,7 +289,7 @@
   },
   {
     "id": "8e907ca6-a192-4063-91c1-872694a3d778",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 796.1786,
       "y": 80.2806,
@@ -307,7 +307,7 @@
   },
   {
     "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 795.5642,
       "y": 81.261,
@@ -325,7 +325,7 @@
   },
   {
     "id": "59486e4c-02c3-486c-a134-60fdb9ca25aa",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 797.2826,
       "y": 82.0986,
@@ -343,7 +343,7 @@
   },
   {
     "id": "fd73c997-2e19-41d8-b4dc-dc8b5a8b86ae",
-    "assetFile": "/models/assets/plants/weed_brick_open.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_open.glb",
     "position": {
       "x": 754.1155,
       "y": -1.8474,
@@ -361,7 +361,7 @@
   },
   {
     "id": "b89aff59-1d92-4b99-b1d0-52c8ae6cf000",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 728.03,
       "y": 8.4155,
@@ -379,7 +379,7 @@
   },
   {
     "id": "f11c9ad6-9aed-49bf-a99e-835b37230488",
-    "assetFile": "/models/assets/parafernalia/joint.glb",
+    "assetFile": "/data/appdata/models/assets/parafernalia/joint.glb",
     "position": {
       "x": 412.7598,
       "y": 16.705,
@@ -397,7 +397,7 @@
   },
   {
     "id": "941f72f2-3f5c-4e37-8179-46f07bdcfcf8",
-    "assetFile": "/models/assets/plants/compost_bag.glb",
+    "assetFile": "/data/appdata/models/assets/plants/compost_bag.glb",
     "position": {
       "x": 738.5086,
       "y": -0.9953,
@@ -415,7 +415,7 @@
   },
   {
     "id": "28d524cf-7888-40bf-8d8c-0d3bf9026426",
-    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_in_a_bag.glb",
     "position": {
       "x": 414.5536,
       "y": 15.0544,
@@ -433,7 +433,7 @@
   },
   {
     "id": "3a45e961-97f6-4562-b8fe-432beea62321",
-    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_in_a_bag.glb",
     "position": {
       "x": 401.6282,
       "y": 16.2576,
@@ -451,7 +451,7 @@
   },
   {
     "id": "25e3c933-5eb7-4bd5-ac3f-1a87be8a2702",
-    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_in_a_bag.glb",
     "position": {
       "x": 422.9655,
       "y": 16.2576,
@@ -469,7 +469,7 @@
   },
   {
     "id": "76637be8-8af0-4ff5-b003-65199690544e",
-    "assetFile": "/models/assets/plants/weed_in_a_bag.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_in_a_bag.glb",
     "position": {
       "x": 458.8049,
       "y": 16.2576,
@@ -487,7 +487,7 @@
   },
   {
     "id": "3b2b9942-96e0-4992-a909-ca955ef52846",
-    "assetFile": "/models/assets/parafernalia/joint.glb",
+    "assetFile": "/data/appdata/models/assets/parafernalia/joint.glb",
     "position": {
       "x": 355.579,
       "y": 0.9165,
@@ -505,7 +505,7 @@
   },
   {
     "id": "44985502-8c99-4d56-b6ec-a6c986d2ca96",
-    "assetFile": "/models/assets/plants/weed_brick_2.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
     "position": {
       "x": 435.4386,
       "y": 21.2571,
@@ -523,7 +523,7 @@
   },
   {
     "id": "12365543-4a5f-413a-bcaf-8dbcb1d97acd",
-    "assetFile": "/models/assets/plants/weed_brick_open.glb",
+    "assetFile": "/data/appdata/models/assets/plants/weed_brick_open.glb",
     "position": {
       "x": 428.0249,
       "y": 16.5379,
@@ -541,7 +541,7 @@
   },
   {
     "id": "8e284582-fc82-4f8b-b533-e41a5d27d451",
-    "assetFile": "/models/assets/parafernalia/super_bong_haze.glb",
+    "assetFile": "/data/appdata/models/assets/parafernalia/super_bong_haze.glb",
     "position": {
       "x": 454.3999,
       "y": 16.4,
@@ -559,7 +559,7 @@
   },
   {
     "id": "f3e96d2c-f11f-44fd-8426-40f2280d4616",
-    "assetFile": "/models/assets/parafernalia/super_bong_haze.glb",
+    "assetFile": "/data/appdata/models/assets/parafernalia/super_bong_haze.glb",
     "position": {
       "x": 230.9504,
       "y": 0.6745,
@@ -577,7 +577,7 @@
   },
   {
     "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
-    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
     "position": {
       "x": 681.3363,
       "y": 0.8021,
@@ -595,7 +595,7 @@
   },
   {
     "id": "3f3b1613-7260-4ba1-b2d8-b298c61a7915",
-    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
     "position": {
       "x": 650.1847,
       "y": 0.8021,
@@ -613,7 +613,7 @@
   },
   {
     "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
-    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
     "position": {
       "x": 619.1562,
       "y": 0.8021,
@@ -631,7 +631,7 @@
   },
   {
     "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
-    "assetFile": "/models/assets/plants/cannabis_sativa_plant.glb",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
     "position": {
       "x": 612.1478,
       "y": 1.4186,
@@ -649,7 +649,7 @@
   },
   {
     "id": "3462f252-d701-47d4-a7e2-a9c4749b6fa6",
-    "assetFile": "/models/assets/fourniture/game_ready_light.glb",
+    "assetFile": "/data/appdata/models/assets/fourniture/game_ready_light.glb",
     "position": {
       "x": 640.4202,
       "y": 157.1311,
@@ -667,7 +667,7 @@
   },
   {
     "id": "b91ac89f-d556-4211-814c-cfd5f5f4a707",
-    "assetFile": "/models/assets/fourniture/carpets_from_asia.glb",
+    "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
     "position": {
       "x": 635.8351,
       "y": 0.9654,
@@ -685,7 +685,7 @@
   },
   {
     "id": "aa6d22ea-966f-48f4-bb79-e2e4fe9e0fb0",
-    "assetFile": "/models/assets/keypad_codelock.glb",
+    "assetFile": "/data/appdata/models/assets/keypad_codelock.glb",
     "position": {
       "x": 347.102,
       "y": 74.8209,
@@ -769,7 +769,7 @@
           }
         },
         "config": {
-          "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+          "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
           "fontSize": 0.72,
           "textColor": "#00ff11",
           "backgroundColor": "#000000",
@@ -860,7 +860,7 @@
           "value": "1",
           "label": "1",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -953,7 +953,7 @@
           "value": "3",
           "label": "3",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1046,7 +1046,7 @@
           "value": "2",
           "label": "2",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1139,7 +1139,7 @@
           "value": "4",
           "label": "4",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1232,7 +1232,7 @@
           "value": "5",
           "label": "5",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1325,7 +1325,7 @@
           "value": "A",
           "label": "A",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1418,7 +1418,7 @@
           "value": "6",
           "label": "6",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1511,7 +1511,7 @@
           "value": "b",
           "label": "b",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1604,7 +1604,7 @@
           "value": "C",
           "label": "C",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1697,7 +1697,7 @@
           "value": "e",
           "label": "e",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1790,7 +1790,7 @@
           "value": "d",
           "label": "d",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1883,7 +1883,7 @@
           "value": "f",
           "label": "f",
           "labelConfig": {
-            "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+            "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
             "fontSize": 1,
             "textColor": "#ffffff",
             "backgroundColor": "#000000",
@@ -1927,7 +1927,7 @@
         "action": {
           "type": "door",
           "doorAccessMode": "per-player",
-          "targetId": "/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
+          "targetId": "/data/appdata/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
         }
       }
     },
@@ -2003,7 +2003,7 @@
               }
             },
             "config": {
-              "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+              "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
               "fontSize": 0.72,
               "textColor": "#00ff11",
               "backgroundColor": "#000000",
@@ -2094,7 +2094,7 @@
               "value": "1",
               "label": "1",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2187,7 +2187,7 @@
               "value": "3",
               "label": "3",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2280,7 +2280,7 @@
               "value": "2",
               "label": "2",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2373,7 +2373,7 @@
               "value": "4",
               "label": "4",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2466,7 +2466,7 @@
               "value": "5",
               "label": "5",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2559,7 +2559,7 @@
               "value": "A",
               "label": "A",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2652,7 +2652,7 @@
               "value": "6",
               "label": "6",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2745,7 +2745,7 @@
               "value": "b",
               "label": "b",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2838,7 +2838,7 @@
               "value": "C",
               "label": "C",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -2931,7 +2931,7 @@
               "value": "e",
               "label": "e",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -3024,7 +3024,7 @@
               "value": "d",
               "label": "d",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -3117,7 +3117,7 @@
               "value": "f",
               "label": "f",
               "labelConfig": {
-                "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                 "fontSize": 1,
                 "textColor": "#ffffff",
                 "backgroundColor": "#000000",
@@ -3161,7 +3161,7 @@
             "action": {
               "type": "door",
               "doorAccessMode": "per-player",
-              "targetId": "/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
+              "targetId": "/data/appdata/models/assets/construction/door2.glb|301.5957,69.4863,-50.197"
             }
           }
         }
@@ -3170,7 +3170,7 @@
   },
   {
     "id": "78595326-7c16-4c0e-8eb3-c3069c640003",
-    "assetFile": "/models/assets/construction/door2.glb",
+    "assetFile": "/data/appdata/models/assets/construction/door2.glb",
     "position": {
       "x": 301.5957,
       "y": 69.4863,
@@ -3188,7 +3188,7 @@
     "doorTarget": {
       "envId": "gallery"
     },
-    "keypadLock": "/models/assets/keypad_codelock.glb|347.102,74.8209,-49.4241",
+    "keypadLock": "/data/appdata/models/assets/keypad_codelock.glb|347.102,74.8209,-49.4241",
     "keypadLockMode": "per-player",
     "behavior": {
       "type": "door",
@@ -3209,7 +3209,7 @@
   },
   {
     "id": "003d5397-c97b-4c8b-bc5f-e8559d15d131",
-    "assetFile": "/models/assets/construction/door.glb",
+    "assetFile": "/data/appdata/models/assets/construction/door.glb",
     "position": {
       "x": 675.0653,
       "y": 110.7459,
@@ -3245,7 +3245,7 @@
   },
   {
     "id": "a2359506-cabe-408d-bcc5-756a616c131d",
-    "assetFile": "/models/assets/digital/tv_plasma.glb",
+    "assetFile": "/data/appdata/models/assets/digital/tv_plasma.glb",
     "position": {
       "x": 202.1305,
       "y": 17.7399,
@@ -3269,7 +3269,7 @@
   },
   {
     "id": "acff7f3a-6a6d-49ac-8c99-7015268f2de0",
-    "assetFile": "/models/assets/digital/tv_plasma.glb",
+    "assetFile": "/data/appdata/models/assets/digital/tv_plasma.glb",
     "position": {
       "x": 505.576,
       "y": 26.8241,
@@ -3297,7 +3297,7 @@
   },
   {
     "id": "216415b8-686e-4910-9c7e-d3a8d0f70273",
-    "assetFile": "/models/assets/fourniture/carpets_from_asia.glb",
+    "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
     "position": {
       "x": 282.6529,
       "y": 0.9654,
@@ -3315,7 +3315,7 @@
   },
   {
     "id": "febe4433-735e-4294-b64f-6cbc9baa1776",
-    "assetFile": "/models/assets/fourniture/realistic_blackboard.glb",
+    "assetFile": "/data/appdata/models/assets/fourniture/realistic_blackboard.glb",
     "position": {
       "x": 722.4515,
       "y": 60.4061,
@@ -3413,7 +3413,7 @@
                   "showSeconds": false,
                   "color": "#ffffff",
                   "fontSize": 32,
-                  "fontFamily": "/fonts/Silkscreen-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/Silkscreen-Regular.ttf",
                   "align": "center"
                 }
               },
@@ -3426,7 +3426,7 @@
                 "height": 8.5,
                 "config": {
                   "text": "Temp",
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "fontSize": 24,
                   "color": "#ffffff",
                   "align": "left",
@@ -3467,7 +3467,7 @@
                   "showUnit": true,
                   "fontSize": 22,
                   "titleFontSize": 13,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "valueColor": "#12d370",
                   "labelColor": "",
                   "theme": "default"
@@ -3488,7 +3488,7 @@
                   "showUnit": true,
                   "fontSize": 22,
                   "titleFontSize": 13,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "valueColor": "#12d370",
                   "labelColor": "",
                   "theme": "chalk"
@@ -3507,7 +3507,7 @@
                   "showStatus": true,
                   "fontSize": 24,
                   "titleFontSize": 22,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "gaugeColor": "#06b6d4",
                   "theme": "chalk"
                 }
@@ -3521,7 +3521,7 @@
                 "height": 5.5,
                 "config": {
                   "text": "Humi",
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "fontSize": 24,
                   "color": "#ffffff",
                   "align": "left",
@@ -3559,7 +3559,7 @@
                   "showTriggerSource": true,
                   "fontSize": 20,
                   "titleFontSize": 21,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "onColor": "#4ade80",
                   "offColor": "#f87171",
                   "theme": "chalk"
@@ -3579,7 +3579,7 @@
                   "showWattage": true,
                   "fontSize": 20,
                   "titleFontSize": 14,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "barColor": "#facc15",
                   "theme": "chalk"
                 }
@@ -3596,7 +3596,7 @@
                   "showModeName": true,
                   "showWattage": true,
                   "fontSize": 25,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "onColor": "#52ff91",
                   "offColor": "#a80000",
                   "theme": "chalk"
@@ -3611,7 +3611,7 @@
                 "height": 6,
                 "config": {
                   "text": "AIR VPD",
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "fontSize": 24,
                   "color": "#ffffff",
                   "align": "left",
@@ -3635,7 +3635,7 @@
                   "showUnit": true,
                   "fontSize": 22,
                   "titleFontSize": 13,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "valueColor": "#12d370",
                   "labelColor": "",
                   "theme": "chalk"
@@ -3684,7 +3684,7 @@
                 "height": 7,
                 "config": {
                   "text": "Blower",
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "fontSize": 24,
                   "color": "#ffffff",
                   "align": "left",
@@ -3706,7 +3706,7 @@
                   "showCost": true,
                   "fontSize": 20,
                   "titleFontSize": 20,
-                  "fontFamily": "/fonts/GloriaHallelujah-Regular.ttf",
+                  "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
                   "accentColor": "#4ade80",
                   "theme": "chalk"
                 }
@@ -3719,7 +3719,7 @@
                 "width": 39.5,
                 "height": 44.5,
                 "config": {
-                  "src": "/appdata-display-images/timelapse.mp4",
+                  "src": "/data/appdata/display-images/timelapse.mp4",
                   "srcType": "upload",
                   "fit": "cover",
                   "loop": true,
@@ -3741,7 +3741,7 @@
   },
   {
     "id": "e243ebcc-baf8-4d5d-8f87-69034ca77856",
-    "assetFile": "/models/assets/picture_frame_2.glb",
+    "assetFile": "/data/appdata/models/assets/picture_frame_2.glb",
     "position": {
       "x": 558.0285,
       "y": 68.3029,
@@ -3835,7 +3835,7 @@
                 "width": 100,
                 "height": 100,
                 "config": {
-                  "src": "/appdata-display-images/our-strains-bolo-runtz.jpg",
+                  "src": "/data/appdata/display-images/our-strains-bolo-runtz.jpg",
                   "fit": "cover",
                   "borderRadius": 0,
                   "opacity": 1
@@ -3854,7 +3854,7 @@
   },
   {
     "id": "1b0ed828-6b55-4164-87a7-87fec4813d2e",
-    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "assetFile": "/data/appdata/models/assets/animated/switches/power_switch_1.glb",
     "position": {
       "x": 722.7891,
       "y": 86.2333,
@@ -3886,7 +3886,7 @@
   },
   {
     "id": "26842ab2-ed3f-4931-8430-ca99e0f9b405",
-    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "assetFile": "/data/appdata/models/assets/animated/switches/power_switch_1.glb",
     "position": {
       "x": 722.7896,
       "y": 86.1118,
@@ -3918,7 +3918,7 @@
   },
   {
     "id": "4eb8cdca-b602-4fe1-ab09-cf12cc7b264a",
-    "assetFile": "/models/assets/animated/switches/power_switch_1.glb",
+    "assetFile": "/data/appdata/models/assets/animated/switches/power_switch_1.glb",
     "position": {
       "x": 722.79,
       "y": 86.0663,
@@ -3950,7 +3950,7 @@
   },
   {
     "id": "725caf95-fb3d-4b07-ad6a-868c3236273e",
-    "assetFile": "/models/assets/animated/switches/switch_keypad.glb",
+    "assetFile": "/data/appdata/models/assets/animated/switches/switch_keypad.glb",
     "position": {
       "x": 720.7462,
       "y": 56.7717,
@@ -3985,7 +3985,7 @@
   },
   {
     "id": "e6e24990-f656-4b24-98fa-a732402baec2",
-    "assetFile": "/models/assets/plants/compost_bags.glb",
+    "assetFile": "/data/appdata/models/assets/plants/compost_bags.glb",
     "position": {
       "x": 749.6136,
       "y": 2.658,

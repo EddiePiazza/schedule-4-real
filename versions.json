@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T17:19:54Z",
+  "generatedAt": "2026-02-20T19:19:00Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.62.0",
-      "archive": "s4r-web-1.62.0.tar.gz",
-      "sha256": "fc790718ea22c485bfb9c52ce01bd1093e6db831e53711b8930c1e0c0cbc395a",
-      "size": 10583491,
+      "version": "1.62.1",
+      "archive": "s4r-web-1.62.1.tar.gz",
+      "sha256": "d1c91bf8703fe4c0afb3729a688976239a42e29fca19badbbd0e95d82fb570b4",
+      "size": 10583181,
       "changelog": [
+        {
+          "version": "1.62.1",
+          "changes": [
+            "Fix file route paths and update default room models"
+          ]
+        },
         {
           "version": "1.62.0",
           "changes": [
