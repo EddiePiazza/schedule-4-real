@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T03:21:16.441Z",
+  "lastCheck": "2026-02-20T15:21:16.475Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.60.2",
-      "installedAt": "2026-02-20T03:25:36Z"
+      "version": "1.61.0",
+      "installedAt": "2026-02-20T15:23:29Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.60.2",
+        "changes": [
+          "Fix Tab key not closing inventory and display images not appearing after upload"
+        ]
+      },
       {
         "version": "1.60.1",
         "changes": [
@@ -384,12 +390,6 @@
         "version": "1.40.9",
         "changes": [
           "Fix Firefox keyboard/mouse control, remove dashboard demo data, suppress Weedlix modal on room3d"
-        ]
-      },
-      {
-        "version": "1.40.8",
-        "changes": [
-          "Fix TV broken in windowed mode, hover effects, and Chrome video pausing"
         ]
       }
     ],

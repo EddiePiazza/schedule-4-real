@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T03:25:36Z",
+  "generatedAt": "2026-02-20T15:23:29Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.60.2",
-      "archive": "s4r-web-1.60.2.tar.gz",
-      "sha256": "5cb8a4c390f94051fd08293cf8a2c21908b4a5be75f4e63a40b0ea375ba0768d",
-      "size": 10574190,
+      "version": "1.61.0",
+      "archive": "s4r-web-1.61.0.tar.gz",
+      "sha256": "35faf5478272306acdca11d314824a46b17f7b9a6e052a649042f8bcdac31b1f",
+      "size": 10582306,
       "changelog": [
+        {
+          "version": "1.61.0",
+          "changes": [
+            "Fix lobby room cards on mobile: proper centering, swipe navigation, options overlay on image",
+            "Redesign radial menu for mobile: icon-only layout with tooltip, smaller buttons, tighter radius",
+            "Add mobile touch controls: tappable proximity HUDs, keypad button bar, rotation confirm/cancel, and mobile tool bars for all editor modes",
+            "Collapse mobile TV controls into single icon that expands on tap"
+          ]
+        },
         {
           "version": "1.60.2",
           "changes": [

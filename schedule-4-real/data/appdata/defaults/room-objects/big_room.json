@@ -3965,7 +3965,7 @@
     "scale": 3.6444,
     "name": "switch keypad",
     "locked": false,
-    "toggleState": true,
+    "toggleState": false,
     "deviceBinding": {
       "deviceType": "light",
       "deviceId": "light",
