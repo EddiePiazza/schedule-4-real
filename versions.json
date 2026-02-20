@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T15:23:29Z",
+  "generatedAt": "2026-02-20T17:19:54Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.61.0",
-      "archive": "s4r-web-1.61.0.tar.gz",
-      "sha256": "35faf5478272306acdca11d314824a46b17f7b9a6e052a649042f8bcdac31b1f",
-      "size": 10582306,
+      "version": "1.62.0",
+      "archive": "s4r-web-1.62.0.tar.gz",
+      "sha256": "fc790718ea22c485bfb9c52ce01bd1093e6db831e53711b8930c1e0c0cbc395a",
+      "size": 10583491,
       "changelog": [
+        {
+          "version": "1.62.0",
+          "changes": [
+            "Add unified /data/ endpoint for all static asset serving"
+          ]
+        },
         {
           "version": "1.61.0",
           "changes": [

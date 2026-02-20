@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T15:21:16.475Z",
+  "lastCheck": "2026-02-20T17:11:16.479Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.61.0",
-      "installedAt": "2026-02-20T15:23:29Z"
+      "version": "1.62.0",
+      "installedAt": "2026-02-20T17:19:54Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.61.0",
+        "changes": [
+          "Fix lobby room cards on mobile: proper centering, swipe navigation, options overlay on image",
+          "Redesign radial menu for mobile: icon-only layout with tooltip, smaller buttons, tighter radius",
+          "Add mobile touch controls: tappable proximity HUDs, keypad button bar, rotation confirm/cancel, and mobile tool bars for all editor modes",
+          "Collapse mobile TV controls into single icon that expands on tap"
+        ]
+      },
       {
         "version": "1.60.2",
         "changes": [
@@ -384,12 +393,6 @@
         "version": "1.40.10",
         "changes": [
           "Reduce IPTV stream buffer from 15s to 6s and pause streams when player is far from TV"
-        ]
-      },
-      {
-        "version": "1.40.9",
-        "changes": [
-          "Fix Firefox keyboard/mouse control, remove dashboard demo data, suppress Weedlix modal on room3d"
         ]
       }
     ],
