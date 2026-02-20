@@ -839,7 +839,7 @@
       }
     }
   ],
-  "mode": "cycle",
+  "mode": "single",
   "activePresetId": "default",
   "cyclePresetIds": [
     "default",

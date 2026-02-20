@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T21:22:53Z",
+  "generatedAt": "2026-02-20T22:20:42Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.64.0",
-      "archive": "s4r-web-1.64.0.tar.gz",
-      "sha256": "3f72318831008d11b4598691f21dada13e24a2c2d5fd813ec5d24f3c9a5522df",
-      "size": 10585550,
+      "version": "1.64.1",
+      "archive": "s4r-web-1.64.1.tar.gz",
+      "sha256": "6d161a687a60a0dcce9e5e223b34749e031e93c98ba3a67a46a10d42583aa42c",
+      "size": 10586859,
       "changelog": [
+        {
+          "version": "1.64.1",
+          "changes": [
+            "Throttle CSS filter updates during lighting cycle to reduce compositor overhead",
+            "Fix microphone permission prompt not showing on some domains",
+            "Revert matrix freeze system that caused TV screen misplacement and FPS regression"
+          ]
+        },
         {
           "version": "1.64.0",
           "changes": [

@@ -3264,7 +3264,7 @@
       "widgets": [
         "tv_channel"
       ],
-      "channelUrl": "https://d2jl8r92tdc3f1.cloudfront.net/out/v1/59419700344b4625b7cb0693ba265ea3/TVGindex_1.m3u8"
+      "channelUrl": "https://epiconvh.akamaized.net/live/gubbare/master.m3u8"
     }
   },
   {
@@ -3597,7 +3597,7 @@
                   "showWattage": true,
                   "fontSize": 25,
                   "fontFamily": "/data/appdata/fonts/GloriaHallelujah-Regular.ttf",
-                  "onColor": "#52ff91",
+                  "onColor": "#008531",
                   "offColor": "#a80000",
                   "theme": "chalk"
                 }
@@ -3869,7 +3869,7 @@
     "scale": 0.0576,
     "name": "power switch 1",
     "locked": false,
-    "toggleState": true,
+    "toggleState": false,
     "deviceBinding": {
       "deviceType": "socket",
       "deviceId": "O3",
@@ -3901,7 +3901,7 @@
     "scale": 0.0576,
     "name": "power switch 1",
     "locked": false,
-    "toggleState": false,
+    "toggleState": true,
     "deviceBinding": {
       "deviceType": "socket",
       "deviceId": "O4",
@@ -3933,7 +3933,7 @@
     "scale": 0.0576,
     "name": "power switch 1",
     "locked": false,
-    "toggleState": true,
+    "toggleState": false,
     "deviceBinding": {
       "deviceType": "socket",
       "deviceId": "O5",

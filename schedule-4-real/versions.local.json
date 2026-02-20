@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T21:21:16.453Z",
+  "lastCheck": "2026-02-20T22:11:16.516Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.64.0",
-      "installedAt": "2026-02-20T21:22:53Z"
+      "version": "1.64.1",
+      "installedAt": "2026-02-20T22:20:42Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.64.0",
+        "changes": [
+          "Add voice init error tracking in debug overlay for cross-domain diagnostics",
+          "Add microphone permission indicator in lobby with re-request button"
+        ]
+      },
       {
         "version": "1.63.0",
         "changes": [
@@ -389,15 +396,6 @@
         "version": "1.41.1",
         "changes": [
           "Fix mobile crash by disabling fullscreen API and reducing pixel ratio"
-        ]
-      },
-      {
-        "version": "1.41.0",
-        "changes": [
-          "Fix Firefox Quick Find stealing all key input in room",
-          "Fix mobile crash when entering room in fullscreen mode",
-          "Remove voice chat from invite lobby, keep it room-only",
-          "Add mobile TV control bar with channel/volume buttons"
         ]
       }
     ],

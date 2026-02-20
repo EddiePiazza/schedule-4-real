@@ -6,38 +6,8 @@
     "color": "#60a5fa"
   },
   {
-    "name": "3AW Melbourne",
-    "url": "https://3awlive.akamaized.net/hls/live/2032295/3AW/index.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
-    "name": "ABC 7 Los Angeles C.",
-    "url": "https://content.uplynk.com/channel/ext/2118d9222a87420ab69223af9cfa0a0f/kabc_24x7_news.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
-    "name": "Al Jazeera English",
-    "url": "https://live-hls-web-aje.getaj.net/AJE/01.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
     "name": "Bloomberg US",
     "url": "https://www.bloomberg.com/media-manifest/streams/us.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
-    "name": "CGTN News",
-    "url": "https://news.cgtn.com/resource/live/english/cgtn-news.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
-    "name": "DW News",
-    "url": "https://dwamdstream104.akamaized.net/hls/live/2015525/dwstream104/index.m3u8",
     "category": "News",
     "color": "#60a5fa"
   },
@@ -48,34 +18,10 @@
     "color": "#60a5fa"
   },
   {
-    "name": "France 24 French",
-    "url": "https://live.france24.com/hls/live/2037219/F24_FR_LO_HLS/master.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
-    "name": "NHK World",
-    "url": "https://nhkworld.webcdn.stream.ne.jp/www11/nhkworld-tv/bmcc-vh/1.3m/chunklist.m3u8",
-    "category": "News",
-    "color": "#60a5fa"
-  },
-  {
     "name": "TRT World",
     "url": "https://tv-trtworld.medya.trt.com.tr/master.m3u8",
     "category": "News",
     "color": "#60a5fa"
-  },
-  {
-    "name": "20 Mediaset",
-    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(lb)/index.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "9Gem",
-    "url": "https://9now-livestreams.akamaized.net/hls/live/2008311/gem-syd/master.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
   },
   {
     "name": "9Go!",
@@ -96,44 +42,8 @@
     "color": "#fb923c"
   },
   {
-    "name": "ARTE",
-    "url": "https://artesimulcast.akamaized.net/hls/live/2030993/artelive_de/index.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
     "name": "BBC America",
     "url": "https://bcovlive-a.akamaihd.net/7f5ec16d102f4b5d92e8e27bc95ff424/us-east-1/6240731308001/playlist.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Canale 5",
-    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(C5)/index.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Channel 200",
-    "url": "https://d1jlnqid3sfc6m.cloudfront.net/out/v1/3fc2254c865a457c8d7fbbce227a2aae/index.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Dangal 2",
-    "url": "https://live-dangal2.akamaized.net/liveabr/playlist.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Enterr 10 Bangla [N.",
-    "url": "https://live-bangla.akamaized.net/liveabr/playlist.m3u8",
-    "category": "Entertainment",
-    "color": "#fb923c"
-  },
-  {
-    "name": "Epic TV",
-    "url": "https://epiconvh.akamaized.net/live/epic/master.m3u8",
     "category": "Entertainment",
     "color": "#fb923c"
   },
@@ -146,12 +56,6 @@
   {
     "name": "24 Hour Free Movies",
     "url": "https://d1j2u714xk898n.cloudfront.net/scheduler/scheduleMaster/145.m3u8",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
-    "name": "Abzy Dhakad",
-    "url": "https://d2lk5u59tns74c.cloudfront.net/out/v1/4fe6ab07a13543d6bdb2ec63b3e2df44/index.m3u8",
     "category": "Movies",
     "color": "#a78bfa"
   },
@@ -174,20 +78,8 @@
     "color": "#a78bfa"
   },
   {
-    "name": "Bollywood HD",
-    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-hd/manifest.m3u8",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
     "name": "Box Cinema",
     "url": "https://d3s7x6kmqcnb6b.cloudfront.net/d/distro001a/QK2TKFREGRYXDI8IJGHW/hls3/now,-1m/m.m3u8?ads.vf=kU8ru-Yl4zG",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
-    "name": "Cine 34",
-    "url": "https://live3-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(b6)/index.m3u8",
     "category": "Movies",
     "color": "#a78bfa"
   },
@@ -212,18 +104,6 @@
   {
     "name": "Cinema Hausa",
     "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/cinema-hausa/video.m3u8?ads.vf=v-YPzZubeoG",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
-    "name": "ETV Cinema HD",
-    "url": "https://d1q7j6ha51ro6f.cloudfront.net/v1/master/9d43eacaed199f8d5883927e7aef514a8a08e108/ETV_CINEMA_H264-3_cloud_in/index.m3u8",
-    "category": "Movies",
-    "color": "#a78bfa"
-  },
-  {
-    "name": "Filamchi Bhojpuri",
-    "url": "https://epiconvh.akamaized.net/live/filamchi/master.m3u8",
     "category": "Movies",
     "color": "#a78bfa"
   },
@@ -264,32 +144,8 @@
     "color": "#f472b6"
   },
   {
-    "name": "ETV Music",
-    "url": "https://cc-szivnms4rlah6.akamaized.net/WWBI/Amagi/ETV_Music_IN/playlist.m3u8",
-    "category": "Music",
-    "color": "#f472b6"
-  },
-  {
-    "name": "Fame95 FM",
-    "url": "https://rjr-fame.akamaized.net/hls/live/2033820/RJR_FAME/master.m3u8",
-    "category": "Music",
-    "color": "#f472b6"
-  },
-  {
     "name": "GMTV",
     "url": "https://livechannel.mdc.akamaized.net/stitch/livechannel/1341/master1400000.m3u8;session=live_stream_1341",
-    "category": "Music",
-    "color": "#f472b6"
-  },
-  {
-    "name": "La Bocina Latina",
-    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/la-bocina-latina/master.m3u8?ads.vf=l7gGrGmJwf4",
-    "category": "Music",
-    "color": "#f472b6"
-  },
-  {
-    "name": "Majid Al Mohandis",
-    "url": "https://shls-live-mood-ak.akamaized.net/out/v1/8e2419c6c7494dbba478be025af490ee/index.m3u8",
     "category": "Music",
     "color": "#f472b6"
   },
@@ -384,18 +240,6 @@
     "color": "#4ade80"
   },
   {
-    "name": "L'Equipe",
-    "url": "https://dshn8inoshngm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-gac2i63dmu8b7/LEquipe_FR.m3u8",
-    "category": "Sports",
-    "color": "#4ade80"
-  },
-  {
-    "name": "MMA Junkie",
-    "url": "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/mma-junkie/master.m3u8?ads.vf=h5aUSvZnJu4",
-    "category": "Sports",
-    "color": "#4ade80"
-  },
-  {
     "name": "ABC Entertains",
     "url": "https://c.mjh.nz/abc-me.m3u8",
     "category": "Kids",
@@ -426,24 +270,6 @@
     "color": "#facc15"
   },
   {
-    "name": "Cúla4",
-    "url": "https://d3eq0jseza7fm5.cloudfront.net/tg4_vod_3.m3u8",
-    "category": "Kids",
-    "color": "#facc15"
-  },
-  {
-    "name": "DR Ramasjang",
-    "url": "https://drlive03hls.akamaized.net/hls/live/2014190/drlive03/master.m3u8",
-    "category": "Kids",
-    "color": "#facc15"
-  },
-  {
-    "name": "Gubbare",
-    "url": "https://epiconvh.akamaized.net/live/gubbare/master.m3u8",
-    "category": "Kids",
-    "color": "#facc15"
-  },
-  {
     "name": "KiKA",
     "url": "https://kikageohls.akamaized.net/hls/live/2022693/livetvkika_de/master.m3u8",
     "category": "Kids",
@@ -456,20 +282,8 @@
     "color": "#facc15"
   },
   {
-    "name": "MCN6 Music Channel.",
-    "url": "https://d18fcxaqfnwjhj.cloudfront.net/CDN_Ingest/MCN6_MUSIC.smil/Playlist.m3u8",
-    "category": "Kids",
-    "color": "#facc15"
-  },
-  {
     "name": "Nick Pluto TV",
     "url": "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5ca673e0d0bd6c2689c94ce3livestitch/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2a5108-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&profilesFromStream=true&serverSideAds=false&sid=5730720c-9e54-41d9-b73d-eab8fdac7291",
-    "category": "Kids",
-    "color": "#facc15"
-  },
-  {
-    "name": "NRK Super (1080i)",
-    "url": "https://nrk-live-no.akamaized.net/nrksuper/muxed.m3u8",
     "category": "Kids",
     "color": "#facc15"
   },
@@ -488,12 +302,6 @@
   {
     "name": "Comedia Made in Spa.",
     "url": "https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f1abce155a03d0007718834/master.m3u8?advertisingId=&appName=web&appStoreUrl=&appVersion=DNT&app_name=&architecture=&buildVersion=&deviceDNT=0&deviceId=5f1abce155a03d0007718834&deviceLat=41.1167&deviceLon=1.2500&deviceMake=web&deviceModel=web&deviceType=web&deviceVersion=DNT&includeExtendedEvents=false&marketingRegion=ES&serverSideAds=false&sid=505&terminate=false&userId=",
-    "category": "Comedy",
-    "color": "#ef4444"
-  },
-  {
-    "name": "ETV Comedy",
-    "url": "https://cc-wie8j8y69d2uy.akamaized.net/WWBI/Amagi/ETV_Comedy_IN/playlist.m3u8",
     "category": "Comedy",
     "color": "#ef4444"
   },
@@ -534,20 +342,8 @@
     "color": "#ef4444"
   },
   {
-    "name": "Pluto TV Series Com.",
-    "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f9853138d19af0007104a8d/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&is_lat=1&platform=web&rdid=channel&tags=ROKU_CONTENT_TAGS",
-    "category": "Comedy",
-    "color": "#ef4444"
-  },
-  {
     "name": "Pluto TV Vaya seman.",
     "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f28009b150b2500077766b8/master.m3u8?advertisingId=channel&appName=rokuchannel&appVersion=1.0&bmodel=bm1&content=channel&content_rating=ROKU_ADS_CONTENT_RATING&content_type=livefeed&coppa=false&deviceDNT=1&deviceId=channel&deviceMake=rokuChannel&deviceModel=web&deviceType=rokuChannel&deviceVersion=1.0&embedPartner=rokuChannel&is_lat=1&platform=web&rdid=channel&tags=ROKU_CONTENT_TAGS",
-    "category": "Comedy",
-    "color": "#ef4444"
-  },
-  {
-    "name": "Scherzi e risate It.",
-    "url": "https://stitcher-ipv4.pluto.tv/v1/stitch/embed/hls/channel/609404b0a8ec810007d8de9d/master.m3u8?advertisingId={PSID}&appVersion=unknown&deviceDNT={TARGETOPT}&deviceId={PSID}&deviceLat=0&deviceLon=0&deviceMake=samsung&deviceModel=samsung&deviceType=samsung-tvplus&deviceVersion=unknown&embedPartner=samsung-tvplus&profileFloor=&profileLimit=&samsung_app_domain={APP_DOMAIN}&samsung_app_name={APP_NAME}&us_privacy=1YNY",
     "category": "Comedy",
     "color": "#ef4444"
   },
@@ -570,18 +366,6 @@
     "color": "#94a3b8"
   },
   {
-    "name": "3sat",
-    "url": "https://zdf-hls-18.akamaized.net/hls/live/2016501/dach/high/master.m3u8",
-    "category": "General",
-    "color": "#94a3b8"
-  },
-  {
-    "name": "A Punt",
-    "url": "https://bcovlive-a.akamaihd.net/8499d938ef904e39b58a4adec2ddeada/eu-west-1/6057955885001/playlist_dvr.m3u8",
-    "category": "General",
-    "color": "#94a3b8"
-  },
-  {
     "name": "ABC 13 Las Vegas NV.",
     "url": "https://content.uplynk.com/channel/39919d3f7a074eefa8bf579214e952f9.m3u8",
     "category": "General",
@@ -600,12 +384,6 @@
     "color": "#94a3b8"
   },
   {
-    "name": "ABC 5",
-    "url": "https://d3svnrf3rmq619.cloudfront.net/krgv-live/smil:krgv-live.smil/playlist.m3u8",
-    "category": "General",
-    "color": "#94a3b8"
-  },
-  {
     "name": "ABC 7 Denver CO (KM.",
     "url": "https://content.uplynk.com/channel/64ca339f04964a5e961c3207a7771bf1.m3u8",
     "category": "General",
@@ -620,12 +398,6 @@
   {
     "name": "Mux Big Buck Bunny",
     "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-    "category": "Test",
-    "color": "#06b6d4"
-  },
-  {
-    "name": "Mux Sintel",
-    "url": "https://test-streams.mux.dev/sintel/index.m3u8",
     "category": "Test",
     "color": "#06b6d4"
   },

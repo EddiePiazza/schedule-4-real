@@ -1268,7 +1268,7 @@
     "category": "animated / switches",
     "animType": "toggle",
     "defaultToggleState": false,
-    "onIsEnd": true,
+    "onIsEnd": false,
     "isDoor": false,
     "animRange": "full"
   },

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-20T21:23:01Z",
+  "generated": "2026-02-20T22:20:50Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -390,16 +390,16 @@
       "size": 54232
     },
     "defaults/tv-channels.json": {
-      "hash": "7141eaef2b48e9209776182f4f007dc0",
-      "size": 25628
+      "hash": "0106dc713b87ed5c6695fa4e2ddfd501",
+      "size": 18067
     },
     "defaults/room-settings.json": {
       "hash": "167cc66e54fe90dd50806e80f3946c1d",
       "size": 94
     },
     "defaults/asset-anim-meta.json": {
-      "hash": "ddcb6457bf84b746259fadf04b4d0110",
-      "size": 144
+      "hash": "55bd8a458b30db16aaf74913eb01f338",
+      "size": 145
     },
     "defaults/asset-scales.json": {
       "hash": "47e407ba313cb87adab733238591db8e",
@@ -430,8 +430,8 @@
       "size": 2
     },
     "defaults/asset-meta.json": {
-      "hash": "2113a5e1ff40859953e007e5ca5b51af",
-      "size": 39745
+      "hash": "d5fb67b7eb2ee441982dd9257c853a40",
+      "size": 39746
     },
     "defaults/room-spawns.json": {
       "hash": "aef72378084cca086951ee9e4e0e52af",
@@ -454,8 +454,8 @@
       "size": 11221
     },
     "defaults/room-lighting/big_room.json": {
-      "hash": "99baacf8c0c84e9632b9f9d81d6f4baa",
-      "size": 19780
+      "hash": "6eb6dfdd148d9667ca931783d34b85a4",
+      "size": 19781
     },
     "defaults/room-lighting/gallery.json": {
       "hash": "d5e35aad6149e5b000b405e6e568dba0",
@@ -490,8 +490,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "b896587de3ed67462a9743bad477e3ca",
-      "size": 121617
+      "hash": "8b793ea87a796114568f46dabf0a4bb5",
+      "size": 121580
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",
