@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T19:11:16.484Z",
+  "lastCheck": "2026-02-20T20:01:16.446Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.62.1",
-      "installedAt": "2026-02-20T19:19:00Z"
+      "version": "1.63.0",
+      "installedAt": "2026-02-20T20:02:11Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.62.1",
+        "changes": [
+          "Fix file route paths and update default room models"
+        ]
+      },
       {
         "version": "1.62.0",
         "changes": [
@@ -387,12 +393,6 @@
         "version": "1.40.12",
         "changes": [
           "Fix TV stream pausing before player walks to TV"
-        ]
-      },
-      {
-        "version": "1.40.11",
-        "changes": [
-          "Fix TV stream stopping seconds after starting due to distance check"
         ]
       }
     ],

@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T19:19:00Z",
+  "generatedAt": "2026-02-20T20:02:11Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.62.1",
-      "archive": "s4r-web-1.62.1.tar.gz",
-      "sha256": "d1c91bf8703fe4c0afb3729a688976239a42e29fca19badbbd0e95d82fb570b4",
-      "size": 10583181,
+      "version": "1.63.0",
+      "archive": "s4r-web-1.63.0.tar.gz",
+      "sha256": "d0a0262f719f833845a015305ad2c01e35a9af7d11786886ace57e6424f71d73",
+      "size": 10582727,
       "changelog": [
+        {
+          "version": "1.63.0",
+          "changes": [
+            "Fix unified /data/ route not serving files correctly",
+            "Add debug overlay setting in Graphics tab (Off / FPS / Full)",
+            "Remove confusing capacity number from public room list and sort favorites first",
+            "Fix pointer lock SecurityError and compileAsync crash during room transitions",
+            "Fix TV mute button indistinguishable from volume, reduce default TV volume",
+            "Add voice chat debug overlay for cross-domain diagnostics"
+          ]
+        },
         {
           "version": "1.62.1",
           "changes": [
