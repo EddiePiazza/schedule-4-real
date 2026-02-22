@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T02:01:17.434Z",
+  "lastCheck": "2026-02-22T04:01:17.433Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.65.1",
-      "installedAt": "2026-02-22T02:05:31Z"
+      "version": "1.66.0",
+      "installedAt": "2026-02-22T04:03:43Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.12.2",
-      "installedAt": "2026-02-19T21:36:55Z"
+      "version": "1.13.0",
+      "installedAt": "2026-02-22T04:03:43Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.65.1",
+        "changes": [
+          "Fix CORS and public IP leak on peer discovery by using server-side proxy"
+        ]
+      },
       {
         "version": "1.65.0",
         "changes": [
@@ -404,13 +410,6 @@
         "version": "1.42.1",
         "changes": [
           "Fix TV pausing when walking away and improve mobile stream quality"
-        ]
-      },
-      {
-        "version": "1.42.0",
-        "changes": [
-          "Redesign lobby with video background, remove platform, fade carousel transitions, and mobile swipe",
-          "Fix skybox seam line with GLSL 300 textureGrad shader"
         ]
       }
     ],

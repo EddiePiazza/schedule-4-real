@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T02:05:31Z",
+  "generatedAt": "2026-02-22T04:03:43Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.65.1",
-      "archive": "s4r-web-1.65.1.tar.gz",
-      "sha256": "ab42ab7a591b0f282978c6ec72e003e1e2b32a7ff6efc513fe4283336c3dcc1c",
-      "size": 10664488,
+      "version": "1.66.0",
+      "archive": "s4r-web-1.66.0.tar.gz",
+      "sha256": "e77f33e7bcf469c9210b9e4cd48b94112a0145da9e528a7109f4647d53667322",
+      "size": 10665385,
       "changelog": [
+        {
+          "version": "1.66.0",
+          "changes": [
+            "Add latency-based relay selection for faster circuit routing"
+          ]
+        },
         {
           "version": "1.65.1",
           "changes": [
@@ -1287,11 +1293,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.12.2",
-      "archive": "s4r-supervisor-1.12.2.tar.gz",
-      "sha256": "e403b5a07dcdfacab1819f0dee418005ed640494b9726712ac2ed8861b581931",
-      "size": 33697,
+      "version": "1.13.0",
+      "archive": "s4r-supervisor-1.13.0.tar.gz",
+      "sha256": "279bb74d8a4b8cc246fa75bc28a26a8958b87244aaee2e928c4f0653c8dccb48",
+      "size": 33689,
       "changelog": [
+        {
+          "version": "1.13.0",
+          "changes": [
+            "Add relay-to-relay RTT measurement in gossip protocol"
+          ]
+        },
         {
           "version": "1.12.2",
           "changes": [

@@ -291,6 +291,7 @@ function fetchPeersFrom(peerUrl) {
     const mod = httpUrl.startsWith('https:') ? https : http
 
     const MAX_BODY = 256 * 1024 // 256KB max for peer list response
+    const startTime = Date.now()
 
     const req = mod.get(httpUrl, { timeout: REQUEST_TIMEOUT_MS }, (res) => {
       let body = ''
@@ -315,6 +316,7 @@ function fetchPeersFrom(peerUrl) {
           if (peer) {
             peer.lastSeen = Date.now()
             peer.failures = isSeedNode(peerUrl) ? 0 : Math.max(0, peer.failures - 1)
+            peer.rtt = Date.now() - startTime
           }
 
           resolve(remotePeers)
