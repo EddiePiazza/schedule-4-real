@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T01:45:32Z",
+  "generatedAt": "2026-02-22T02:05:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.65.0",
-      "archive": "s4r-web-1.65.0.tar.gz",
-      "sha256": "4deea6c3bf1a2daab16bf79b7955dd82048cce098b0c4acd449d9b0f8b8cd936",
-      "size": 10663651,
+      "version": "1.65.1",
+      "archive": "s4r-web-1.65.1.tar.gz",
+      "sha256": "ab42ab7a591b0f282978c6ec72e003e1e2b32a7ff6efc513fe4283336c3dcc1c",
+      "size": 10664488,
       "changelog": [
+        {
+          "version": "1.65.1",
+          "changes": [
+            "Fix CORS and public IP leak on peer discovery by using server-side proxy"
+          ]
+        },
         {
           "version": "1.65.0",
           "changes": [

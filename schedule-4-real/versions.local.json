@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T01:41:17.433Z",
+  "lastCheck": "2026-02-22T02:01:17.434Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.65.0",
-      "installedAt": "2026-02-22T01:45:32Z"
+      "version": "1.65.1",
+      "installedAt": "2026-02-22T02:05:31Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,21 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.65.0",
+        "changes": [
+          "Fix Cycle mode showing wrong execution times, durations and defaults for blower, fan and sockets",
+          "Add corrugated accordion ridges to ducting tubes with perpendicular ring texture",
+          "Redesign grow tent with D-shaped door, cloth physics, zipper sound, and configurable vents",
+          "Fix remote room loading local config instead of remote room state for guests",
+          "Redesign privacy info modal with Simple and Experts tabs",
+          "Add all relay endpoints to proxy configs and CORS warning in install guide",
+          "Add resilient relay discovery with automatic failover and latency-based sorting",
+          "Add reversed audio playback support for closing sounds",
+          "Fix CORS error on public room discovery by using server-side relay proxy",
+          "Fix grow tent door open/close state not persisting across room re-entry"
+        ]
+      },
       {
         "version": "1.64.2",
         "changes": [
@@ -396,12 +411,6 @@
         "changes": [
           "Redesign lobby with video background, remove platform, fade carousel transitions, and mobile swipe",
           "Fix skybox seam line with GLSL 300 textureGrad shader"
-        ]
-      },
-      {
-        "version": "1.41.3",
-        "changes": [
-          "Fix mobile GPU crash with dynamic pixel ratio cap and WebGL context recovery"
         ]
       }
     ],
