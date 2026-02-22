@@ -28,6 +28,8 @@ const circuitSessions = new Map()
 const federatedRooms = new Map()
 
 let cleanupTimer = null
+// Push callback: (circuitIdBuf, payload) => void — set by relay to route through sendToCircuit
+let circuitPushFn = null
 
 // ── Configuration ────────────────────────────────────────────────
 function configure(opts) {
@@ -233,21 +235,29 @@ function handleIntroduce(data) {
     return Buffer.from([MSG_RESPONSE, 0x00])
   }
 
-  // Build INTRODUCE_DATA (0x45) to forward to host's circuit
-  // Layout: circuitId(4) + type(1) + cookie(20) + relayUrlLen(2 BE) + relayUrl
+  // Build INTRODUCE_DATA (0x45) payload for host's circuit
+  // Payload: cookie(20) + relayUrlLen(2 BE) + relayUrl
   const relayUrlLenBuf = Buffer.alloc(2)
   relayUrlLenBuf.writeUInt16BE(relayUrlLen, 0)
 
-  const introData = Buffer.concat([
-    session.circuitId,
-    Buffer.from([MSG_INTRO_DATA]),
-    cookie,
-    relayUrlLenBuf,
-    relayUrl,
-  ])
+  const pushPayload = Buffer.concat([cookie, relayUrlLenBuf, relayUrl])
+
+  // Build proper message envelope: type(1) + nextHopLen(1=0) + payloadLen(2) + payload
+  const introMsg = Buffer.alloc(4 + pushPayload.length)
+  introMsg[0] = MSG_INTRO_DATA
+  introMsg[1] = 0 // no next hop
+  introMsg.writeUInt16BE(pushPayload.length, 2)
+  pushPayload.copy(introMsg, 4)
 
   try {
-    session.ws.send(introData)
+    if (circuitPushFn) {
+      // Co-hosted: push through circuit encryption
+      circuitPushFn(session.circuitId, introMsg)
+    } else {
+      // Legacy: raw WS send (for non-co-hosted trackers)
+      const withCircuit = Buffer.concat([session.circuitId, introMsg])
+      session.ws.send(withCircuit)
+    }
     return Buffer.from([MSG_RESPONSE, 0x01])
   } catch {
     circuitSessions.delete(roomId)
@@ -378,10 +388,19 @@ function cleanupExpiredRooms() {
   }
 }
 
+/**
+ * Set a callback for pushing messages through circuit encryption.
+ * @param {(circuitIdBuf: Buffer, payload: Buffer) => void} fn
+ */
+function setCircuitPush(fn) {
+  circuitPushFn = fn
+}
+
 module.exports = {
   configure,
   handleTrackerMessage,
   pushToCircuit,
+  setCircuitPush,
   listPublicRooms,
   setFederatedRooms,
   roomCount,

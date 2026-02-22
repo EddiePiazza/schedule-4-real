@@ -60,7 +60,8 @@
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
     "terser": "^5.46.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.2.5"
   },
   "engines": {
     "node": ">=22.0.0"

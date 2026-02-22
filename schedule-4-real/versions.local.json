@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-20T22:11:16.516Z",
+  "lastCheck": "2026-02-22T01:41:17.433Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.64.1",
-      "installedAt": "2026-02-20T22:20:42Z"
+      "version": "1.65.0",
+      "installedAt": "2026-02-22T01:45:32Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,24 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.64.2",
+        "changes": [
+          "Fix event log widget layout misalignment on display zone screens",
+          "Fix lighting presets not matching editor values during cycle transitions",
+          "Fix microphone permission prompt not showing on /join/ pages and improve denied state handling",
+          "Fix real-time sensor data not updating on TV screens and dashboard widgets",
+          "Fix TV remote control not appearing, channel shuffle breaking on removal, and default config not loading"
+        ]
+      },
+      {
+        "version": "1.64.1",
+        "changes": [
+          "Throttle CSS filter updates during lighting cycle to reduce compositor overhead",
+          "Fix microphone permission prompt not showing on some domains",
+          "Revert matrix freeze system that caused TV screen misplacement and FPS regression"
+        ]
+      },
       {
         "version": "1.64.0",
         "changes": [
@@ -384,18 +402,6 @@
         "version": "1.41.3",
         "changes": [
           "Fix mobile GPU crash with dynamic pixel ratio cap and WebGL context recovery"
-        ]
-      },
-      {
-        "version": "1.41.2",
-        "changes": [
-          "Fix mobile crash caused by per-frame memory allocations during movement"
-        ]
-      },
-      {
-        "version": "1.41.1",
-        "changes": [
-          "Fix mobile crash by disabling fullscreen API and reducing pixel ratio"
         ]
       }
     ],

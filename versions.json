@@ -1,14 +1,39 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-20T22:20:42Z",
+  "generatedAt": "2026-02-22T01:45:32Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.64.1",
-      "archive": "s4r-web-1.64.1.tar.gz",
-      "sha256": "6d161a687a60a0dcce9e5e223b34749e031e93c98ba3a67a46a10d42583aa42c",
-      "size": 10586859,
+      "version": "1.65.0",
+      "archive": "s4r-web-1.65.0.tar.gz",
+      "sha256": "4deea6c3bf1a2daab16bf79b7955dd82048cce098b0c4acd449d9b0f8b8cd936",
+      "size": 10663651,
       "changelog": [
+        {
+          "version": "1.65.0",
+          "changes": [
+            "Fix Cycle mode showing wrong execution times, durations and defaults for blower, fan and sockets",
+            "Add corrugated accordion ridges to ducting tubes with perpendicular ring texture",
+            "Redesign grow tent with D-shaped door, cloth physics, zipper sound, and configurable vents",
+            "Fix remote room loading local config instead of remote room state for guests",
+            "Redesign privacy info modal with Simple and Experts tabs",
+            "Add all relay endpoints to proxy configs and CORS warning in install guide",
+            "Add resilient relay discovery with automatic failover and latency-based sorting",
+            "Add reversed audio playback support for closing sounds",
+            "Fix CORS error on public room discovery by using server-side relay proxy",
+            "Fix grow tent door open/close state not persisting across room re-entry"
+          ]
+        },
+        {
+          "version": "1.64.2",
+          "changes": [
+            "Fix event log widget layout misalignment on display zone screens",
+            "Fix lighting presets not matching editor values during cycle transitions",
+            "Fix microphone permission prompt not showing on /join/ pages and improve denied state handling",
+            "Fix real-time sensor data not updating on TV screens and dashboard widgets",
+            "Fix TV remote control not appearing, channel shuffle breaking on removal, and default config not loading"
+          ]
+        },
         {
           "version": "1.64.1",
           "changes": [

@@ -1,1 +1,0 @@
-const r=[".custom-scrollbar[data-v-2c69e695]::-webkit-scrollbar{width:6px}.custom-scrollbar[data-v-2c69e695]::-webkit-scrollbar-track{background:transparent}.custom-scrollbar[data-v-2c69e695]::-webkit-scrollbar-thumb{background:#ffffff1a;border-radius:3px}.custom-scrollbar[data-v-2c69e695]::-webkit-scrollbar-thumb:hover{background:#fff3}"];export{r as default};

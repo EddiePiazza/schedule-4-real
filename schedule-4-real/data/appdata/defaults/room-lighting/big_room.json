@@ -1,351 +1,6 @@
 {
   "presets": [
     {
-      "id": "default",
-      "name": "Default - Day",
-      "lights": [
-        {
-          "id": "ambient",
-          "type": "ambient",
-          "name": "Ambient",
-          "enabled": true,
-          "color": "#ffc800",
-          "intensity": 0.24
-        },
-        {
-          "id": "hemi",
-          "type": "hemisphere",
-          "name": "Hemisphere",
-          "enabled": true,
-          "color": "#ffa852",
-          "intensity": 0.88,
-          "groundColor": "#ffffff"
-        },
-        {
-          "id": "key",
-          "type": "directional",
-          "name": "Key Light",
-          "enabled": true,
-          "color": "#fff5eb",
-          "intensity": 0.55,
-          "position": {
-            "x": -19.4,
-            "y": 34,
-            "z": 604.4
-          }
-        },
-        {
-          "id": "fill_dir",
-          "type": "directional",
-          "name": "Fill Light",
-          "enabled": true,
-          "color": "#ffdbdb",
-          "intensity": 0.6,
-          "position": {
-            "x": -8,
-            "y": 15,
-            "z": -5
-          }
-        },
-        {
-          "id": "fill1",
-          "type": "point",
-          "name": "Fill 1",
-          "enabled": true,
-          "color": "#ffdcad",
-          "intensity": 457.88,
-          "distance": 1155,
-          "position": {
-            "x": 315.9,
-            "y": 73,
-            "z": -434.2
-          },
-          "decay": 1
-        },
-        {
-          "id": "fill2",
-          "type": "point",
-          "name": "Fill 2",
-          "enabled": true,
-          "color": "#fffdfa",
-          "intensity": 695.97,
-          "distance": 1495,
-          "position": {
-            "x": 505.6,
-            "y": 48.5,
-            "z": -434.2
-          },
-          "decay": 1
-        },
-        {
-          "id": "fill3",
-          "type": "point",
-          "name": "Fill 3",
-          "enabled": true,
-          "color": "#fef6ec",
-          "intensity": 219.78,
-          "distance": 1251.8065795898438,
-          "position": {
-            "x": 658,
-            "y": 65,
-            "z": -517.4
-          },
-          "decay": 0.7
-        }
-      ],
-      "skyRotation": 90,
-      "exposure": 1,
-      "filters": {
-        "brightness": 1.03,
-        "contrast": 1.02,
-        "saturation": 2.19,
-        "warmth": 27,
-        "highlights": 3,
-        "vibrance": -1,
-        "tint": 22
-      },
-      "cycleWeight": 4,
-      "sceneFilters": {
-        "brightness": 1.04,
-        "contrast": 1,
-        "saturation": 1,
-        "warmth": 0,
-        "highlights": -22,
-        "shadows": -21,
-        "whites": -7,
-        "blacks": 11
-      }
-    },
-    {
-      "id": "preset_1771215383523",
-      "name": "Default - evening",
-      "lights": [
-        {
-          "id": "ambient",
-          "type": "ambient",
-          "name": "Ambient",
-          "enabled": true,
-          "color": "#ffea00",
-          "intensity": 0.13
-        },
-        {
-          "id": "hemi",
-          "type": "hemisphere",
-          "name": "Hemisphere",
-          "enabled": true,
-          "color": "#ffa852",
-          "intensity": 0.13,
-          "groundColor": "#ffffff"
-        },
-        {
-          "id": "key",
-          "type": "directional",
-          "name": "Key Light",
-          "enabled": true,
-          "color": "#fff5eb",
-          "intensity": 0.55,
-          "position": {
-            "x": -19.4,
-            "y": 34,
-            "z": 604.4
-          }
-        },
-        {
-          "id": "fill_dir",
-          "type": "directional",
-          "name": "Fill Light",
-          "enabled": true,
-          "color": "#ffdbdb",
-          "intensity": 0.6,
-          "position": {
-            "x": -8,
-            "y": 15,
-            "z": -5
-          }
-        },
-        {
-          "id": "fill1",
-          "type": "point",
-          "name": "Fill 1",
-          "enabled": true,
-          "color": "#ff9100",
-          "intensity": 457.88,
-          "distance": 1155,
-          "position": {
-            "x": 315.9,
-            "y": 73,
-            "z": -434.2
-          },
-          "decay": 1
-        },
-        {
-          "id": "fill2",
-          "type": "point",
-          "name": "Fill 2",
-          "enabled": true,
-          "color": "#debb87",
-          "intensity": 439.56,
-          "distance": 1375,
-          "position": {
-            "x": 505.6,
-            "y": 48.5,
-            "z": -434.2
-          },
-          "decay": 0.9
-        },
-        {
-          "id": "fill3",
-          "type": "point",
-          "name": "Fill 3",
-          "enabled": true,
-          "color": "#feead2",
-          "intensity": 54.95,
-          "distance": 1251.8065795898438,
-          "position": {
-            "x": 658,
-            "y": 65,
-            "z": -517.4
-          },
-          "decay": 0.7
-        }
-      ],
-      "skyRotation": 90,
-      "exposure": 1,
-      "filters": {
-        "brightness": 0.75,
-        "contrast": 1.02,
-        "saturation": 2.19,
-        "warmth": 27,
-        "highlights": 3,
-        "vibrance": -1,
-        "tint": 22
-      },
-      "cycleWeight": 1,
-      "sceneFilters": {
-        "brightness": 1,
-        "contrast": 1,
-        "saturation": 1,
-        "warmth": 0
-      }
-    },
-    {
-      "id": "preset_1770865600171",
-      "name": "Default - sunset",
-      "lights": [
-        {
-          "id": "ambient",
-          "type": "ambient",
-          "name": "Ambient",
-          "enabled": true,
-          "color": "#fffcdb",
-          "intensity": 0.75
-        },
-        {
-          "id": "hemi",
-          "type": "hemisphere",
-          "name": "Hemisphere",
-          "enabled": true,
-          "color": "#ffa852",
-          "intensity": 0.79,
-          "groundColor": "#fe3939"
-        },
-        {
-          "id": "key",
-          "type": "directional",
-          "name": "Key Light",
-          "enabled": true,
-          "color": "#fff5eb",
-          "intensity": 0.55,
-          "position": {
-            "x": -19.4,
-            "y": 34,
-            "z": 604.4
-          }
-        },
-        {
-          "id": "fill_dir",
-          "type": "directional",
-          "name": "Fill Light",
-          "enabled": true,
-          "color": "#ffdbdb",
-          "intensity": 0.6,
-          "position": {
-            "x": -8,
-            "y": 15,
-            "z": -5
-          }
-        },
-        {
-          "id": "fill1",
-          "type": "point",
-          "name": "Fill 1",
-          "enabled": true,
-          "color": "#ff9100",
-          "intensity": 1611.72,
-          "distance": 1155,
-          "position": {
-            "x": 315.9,
-            "y": 73,
-            "z": -434.2
-          },
-          "decay": 1
-        },
-        {
-          "id": "fill2",
-          "type": "point",
-          "name": "Fill 2",
-          "enabled": true,
-          "color": "#ff9900",
-          "intensity": 1025.64,
-          "distance": 1495,
-          "position": {
-            "x": 505.6,
-            "y": 48.5,
-            "z": -434.2
-          },
-          "decay": 1
-        },
-        {
-          "id": "fill3",
-          "type": "point",
-          "name": "Fill 3",
-          "enabled": true,
-          "color": "#ffaf4d",
-          "intensity": 311.36,
-          "distance": 1251.8065795898438,
-          "position": {
-            "x": 658,
-            "y": 65,
-            "z": -517.4
-          },
-          "decay": 0.7
-        }
-      ],
-      "skyRotation": 90,
-      "exposure": 0.85,
-      "filters": {
-        "brightness": 2.22,
-        "contrast": 1.74,
-        "saturation": 1.46,
-        "warmth": 100,
-        "highlights": -45,
-        "vibrance": -100,
-        "tint": 0,
-        "whites": -26,
-        "blacks": 0
-      },
-      "cycleWeight": 1,
-      "sceneFilters": {
-        "brightness": 1,
-        "contrast": 1.03,
-        "saturation": 1,
-        "warmth": 0,
-        "shadows": -60,
-        "whites": -32,
-        "blacks": 14
-      }
-    },
-    {
       "id": "preset_1770601614046",
       "name": "Default - Night",
       "lights": [
@@ -600,7 +255,123 @@
         "vibrance": -2,
         "tint": 31
       },
-      "cycleWeight": 4,
+      "cycleWeight": 2,
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1,
+        "saturation": 1,
+        "warmth": 100,
+        "vibrance": 100
+      }
+    },
+    {
+      "id": "preset_1771634616395",
+      "name": "Default - Night transitionning",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#d7c2ff",
+          "intensity": 2.49
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffeedd",
+          "intensity": 2.58,
+          "groundColor": "#8899aa"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff8f0",
+          "intensity": 1.5,
+          "position": {
+            "x": 207.2,
+            "y": 307,
+            "z": 266
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#e8f0ff",
+          "intensity": 2.31,
+          "position": {
+            "x": 464.2,
+            "y": 307,
+            "z": 9.1
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 5000,
+          "distance": 565,
+          "position": {
+            "x": 453.1,
+            "y": 104,
+            "z": -110.4
+          },
+          "decay": 1.7
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 146.52,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 665.4291458129883,
+            "y": 161.52391261211042,
+            "z": -167.97532653808594
+          },
+          "decay": 1.1
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 0,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 333.8,
+            "y": 161.52391261211042,
+            "z": -418.9
+          },
+          "decay": 1.1
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 0.14,
+      "filters": {
+        "brightness": 0.77,
+        "contrast": 1.19,
+        "saturation": 1.55,
+        "warmth": -100,
+        "highlights": -95,
+        "shadows": -63,
+        "whites": 6,
+        "blacks": 0,
+        "vibrance": -2,
+        "tint": 31
+      },
+      "cycleWeight": 1,
       "sceneFilters": {
         "brightness": 1,
         "contrast": 1,
@@ -722,8 +493,123 @@
       }
     },
     {
-      "id": "preset_1771215181070",
-      "name": "Default - sunset Copy",
+      "id": "preset_1771633181771",
+      "name": "Default - Sunrise",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#ffea00",
+          "intensity": 0.13
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffa852",
+          "intensity": 0.13,
+          "groundColor": "#ffffff"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff5eb",
+          "intensity": 0.55,
+          "position": {
+            "x": -19.4,
+            "y": 34,
+            "z": 604.4
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#ffdbdb",
+          "intensity": 0.6,
+          "position": {
+            "x": -8,
+            "y": 15,
+            "z": -5
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#ff9100",
+          "intensity": 457.88,
+          "distance": 1155,
+          "position": {
+            "x": 315.9,
+            "y": 73,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#debb87",
+          "intensity": 439.56,
+          "distance": 1375,
+          "position": {
+            "x": 505.6,
+            "y": 48.5,
+            "z": -434.2
+          },
+          "decay": 0.9
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#feead2",
+          "intensity": 54.95,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 658,
+            "y": 65,
+            "z": -517.4
+          },
+          "decay": 0.7
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 1,
+      "filters": {
+        "brightness": 0.38,
+        "contrast": 1.04,
+        "saturation": 1.74,
+        "warmth": 100,
+        "highlights": -7,
+        "vibrance": -100,
+        "tint": 1,
+        "shadows": -32,
+        "whites": -22,
+        "blacks": 0
+      },
+      "cycleWeight": 1,
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1,
+        "saturation": 1,
+        "warmth": 0
+      }
+    },
+    {
+      "id": "preset_1770865600171",
+      "name": "Default - Sunrise 2",
       "lights": [
         {
           "id": "ambient",
@@ -731,7 +617,7 @@
           "name": "Ambient",
           "enabled": true,
           "color": "#fffcdb",
-          "intensity": 0.75
+          "intensity": 0.86
         },
         {
           "id": "hemi",
@@ -837,17 +723,484 @@
         "whites": -32,
         "blacks": 14
       }
+    },
+    {
+      "id": "default",
+      "name": "Default - Day",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#ffc800",
+          "intensity": 0.24
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffa852",
+          "intensity": 0.88,
+          "groundColor": "#ffffff"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff5eb",
+          "intensity": 0.55,
+          "position": {
+            "x": -19.4,
+            "y": 34,
+            "z": 604.4
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#ffdbdb",
+          "intensity": 0.6,
+          "position": {
+            "x": -8,
+            "y": 15,
+            "z": -5
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#ffdcad",
+          "intensity": 457.88,
+          "distance": 1155,
+          "position": {
+            "x": 315.9,
+            "y": 73,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#fffdfa",
+          "intensity": 695.97,
+          "distance": 1495,
+          "position": {
+            "x": 505.6,
+            "y": 48.5,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#fef6ec",
+          "intensity": 219.78,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 658,
+            "y": 65,
+            "z": -517.4
+          },
+          "decay": 0.7
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 0.63,
+      "filters": {
+        "brightness": 1.03,
+        "contrast": 1.02,
+        "saturation": 2.19,
+        "warmth": 27,
+        "highlights": 3,
+        "vibrance": -1,
+        "tint": 22
+      },
+      "cycleWeight": 2,
+      "sceneFilters": {
+        "brightness": 1.04,
+        "contrast": 1,
+        "saturation": 1,
+        "warmth": 0,
+        "highlights": -22,
+        "shadows": -21,
+        "whites": -7,
+        "blacks": 11
+      }
+    },
+    {
+      "id": "preset_1771635291802",
+      "name": "Default - Sunset",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#fffcdb",
+          "intensity": 0.86
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffa852",
+          "intensity": 0.79,
+          "groundColor": "#fe3939"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff5eb",
+          "intensity": 0.55,
+          "position": {
+            "x": -19.4,
+            "y": 34,
+            "z": 604.4
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#ffdbdb",
+          "intensity": 0.6,
+          "position": {
+            "x": -8,
+            "y": 15,
+            "z": -5
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#ff9100",
+          "intensity": 1611.72,
+          "distance": 1155,
+          "position": {
+            "x": 315.9,
+            "y": 73,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#ff9900",
+          "intensity": 1025.64,
+          "distance": 1495,
+          "position": {
+            "x": 505.6,
+            "y": 48.5,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#ffaf4d",
+          "intensity": 311.36,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 658,
+            "y": 65,
+            "z": -517.4
+          },
+          "decay": 0.7
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 0.85,
+      "filters": {
+        "brightness": 2.22,
+        "contrast": 1.74,
+        "saturation": 1.46,
+        "warmth": 100,
+        "highlights": -45,
+        "vibrance": -100,
+        "tint": 0,
+        "whites": -26,
+        "blacks": 0
+      },
+      "cycleWeight": 1,
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1.03,
+        "saturation": 1,
+        "warmth": 0,
+        "shadows": -60,
+        "whites": -32,
+        "blacks": 14
+      }
+    },
+    {
+      "id": "preset_1771215383523",
+      "name": "Default - Sunset 2",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#ffea00",
+          "intensity": 0.13
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffa852",
+          "intensity": 0.13,
+          "groundColor": "#ffffff"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff5eb",
+          "intensity": 0.55,
+          "position": {
+            "x": -19.4,
+            "y": 34,
+            "z": 604.4
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#ffdbdb",
+          "intensity": 0.6,
+          "position": {
+            "x": -8,
+            "y": 15,
+            "z": -5
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#ff9100",
+          "intensity": 457.88,
+          "distance": 1155,
+          "position": {
+            "x": 315.9,
+            "y": 73,
+            "z": -434.2
+          },
+          "decay": 1
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#debb87",
+          "intensity": 439.56,
+          "distance": 1375,
+          "position": {
+            "x": 505.6,
+            "y": 48.5,
+            "z": -434.2
+          },
+          "decay": 0.9
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#feead2",
+          "intensity": 54.95,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 658,
+            "y": 65,
+            "z": -517.4
+          },
+          "decay": 0.7
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 1,
+      "filters": {
+        "brightness": 0.38,
+        "contrast": 1.04,
+        "saturation": 1.74,
+        "warmth": 100,
+        "highlights": -7,
+        "vibrance": -100,
+        "tint": 1,
+        "shadows": -32,
+        "whites": -22,
+        "blacks": 0
+      },
+      "cycleWeight": 1,
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1,
+        "saturation": 1,
+        "warmth": 0
+      }
+    },
+    {
+      "id": "preset_1771635353734",
+      "name": "Default - Night transitionning 2",
+      "lights": [
+        {
+          "id": "ambient",
+          "type": "ambient",
+          "name": "Ambient",
+          "enabled": true,
+          "color": "#d7c2ff",
+          "intensity": 2.49
+        },
+        {
+          "id": "hemi",
+          "type": "hemisphere",
+          "name": "Hemisphere",
+          "enabled": true,
+          "color": "#ffeedd",
+          "intensity": 2.58,
+          "groundColor": "#8899aa"
+        },
+        {
+          "id": "key",
+          "type": "directional",
+          "name": "Key Light",
+          "enabled": true,
+          "color": "#fff8f0",
+          "intensity": 1.5,
+          "position": {
+            "x": 207.2,
+            "y": 307,
+            "z": 266
+          }
+        },
+        {
+          "id": "fill_dir",
+          "type": "directional",
+          "name": "Fill Light",
+          "enabled": true,
+          "color": "#e8f0ff",
+          "intensity": 2.31,
+          "position": {
+            "x": 464.2,
+            "y": 307,
+            "z": 9.1
+          }
+        },
+        {
+          "id": "fill1",
+          "type": "point",
+          "name": "Fill 1",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 5000,
+          "distance": 565,
+          "position": {
+            "x": 453.1,
+            "y": 104,
+            "z": -110.4
+          },
+          "decay": 1.7
+        },
+        {
+          "id": "fill2",
+          "type": "point",
+          "name": "Fill 2",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 146.52,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 665.4291458129883,
+            "y": 161.52391261211042,
+            "z": -167.97532653808594
+          },
+          "decay": 1.1
+        },
+        {
+          "id": "fill3",
+          "type": "point",
+          "name": "Fill 3",
+          "enabled": true,
+          "color": "#fff5e8",
+          "intensity": 0,
+          "distance": 1251.8065795898438,
+          "position": {
+            "x": 333.8,
+            "y": 161.52391261211042,
+            "z": -418.9
+          },
+          "decay": 1.1
+        }
+      ],
+      "skyRotation": 90,
+      "exposure": 0.14,
+      "filters": {
+        "brightness": 0.77,
+        "contrast": 1.19,
+        "saturation": 1.55,
+        "warmth": -100,
+        "highlights": -95,
+        "shadows": -63,
+        "whites": 6,
+        "blacks": 0,
+        "vibrance": -2,
+        "tint": 31
+      },
+      "cycleWeight": 1,
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1,
+        "saturation": 1,
+        "warmth": 100,
+        "vibrance": 100
+      }
     }
   ],
-  "mode": "single",
+  "mode": "cycle",
   "activePresetId": "default",
   "cyclePresetIds": [
-    "default",
-    "preset_1771215383523",
-    "preset_1770865600171",
     "preset_1770601614046",
+    "preset_1771634616395",
     "preset_1771215080582",
-    "preset_1771215181070"
+    "preset_1771633181771",
+    "preset_1770865600171",
+    "default",
+    "preset_1771635291802",
+    "preset_1771215383523",
+    "preset_1771635353734"
   ],
   "cycleDurationMinutes": 3
 }

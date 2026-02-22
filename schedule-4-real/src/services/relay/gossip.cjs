@@ -32,6 +32,9 @@ const ANNOUNCE_INTERVAL_MS = 300_000    // 5min
 const PERSIST_INTERVAL_MS = 300_000     // 5min
 const MAX_FAILURES = 3
 const ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000   // 24h
+const MAX_PEERS = 500                   // Prevent memory exhaustion from peer flooding
+const ANNOUNCE_MAX_AGE_MS = 600_000     // Reject announcements older than 10 min (anti-replay)
+const ANNOUNCE_MAX_FUTURE_MS = 60_000   // Reject announcements more than 1 min in the future
 
 // ── Identity configuration ──────────────────────────────────────────
 
@@ -154,14 +157,18 @@ function stop() {
  */
 function mergePeers(remotePeers) {
   if (!Array.isArray(remotePeers)) return
+  // Limit how many peers we process from a single response
+  const toProcess = remotePeers.slice(0, 200)
 
-  for (const rp of remotePeers) {
+  for (const rp of toProcess) {
     if (!isValidPeer(rp)) continue
     // Skip self
     if (rp.url === myUrl) continue
 
     const existing = knownPeers.get(rp.url)
     if (!existing) {
+      // Enforce max peer count — don't add if at limit
+      if (knownPeers.size >= MAX_PEERS) continue
       // New peer
       knownPeers.set(rp.url, {
         url: rp.url,
@@ -232,7 +239,7 @@ function getAnnouncement() {
 }
 
 /**
- * Verify a peer's announcement signature.
+ * Verify a peer's announcement signature + freshness.
  * @param {{ url: string, pk: string, signPk: string, ts: number, sig: string }} announcement
  * @returns {boolean}
  */
@@ -241,6 +248,26 @@ function verifyAnnouncement(announcement) {
     if (!announcement || !announcement.url || !announcement.pk || !announcement.signPk || !announcement.ts || !announcement.sig) {
       return false
     }
+
+    // Validate URL format
+    if (typeof announcement.url !== 'string' || (!announcement.url.startsWith('wss://') && !announcement.url.startsWith('ws://'))) {
+      return false
+    }
+    if (announcement.url.length > 256) return false
+
+    // Validate hex key formats
+    if (!/^[0-9a-f]{64}$/i.test(announcement.pk)) return false
+    if (!/^[0-9a-f]{64}$/i.test(announcement.signPk)) return false
+
+    // Anti-replay: reject stale or future timestamps
+    const now = Date.now()
+    if (typeof announcement.ts !== 'number') return false
+    if (announcement.ts < now - ANNOUNCE_MAX_AGE_MS) return false  // too old
+    if (announcement.ts > now + ANNOUNCE_MAX_FUTURE_MS) return false // too far in the future
+
+    // Reject URLs pointing to internal/private IPs (SSRF prevention)
+    if (isInternalUrl(announcement.url)) return false
+
     const message = `${announcement.url}|${announcement.pk}|${announcement.ts}`
     const msgBuf = Buffer.from(message, 'utf-8')
     const sigBuf = Buffer.from(announcement.sig, 'hex')
@@ -260,12 +287,24 @@ function verifyAnnouncement(announcement) {
  */
 function fetchPeersFrom(peerUrl) {
   return new Promise((resolve, reject) => {
-    const httpUrl = wsUrlToHttp(peerUrl) + '/peers'
+    const httpUrl = wsUrlToHttpBase(peerUrl) + '/peers'
     const mod = httpUrl.startsWith('https:') ? https : http
+
+    const MAX_BODY = 256 * 1024 // 256KB max for peer list response
 
     const req = mod.get(httpUrl, { timeout: REQUEST_TIMEOUT_MS }, (res) => {
       let body = ''
-      res.on('data', (chunk) => { body += chunk })
+      let totalSize = 0
+      res.on('data', (chunk) => {
+        totalSize += chunk.length
+        if (totalSize > MAX_BODY) {
+          req.destroy()
+          incrementFailure(peerUrl)
+          reject(new Error('Peer response too large'))
+          return
+        }
+        body += chunk
+      })
       res.on('end', () => {
         try {
           const remotePeers = JSON.parse(body)
@@ -330,7 +369,7 @@ async function announceToAll() {
  */
 function postAnnouncement(peerUrl, payload) {
   return new Promise((resolve, reject) => {
-    const httpUrl = wsUrlToHttp(peerUrl) + '/peers/announce'
+    const httpUrl = wsUrlToHttpBase(peerUrl) + '/peers/announce'
     const parsed = new URL(httpUrl)
     const mod = parsed.protocol === 'https:' ? https : http
 
@@ -405,7 +444,7 @@ async function federateRooms() {
  */
 function fetchRoomsFrom(peerUrl) {
   return new Promise((resolve, reject) => {
-    const httpUrl = wsUrlToHttp(peerUrl) + '/api/rooms'
+    const httpUrl = wsUrlToHttpBase(peerUrl) + '/api/rooms'
     const mod = httpUrl.startsWith('https:') ? https : http
 
     const req = mod.get(httpUrl, { timeout: REQUEST_TIMEOUT_MS }, (res) => {
@@ -442,15 +481,53 @@ function wsUrlToHttp(wsUrl) {
 }
 
 /**
+ * Convert a ws:// or wss:// URL to HTTP base URL (protocol + host, no path).
+ * E.g. 'wss://schedule4real.com/rooms' → 'https://schedule4real.com'
+ */
+function wsUrlToHttpBase(wsUrl) {
+  const httpUrl = wsUrlToHttp(wsUrl)
+  try {
+    const parsed = new URL(httpUrl)
+    return `${parsed.protocol}//${parsed.host}`
+  } catch {
+    return httpUrl
+  }
+}
+
+/**
  * Validate a peer object has the minimum required fields.
  */
 function isValidPeer(p) {
   if (!p || typeof p !== 'object') return false
   if (!p.url || typeof p.url !== 'string') return false
   if (!p.url.startsWith('ws://') && !p.url.startsWith('wss://')) return false
+  if (p.url.length > 256) return false
   if (!p.pk || typeof p.pk !== 'string') return false
   if (!/^[0-9a-f]{64}$/i.test(p.pk)) return false
+  // Reject internal/private IPs
+  if (isInternalUrl(p.url)) return false
   return true
+}
+
+/**
+ * Check if a URL points to an internal/private IP (SSRF prevention).
+ */
+function isInternalUrl(url) {
+  try {
+    const parsed = new URL(url.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:'))
+    const host = parsed.hostname
+    // Block localhost variants
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0') return true
+    // Block private IP ranges
+    if (/^10\./.test(host)) return true
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true
+    if (/^192\.168\./.test(host)) return true
+    if (/^169\.254\./.test(host)) return true // link-local
+    if (/^fc00:|^fd/.test(host)) return true  // IPv6 private
+    return false
+  } catch {
+    return true // Invalid URL → treat as internal
+  }
 }
 
 /**

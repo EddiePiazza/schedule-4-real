@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-20T22:20:50Z",
+  "generated": "2026-02-22T01:45:40Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -44,6 +44,94 @@
     "models/plant_flower.glb": {
       "hash": "764476e8d70b382d22cc7f8dac54cb18",
       "size": 195160
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Metallic.jpg": {
+      "hash": "0a2e98f33ee9de858b0a764c4ac82e6c",
+      "size": 37667
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Normal.png": {
+      "hash": "e0fb7410e2cff7daededd17377b00419",
+      "size": 7225894
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664.mtlx": {
+      "hash": "a5fcb4b9439593a36d1d64424f3bbedb",
+      "size": 7528
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_BaseColor.jpg": {
+      "hash": "90d4d15db6317fa7f15945c8326cccba",
+      "size": 53461
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Roughness.jpg": {
+      "hash": "4e6c217d51407238e5e5f13fbedcf5fe",
+      "size": 686830
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Displacement.tiff": {
+      "hash": "bb9761ebe6ab83fc03b3ebbc313ae610",
+      "size": 1873253
+    },
+    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_AmbientOcclusion.jpg": {
+      "hash": "6287c60eb934565ebddb691f41d90871",
+      "size": 575162
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Color.jpg": {
+      "hash": "9ac72f3a42e8957e696ffd954d011cbd",
+      "size": 358091
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_NormalGL.jpg": {
+      "hash": "f37d9f9fc89476ba98ede4f474af338b",
+      "size": 618413
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Roughness.jpg": {
+      "hash": "2e62725363b8bd88155badfa872eb724",
+      "size": 256230
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Displacement.jpg": {
+      "hash": "d5cb5df9f1c45d8e4625a6920cccfa92",
+      "size": 313782
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Metalness.jpg": {
+      "hash": "30c1d68817e2f9bca92997179b81723f",
+      "size": 11054
+    },
+    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_DISP_2K.png": {
+      "hash": "89cb081a17f75d74082286e147fda712",
+      "size": 1844225
+    },
+    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_NRM_2K.png": {
+      "hash": "8c719b05700e348da42cb3f5edf0497a",
+      "size": 7469533
+    },
+    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_COL_2K.jpg": {
+      "hash": "e479871c58006302e6c402303ecebb10",
+      "size": 6227297
+    },
+    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_GLOSS_2K.jpg": {
+      "hash": "c65d11191ce66002e0400bcc60e171cd",
+      "size": 2070017
+    },
+    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_REFL_2K.jpg": {
+      "hash": "e15514dd85c0b1aa0ff3c6c6efb69647",
+      "size": 299880
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Roughness.jpg": {
+      "hash": "918e7648c0ac88090349704c063dc051",
+      "size": 866950
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Displacement.jpg": {
+      "hash": "283bd551f90cba3ce14e0b14670235d8",
+      "size": 831560
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_AmbientOcclusion.jpg": {
+      "hash": "cc72b3b03bd5ea54c22ce16e91f57290",
+      "size": 835879
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_NormalGL.jpg": {
+      "hash": "f325f80796d2627ab9215e881f4b134c",
+      "size": 2682952
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Color.jpg": {
+      "hash": "8952c51aaecb6708a5d3a9928f29846b",
+      "size": 1681447
     },
     "models/userassets/simple_tv_remote.glb": {
       "hash": "9859547adb4bcb3ded9400c1ac5b7198",
@@ -149,13 +237,17 @@
       "hash": "dedf674c185ae877e3b279437d6a673c",
       "size": 3012424
     },
-    "models/assets/fourniture/game_ready_light.glb": {
-      "hash": "d5011cdce7b5692aee6647a6277f4ae9",
-      "size": 2003420
-    },
     "models/assets/fourniture/monitor-curve.glb": {
       "hash": "dd57215cddff057b1fb0493a2a3f74cc",
       "size": 972072
+    },
+    "models/assets/lights/grow_led.glb": {
+      "hash": "cea82dace62eb3ce2d956e812b80df91",
+      "size": 2782760
+    },
+    "models/assets/lights/roof_light.glb": {
+      "hash": "d5011cdce7b5692aee6647a6277f4ae9",
+      "size": 2003420
     },
     "models/assets/plants/compost_bag.glb": {
       "hash": "9365944d4f0fdad8ccabae6c5bfb0d0e",
@@ -353,6 +445,10 @@
       "hash": "5d8b9431a0a3ac99574ca27234c7c4a4",
       "size": 2527292
     },
+    "sound/zipper.mp3": {
+      "hash": "c83b45abe96ecbb06c15154de754dc46",
+      "size": 34524
+    },
     "sound/unlock-door.mp3": {
       "hash": "592d05b2be74c327bfa76b41f5e2ebb7",
       "size": 19724
@@ -410,16 +506,16 @@
       "size": 593
     },
     "defaults/asset-rotations.json": {
-      "hash": "5fc6d65900ca991319d235339465d3c1",
-      "size": 2089
+      "hash": "f96b3c566c2cde84f66d838271ad07d9",
+      "size": 2154
     },
     "defaults/room-hidden-meshes.json": {
       "hash": "2e8d4e37ea66d78433a02066578bd14d",
       "size": 38
     },
     "defaults/asset-thumb-offsets.json": {
-      "hash": "08ddc5b7862b6b8b7719e2cea2934cb5",
-      "size": 1686
+      "hash": "cf6486c3f69eec24dcc193bcb81d7347",
+      "size": 1862
     },
     "defaults/character-calibration.json": {
       "hash": "6300cb3d65e417c5968440015d23f7db",
@@ -430,8 +526,8 @@
       "size": 2
     },
     "defaults/asset-meta.json": {
-      "hash": "d5fb67b7eb2ee441982dd9257c853a40",
-      "size": 39746
+      "hash": "f38d3a9ea5b65ba55c1fe1f6e1663f79",
+      "size": 39843
     },
     "defaults/room-spawns.json": {
       "hash": "aef72378084cca086951ee9e4e0e52af",
@@ -454,8 +550,8 @@
       "size": 11221
     },
     "defaults/room-lighting/big_room.json": {
-      "hash": "6eb6dfdd148d9667ca931783d34b85a4",
-      "size": 19781
+      "hash": "864440b91356ebc8a9fba05812712e4c",
+      "size": 28088
     },
     "defaults/room-lighting/gallery.json": {
       "hash": "d5e35aad6149e5b000b405e6e568dba0",
@@ -490,8 +586,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "8b793ea87a796114568f46dabf0a4bb5",
-      "size": 121580
+      "hash": "e3b3ed7fb912218bded76c9e0380525b",
+      "size": 122960
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",

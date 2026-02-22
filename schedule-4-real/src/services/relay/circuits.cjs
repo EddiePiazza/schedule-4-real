@@ -14,6 +14,8 @@ function configure(opts) {
 
 function registerCircuit(circuitId, rx, tx, inboundWs) {
   if (circuits.size >= maxCircuits) return false
+  // Reject if circuit ID already exists (prevents hijacking)
+  if (circuits.has(circuitId)) return false
   circuits.set(circuitId, {
     circuitId, rx, tx, inboundWs,
     outboundWs: null,

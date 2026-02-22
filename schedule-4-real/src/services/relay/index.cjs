@@ -9,19 +9,46 @@ const { WebSocketServer } = require('ws')
 
 const { loadConfig, loadIdentity, loadPeers, savePeers, SEED_NODES } = require('./config.cjs')
 const { generateKxKeypair, generateSignKeypair } = require('./crypto.cjs')
-const { configure: configureRelay, setTrackerHandler, handlePacket, rotateKeys, getRelayPublicKey } = require('./relay.cjs')
+const { configure: configureRelay, setTrackerHandler, handlePacket, pushToCircuitById, rotateKeys, getRelayPublicKey } = require('./relay.cjs')
 const { configure: configureCircuits, cleanupExpired: cleanupCircuits, activeCount } = require('./circuits.cjs')
 const { cleanupPendingRendezvous } = require('./rendezvous.cjs')
 const { startChaff, stopChaff } = require('./chaff.cjs')
-const { configure: configureTracker, handleTrackerMessage, listPublicRooms, setFederatedRooms, roomCount, cleanupExpiredRooms } = require('./tracker.cjs')
+const { configure: configureTracker, handleTrackerMessage, setCircuitPush, listPublicRooms, setFederatedRooms, roomCount, cleanupExpiredRooms } = require('./tracker.cjs')
 const gossip = require('./gossip.cjs')
 const {
   registerHost, resolveSession, createSession, getHostTunnel, getDefaultRoomKey,
   proxyHttpRequest, getNextReqId, proxyWebSocket,
   cleanupExpiredSessions, tunnelStats,
 } = require('./tunnel-proxy.cjs')
+const { createRateLimiter } = require('./rate-limit.cjs')
 let joinPage = null
 try { joinPage = require('./join-page.cjs') } catch { /* loaded when available */ }
+
+// ── Rate limiters (per-IP) ──────────────────────────────────────────
+const rl = {
+  register:   createRateLimiter(30, 60_000),    // 30 registrations/min
+  announce:   createRateLimiter(10, 60_000),     // 10 announcements/min
+  query:      createRateLimiter(60, 60_000),     // 60 queries/min
+  peers:      createRateLimiter(30, 60_000),     // 30 peer fetches/min
+  general:    createRateLimiter(120, 60_000),    // 120 requests/min general
+}
+
+function getClientIp(req) {
+  // Trust X-Forwarded-For only if behind known reverse proxy
+  const xff = req.headers['x-forwarded-for']
+  if (xff) return xff.split(',')[0].trim()
+  return req.socket?.remoteAddress || '0.0.0.0'
+}
+
+function rateLimited(res, ip, limiterName) {
+  if (!rl[limiterName]) return false
+  if (!rl[limiterName].check(ip)) {
+    res.writeHead(429, { 'Content-Type': 'application/json', 'Retry-After': '60' })
+    res.end(JSON.stringify({ error: 'Rate limit exceeded' }))
+    return true
+  }
+  return false
+}
 
 // ── Load configuration ──────────────────────────────────────────────
 const cfg = loadConfig()
@@ -54,6 +81,8 @@ if (trackerEnabled) {
   setTrackerHandler((data, ws, circuitIdBuf) => {
     return handleTrackerMessage(data, ws, circuitIdBuf)
   })
+  // Wire tracker push → relay circuit encryption (for INTRODUCE_DATA etc.)
+  setCircuitPush(pushToCircuitById)
 }
 
 gossip.configure({
@@ -94,12 +123,13 @@ function parseJoinPath(url) {
 const server = createServer(async (req, res) => {
   const url = req.url || '/'
 
-  // CORS preflight
+  const clientIp = getClientIp(req)
+
+  // CORS preflight — only allow GET endpoints from browsers
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
     res.writeHead(204)
     res.end()
     return
@@ -109,7 +139,9 @@ const server = createServer(async (req, res) => {
 
   // Relay public key
   if (req.method === 'GET' && url === '/pk') {
+    if (rateLimited(res, clientIp, 'general')) return
     res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Cache-Control', 'public, max-age=60')
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({
       publicKey: getRelayPublicKey().toString('hex'),
@@ -121,6 +153,7 @@ const server = createServer(async (req, res) => {
   // Public rooms list (only when tracker is enabled)
   // Metadata is encrypted — returned as base64 for client decryption and peer federation
   if (req.method === 'GET' && (url === '/' || url === '/api/rooms' || url === '/rooms')) {
+    if (rateLimited(res, clientIp, 'query')) return
     res.setHeader('Access-Control-Allow-Origin', '*')
     if (!trackerEnabled) {
       res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -142,24 +175,38 @@ const server = createServer(async (req, res) => {
   // Room registration via HTTP (for server-side auto-publishers)
   // Accepts: { roomId (hex), metadata (base64), entryRelay (url), private (bool) }
   if (req.method === 'POST' && (url === '/api/register' || url === '/register')) {
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    if (rateLimited(res, clientIp, 'register')) return
+    // No wildcard CORS — registration is server-to-server only
     if (!trackerEnabled) {
       res.writeHead(503, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify({ ok: false, error: 'Tracker not enabled' }))
       return
     }
     try {
-      const body = await collectBody(req, 8192)
+      const body = await collectBody(req, 4096) // Tighter limit for registration
       const data = JSON.parse(body.toString('utf8'))
       if (!data.roomId || !data.metadata || !data.entryRelay) {
         res.writeHead(400, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ ok: false, error: 'Missing roomId, metadata, or entryRelay' }))
         return
       }
-      const roomIdBuf = Buffer.from(data.roomId, 'hex')
-      if (roomIdBuf.length !== 32) {
+      // Validate roomId format
+      if (typeof data.roomId !== 'string' || !/^[0-9a-f]{64}$/i.test(data.roomId)) {
         res.writeHead(400, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ ok: false, error: 'roomId must be 64 hex chars (32 bytes)' }))
+        return
+      }
+      const roomIdBuf = Buffer.from(data.roomId, 'hex')
+      // Validate entryRelay is a proper relay URL
+      if (typeof data.entryRelay !== 'string' || (!data.entryRelay.startsWith('wss://') && !data.entryRelay.startsWith('ws://')) || data.entryRelay.length > 256) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: false, error: 'entryRelay must be a valid ws:// or wss:// URL' }))
+        return
+      }
+      // Validate metadata size (encrypted metadata shouldn't be huge)
+      if (typeof data.metadata !== 'string' || data.metadata.length > 2048) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: false, error: 'metadata too large' }))
         return
       }
       const metadataBuf = Buffer.from(data.metadata, 'base64')
@@ -188,7 +235,9 @@ const server = createServer(async (req, res) => {
 
   // Gossip: peer list
   if (req.method === 'GET' && url === '/peers') {
+    if (rateLimited(res, clientIp, 'peers')) return
     res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Cache-Control', 'public, max-age=30')
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify(gossip.getPeerList()))
     return
@@ -196,8 +245,9 @@ const server = createServer(async (req, res) => {
 
   // Gossip: receive peer announcement
   if (req.method === 'POST' && url === '/peers/announce') {
+    if (rateLimited(res, clientIp, 'announce')) return
     try {
-      const body = await collectBody(req, 4096)
+      const body = await collectBody(req, 2048) // Announcements are small
       const announcement = JSON.parse(body.toString('utf8'))
       if (gossip.verifyAnnouncement(announcement)) {
         gossip.mergePeers([announcement])
@@ -214,23 +264,22 @@ const server = createServer(async (req, res) => {
     return
   }
 
-  // Stats (internal, no sensitive data)
+  // Stats (minimal — only expose non-sensitive info)
   if (req.method === 'GET' && (url === '/api/stats' || url === '/stats')) {
-    const ts = tunnelStats()
+    if (rateLimited(res, clientIp, 'general')) return
+    // Only return basic health info, not operational details
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({
-      circuits: activeCount(),
-      rooms: trackerEnabled ? roomCount() : 0,
-      tunnelHosts: ts.hosts,
-      tunnelSessions: ts.sessions,
-      peers: gossip.getPeerList().length,
+      ok: true,
       trackerEnabled,
+      peers: gossip.getPeerList().length,
     }))
     return
   }
 
   // ── Public rooms page: /join (no token) ─────────────────────────
   if (req.method === 'GET' && (url === '/join' || url === '/join/')) {
+    if (rateLimited(res, clientIp, 'general')) return
     if (!trackerEnabled || !joinPage) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
       res.end('<html><body style="background:#111;color:#888;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh"><p>No public rooms available</p></body></html>')
@@ -396,9 +445,18 @@ wssGuest.on('connection', (ws, req) => {
   proxyWebSocket(tunnel, ws, req.url, req.headers)
 })
 
+// ── WebSocket connection rate limiter ────────────────────────────────
+const wsConnectLimiter = createRateLimiter(30, 60_000) // 30 WS connections/min per IP
+
 // ── HTTP Upgrade handler (route WS by path) ─────────────────────────
 server.on('upgrade', (req, socket, head) => {
   const url = req.url || '/'
+  const wsIp = getClientIp(req)
+  if (!wsConnectLimiter.check(wsIp)) {
+    socket.write('HTTP/1.1 429 Too Many Requests\r\n\r\n')
+    socket.destroy()
+    return
+  }
 
   // Host tunnel
   if (url === '/tunnel') {

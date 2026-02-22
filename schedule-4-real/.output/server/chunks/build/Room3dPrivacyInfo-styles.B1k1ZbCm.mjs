@@ -1,0 +1,1 @@
+const a=[".custom-scrollbar[data-v-854eaa7a]::-webkit-scrollbar{width:6px}.custom-scrollbar[data-v-854eaa7a]::-webkit-scrollbar-track{background:transparent}.custom-scrollbar[data-v-854eaa7a]::-webkit-scrollbar-thumb{background:#ffffff1a;border-radius:3px}.custom-scrollbar[data-v-854eaa7a]::-webkit-scrollbar-thumb:hover{background:#fff3}"];export{a as default};

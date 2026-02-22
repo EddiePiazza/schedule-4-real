@@ -1,0 +1,38 @@
+[
+  {
+    "url": "wss://schedule4real.com/rooms",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
+    "tracker": true,
+    "ts": 1771448874289,
+    "failures": 0,
+    "lastSeen": 1771449083166
+  },
+  {
+    "url": "wss://r2.imaset.com",
+    "pk": "78feb6b721ce2a7a700b4e847eead603f0655414899476091d231178ab98fd33",
+    "signPk": "ff36752073de11130dd2fd2f3f1a5aa9ea15590cb90548896e42492696a15aa2",
+    "tracker": true,
+    "ts": 1771448849457,
+    "failures": 0,
+    "lastSeen": 1771449083090
+  },
+  {
+    "url": "ws://80.24.53.244:9443",
+    "pk": "46ef67d70800156bf85fce0f41abacbc35e260e37ee195b25d65fe46fda02d5d",
+    "signPk": "0a93f10139cb5d4c6d42e056b5549696fc03f5b72c7ff0addb2b674d3df6572a",
+    "tracker": true,
+    "ts": 1771375479325,
+    "failures": 0,
+    "lastSeen": 1771449083001
+  },
+  {
+    "url": "ws://95.89.244.154:9443",
+    "pk": "0ec6c56c851480a8cdabdbb73873d70258bd3abebc39f0dcec0f5ba6c1e06d51",
+    "signPk": "005eb9f2ca2ed7631e7710ef8bd33cb5921e4d5735d16850ca7a155bfc15f350",
+    "tracker": true,
+    "ts": 1771449019949,
+    "failures": 2,
+    "lastSeen": 0
+  }
+]

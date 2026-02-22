@@ -1278,5 +1278,10 @@
     "loopMode": "continuous",
     "isDoor": false,
     "animRange": "full"
+  },
+  "grow_led.glb": {
+    "category": "lights",
+    "animType": "static",
+    "isDoor": false
   }
 }

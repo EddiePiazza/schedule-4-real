@@ -182,16 +182,33 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
 
     case MSG.DATA:
       if (circuit.rendezvousPairId) {
-        relayRendezvousData(circuit.circuitId, payload)
+        // Forward E2E payload to paired circuit WITH circuit-layer encryption
+        const toCircuit = getCircuit(circuit.rendezvousPairId)
+        if (toCircuit) {
+          // Build a proper DATA message: type(1) + nextHopLen(1=0) + payloadLen(2) + payload
+          const dataMsg = Buffer.alloc(4 + payload.length)
+          dataMsg[0] = MSG.DATA
+          dataMsg[1] = 0 // no next hop
+          dataMsg.writeUInt16BE(payload.length, 2)
+          if (Buffer.isBuffer(payload)) {
+            payload.copy(dataMsg, 4)
+          } else {
+            Buffer.from(payload).copy(dataMsg, 4)
+          }
+          sendToCircuit(toCircuit, dataMsg)
+        }
       }
       break
 
     case MSG.ESTABLISH_RENDEZVOUS: {
       const cookie = payload.subarray(0, 20)
       const result = establishRendezvous(circuit.circuitId, cookie)
-      const replyBuf = Buffer.alloc(2)
+      // Build proper message envelope: type(1) + nextHopLen(1=0) + payloadLen(2) + payload(1)
+      const replyBuf = Buffer.alloc(5)
       replyBuf[0] = MSG.RENDEZVOUS_ESTABLISHED
-      replyBuf[1] = result.success ? 1 : 0
+      replyBuf[1] = 0 // no next hop
+      replyBuf.writeUInt16BE(1, 2) // payload length = 1
+      replyBuf[4] = result.success ? 1 : 0
       sendToCircuit(circuit, replyBuf)
       break
     }
@@ -203,9 +220,12 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
       if (joinResult.success) {
         const visitorCircuit = getCircuit(joinResult.visitorCircuitId)
         if (visitorCircuit) {
-          const handshakeMsg = Buffer.alloc(1 + joinHandshakeData.length)
+          // Build proper message envelope: type(1) + nextHopLen(1=0) + payloadLen(2) + payload
+          const handshakeMsg = Buffer.alloc(4 + joinHandshakeData.length)
           handshakeMsg[0] = MSG.RENDEZVOUS_JOIN
-          joinHandshakeData.copy(handshakeMsg, 1)
+          handshakeMsg[1] = 0 // no next hop
+          handshakeMsg.writeUInt16BE(joinHandshakeData.length, 2)
+          joinHandshakeData.copy(handshakeMsg, 4)
           sendToCircuit(visitorCircuit, handshakeMsg)
         }
       }
@@ -222,7 +242,17 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
         circuitIdBuf.writeUInt32BE(circuit.circuitId, 0)
         const response = trackerDirectHandler(payload, ws, circuitIdBuf)
         if (response) {
-          sendToCircuit(circuit, response)
+          // Wrap tracker response in standard message envelope
+          // The tracker returns raw protocol data; we wrap it as:
+          // type(1) + nextHopLen(1=0) + payloadLen(2) + payload
+          const responseType = response[0] || 0x42 // TRACKER_RESPONSE
+          const responsePayload = response.subarray(1)
+          const wrapped = Buffer.alloc(4 + responsePayload.length)
+          wrapped[0] = responseType
+          wrapped[1] = 0 // no next hop
+          wrapped.writeUInt16BE(responsePayload.length, 2)
+          responsePayload.copy(wrapped, 4)
+          sendToCircuit(circuit, wrapped)
         }
         break
       }
@@ -233,7 +263,15 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
         withCircuit.writeUInt32BE(circuit.circuitId, 0)
         payload.copy(withCircuit, 4)
         trackerPendingCallbacks.set(circuit.circuitId, (responsePayload) => {
-          sendToCircuit(circuit, responsePayload)
+          // Wrap tracker response in standard message envelope
+          const rType = responsePayload[0] || 0x42
+          const rData = responsePayload.subarray(1)
+          const rWrapped = Buffer.alloc(4 + rData.length)
+          rWrapped[0] = rType
+          rWrapped[1] = 0
+          rWrapped.writeUInt16BE(rData.length, 2)
+          rData.copy(rWrapped, 4)
+          sendToCircuit(circuit, rWrapped)
           trackerPendingCallbacks.delete(circuit.circuitId)
         })
         tw.send(withCircuit)
@@ -297,6 +335,16 @@ function sendToCircuit(circuit, plaintext) {
   }
 }
 
+/**
+ * Push a message to a specific circuit by its 4-byte ID buffer.
+ * Used by co-hosted tracker to send INTRODUCE_DATA through proper circuit encryption.
+ */
+function pushToCircuitById(circuitIdBuf, payload) {
+  const circuitId = circuitIdBuf.readUInt32BE(0)
+  const circuit = getCircuit(circuitId)
+  if (circuit) sendToCircuit(circuit, payload)
+}
+
 function getRelayPublicKey() {
   return relayKeypair.publicKey
 }
@@ -317,6 +365,7 @@ module.exports = {
   configure,
   setTrackerHandler,
   handlePacket,
+  pushToCircuitById,
   getRelayPublicKey,
   rotateKeys,
 }

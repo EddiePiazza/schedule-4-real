@@ -576,78 +576,6 @@
     "locked": false
   },
   {
-    "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
-    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-    "position": {
-      "x": 681.3363,
-      "y": 0.8021,
-      "z": -508.6747
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.9864,
-      "z": 0,
-      "w": 0.1647
-    },
-    "scale": 52.0324,
-    "name": "cannabis sativa plant",
-    "locked": false
-  },
-  {
-    "id": "3f3b1613-7260-4ba1-b2d8-b298c61a7915",
-    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-    "position": {
-      "x": 650.1847,
-      "y": 0.8021,
-      "z": -509.675
-    },
-    "quaternion": {
-      "x": 0,
-      "y": -0.33,
-      "z": 0,
-      "w": -0.944
-    },
-    "scale": 56.6633,
-    "name": "cannabis sativa plant",
-    "locked": false
-  },
-  {
-    "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
-    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-    "position": {
-      "x": 619.1562,
-      "y": 0.8021,
-      "z": -499.1467
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.0059,
-      "z": 0,
-      "w": -1
-    },
-    "scale": 45.4383,
-    "name": "cannabis sativa plant",
-    "locked": false
-  },
-  {
-    "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
-    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-    "position": {
-      "x": 612.1478,
-      "y": 1.4186,
-      "z": -454.3059
-    },
-    "quaternion": {
-      "x": 0,
-      "y": 0.915,
-      "z": 0,
-      "w": -0.4035
-    },
-    "scale": 56.6633,
-    "name": "cannabis sativa plant",
-    "locked": false
-  },
-  {
     "id": "3462f252-d701-47d4-a7e2-a9c4749b6fa6",
     "assetFile": "/data/appdata/models/assets/fourniture/game_ready_light.glb",
     "position": {
@@ -3264,7 +3192,7 @@
       "widgets": [
         "tv_channel"
       ],
-      "channelUrl": "https://epiconvh.akamaized.net/live/gubbare/master.m3u8"
+      "channelUrl": "https://d1j2csarxnwazk.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-uze1m6xh4fiyr-ssai-prd/master.m3u8"
     }
   },
   {
@@ -3999,6 +3927,136 @@
     },
     "scale": 40.1646,
     "name": "compost bags",
+    "locked": false
+  },
+  {
+    "id": "6cb4f922-f385-4e03-86af-d960ee1997eb",
+    "assetFile": "procedural://grow-tent",
+    "position": {
+      "x": 643.0142,
+      "y": 0.7496,
+      "z": -465.0141
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.0016,
+      "z": 0,
+      "w": -1
+    },
+    "scale": 1.2998,
+    "name": "Grow Tent 150×150×200cm",
+    "locked": false,
+    "toggleState": false,
+    "properties": {
+      "_tentConfig": "{\"width\":1.5,\"depth\":1.5,\"height\":2,\"ventDiameter\":0.15,\"vents\":[{\"wall\":\"right\",\"position\":\"top\"}]}"
+    }
+  },
+  {
+    "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 672.7447,
+      "y": 0.7509,
+      "z": -493.3006
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9975,
+      "z": 0,
+      "w": 0.0708
+    },
+    "scale": 56.6633,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "3f3b1613-7260-4ba1-b2d8-b298c61a7915",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 620.4421,
+      "y": 0.7509,
+      "z": -491.7984
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9993,
+      "z": 0,
+      "w": 0.0376
+    },
+    "scale": 56.6633,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 621.7169,
+      "y": 0.7509,
+      "z": -437.4806
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.9872,
+      "z": 0,
+      "w": 0.1595
+    },
+    "scale": 45.4383,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
+    "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+    "position": {
+      "x": 665.7472,
+      "y": 0.7509,
+      "z": -444.8861
+    },
+    "quaternion": {
+      "x": 0,
+      "y": 0.9991,
+      "z": 0,
+      "w": 0.0413
+    },
+    "scale": 52.0324,
+    "name": "cannabis sativa plant",
+    "locked": false
+  },
+  {
+    "id": "ef9219a2-2857-4f01-a3e5-41b60e02a3fd",
+    "assetFile": "/data/appdata/models/assets/lights/grow_led.glb",
+    "position": {
+      "x": 642.1445,
+      "y": 22.8631,
+      "z": -484.5688
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7037,
+      "z": 0,
+      "w": -0.7105
+    },
+    "scale": 78.6287,
+    "name": "grow led",
+    "locked": false
+  },
+  {
+    "id": "1e7a157c-2cb7-4425-8489-252282e39c3d",
+    "assetFile": "/data/appdata/models/assets/lights/grow_led.glb",
+    "position": {
+      "x": 642.5867,
+      "y": 22.9226,
+      "z": -440.7864
+    },
+    "quaternion": {
+      "x": 0,
+      "y": -0.7056,
+      "z": 0,
+      "w": 0.7086
+    },
+    "scale": 78.6287,
+    "name": "grow led",
     "locked": false
   }
 ]
