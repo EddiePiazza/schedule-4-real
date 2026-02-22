@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T04:01:17.433Z",
+  "lastCheck": "2026-02-22T04:51:17.438Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.66.0",
-      "installedAt": "2026-02-22T04:03:43Z"
+      "version": "1.67.0",
+      "installedAt": "2026-02-22T04:51:51Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.13.0",
-      "installedAt": "2026-02-22T04:03:43Z"
+      "version": "1.14.0",
+      "installedAt": "2026-02-22T04:51:51Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.66.0",
+        "changes": [
+          "Add latency-based relay selection for faster circuit routing"
+        ]
+      },
       {
         "version": "1.65.1",
         "changes": [
@@ -405,12 +411,6 @@
         "changes": [
           "Fix environment Reset to restore editor defaults, hide Reset in editor mode"
         ]
-      },
-      {
-        "version": "1.42.1",
-        "changes": [
-          "Fix TV pausing when walking away and improve mobile stream quality"
-        ]
       }
     ],
     "ingest": [
@@ -496,6 +496,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.13.0",
+        "changes": [
+          "Add relay-to-relay RTT measurement in gossip protocol"
+        ]
+      },
       {
         "version": "1.12.2",
         "changes": [

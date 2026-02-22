@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T04:03:43Z",
+  "generatedAt": "2026-02-22T04:51:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.66.0",
-      "archive": "s4r-web-1.66.0.tar.gz",
-      "sha256": "e77f33e7bcf469c9210b9e4cd48b94112a0145da9e528a7109f4647d53667322",
-      "size": 10665385,
+      "version": "1.67.0",
+      "archive": "s4r-web-1.67.0.tar.gz",
+      "sha256": "56c88000fee4a7bfef7423b22f754f8b2bdfaac5707d577d9fe02602673eb6b9",
+      "size": 10664643,
       "changelog": [
+        {
+          "version": "1.67.0",
+          "changes": [
+            "Add latency-based relay selection and parallel room discovery"
+          ]
+        },
         {
           "version": "1.66.0",
           "changes": [
@@ -1293,11 +1299,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.13.0",
-      "archive": "s4r-supervisor-1.13.0.tar.gz",
-      "sha256": "279bb74d8a4b8cc246fa75bc28a26a8958b87244aaee2e928c4f0653c8dccb48",
-      "size": 33689,
+      "version": "1.14.0",
+      "archive": "s4r-supervisor-1.14.0.tar.gz",
+      "sha256": "5af574ff7c09e310b1bf9ed69e15f6f12446b693ad8dbcd867642a2b584261ac",
+      "size": 33698,
       "changelog": [
+        {
+          "version": "1.14.0",
+          "changes": [
+            "Add relay-to-relay RTT measurement in gossip protocol"
+          ]
+        },
         {
           "version": "1.13.0",
           "changes": [

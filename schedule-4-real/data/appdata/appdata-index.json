@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-22T01:45:40Z",
+  "generated": "2026-02-22T04:52:01Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -45,34 +45,6 @@
       "hash": "764476e8d70b382d22cc7f8dac54cb18",
       "size": 195160
     },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Metallic.jpg": {
-      "hash": "0a2e98f33ee9de858b0a764c4ac82e6c",
-      "size": 37667
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Normal.png": {
-      "hash": "e0fb7410e2cff7daededd17377b00419",
-      "size": 7225894
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664.mtlx": {
-      "hash": "a5fcb4b9439593a36d1d64424f3bbedb",
-      "size": 7528
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_BaseColor.jpg": {
-      "hash": "90d4d15db6317fa7f15945c8326cccba",
-      "size": 53461
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Roughness.jpg": {
-      "hash": "4e6c217d51407238e5e5f13fbedcf5fe",
-      "size": 686830
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_Displacement.tiff": {
-      "hash": "bb9761ebe6ab83fc03b3ebbc313ae610",
-      "size": 1873253
-    },
-    "models/textures/PlasterPainted/Poliigon_PlasterPainted_7664_AmbientOcclusion.jpg": {
-      "hash": "6287c60eb934565ebddb691f41d90871",
-      "size": 575162
-    },
     "models/textures/metal1/Metal061A_1K-JPG_Color.jpg": {
       "hash": "9ac72f3a42e8957e696ffd954d011cbd",
       "size": 358091
@@ -92,26 +64,6 @@
     "models/textures/metal1/Metal061A_1K-JPG_Metalness.jpg": {
       "hash": "30c1d68817e2f9bca92997179b81723f",
       "size": 11054
-    },
-    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_DISP_2K.png": {
-      "hash": "89cb081a17f75d74082286e147fda712",
-      "size": 1844225
-    },
-    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_NRM_2K.png": {
-      "hash": "8c719b05700e348da42cb3f5edf0497a",
-      "size": 7469533
-    },
-    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_COL_2K.jpg": {
-      "hash": "e479871c58006302e6c402303ecebb10",
-      "size": 6227297
-    },
-    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_GLOSS_2K.jpg": {
-      "hash": "c65d11191ce66002e0400bcc60e171cd",
-      "size": 2070017
-    },
-    "models/textures/FabricPlainNaturalSheer/FabricPlainNaturalSheer009_REFL_2K.jpg": {
-      "hash": "e15514dd85c0b1aa0ff3c6c6efb69647",
-      "size": 299880
     },
     "models/textures/leader1/Fabric030_1K-JPG_Roughness.jpg": {
       "hash": "918e7648c0ac88090349704c063dc051",
