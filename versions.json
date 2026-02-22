@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T16:13:03Z",
+  "generatedAt": "2026-02-22T16:27:06Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.68.1",
-      "archive": "s4r-web-1.68.1.tar.gz",
-      "sha256": "0d4bd7939f61109e4379b6c0d99778a4c96e72d8fd50cf442313ae7f2a86ec3e",
-      "size": 10667924,
+      "version": "1.68.2",
+      "archive": "s4r-web-1.68.2.tar.gz",
+      "sha256": "ea359014220b63764e103eaa92f14730ea177591b33b1e101b07c8e5fd666231",
+      "size": 10667493,
       "changelog": [
+        {
+          "version": "1.68.2",
+          "changes": [
+            "Fix ducts not following moved tents and not being removed when a tent is deleted",
+            "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
+          ]
+        },
         {
           "version": "1.68.1",
           "changes": [

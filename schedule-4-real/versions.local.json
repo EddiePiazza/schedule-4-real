@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T16:12:01.961Z",
+  "lastCheck": "2026-02-22T16:22:01.960Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.68.1",
-      "installedAt": "2026-02-22T16:13:03Z"
+      "version": "1.68.2",
+      "installedAt": "2026-02-22T16:27:06Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.68.1",
+        "changes": [
+          "Fix ducts not following moved tents and not being removed when a tent is deleted",
+          "Fix landing page to show rooms from all relays instead of only local",
+          "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
+        ]
+      },
       {
         "version": "1.68.0",
         "changes": [
@@ -400,12 +408,6 @@
         "changes": [
           "Fix animated GLB models not playing - add reset() and mixer.update(0)",
           "Add IP camera streaming with go2rtc WebRTC bridge"
-        ]
-      },
-      {
-        "version": "1.43.1",
-        "changes": [
-          "Fix room code input rejecting letters O/I and cursor jumping, save code on room enter"
         ]
       }
     ],
