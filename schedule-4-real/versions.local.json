@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T15:22:01.928Z",
+  "lastCheck": "2026-02-22T16:12:01.961Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.68.0",
-      "installedAt": "2026-02-22T15:22:46Z"
+      "version": "1.68.1",
+      "installedAt": "2026-02-22T16:13:03Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.68.0",
+        "changes": [
+          "Fix slow room discovery by racing HTTP and circuit methods instead of waiting for both",
+          "Add rooms API endpoint for landing page room discovery"
+        ]
+      },
       {
         "version": "1.67.1",
         "changes": [
@@ -399,18 +406,6 @@
         "version": "1.43.1",
         "changes": [
           "Fix room code input rejecting letters O/I and cursor jumping, save code on room enter"
-        ]
-      },
-      {
-        "version": "1.43.0",
-        "changes": [
-          "Add Home Assistant MQTT Discovery bridge with bidirectional control",
-          "Allow Home Assistant control in Trigger mode with warning about active triggers",
-          "Hide sprint indicator and object counter from HUD in normal play mode",
-          "Reduce mobile TV streaming quality to prevent stuttering",
-          "Fix ambient menu not opening from radial wheel and F12 DevTools key being blocked",
-          "Redesign all Room 3D UI with game-style visuals: keycap buttons, color-coded joysticks, glass panels, gradient controls",
-          "Redesign System panel layout and unify text sizes across all components"
         ]
       }
     ],

@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T15:22:46Z",
+  "generatedAt": "2026-02-22T16:13:03Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.68.0",
-      "archive": "s4r-web-1.68.0.tar.gz",
-      "sha256": "3bd9f39abf6d6ec26db9be0c06c3c09060d567aae1aa5fe608bb0b50d8558427",
-      "size": 10668036,
+      "version": "1.68.1",
+      "archive": "s4r-web-1.68.1.tar.gz",
+      "sha256": "0d4bd7939f61109e4379b6c0d99778a4c96e72d8fd50cf442313ae7f2a86ec3e",
+      "size": 10667924,
       "changelog": [
+        {
+          "version": "1.68.1",
+          "changes": [
+            "Fix ducts not following moved tents and not being removed when a tent is deleted",
+            "Fix landing page to show rooms from all relays instead of only local",
+            "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
+          ]
+        },
         {
           "version": "1.68.0",
           "changes": [
