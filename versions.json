@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T06:01:04Z",
+  "generatedAt": "2026-02-22T15:22:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.67.1",
-      "archive": "s4r-web-1.67.1.tar.gz",
-      "sha256": "cc340a57d89492639519581af1d71303ccb1b10b8fdddeef8995e3723efeb163",
-      "size": 10664997,
+      "version": "1.68.0",
+      "archive": "s4r-web-1.68.0.tar.gz",
+      "sha256": "3bd9f39abf6d6ec26db9be0c06c3c09060d567aae1aa5fe608bb0b50d8558427",
+      "size": 10668036,
       "changelog": [
+        {
+          "version": "1.68.0",
+          "changes": [
+            "Fix slow room discovery by racing HTTP and circuit methods instead of waiting for both",
+            "Add rooms API endpoint for landing page room discovery"
+          ]
+        },
         {
           "version": "1.67.1",
           "changes": [

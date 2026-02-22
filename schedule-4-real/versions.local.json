@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T05:51:17.437Z",
+  "lastCheck": "2026-02-22T15:22:01.928Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.67.1",
-      "installedAt": "2026-02-22T06:01:04Z"
+      "version": "1.68.0",
+      "installedAt": "2026-02-22T15:22:46Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.67.1",
+        "changes": [
+          "Fix guest mode showing empty rooms by loading defaults and overrides for all users",
+          "Reduce relay proxy timeout from 8s to 3s for faster room discovery"
+        ]
+      },
       {
         "version": "1.67.0",
         "changes": [
@@ -405,12 +412,6 @@
           "Redesign all Room 3D UI with game-style visuals: keycap buttons, color-coded joysticks, glass panels, gradient controls",
           "Redesign System panel layout and unify text sizes across all components"
         ]
-      },
-      {
-        "version": "1.42.3",
-        "changes": [
-          "Fix TV pausing by distance, Tab not closing inventory, and env editor click-outside"
-        ]
       }
     ],
     "ingest": [
@@ -496,6 +497,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.14.1",
+        "changes": [
+          "Fix room publisher re-registration loop by caching invite tokens"
+        ]
+      },
       {
         "version": "1.14.0",
         "changes": [
