@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-22T04:51:51Z",
+  "generatedAt": "2026-02-22T06:01:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.67.0",
-      "archive": "s4r-web-1.67.0.tar.gz",
-      "sha256": "56c88000fee4a7bfef7423b22f754f8b2bdfaac5707d577d9fe02602673eb6b9",
-      "size": 10664643,
+      "version": "1.67.1",
+      "archive": "s4r-web-1.67.1.tar.gz",
+      "sha256": "cc340a57d89492639519581af1d71303ccb1b10b8fdddeef8995e3723efeb163",
+      "size": 10664997,
       "changelog": [
+        {
+          "version": "1.67.1",
+          "changes": [
+            "Fix guest mode showing empty rooms by loading defaults and overrides for all users",
+            "Reduce relay proxy timeout from 8s to 3s for faster room discovery"
+          ]
+        },
         {
           "version": "1.67.0",
           "changes": [
@@ -1299,11 +1306,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.0",
-      "archive": "s4r-supervisor-1.14.0.tar.gz",
-      "sha256": "5af574ff7c09e310b1bf9ed69e15f6f12446b693ad8dbcd867642a2b584261ac",
+      "version": "1.14.1",
+      "archive": "s4r-supervisor-1.14.1.tar.gz",
+      "sha256": "051d7de4e80af3008311733b576c169a4de60dba83d8e80dcb36f6119d999382",
       "size": 33698,
       "changelog": [
+        {
+          "version": "1.14.1",
+          "changes": [
+            "Fix room publisher re-registration loop by caching invite tokens"
+          ]
+        },
         {
           "version": "1.14.0",
           "changes": [

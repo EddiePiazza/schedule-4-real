@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T04:51:17.438Z",
+  "lastCheck": "2026-02-22T05:51:17.437Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.67.0",
-      "installedAt": "2026-02-22T04:51:51Z"
+      "version": "1.67.1",
+      "installedAt": "2026-02-22T06:01:04Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.14.0",
-      "installedAt": "2026-02-22T04:51:51Z"
+      "version": "1.14.1",
+      "installedAt": "2026-02-22T06:01:04Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.67.0",
+        "changes": [
+          "Add latency-based relay selection and parallel room discovery"
+        ]
+      },
       {
         "version": "1.66.0",
         "changes": [
@@ -405,12 +411,6 @@
         "changes": [
           "Fix TV pausing by distance, Tab not closing inventory, and env editor click-outside"
         ]
-      },
-      {
-        "version": "1.42.2",
-        "changes": [
-          "Fix environment Reset to restore editor defaults, hide Reset in editor mode"
-        ]
       }
     ],
     "ingest": [
@@ -496,6 +496,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.14.0",
+        "changes": [
+          "Add relay-to-relay RTT measurement in gossip protocol"
+        ]
+      },
       {
         "version": "1.13.0",
         "changes": [

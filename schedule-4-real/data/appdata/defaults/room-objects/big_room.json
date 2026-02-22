@@ -576,24 +576,6 @@
     "locked": false
   },
   {
-    "id": "3462f252-d701-47d4-a7e2-a9c4749b6fa6",
-    "assetFile": "/data/appdata/models/assets/fourniture/game_ready_light.glb",
-    "position": {
-      "x": 640.4202,
-      "y": 157.1311,
-      "z": -473.915
-    },
-    "quaternion": {
-      "x": 0,
-      "y": -0.9999,
-      "z": 0,
-      "w": 0.0105
-    },
-    "scale": 76.191,
-    "name": "game ready light",
-    "locked": false
-  },
-  {
     "id": "b91ac89f-d556-4211-814c-cfd5f5f4a707",
     "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
     "position": {

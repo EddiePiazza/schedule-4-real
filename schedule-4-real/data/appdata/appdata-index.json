@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-22T04:52:01Z",
+  "generated": "2026-02-22T06:01:14Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -188,6 +188,10 @@
     "models/assets/fourniture/unfc_computer_suitcase.glb": {
       "hash": "dedf674c185ae877e3b279437d6a673c",
       "size": 3012424
+    },
+    "models/assets/fourniture/game_ready_light.glb": {
+      "hash": "d5011cdce7b5692aee6647a6277f4ae9",
+      "size": 2003420
     },
     "models/assets/fourniture/monitor-curve.glb": {
       "hash": "dd57215cddff057b1fb0493a2a3f74cc",
@@ -538,8 +542,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "e3b3ed7fb912218bded76c9e0380525b",
-      "size": 122960
+      "hash": "0d4b17ba4589c126f7738a97f4ab9ba3",
+      "size": 122568
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",

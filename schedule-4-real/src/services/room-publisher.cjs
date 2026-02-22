@@ -339,6 +339,7 @@ const roomKey = loadRoomKey()
 const circuits = new Map()           // trackerUrl → TrackerCircuit
 const registeredOnce = new Map()     // trackerUrl → Set<roomIdHex>
 const lastMetaHash = new Map()       // roomIdHex → hash of metadata JSON
+const cachedInviteTokens = new Map() // envId → inviteToken (stable across heartbeats)
 let lastLoggedCount = -1
 let lastSettingsMtime = 0            // track room-settings.json changes
 
@@ -364,6 +365,7 @@ async function publishAll() {
   if (settingsChanged) {
     registeredOnce.clear()
     lastMetaHash.clear()
+    cachedInviteTokens.clear()
     console.log('[RoomPublisher] Settings changed — forcing re-register')
   }
 
@@ -404,8 +406,12 @@ async function publishAll() {
       const roomId = deriveRoomId(room.id, roomSecret)
       const roomIdHex = roomId.toString('hex')
 
-      // Build metadata JSON for this room
-      const inviteToken = generateInviteToken(room.id, roomKey, metadataKey)
+      // Build metadata JSON for this room (cache inviteToken to avoid random nonce changing metadata hash)
+      let inviteToken = cachedInviteTokens.get(room.id)
+      if (!inviteToken) {
+        inviteToken = generateInviteToken(room.id, roomKey, metadataKey)
+        if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
+      }
       const metaJson = JSON.stringify({
         envId: room.id,
         name: room.publishName || room.name,
