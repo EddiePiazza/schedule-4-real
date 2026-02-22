@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T16:22:01.960Z",
+  "lastCheck": "2026-02-22T16:42:01.933Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.68.2",
-      "installedAt": "2026-02-22T16:27:06Z"
+      "version": "1.68.3",
+      "installedAt": "2026-02-22T16:47:59Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -33,14 +33,21 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.3.2",
-      "installedAt": "2026-02-19T21:36:55Z"
+      "version": "1.3.3",
+      "installedAt": "2026-02-22T16:47:59Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.68.2",
+        "changes": [
+          "Fix ducts not following moved tents and not being removed when a tent is deleted",
+          "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
+        ]
+      },
       {
         "version": "1.68.1",
         "changes": [
@@ -401,13 +408,6 @@
           "Add customizable server-side photo overlay with day counter, date, time, and custom text",
           "Show textured model during placement instead of green ghost material",
           "Add timelapse photo scheduling with daily video generation via ffmpeg"
-        ]
-      },
-      {
-        "version": "1.44.0",
-        "changes": [
-          "Fix animated GLB models not playing - add reset() and mixer.update(0)",
-          "Add IP camera streaming with go2rtc WebRTC bridge"
         ]
       }
     ],

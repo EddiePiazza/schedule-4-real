@@ -57,7 +57,8 @@ function loadTrackersFromDisk() {
     const peers = JSON.parse(fs.readFileSync(PEERS_FILE, 'utf8'))
     if (!Array.isArray(peers)) return
     for (const p of peers) {
-      if (p.tracker && p.url && (p.failures || 0) < 3 && !knownTrackers.includes(p.url))
+      if (p.tracker && p.url && (p.failures || 0) < 3 && !knownTrackers.includes(p.url)
+        && !/weedlix\.com/i.test(p.url))
         knownTrackers.push(p.url)
     }
   } catch {}
@@ -340,6 +341,8 @@ const circuits = new Map()           // trackerUrl → TrackerCircuit
 const registeredOnce = new Map()     // trackerUrl → Set<roomIdHex>
 const lastMetaHash = new Map()       // roomIdHex → hash of metadata JSON
 const cachedInviteTokens = new Map() // envId → inviteToken (stable across heartbeats)
+const trackerFailures = new Map()    // trackerUrl → consecutive failure count
+const MAX_TRACKER_FAILURES = 10      // remove non-seed tracker after this many consecutive failures
 let lastLoggedCount = -1
 let lastSettingsMtime = 0            // track room-settings.json changes
 
@@ -392,10 +395,19 @@ async function publishAll() {
         failCount += rooms.length
         circuits.delete(trackerUrl)
         registeredOnce.delete(trackerUrl) // force re-register on reconnect
+        // Track consecutive failures — evict dead non-seed trackers
+        const fails = (trackerFailures.get(trackerUrl) || 0) + 1
+        trackerFailures.set(trackerUrl, fails)
+        if (fails >= MAX_TRACKER_FAILURES && !SEED_TRACKERS.includes(trackerUrl)) {
+          console.log(`[RoomPublisher] Evicting dead tracker ${trackerUrl} (${fails} consecutive failures)`)
+          knownTrackers = knownTrackers.filter(t => t !== trackerUrl)
+          trackerFailures.delete(trackerUrl)
+        }
         continue
       }
       circuits.set(trackerUrl, circuit)
       registeredOnce.delete(trackerUrl) // new circuit → must re-register
+      trackerFailures.delete(trackerUrl) // reset failures on success
       console.log(`[RoomPublisher] Circuit to ${trackerUrl} established (id=${circuit.circuitId})`)
     }
 
@@ -447,6 +459,13 @@ async function publishAll() {
         circuit.close()
         circuits.delete(trackerUrl)
         registeredOnce.delete(trackerUrl)
+        const fails = (trackerFailures.get(trackerUrl) || 0) + 1
+        trackerFailures.set(trackerUrl, fails)
+        if (fails >= MAX_TRACKER_FAILURES && !SEED_TRACKERS.includes(trackerUrl)) {
+          console.log(`[RoomPublisher] Evicting dead tracker ${trackerUrl} (${fails} consecutive failures)`)
+          knownTrackers = knownTrackers.filter(t => t !== trackerUrl)
+          trackerFailures.delete(trackerUrl)
+        }
         failCount += rooms.length
         circuitBroken = true
         break

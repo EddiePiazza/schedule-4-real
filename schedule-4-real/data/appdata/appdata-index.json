@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-22T06:01:14Z",
+  "generated": "2026-02-22T16:48:09Z",
   "files": {
     "appdata-index.json": {
       "hash": "ac0669a656d5bf10b2822594cbde2fa6",
@@ -542,8 +542,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "0d4b17ba4589c126f7738a97f4ab9ba3",
-      "size": 122568
+      "hash": "c27d715b91c728cf2b3d08f36c30ac60",
+      "size": 131958
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",

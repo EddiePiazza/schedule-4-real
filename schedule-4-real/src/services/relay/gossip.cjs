@@ -130,8 +130,9 @@ function start() {
     announceToAll().catch(() => {})
   }, ANNOUNCE_INTERVAL_MS)
 
-  // Persist loop: save to disk every 5min
+  // Persist loop: save to disk every 5min (prune dead peers before saving)
   persistInterval = setInterval(() => {
+    pruneDeadPeers()
     savePeers(getPeerList())
   }, PERSIST_INTERVAL_MS)
 
@@ -147,6 +148,25 @@ function stop() {
   if (persistInterval) { clearInterval(persistInterval); persistInterval = null }
   if (roomFederationInterval) { clearInterval(roomFederationInterval); roomFederationInterval = null }
   console.log('[GOSSIP] Stopped')
+}
+
+// ── Peer pruning ────────────────────────────────────────────────────
+
+/**
+ * Remove peers that have too many failures or haven't been seen in 48h.
+ * Seed nodes are never pruned.
+ */
+function pruneDeadPeers() {
+  const cutoff = Date.now() - 48 * 60 * 60 * 1000  // 48h
+  let pruned = 0
+  for (const [url, peer] of knownPeers) {
+    if (isSeedNode(url)) continue
+    if (peer.failures >= MAX_FAILURES && peer.lastSeen < cutoff) {
+      knownPeers.delete(url)
+      pruned++
+    }
+  }
+  if (pruned > 0) console.log(`[GOSSIP] Pruned ${pruned} dead peer(s)`)
 }
 
 // ── Peer merging ────────────────────────────────────────────────────
@@ -504,6 +524,8 @@ function isValidPeer(p) {
   if (!p.url || typeof p.url !== 'string') return false
   if (!p.url.startsWith('ws://') && !p.url.startsWith('wss://')) return false
   if (p.url.length > 256) return false
+  // Block deprecated/dead domains from propagating through gossip
+  if (/weedlix\.com/i.test(p.url)) return false
   if (!p.pk || typeof p.pk !== 'string') return false
   if (!/^[0-9a-f]{64}$/i.test(p.pk)) return false
   // Reject internal/private IPs
