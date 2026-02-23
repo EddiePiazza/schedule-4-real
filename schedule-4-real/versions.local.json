@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T19:51:18.057Z",
+  "lastCheck": "2026-02-23T20:01:18.052Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.70.3",
-      "installedAt": "2026-02-23T19:56:08Z"
+      "version": "1.70.4",
+      "installedAt": "2026-02-23T20:09:04Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.70.3",
+        "changes": [
+          "Fix public room browser using direct API instead of complex onion circuit"
+        ]
+      },
       {
         "version": "1.70.2",
         "changes": [
@@ -392,12 +398,6 @@
         "version": "1.47.5",
         "changes": [
           "Separate blower and fan as independent entities in Home Assistant bridge"
-        ]
-      },
-      {
-        "version": "1.47.4",
-        "changes": [
-          "Fix light settings save not applying when planting plan is active"
         ]
       }
     ],

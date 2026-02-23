@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T19:56:08Z",
+  "generatedAt": "2026-02-23T20:09:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.3",
-      "archive": "s4r-web-1.70.3.tar.gz",
-      "sha256": "9904d3a976c4d14d3d63603f6d58488de91b813b9d2799efc1ae98e34db9a458",
-      "size": 10716483,
+      "version": "1.70.4",
+      "archive": "s4r-web-1.70.4.tar.gz",
+      "sha256": "3f1a9b70b6daa48f200d61dd7293b3eaa6027f625a18fdea93d14ff61379de96",
+      "size": 10716076,
       "changelog": [
+        {
+          "version": "1.70.4",
+          "changes": [
+            "Fix public room discovery with server-side decryption endpoint"
+          ]
+        },
         {
           "version": "1.70.3",
           "changes": [
