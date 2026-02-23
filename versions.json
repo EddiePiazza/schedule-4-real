@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T20:21:23Z",
+  "generatedAt": "2026-02-23T20:39:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.5",
-      "archive": "s4r-web-1.70.5.tar.gz",
-      "sha256": "f2292af99420336d71404c3d9327e3b7c6269573107bdc6cfde06465d6e446a5",
-      "size": 10716235,
+      "version": "1.70.6",
+      "archive": "s4r-web-1.70.6.tar.gz",
+      "sha256": "e672229db65901a6ad06682e866fde5bb2899207226578228a685372c8e7f003",
+      "size": 10716268,
       "changelog": [
+        {
+          "version": "1.70.6",
+          "changes": [
+            "Deduplicate rooms by name and sort Welcome Demo Room first"
+          ]
+        },
         {
           "version": "1.70.5",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T20:21:18.052Z",
+  "lastCheck": "2026-02-23T20:31:18.054Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.70.5",
-      "installedAt": "2026-02-23T20:21:23Z"
+      "version": "1.70.6",
+      "installedAt": "2026-02-23T20:39:47Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.70.5",
+        "changes": [
+          "Fix room dedup removing distinct rooms with same envId"
+        ]
+      },
       {
         "version": "1.70.4",
         "changes": [
@@ -388,16 +394,6 @@
         "version": "1.47.7",
         "changes": [
           "Fix voice relay quality: remove chipmunk effect, add jitter buffer, boost volume"
-        ]
-      },
-      {
-        "version": "1.47.6",
-        "changes": [
-          "Improve 3D room mobile performance with reduced GPU load and throttled raycasts",
-          "Fix players getting stuck when touching, now softly push apart",
-          "Fix static assets and API returning 404/500 in preview mode",
-          "Fix voice chat outside LAN with WebSocket relay fallback when P2P fails",
-          "Fix wall collision blocking instead of sliding along surfaces"
         ]
       }
     ],
