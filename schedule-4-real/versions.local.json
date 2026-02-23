@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T20:31:18.054Z",
+  "lastCheck": "2026-02-23T23:01:48.473Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.70.6",
-      "installedAt": "2026-02-23T20:39:47Z"
+      "version": "1.70.7",
+      "installedAt": "2026-02-23T23:02:24Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.70.6",
+        "changes": [
+          "Deduplicate rooms by name and sort Welcome Demo Room first"
+        ]
+      },
       {
         "version": "1.70.5",
         "changes": [
@@ -388,12 +394,6 @@
           "Fix socket control not responding when source filter is active",
           "Fix Data Sources list flickering when messages arrive",
           "Add dedicated voice WebSocket relay with binary audio and AudioWorklet playback"
-        ]
-      },
-      {
-        "version": "1.47.7",
-        "changes": [
-          "Fix voice relay quality: remove chipmunk effect, add jitter buffer, boost volume"
         ]
       }
     ],

@@ -126,13 +126,16 @@ function loadRoomKey() {
   return null
 }
 
-function generateInviteToken(envId, roomKey, key) {
+function generateInviteToken(envId, roomKey) {
   if (!roomKey) return ''
+  // Derive per-room invite key from roomKey (must match client-side parseInviteToken)
+  const tokenKey = Buffer.alloc(32)
+  sodium.crypto_generichash(tokenKey, Buffer.from(`invite-${roomKey}`, 'utf8'))
   const plaintext = Buffer.from(envId, 'utf8')
   const nonce = Buffer.alloc(NONCE_BYTES)
   sodium.randombytes_buf(nonce)
   const ct = Buffer.alloc(plaintext.length + MAC_BYTES)
-  sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(ct, plaintext, null, null, nonce, key)
+  sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(ct, plaintext, null, null, nonce, tokenKey)
   const payload = Buffer.concat([nonce, ct])
   return `${roomKey}.${payload.toString('base64url')}`
 }
@@ -447,7 +450,7 @@ async function publishAll() {
       // Build metadata JSON for this room (cache inviteToken to avoid random nonce changing metadata hash)
       let inviteToken = cachedInviteTokens.get(room.id)
       if (!inviteToken) {
-        inviteToken = generateInviteToken(room.id, roomKey, metadataKey)
+        inviteToken = generateInviteToken(room.id, roomKey)
         if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
       }
       const metaJson = JSON.stringify({
