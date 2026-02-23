@@ -6,16 +6,18 @@
     "tracker": true,
     "ts": 1771448874289,
     "failures": 0,
-    "lastSeen": 1771449083166
+    "lastSeen": 1771869144351,
+    "rtt": 82
   },
   {
     "url": "wss://r2.imaset.com",
     "pk": "78feb6b721ce2a7a700b4e847eead603f0655414899476091d231178ab98fd33",
     "signPk": "ff36752073de11130dd2fd2f3f1a5aa9ea15590cb90548896e42492696a15aa2",
     "tracker": true,
-    "ts": 1771448849457,
+    "ts": 1771538116104,
     "failures": 0,
-    "lastSeen": 1771449083090
+    "lastSeen": 1771868964310,
+    "rtt": 19
   },
   {
     "url": "ws://80.24.53.244:9443",
@@ -24,15 +26,53 @@
     "tracker": true,
     "ts": 1771375479325,
     "failures": 0,
-    "lastSeen": 1771449083001
+    "lastSeen": 1771866564261
   },
   {
-    "url": "ws://95.89.244.154:9443",
-    "pk": "0ec6c56c851480a8cdabdbb73873d70258bd3abebc39f0dcec0f5ba6c1e06d51",
-    "signPk": "005eb9f2ca2ed7631e7710ef8bd33cb5921e4d5735d16850ca7a155bfc15f350",
+    "url": "wss://schedule4real.com/rooms/relay",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
     "tracker": true,
-    "ts": 1771449019949,
-    "failures": 2,
-    "lastSeen": 0
+    "ts": 1771477725386,
+    "failures": 0,
+    "lastSeen": 1771869024351,
+    "rtt": 82
+  },
+  {
+    "url": "wss://demo.schedule4real.com/relay",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
+    "tracker": true,
+    "ts": 1771537470569,
+    "failures": 15,
+    "lastSeen": 1771868364354
+  },
+  {
+    "url": "wss://schedule4real.com/relay",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
+    "tracker": true,
+    "ts": 1771538115068,
+    "failures": 0,
+    "lastSeen": 1771869204351,
+    "rtt": 82
+  },
+  {
+    "url": "",
+    "pk": "78feb6b721ce2a7a700b4e847eead603f0655414899476091d231178ab98fd33",
+    "signPk": "ff36752073de11130dd2fd2f3f1a5aa9ea15590cb90548896e42492696a15aa2",
+    "tracker": true,
+    "ts": 1771865431724,
+    "failures": 0,
+    "lastSeen": 1771866272505
+  },
+  {
+    "url": "",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
+    "tracker": true,
+    "ts": 1771864110486,
+    "failures": 0,
+    "lastSeen": 1771866212569
   }
 ]

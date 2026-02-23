@@ -41,7 +41,11 @@ setInterval(() => {
 }, 30_000)
 
 // Only trust X-Forwarded-For from known reverse proxies (prevents rate limit bypass)
-const TRUSTED_PROXIES = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
+// Supports TRUSTED_PROXIES env var (comma-separated IPs) for custom deployments
+const TRUSTED_PROXIES = new Set([
+  '127.0.0.1', '::1', '::ffff:127.0.0.1',
+  ...(process.env.TRUSTED_PROXIES || '').split(',').map(s => s.trim()).filter(Boolean),
+])
 
 function getClientIp(req) {
   const remoteAddr = req.socket?.remoteAddress || '0.0.0.0'

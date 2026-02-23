@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T16:24:37Z",
+  "generatedAt": "2026-02-23T17:55:56Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.0",
-      "archive": "s4r-web-1.70.0.tar.gz",
-      "sha256": "7184efc08552c452fa8992fe5600492bb5b53b43523bff7dc2ae4eb9d989d97f",
-      "size": 10682533,
+      "version": "1.70.1",
+      "archive": "s4r-web-1.70.1.tar.gz",
+      "sha256": "94f98e6dd7f1c0fbd243e17e32b40520c0567d93b40f2900aab3601842a64c06",
+      "size": 10715697,
       "changelog": [
+        {
+          "version": "1.70.1",
+          "changes": [
+            "Fix public room discovery not showing rooms in lobby"
+          ]
+        },
         {
           "version": "1.70.0",
           "changes": [

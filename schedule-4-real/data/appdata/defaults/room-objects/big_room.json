@@ -19,24 +19,6 @@
       "locked": true
     },
     {
-      "id": "78ea956b-cc2c-4c9a-a5d1-8bd45c1ecf26",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 797.7882,
-        "y": 42.078,
-        "z": -462.4115
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9986,
-        "z": 0,
-        "w": -0.0525
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "6c713607-fc2c-4370-aa86-9c7f3bec3a2c",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -49,24 +31,6 @@
         "y": -1,
         "z": 0,
         "w": -0.0037
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "ec891e0d-9f53-4085-9e76-99d6745aedf9",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 799.7141,
-        "y": 77.4573,
-        "z": -502.637
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -1,
-        "z": 0,
-        "w": 0.0098
       },
       "scale": 129.6261,
       "name": "weed brick 2",
@@ -4242,6 +4206,42 @@
         "y": 0.9969,
         "z": 0,
         "w": -0.0787
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "78ea956b-cc2c-4c9a-a5d1-8bd45c1ecf26",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 797.6543,
+        "y": 41.8131,
+        "z": -453.7879
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.0654,
+        "z": 0,
+        "w": 0.9979
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "ec891e0d-9f53-4085-9e76-99d6745aedf9",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 792.8506,
+        "y": 81.024,
+        "z": -509.3072
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.1951,
+        "z": 0,
+        "w": 0.9808
       },
       "scale": 129.6261,
       "name": "weed brick 2",

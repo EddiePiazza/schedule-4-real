@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T16:21:18.075Z",
+  "lastCheck": "2026-02-23T17:51:18.052Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.70.0",
-      "installedAt": "2026-02-23T16:24:37Z"
+      "version": "1.70.1",
+      "installedAt": "2026-02-23T17:55:56Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.70.0",
+        "changes": [
+          "Security hardening v2: 3-hop circuits, guard node persistence, SSRF protection, remove RTT data, PK-only routing"
+        ]
+      },
       {
         "version": "1.69.1",
         "changes": [
@@ -392,12 +398,6 @@
         "version": "1.47.2",
         "changes": [
           "Fix brightness slider showing stale device config instead of active plan values"
-        ]
-      },
-      {
-        "version": "1.47.1",
-        "changes": [
-          "Fix light brightness not applying when planting plan is active"
         ]
       }
     ],
