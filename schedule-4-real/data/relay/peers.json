@@ -6,8 +6,8 @@
     "tracker": true,
     "ts": 1771448874289,
     "failures": 0,
-    "lastSeen": 1771876884362,
-    "rtt": 82
+    "lastSeen": 1771877844361,
+    "rtt": 81
   },
   {
     "url": "wss://r2.imaset.com",
@@ -16,8 +16,8 @@
     "tracker": true,
     "ts": 1771538116104,
     "failures": 0,
-    "lastSeen": 1771876944322,
-    "rtt": 42
+    "lastSeen": 1771877904296,
+    "rtt": 16
   },
   {
     "url": "ws://80.24.53.244:9443",
@@ -35,8 +35,8 @@
     "tracker": true,
     "ts": 1771477725386,
     "failures": 0,
-    "lastSeen": 1771876764375,
-    "rtt": 79
+    "lastSeen": 1771877664345,
+    "rtt": 81
   },
   {
     "url": "wss://demo.schedule4real.com/relay",
@@ -44,8 +44,8 @@
     "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
     "tracker": true,
     "ts": 1771537470569,
-    "failures": 46,
-    "lastSeen": 1771876764546
+    "failures": 52,
+    "lastSeen": 1771877364354
   },
   {
     "url": "wss://schedule4real.com/relay",
@@ -54,8 +54,8 @@
     "tracker": true,
     "ts": 1771538115068,
     "failures": 0,
-    "lastSeen": 1771876764358,
-    "rtt": 78
+    "lastSeen": 1771877664344,
+    "rtt": 81
   },
   {
     "url": "",
