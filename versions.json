@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T23:02:24Z",
+  "generatedAt": "2026-02-23T23:09:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.7",
-      "archive": "s4r-web-1.70.7.tar.gz",
-      "sha256": "79b87a86ea27775927ff0b46ff738f53c3c9a12737fc4bcabddcd3b8a1e3a076",
-      "size": 10717322,
+      "version": "1.71.0",
+      "archive": "s4r-web-1.71.0.tar.gz",
+      "sha256": "6ae17b7192ece7c0175d398bd393e06e890469eca53b53116dc40c75f22a4f33",
+      "size": 10715437,
       "changelog": [
+        {
+          "version": "1.71.0",
+          "changes": [
+            "Add encrypted bootstrap peer fallback for network resilience"
+          ]
+        },
         {
           "version": "1.70.7",
           "changes": [
@@ -1658,11 +1664,17 @@
       ]
     },
     "relay": {
-      "version": "1.4.1",
-      "archive": "s4r-relay-1.4.1.tar.gz",
-      "sha256": "082c6b55f665169b9bd9dd0775228b9e03e4689ab0b043023db90da3c1d5d578",
-      "size": 38589,
+      "version": "1.5.0",
+      "archive": "s4r-relay-1.5.0.tar.gz",
+      "sha256": "7e12c74bfc6ae6d6911601c6f529f995f42ed9a6592cf3e43f62b00b3a059521",
+      "size": 41369,
       "changelog": [
+        {
+          "version": "1.5.0",
+          "changes": [
+            "Add encrypted bootstrap peer list for offline peer discovery"
+          ]
+        },
         {
           "version": "1.4.1",
           "changes": [

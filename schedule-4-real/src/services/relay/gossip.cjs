@@ -10,7 +10,7 @@ const https = require('node:https')
 const fs = require('node:fs')
 const path = require('node:path')
 const { sign, verify, randomBytes } = require('./crypto.cjs')
-const { loadPeers, savePeers, SEED_NODES, DATA_DIR } = require('./config.cjs')
+const { loadPeers, savePeers, SEED_NODES, DATA_DIR, loadBootstrapPeers } = require('./config.cjs')
 
 // ── Module state ────────────────────────────────────────────────────
 const knownPeers = new Map()   // url or pk:signPk -> peer object
@@ -138,6 +138,20 @@ function start() {
         failures: 0,
         lastSeen: 0,
       })
+    }
+  }
+
+  // If only seeds known, try encrypted bootstrap peers as fallback
+  const peersWithUrls = [...knownPeers.values()].filter(p => p.url)
+  if (peersWithUrls.length <= SEED_NODES.length) {
+    const bootstrap = loadBootstrapPeers()
+    if (bootstrap.length) {
+      for (const bp of bootstrap) {
+        if (bp.signPk && !knownPeers.has(`pk:${bp.signPk}`)) {
+          knownPeers.set(`pk:${bp.signPk}`, bp)
+        }
+      }
+      console.log(`[GOSSIP] Loaded ${bootstrap.length} bootstrap peers as fallback`)
     }
   }
 

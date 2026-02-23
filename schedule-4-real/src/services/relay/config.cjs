@@ -99,8 +99,37 @@ function savePeers(peers) {
   fs.writeFileSync(peersFile, JSON.stringify(peers, null, 2))
 }
 
+/**
+ * Load encrypted bootstrap peers from bootstrap-peers.enc (fallback when seeds are unreachable).
+ * Requires BOOTSTRAP_PEERS_KEY in process.env and sodium-native.
+ */
+function loadBootstrapPeers() {
+  const keyHex = process.env.BOOTSTRAP_PEERS_KEY
+  if (!keyHex || keyHex.length !== 64) return []
+
+  const encFile = path.join(DATA_DIR, 'bootstrap-peers.enc')
+  if (!fs.existsSync(encFile)) return []
+
+  try {
+    const sodium = require('sodium-native')
+    const encData = fs.readFileSync(encFile)
+    if (encData.length < 24 + 16) return []
+
+    const key = Buffer.from(keyHex, 'hex')
+    const nonce = encData.subarray(0, 24)
+    const ciphertext = encData.subarray(24)
+    const plaintext = Buffer.alloc(ciphertext.length - 16)
+    sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(plaintext, null, ciphertext, null, nonce, key)
+    const data = JSON.parse(plaintext.toString('utf-8'))
+    return (data.peers || []).map(p => ({
+      url: '', pk: p.pk, signPk: p.signPk, tracker: !!p.tracker,
+      ts: data.ts || 0, failures: 0, lastSeen: 0,
+    }))
+  } catch { return [] }
+}
+
 module.exports = {
   DATA_DIR, SEED_NODES,
   loadIdentity, loadConfig, saveConfig, loadPeers, savePeers,
-  ensureDataDir,
+  loadBootstrapPeers, ensureDataDir,
 }
