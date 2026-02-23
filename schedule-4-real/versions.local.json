@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T05:21:18.033Z",
+  "lastCheck": "2026-02-23T13:31:18.071Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.69.0",
-      "installedAt": "2026-02-23T05:25:08Z"
+      "version": "1.69.1",
+      "installedAt": "2026-02-23T13:31:25Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -33,14 +33,20 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.4.0",
-      "installedAt": "2026-02-23T05:25:08Z"
+      "version": "1.4.1",
+      "installedAt": "2026-02-23T13:31:25Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.69.0",
+        "changes": [
+          "Add anonymous relay routing via Ed25519 public keys and deduplicate rooms by envId"
+        ]
+      },
       {
         "version": "1.68.3",
         "changes": [
@@ -394,15 +400,6 @@
           "Add timelapse gallery with multi-day selection, bulk cleanup, and photo browser",
           "Add auto-generated daily timelapse videos with sequential playback and full export"
         ]
-      },
-      {
-        "version": "1.46.0",
-        "changes": [
-          "Add Camera Service and Video Streaming to services panel",
-          "Fix environment editor loading user presets instead of system-only presets",
-          "Add model metadata editor with display name, category, and animation settings",
-          "Show textured model during placement instead of green ghost material"
-        ]
       }
     ],
     "ingest": [
@@ -727,6 +724,12 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.4.0",
+        "changes": [
+          "Add PK-based routing to hide relay IPs from public endpoints"
+        ]
+      },
       {
         "version": "1.3.3",
         "changes": [

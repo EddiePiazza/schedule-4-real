@@ -1,14 +1,5 @@
 [
   {
-    "id": "texture-test",
-    "name": "Texture Test",
-    "description": "",
-    "file": "/data/appdata/models/rooms/texture-test.glb",
-    "size": "5 MB",
-    "icon": "CubeIcon",
-    "image": "/data/appdata/models/rooms/texture-test.webp"
-  },
-  {
     "id": "big_room",
     "name": "Big Room",
     "description": "Spacious furnished interior room with multiple areas to explore.",

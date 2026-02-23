@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T05:25:08Z",
+  "generatedAt": "2026-02-23T13:31:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.69.0",
-      "archive": "s4r-web-1.69.0.tar.gz",
-      "sha256": "e503882867309ccc64da4431e249a09b39ea02b81d99604583dc1664a789b894",
-      "size": 10680831,
+      "version": "1.69.1",
+      "archive": "s4r-web-1.69.1.tar.gz",
+      "sha256": "ba472e97e4c578a4bfa1226f9b459bea27d15b7bc52249f208b52d50caf2b476",
+      "size": 10683182,
       "changelog": [
+        {
+          "version": "1.69.1",
+          "changes": [
+            "Update peer proxy to work with URL-stripped peer data"
+          ]
+        },
         {
           "version": "1.69.0",
           "changes": [
@@ -1603,11 +1609,17 @@
       ]
     },
     "relay": {
-      "version": "1.4.0",
-      "archive": "s4r-relay-1.4.0.tar.gz",
-      "sha256": "6a03d35b0e79bf76318308dccdcdb12bfa77b403af484e265f5d5146a52b7c3a",
-      "size": 38340,
+      "version": "1.4.1",
+      "archive": "s4r-relay-1.4.1.tar.gz",
+      "sha256": "082c6b55f665169b9bd9dd0775228b9e03e4689ab0b043023db90da3c1d5d578",
+      "size": 38589,
       "changelog": [
+        {
+          "version": "1.4.1",
+          "changes": [
+            "Remove relay URLs from public /peers endpoint to prevent IP exposure"
+          ]
+        },
         {
           "version": "1.4.0",
           "changes": [

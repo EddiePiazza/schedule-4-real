@@ -307,7 +307,8 @@ function verifyAnnouncement(announcement) {
  */
 function fetchPeersFrom(peerUrl) {
   return new Promise((resolve, reject) => {
-    const httpUrl = wsUrlToHttpBase(peerUrl) + '/peers'
+    const authParam = mySignPk ? `?auth=${mySignPk}` : ''
+    const httpUrl = wsUrlToHttpBase(peerUrl) + '/peers' + authParam
     const mod = httpUrl.startsWith('https:') ? https : http
 
     const MAX_BODY = 256 * 1024 // 256KB max for peer list response

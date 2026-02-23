@@ -234,12 +234,19 @@ const server = createServer(async (req, res) => {
   }
 
   // Gossip: peer list
-  if (req.method === 'GET' && url === '/peers') {
+  // With ?auth=<signPk> from another relay → full list with URLs (relay-to-relay gossip)
+  // Without auth → public list, no URLs (browser/curl safe)
+  if (req.method === 'GET' && url.startsWith('/peers')) {
     if (rateLimited(res, clientIp, 'peers')) return
+    const parsedUrl = new URL(req.url, 'http://localhost')
+    const authPk = parsedUrl.searchParams.get('auth') || ''
+    // Verify: auth param must be a known relay signPk
+    const isRelay = authPk && /^[0-9a-f]{64}$/i.test(authPk)
+      && gossip.getPeerList().some(p => p.signPk && p.signPk.toLowerCase() === authPk.toLowerCase())
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Cache-Control', 'public, max-age=30')
     res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify(gossip.getPeerList()))
+    res.end(JSON.stringify(isRelay ? gossip.getPeerList() : gossip.getPeerListPublic()))
     return
   }
 
