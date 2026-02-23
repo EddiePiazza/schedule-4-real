@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T17:55:56Z",
+  "generatedAt": "2026-02-23T18:18:03Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.1",
-      "archive": "s4r-web-1.70.1.tar.gz",
-      "sha256": "94f98e6dd7f1c0fbd243e17e32b40520c0567d93b40f2900aab3601842a64c06",
-      "size": 10715697,
+      "version": "1.70.2",
+      "archive": "s4r-web-1.70.2.tar.gz",
+      "sha256": "da2f46cd9f4487252c230de29073431cc44a02dbec7d42ca891dad4e3b43e9d5",
+      "size": 10715554,
       "changelog": [
+        {
+          "version": "1.70.2",
+          "changes": [
+            "Fix room discovery race discarding slower results"
+          ]
+        },
         {
           "version": "1.70.1",
           "changes": [
