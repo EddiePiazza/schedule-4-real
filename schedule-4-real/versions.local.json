@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T18:11:18.052Z",
+  "lastCheck": "2026-02-23T19:51:18.057Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.70.2",
-      "installedAt": "2026-02-23T18:18:03Z"
+      "version": "1.70.3",
+      "installedAt": "2026-02-23T19:56:08Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.70.2",
+        "changes": [
+          "Fix room discovery race discarding slower results"
+        ]
+      },
       {
         "version": "1.70.1",
         "changes": [
@@ -392,12 +398,6 @@
         "version": "1.47.4",
         "changes": [
           "Fix light settings save not applying when planting plan is active"
-        ]
-      },
-      {
-        "version": "1.47.3",
-        "changes": [
-          "Fix timezone consistency, security validations, and error handling in camera endpoints"
         ]
       }
     ],

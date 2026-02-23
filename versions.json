@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T18:18:03Z",
+  "generatedAt": "2026-02-23T19:56:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.70.2",
-      "archive": "s4r-web-1.70.2.tar.gz",
-      "sha256": "da2f46cd9f4487252c230de29073431cc44a02dbec7d42ca891dad4e3b43e9d5",
-      "size": 10715554,
+      "version": "1.70.3",
+      "archive": "s4r-web-1.70.3.tar.gz",
+      "sha256": "9904d3a976c4d14d3d63603f6d58488de91b813b9d2799efc1ae98e34db9a458",
+      "size": 10716483,
       "changelog": [
+        {
+          "version": "1.70.3",
+          "changes": [
+            "Fix public room browser using direct API instead of complex onion circuit"
+          ]
+        },
         {
           "version": "1.70.2",
           "changes": [
