@@ -7,11 +7,70 @@
 
 const http = require('node:http')
 const https = require('node:https')
+const fs = require('node:fs')
+const path = require('node:path')
 const { sign, verify, randomBytes } = require('./crypto.cjs')
-const { loadPeers, savePeers, SEED_NODES } = require('./config.cjs')
+const { loadPeers, savePeers, SEED_NODES, DATA_DIR } = require('./config.cjs')
 
 // ── Module state ────────────────────────────────────────────────────
-const knownPeers = new Map()   // url -> peer object
+const knownPeers = new Map()   // url or pk:signPk -> peer object
+
+// ── Key revocation ──────────────────────────────────────────────────
+const revokedKeys = new Set()  // signPk hex strings (lowercase)
+const pendingRevocations = []  // { signPk, newSignPk, ts, sig } — to propagate in next gossip cycle
+
+// Load persisted revocations
+try {
+  const revokedFile = path.join(DATA_DIR, 'revoked-keys.json')
+  if (fs.existsSync(revokedFile)) {
+    const data = JSON.parse(fs.readFileSync(revokedFile, 'utf-8'))
+    if (Array.isArray(data)) data.forEach(k => revokedKeys.add(k.toLowerCase()))
+  }
+} catch {}
+
+function persistRevocations() {
+  try {
+    const revokedFile = path.join(DATA_DIR, 'revoked-keys.json')
+    fs.writeFileSync(revokedFile, JSON.stringify([...revokedKeys]))
+  } catch {}
+}
+
+function isRevoked(signPk) {
+  return signPk && revokedKeys.has(signPk.toLowerCase())
+}
+
+/**
+ * Process a key revocation announcement.
+ * Format: { type: 'revoke', signPk: oldKey, newSignPk: '', ts, sig }
+ * sig = sign("revoke|oldSignPk|newSignPk|ts", oldSecretKey)
+ * Proves the OLD key owner authorized the revocation.
+ */
+function processRevocation(revocation) {
+  if (!revocation || !revocation.signPk || !revocation.ts || !revocation.sig) return false
+  if (!/^[0-9a-f]{64}$/i.test(revocation.signPk)) return false
+  if (isRevoked(revocation.signPk)) return true // Already revoked
+
+  const newSpk = revocation.newSignPk || ''
+  const msg = Buffer.from(`revoke|${revocation.signPk}|${newSpk}|${revocation.ts}`)
+  try {
+    const sig = Buffer.from(revocation.sig, 'hex')
+    const pubKey = Buffer.from(revocation.signPk, 'hex')
+    if (!verify(sig, msg, pubKey)) return false
+  } catch { return false }
+
+  // Valid revocation — add to set and remove peer
+  const revokedLower = revocation.signPk.toLowerCase()
+  revokedKeys.add(revokedLower)
+  for (const [key, peer] of knownPeers) {
+    if (peer.signPk?.toLowerCase() === revokedLower) {
+      knownPeers.delete(key)
+    }
+  }
+  pendingRevocations.push(revocation)
+  persistRevocations()
+  console.log(`[GOSSIP] Key revoked: ${revocation.signPk.slice(0, 16)}...`)
+  return true
+}
 
 let myUrl = ''
 let myPk = ''
@@ -159,10 +218,10 @@ function stop() {
 function pruneDeadPeers() {
   const cutoff = Date.now() - 48 * 60 * 60 * 1000  // 48h
   let pruned = 0
-  for (const [url, peer] of knownPeers) {
-    if (isSeedNode(url)) continue
+  for (const [key, peer] of knownPeers) {
+    if (peer.url && isSeedNode(peer.url)) continue
     if (peer.failures >= MAX_FAILURES && peer.lastSeen < cutoff) {
-      knownPeers.delete(url)
+      knownPeers.delete(key)
       pruned++
     }
   }
@@ -181,6 +240,36 @@ function mergePeers(remotePeers) {
   const toProcess = remotePeers.slice(0, 200)
 
   for (const rp of toProcess) {
+    // New format: peer without URL (signPk-only, privacy-preserving)
+    if (!rp.url && rp.signPk && /^[0-9a-f]{64}$/i.test(rp.signPk)) {
+      if (!rp.pk || !/^[0-9a-f]{64}$/i.test(rp.pk)) continue
+      // Skip self
+      if (rp.signPk === mySignPk) continue
+
+      const key = `pk:${rp.signPk}`
+      const existing = knownPeers.get(key)
+      if (!existing) {
+        if (knownPeers.size >= MAX_PEERS) continue
+        knownPeers.set(key, {
+          url: '', // no URL — signPk-only peer
+          pk: rp.pk,
+          signPk: rp.signPk,
+          tracker: !!rp.tracker,
+          ts: rp.ts || Date.now(),
+          failures: 0,
+          lastSeen: rp.lastSeen || 0,
+        })
+      } else {
+        if (rp.ts && rp.ts > (existing.ts || 0)) {
+          existing.pk = rp.pk || existing.pk
+          existing.tracker = rp.tracker !== undefined ? !!rp.tracker : existing.tracker
+          existing.ts = rp.ts
+        }
+      }
+      continue
+    }
+
+    // Legacy format: peer with URL
     if (!isValidPeer(rp)) continue
     // Skip self
     if (rp.url === myUrl) continue
@@ -241,15 +330,18 @@ function getActivePeers() {
 
 /**
  * Build a signed announcement for this node.
+ * Uses signPk-based identity — NO URL in announcement (privacy hardening).
+ * Seed nodes' URLs are hardcoded in config.cjs, not shared via gossip.
  */
 function getAnnouncement() {
   const ts = Date.now()
-  const message = `${myUrl}|${myPk}|${ts}`
+  // New format: signPk|pk|ts (no URL — prevents IP leak via gossip)
+  const message = `${mySignPk}|${myPk}|${ts}`
   const msgBuf = Buffer.from(message, 'utf-8')
   const sigBuf = sign(msgBuf, mySignSk)
 
   return {
-    url: myUrl,
+    // NO url field — prevents IP leak to any relay joining the gossip network
     pk: myPk,
     signPk: mySignPk,
     tracker: true,
@@ -260,20 +352,19 @@ function getAnnouncement() {
 
 /**
  * Verify a peer's announcement signature + freshness.
- * @param {{ url: string, pk: string, signPk: string, ts: number, sig: string }} announcement
+ * Accepts two formats (backward compatible during transition):
+ *  - New: signPk|pk|ts (no URL — privacy hardening)
+ *  - Legacy: url|pk|ts (old relays that haven't updated yet)
+ * @param {{ url?: string, pk: string, signPk: string, ts: number, sig: string }} announcement
  * @returns {boolean}
  */
 function verifyAnnouncement(announcement) {
   try {
-    if (!announcement || !announcement.url || !announcement.pk || !announcement.signPk || !announcement.ts || !announcement.sig) {
+    if (!announcement || !announcement.pk || !announcement.signPk || !announcement.ts || !announcement.sig) {
       return false
     }
-
-    // Validate URL format
-    if (typeof announcement.url !== 'string' || (!announcement.url.startsWith('wss://') && !announcement.url.startsWith('ws://'))) {
-      return false
-    }
-    if (announcement.url.length > 256) return false
+    // Reject announcements from revoked keys
+    if (isRevoked(announcement.signPk)) return false
 
     // Validate hex key formats
     if (!/^[0-9a-f]{64}$/i.test(announcement.pk)) return false
@@ -285,7 +376,20 @@ function verifyAnnouncement(announcement) {
     if (announcement.ts < now - ANNOUNCE_MAX_AGE_MS) return false  // too old
     if (announcement.ts > now + ANNOUNCE_MAX_FUTURE_MS) return false // too far in the future
 
-    // Reject URLs pointing to internal/private IPs (SSRF prevention)
+    // New format: signPk|pk|ts (no URL)
+    if (!announcement.url) {
+      const message = `${announcement.signPk}|${announcement.pk}|${announcement.ts}`
+      const msgBuf = Buffer.from(message, 'utf-8')
+      const sigBuf = Buffer.from(announcement.sig, 'hex')
+      const pkBuf = Buffer.from(announcement.signPk, 'hex')
+      return verify(sigBuf, msgBuf, pkBuf)
+    }
+
+    // Legacy format: url|pk|ts (backward compat during transition)
+    if (typeof announcement.url !== 'string' || (!announcement.url.startsWith('wss://') && !announcement.url.startsWith('ws://'))) {
+      return false
+    }
+    if (announcement.url.length > 256) return false
     if (isInternalUrl(announcement.url)) return false
 
     const message = `${announcement.url}|${announcement.pk}|${announcement.ts}`
@@ -307,7 +411,16 @@ function verifyAnnouncement(announcement) {
  */
 function fetchPeersFrom(peerUrl) {
   return new Promise((resolve, reject) => {
-    const authParam = mySignPk ? `?auth=${mySignPk}` : ''
+    // Challenge-response auth: sign(peers|ts|mySignPk|targetSignPk) with Ed25519
+    let authParam = ''
+    if (mySignPk && mySignSk) {
+      const targetPeer = knownPeers.get(peerUrl)
+      const targetSignPk = targetPeer?.signPk || ''
+      const ts = Date.now().toString()
+      const msg = Buffer.from(`peers|${ts}|${mySignPk}|${targetSignPk}`)
+      const sig = sign(msg, mySignSk).toString('hex')
+      authParam = `?ts=${ts}&pk=${mySignPk}&sig=${sig}`
+    }
     const httpUrl = wsUrlToHttpBase(peerUrl) + '/peers' + authParam
     const mod = httpUrl.startsWith('https:') ? https : http
 
@@ -563,10 +676,11 @@ function isSeedNode(url) {
 }
 
 /**
- * Get all peers except self.
+ * Get all peers except self that have a reachable URL.
+ * Peers without URLs (signPk-only) cannot be contacted via HTTP.
  */
 function getOtherPeers() {
-  return getPeerList().filter(p => p.url !== myUrl)
+  return getPeerList().filter(p => p.url && p.url !== myUrl)
 }
 
 /**
@@ -637,10 +751,7 @@ function getPeerListPublic() {
     pk: p.pk,
     signPk: p.signPk,
     tracker: p.tracker,
-    ts: p.ts,
-    failures: p.failures,
-    lastSeen: p.lastSeen,
-    rtt: p.rtt || 0,
+    // NO: ts, failures, lastSeen, rtt — enables fingerprinting/triangulation
   }))
 }
 
@@ -660,4 +771,6 @@ module.exports = {
   announceToAll,
   lookupUrlBySignPk,
   lookupSignPkByUrl,
+  isRevoked,
+  processRevocation,
 }

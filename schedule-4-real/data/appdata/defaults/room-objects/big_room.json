@@ -1,78 +1,6 @@
 {
   "objects": [
     {
-      "id": "2c156a89-26c4-4191-a62c-38c5108dae6a",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 797.3534,
-        "y": 20.3625,
-        "z": -498.7277
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0072,
-        "z": 0,
-        "w": 1
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "447479e3-1ca7-476b-8286-5f5d5328b6ec",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 792.8452,
-        "y": 0.1316,
-        "z": -360.047
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0207,
-        "z": 0,
-        "w": 0.9998
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "a97c88fd-cbe5-4a92-99f7-0641701d5e2a",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 795.2125,
-        "y": 0.1316,
-        "z": -409.803
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0432,
-        "z": 0,
-        "w": 0.9991
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "bde69274-ca83-414a-8db8-b8462e1e7f3f",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 796.2265,
-        "y": 0.1316,
-        "z": -457.0841
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0082,
-        "z": 0,
-        "w": 1
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "4fc49834-66f2-433a-bce9-bc8d53e4cc7d",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -85,60 +13,6 @@
         "y": 0.0103,
         "z": 0,
         "w": 0.9999
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "ef6ed0d9-77a9-4da5-b8af-9d2ff3331835",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 799.7041,
-        "y": 23.1727,
-        "z": -408.4309
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9999,
-        "z": 0,
-        "w": -0.01
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "a17522a9-f58b-4d45-9d5d-f7939c3eeff1",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 800.5166,
-        "y": 21.224,
-        "z": -361.7325
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0018,
-        "z": 0,
-        "w": 1
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "7ac9a305-f1cb-4bae-97ad-51ecbe24aeaa",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 799.915,
-        "y": 40.1573,
-        "z": -510.4635
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -1,
-        "z": 0,
-        "w": 0.0055
       },
       "scale": 129.6261,
       "name": "weed brick 2",
@@ -163,60 +37,6 @@
       "locked": true
     },
     {
-      "id": "fb28b944-237e-498c-9d3f-edb24478a91f",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 798.2053,
-        "y": 43.4915,
-        "z": -414.6775
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.991,
-        "z": 0,
-        "w": 0.1341
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "fe50d075-8da3-4032-bd75-58353054bed3",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 798.7273,
-        "y": 42.8124,
-        "z": -365.0781
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0407,
-        "z": 0,
-        "w": 0.9992
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "1ca3f4df-8344-422d-9fbe-a448f4fbba0c",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 796.2068,
-        "y": 60.3627,
-        "z": -506.8315
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.1006,
-        "z": 0,
-        "w": -0.9949
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "6c713607-fc2c-4370-aa86-9c7f3bec3a2c",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -229,42 +49,6 @@
         "y": -1,
         "z": 0,
         "w": -0.0037
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "dc7be682-3a0b-4ce6-b793-13b22ae305de",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 794.2329,
-        "y": 63.8455,
-        "z": -416.6497
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.9905,
-        "z": 0,
-        "w": -0.1372
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "3e7ff5d1-4776-4454-8c8a-d001a2a15d1a",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 790.9822,
-        "y": 62.4998,
-        "z": -369.3275
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.2626,
-        "z": 0,
-        "w": 0.9649
       },
       "scale": 129.6261,
       "name": "weed brick 2",
@@ -307,60 +91,6 @@
       "locked": true
     },
     {
-      "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 795.5642,
-        "y": 81.261,
-        "z": -411.7467
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.1171,
-        "z": 0,
-        "w": -0.9931
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "59486e4c-02c3-486c-a134-60fdb9ca25aa",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 797.2826,
-        "y": 82.0986,
-        "z": -363.7282
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9979,
-        "z": 0,
-        "w": -0.0642
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "fd73c997-2e19-41d8-b4dc-dc8b5a8b86ae",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_open.glb",
-      "position": {
-        "x": 754.1155,
-        "y": -1.8474,
-        "z": -465.5226
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.1493,
-        "z": 0,
-        "w": 0.9888
-      },
-      "scale": 187.4817,
-      "name": "weed brick open",
-      "locked": false
-    },
-    {
       "id": "b89aff59-1d92-4b99-b1d0-52c8ae6cf000",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -394,24 +124,6 @@
       },
       "scale": 97.295,
       "name": "joint",
-      "locked": false
-    },
-    {
-      "id": "941f72f2-3f5c-4e37-8179-46f07bdcfcf8",
-      "assetFile": "/data/appdata/models/assets/plants/compost_bag.glb",
-      "position": {
-        "x": 738.5086,
-        "y": -0.9953,
-        "z": -358.2362
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.2565,
-        "z": 0,
-        "w": 0.9665
-      },
-      "scale": 108.6801,
-      "name": "compost bag",
       "locked": false
     },
     {
@@ -556,7 +268,31 @@
       },
       "scale": 72.6017,
       "name": "super bong haze",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#4dff00",
+        "intensity": 1,
+        "distance": 1,
+        "decay": 1.8,
+        "angle": 0.7853981633974483,
+        "penumbra": 0.3,
+        "castShadow": true,
+        "offset": [
+          0.01,
+          0.1,
+          0.01
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "lightType": "point"
+      }
     },
     {
       "id": "f3e96d2c-f11f-44fd-8426-40f2280d4616",
@@ -574,25 +310,31 @@
       },
       "scale": 343.8143,
       "name": "super bong haze",
-      "locked": false
-    },
-    {
-      "id": "b91ac89f-d556-4211-814c-cfd5f5f4a707",
-      "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
-      "position": {
-        "x": 635.8351,
-        "y": 0.9654,
-        "z": -211.8578
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
       },
-      "quaternion": {
-        "x": 0,
-        "y": 0.702,
-        "z": 0,
-        "w": 0.7122
-      },
-      "scale": 89.6554,
-      "name": "carpets from asia",
-      "locked": true
+      "lampOverride": {
+        "color": "#4dff00",
+        "intensity": 100,
+        "distance": 3.5,
+        "decay": 1.9,
+        "angle": 0.7853981633974483,
+        "penumbra": 0.3,
+        "castShadow": true,
+        "offset": [
+          0.01,
+          0.1,
+          0.01
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "lightType": "point"
+      }
     },
     {
       "id": "aa6d22ea-966f-48f4-bb79-e2e4fe9e0fb0",
@@ -3207,24 +2949,6 @@
       }
     },
     {
-      "id": "216415b8-686e-4910-9c7e-d3a8d0f70273",
-      "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
-      "position": {
-        "x": 282.6529,
-        "y": 0.9654,
-        "z": -237.7629
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.7085,
-        "z": 0,
-        "w": 0.7057
-      },
-      "scale": 76.3635,
-      "name": "carpets from asia",
-      "locked": true
-    },
-    {
       "id": "febe4433-735e-4294-b64f-6cbc9baa1776",
       "assetFile": "/data/appdata/models/assets/fourniture/realistic_blackboard.glb",
       "position": {
@@ -3876,7 +3600,7 @@
       "scale": 3.6444,
       "name": "switch keypad",
       "locked": false,
-      "toggleState": false,
+      "toggleState": true,
       "deviceBinding": {
         "deviceType": "light",
         "deviceId": "light",
@@ -3893,24 +3617,6 @@
       "tags": [
         "Panic"
       ]
-    },
-    {
-      "id": "e6e24990-f656-4b24-98fa-a732402baec2",
-      "assetFile": "/data/appdata/models/assets/plants/compost_bags.glb",
-      "position": {
-        "x": 749.6136,
-        "y": 2.658,
-        "z": -404.877
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.9332,
-        "z": 0,
-        "w": -0.3595
-      },
-      "scale": 40.1646,
-      "name": "compost bags",
-      "locked": false
     },
     {
       "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
@@ -3945,42 +3651,6 @@
         "w": 0.0376
       },
       "scale": 56.6633,
-      "name": "cannabis sativa plant",
-      "locked": false
-    },
-    {
-      "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
-      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-      "position": {
-        "x": 665.7472,
-        "y": 0.7509,
-        "z": -444.8861
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.9991,
-        "z": 0,
-        "w": 0.0413
-      },
-      "scale": 52.0324,
-      "name": "cannabis sativa plant",
-      "locked": false
-    },
-    {
-      "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
-      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-      "position": {
-        "x": 621.964,
-        "y": 0.7509,
-        "z": -447.4958
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9997,
-        "z": 0,
-        "w": 0.0241
-      },
-      "scale": 45.4383,
       "name": "cannabis sativa plant",
       "locked": false
     },
@@ -4133,7 +3803,7 @@
       "scale": 1.2998,
       "name": "Grow Tent 150×150×200cm",
       "locked": false,
-      "toggleState": false,
+      "toggleState": true,
       "properties": {
         "_tentConfig": "{\"width\":1.5,\"depth\":1.5,\"height\":2,\"ventDiameter\":0.15,\"vents\":[{\"wall\":\"right\",\"position\":\"top\"}]}"
       },
@@ -4162,7 +3832,7 @@
       },
       "lampOverride": {
         "color": "#ff00ea",
-        "intensity": 295,
+        "intensity": 185,
         "distance": 2.5,
         "decay": 1.7,
         "angle": 3.141592653589793,
@@ -4180,6 +3850,402 @@
         ],
         "lightType": "spot"
       }
+    },
+    {
+      "id": "f9754a62-b1c6-42f5-9279-b6d83961818d",
+      "assetFile": "/data/appdata/models/assets/lights/long_light.glb",
+      "position": {
+        "x": 650.739,
+        "y": 157.2073,
+        "z": -200.8492
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.7093,
+        "z": 0,
+        "w": 0.7049
+      },
+      "scale": 59.5712,
+      "name": "long light",
+      "locked": false
+    },
+    {
+      "id": "216415b8-686e-4910-9c7e-d3a8d0f70273",
+      "assetFile": "/data/appdata/models/assets/fourniture/carpets_from_asia.glb",
+      "position": {
+        "x": 622.8004,
+        "y": 0.9614,
+        "z": -182.2934
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.7121,
+        "z": 0,
+        "w": 0.7021
+      },
+      "scale": 91.4758,
+      "name": "carpets from asia",
+      "locked": true
+    },
+    {
+      "id": "447479e3-1ca7-476b-8286-5f5d5328b6ec",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 792.0746,
+        "y": 0.1315,
+        "z": -501.8928
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9968,
+        "z": 0,
+        "w": -0.0804
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "bde69274-ca83-414a-8db8-b8462e1e7f3f",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 794.4295,
+        "y": 0.1316,
+        "z": -456.2198
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.997,
+        "z": 0,
+        "w": -0.0772
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "016202ab-2912-48d6-b07b-e341a65bddea",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 792.3886,
+        "y": 0.1316,
+        "z": -362.3998
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 1,
+        "z": 0,
+        "w": -0.004
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": false
+    },
+    {
+      "id": "fd73c997-2e19-41d8-b4dc-dc8b5a8b86ae",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_open.glb",
+      "position": {
+        "x": 751.0756,
+        "y": 0.6984,
+        "z": -480.171
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.0943,
+        "z": 0,
+        "w": -0.9955
+      },
+      "scale": 136.6742,
+      "name": "weed brick open",
+      "locked": false
+    },
+    {
+      "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
+      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+      "position": {
+        "x": 667.5662,
+        "y": 0.7509,
+        "z": -446.5284
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -1,
+        "z": 0,
+        "w": 0.0026
+      },
+      "scale": 52.0324,
+      "name": "cannabis sativa plant",
+      "locked": false
+    },
+    {
+      "id": "b6620fcb-40fe-4d21-a34e-0b2ede70090c",
+      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
+      "position": {
+        "x": 625.7315,
+        "y": 0.7509,
+        "z": -445.9695
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.6156,
+        "z": 0,
+        "w": -0.7881
+      },
+      "scale": 49.9821,
+      "name": "cannabis sativa plant",
+      "locked": false
+    },
+    {
+      "id": "2c156a89-26c4-4191-a62c-38c5108dae6a",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 794.4037,
+        "y": 20.4442,
+        "z": -498.2634
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9839,
+        "z": 0,
+        "w": -0.1788
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "7ac9a305-f1cb-4bae-97ad-51ecbe24aeaa",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 796.2568,
+        "y": 41.1644,
+        "z": -501.1236
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9997,
+        "z": 0,
+        "w": -0.0248
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "a97c88fd-cbe5-4a92-99f7-0641701d5e2a",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 795.7381,
+        "y": 0.1316,
+        "z": -409.4635
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9996,
+        "z": 0,
+        "w": -0.0276
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "ef6ed0d9-77a9-4da5-b8af-9d2ff3331835",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 801.02,
+        "y": 20.8198,
+        "z": -408.3885
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9994,
+        "z": 0,
+        "w": -0.0356
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "fe50d075-8da3-4032-bd75-58353054bed3",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 797.9692,
+        "y": 41.9248,
+        "z": -361.1826
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9962,
+        "z": 0,
+        "w": 0.0873
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "fb28b944-237e-498c-9d3f-edb24478a91f",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 799.0522,
+        "y": 40.8909,
+        "z": -409.277
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9998,
+        "z": 0,
+        "w": 0.0193
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "3e7ff5d1-4776-4454-8c8a-d001a2a15d1a",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 795.9184,
+        "y": 62.0802,
+        "z": -366.2106
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9992,
+        "z": 0,
+        "w": -0.0409
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "dc7be682-3a0b-4ce6-b793-13b22ae305de",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 800.1226,
+        "y": 60.6781,
+        "z": -414.3578
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9955,
+        "z": 0,
+        "w": -0.0949
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 795.229,
+        "y": 80.0345,
+        "z": -413.8687
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.1305,
+        "z": 0,
+        "w": 0.9914
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "59486e4c-02c3-486c-a134-60fdb9ca25aa",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 798.6157,
+        "y": 80.2793,
+        "z": -363.5122
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.0654,
+        "z": 0,
+        "w": 0.9979
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "e6e24990-f656-4b24-98fa-a732402baec2",
+      "assetFile": "/data/appdata/models/assets/plants/compost_bags.glb",
+      "position": {
+        "x": 732.647,
+        "y": 2.658,
+        "z": -415.4129
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.3847,
+        "z": 0,
+        "w": -0.923
+      },
+      "scale": 40.1646,
+      "name": "compost bags",
+      "locked": false
+    },
+    {
+      "id": "941f72f2-3f5c-4e37-8179-46f07bdcfcf8",
+      "assetFile": "/data/appdata/models/assets/plants/compost_bag.glb",
+      "position": {
+        "x": 733.1151,
+        "y": 0.909,
+        "z": -356.5594
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.8663,
+        "z": 0,
+        "w": -0.4996
+      },
+      "scale": 97.8121,
+      "name": "compost bag",
+      "locked": false
+    },
+    {
+      "id": "a17522a9-f58b-4d45-9d5d-f7939c3eeff1",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 794.6811,
+        "y": 20.842,
+        "z": -362.3286
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9949,
+        "z": 0,
+        "w": 0.1007
+      },
+      "scale": 128.3298,
+      "name": "weed brick 2",
+      "locked": true
+    },
+    {
+      "id": "1ca3f4df-8344-422d-9fbe-a448f4fbba0c",
+      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
+      "position": {
+        "x": 791.8543,
+        "y": 61.4203,
+        "z": -504.3075
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0.9969,
+        "z": 0,
+        "w": -0.0787
+      },
+      "scale": 129.6261,
+      "name": "weed brick 2",
+      "locked": true
     }
   ],
   "ducts": [

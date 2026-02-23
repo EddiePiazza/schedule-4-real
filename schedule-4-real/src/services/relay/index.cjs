@@ -8,7 +8,7 @@ const { createServer } = require('node:http')
 const { WebSocketServer } = require('ws')
 
 const { loadConfig, loadIdentity, loadPeers, savePeers, SEED_NODES } = require('./config.cjs')
-const { generateKxKeypair, generateSignKeypair } = require('./crypto.cjs')
+const { generateKxKeypair, generateSignKeypair, verify: cryptoVerify } = require('./crypto.cjs')
 const { configure: configureRelay, setTrackerHandler, handlePacket, pushToCircuitById, rotateKeys, getRelayPublicKey } = require('./relay.cjs')
 const { configure: configureCircuits, cleanupExpired: cleanupCircuits, activeCount } = require('./circuits.cjs')
 const { cleanupPendingRendezvous } = require('./rendezvous.cjs')
@@ -33,11 +33,23 @@ const rl = {
   general:    createRateLimiter(120, 60_000),    // 120 requests/min general
 }
 
+// ── Signature nonce cache (anti-replay for /peers challenge-response) ──
+const usedSigs = new Map() // sigPrefix -> expiry timestamp
+setInterval(() => {
+  const now = Date.now()
+  for (const [k, exp] of usedSigs) { if (exp < now) usedSigs.delete(k) }
+}, 30_000)
+
+// Only trust X-Forwarded-For from known reverse proxies (prevents rate limit bypass)
+const TRUSTED_PROXIES = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1'])
+
 function getClientIp(req) {
-  // Trust X-Forwarded-For only if behind known reverse proxy
-  const xff = req.headers['x-forwarded-for']
-  if (xff) return xff.split(',')[0].trim()
-  return req.socket?.remoteAddress || '0.0.0.0'
+  const remoteAddr = req.socket?.remoteAddress || '0.0.0.0'
+  if (TRUSTED_PROXIES.has(remoteAddr)) {
+    const xff = req.headers['x-forwarded-for']
+    if (xff) return xff.split(',')[0].trim()
+  }
+  return remoteAddr
 }
 
 function rateLimited(res, ip, limiterName) {
@@ -197,10 +209,12 @@ const server = createServer(async (req, res) => {
         return
       }
       const roomIdBuf = Buffer.from(data.roomId, 'hex')
-      // Validate entryRelay is a proper relay URL
-      if (typeof data.entryRelay !== 'string' || (!data.entryRelay.startsWith('wss://') && !data.entryRelay.startsWith('ws://')) || data.entryRelay.length > 256) {
+      // Validate entryRelay: either a ws(s):// URL or a 64-hex-char Ed25519 signPk
+      const isUrl = typeof data.entryRelay === 'string' && (data.entryRelay.startsWith('wss://') || data.entryRelay.startsWith('ws://')) && data.entryRelay.length <= 256
+      const isPk = typeof data.entryRelay === 'string' && /^[0-9a-f]{64}$/i.test(data.entryRelay)
+      if (!isUrl && !isPk) {
         res.writeHead(400, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ ok: false, error: 'entryRelay must be a valid ws:// or wss:// URL' }))
+        res.end(JSON.stringify({ ok: false, error: 'entryRelay must be a valid ws:// or wss:// URL or 64-hex-char signPk' }))
         return
       }
       // Validate metadata size (encrypted metadata shouldn't be huge)
@@ -234,15 +248,32 @@ const server = createServer(async (req, res) => {
   }
 
   // Gossip: peer list
-  // With ?auth=<signPk> from another relay → full list with URLs (relay-to-relay gossip)
-  // Without auth → public list, no URLs (browser/curl safe)
+  // With valid Ed25519 challenge-response from another relay → full list with URLs
+  // Without valid signature → public list, no URLs (browser/curl safe)
   if (req.method === 'GET' && url.startsWith('/peers')) {
     if (rateLimited(res, clientIp, 'peers')) return
     const parsedUrl = new URL(req.url, 'http://localhost')
-    const authPk = parsedUrl.searchParams.get('auth') || ''
-    // Verify: auth param must be a known relay signPk
-    const isRelay = authPk && /^[0-9a-f]{64}$/i.test(authPk)
-      && gossip.getPeerList().some(p => p.signPk && p.signPk.toLowerCase() === authPk.toLowerCase())
+    const ts = parsedUrl.searchParams.get('ts') || ''
+    const pk = parsedUrl.searchParams.get('pk') || ''
+    const sigHex = parsedUrl.searchParams.get('sig') || ''
+    let isRelay = false
+
+    if (ts && pk && sigHex && /^[0-9a-f]{64}$/i.test(pk) && /^[0-9a-f]{128}$/i.test(sigHex)) {
+      const age = Math.abs(Date.now() - parseInt(ts, 10))
+      const sigKey = sigHex.slice(0, 32) // First 16 bytes as cache key
+      if (age < 30_000 && !usedSigs.has(sigKey)) { // 30s window + replay prevention
+        const mySpk = signKeypair.publicKey.toString('hex')
+        const msg = Buffer.from(`peers|${ts}|${pk}|${mySpk}`) // Target binding
+        const sig = Buffer.from(sigHex, 'hex')
+        const pubKey = Buffer.from(pk, 'hex')
+        try {
+          isRelay = cryptoVerify(sig, msg, pubKey)
+            && gossip.getPeerList().some(p => p.signPk?.toLowerCase() === pk.toLowerCase())
+          if (isRelay) usedSigs.set(sigKey, Date.now() + 30_000)
+        } catch { isRelay = false }
+      }
+    }
+
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Cache-Control', 'public, max-age=30')
     res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -263,6 +294,26 @@ const server = createServer(async (req, res) => {
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ error: 'Invalid signature' }))
+      }
+    } catch {
+      res.writeHead(400, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Bad request' }))
+    }
+    return
+  }
+
+  // Gossip: receive key revocation
+  if (req.method === 'POST' && url === '/peers/revoke') {
+    if (rateLimited(res, clientIp, 'announce')) return
+    try {
+      const body = await collectBody(req, 1024)
+      const revocation = JSON.parse(body.toString('utf8'))
+      if (gossip.processRevocation(revocation)) {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: true }))
+      } else {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'Invalid revocation' }))
       }
     } catch {
       res.writeHead(400, { 'Content-Type': 'application/json' })

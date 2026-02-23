@@ -246,7 +246,7 @@
           "id": "light_1771109751672",
           "type": "point",
           "name": "Green Lamp",
-          "enabled": true,
+          "enabled": false,
           "color": "#4dff00",
           "intensity": 842.49,
           "position": {
@@ -261,7 +261,7 @@
           "id": "light_1771553244427",
           "type": "point",
           "name": "Point Light",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 293.04,
           "position": {

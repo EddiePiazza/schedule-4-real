@@ -77,7 +77,10 @@ async function renderJoinPage(listPublicRooms, relayUrl) {
 
   const roomCards = rooms.map(room => {
     const hasToken = !!room.inviteToken
-    const joinUrl = hasToken ? `${room.entryRelay}/join/${room.inviteToken}` : ''
+    // Privacy: use relative URL for local rooms, no link for federated rooms
+    // Never expose relay URLs in HTML source
+    const isLocal = !room.federated
+    const joinUrl = hasToken && isLocal ? `/join/${room.inviteToken}` : ''
 
     return `
       <div class="room-card" data-search="${esc((room.name + ' ' + room.description).toLowerCase())}">
@@ -88,7 +91,7 @@ async function renderJoinPage(listPublicRooms, relayUrl) {
         ${room.description ? `<div class="room-desc">${esc(room.description)}</div>` : ''}
         <div class="room-footer">
           <div class="room-tags">${room.federated ? '<span class="tag tag-fed">federated</span>' : ''}${room.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-          ${hasToken ? `<a href="${esc(joinUrl)}" class="join-btn">Join</a>` : '<span class="join-na">Waiting for host...</span>'}
+          ${joinUrl ? `<a href="${esc(joinUrl)}" class="join-btn">Join</a>` : hasToken && room.federated ? '<span class="join-na">Available via network</span>' : '<span class="join-na">Waiting for host...</span>'}
         </div>
       </div>`
   }).join('')

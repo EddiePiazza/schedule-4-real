@@ -29,6 +29,8 @@ function loadIdentity() {
   if (fs.existsSync(idFile)) {
     try {
       const data = JSON.parse(fs.readFileSync(idFile, 'utf-8'))
+      // Fix permissions on existing identity files (security hardening)
+      try { fs.chmodSync(idFile, 0o600) } catch {}
       return {
         kxSeed: Buffer.from(data.kxSeed, 'hex'),
         signSeed: Buffer.from(data.signSeed, 'hex'),
@@ -39,7 +41,7 @@ function loadIdentity() {
   const kxSeed = randomBytes(32)
   const signSeed = randomBytes(32)
   const identity = { kxSeed: kxSeed.toString('hex'), signSeed: signSeed.toString('hex') }
-  fs.writeFileSync(idFile, JSON.stringify(identity, null, 2))
+  fs.writeFileSync(idFile, JSON.stringify(identity, null, 2), { mode: 0o600 })
   console.log('[RELAY] Generated new relay identity')
   return { kxSeed, signSeed }
 }

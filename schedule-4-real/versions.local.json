@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-23T13:31:18.071Z",
+  "lastCheck": "2026-02-23T16:21:18.075Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.69.1",
-      "installedAt": "2026-02-23T13:31:25Z"
+      "version": "1.70.0",
+      "installedAt": "2026-02-23T16:24:37Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.69.1",
+        "changes": [
+          "Update peer proxy to work with URL-stripped peer data"
+        ]
+      },
       {
         "version": "1.69.0",
         "changes": [
@@ -393,13 +399,6 @@
         "changes": [
           "Fix light brightness not applying when planting plan is active"
         ]
-      },
-      {
-        "version": "1.47.0",
-        "changes": [
-          "Add timelapse gallery with multi-day selection, bulk cleanup, and photo browser",
-          "Add auto-generated daily timelapse videos with sequential playback and full export"
-        ]
       }
     ],
     "ingest": [
@@ -724,6 +723,12 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.4.1",
+        "changes": [
+          "Remove relay URLs from public /peers endpoint to prevent IP exposure"
+        ]
+      },
       {
         "version": "1.4.0",
         "changes": [

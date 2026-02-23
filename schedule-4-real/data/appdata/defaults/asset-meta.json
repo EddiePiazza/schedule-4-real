@@ -1285,7 +1285,7 @@
     "isDoor": false,
     "lampConfig": {
       "color": "#ff00ea",
-      "intensity": 553,
+      "intensity": 185,
       "distance": 2.5,
       "decay": 1.7,
       "angle": 3.141592653589793,
@@ -1370,6 +1370,31 @@
         0,
         -0.15,
         0.39
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "lightType": "point"
+    }
+  },
+  "super_bong_haze.glb": {
+    "category": "parafernalia",
+    "animType": "static",
+    "isDoor": false,
+    "lampConfig": {
+      "color": "#4dff00",
+      "intensity": 100,
+      "distance": 3.5,
+      "decay": 1.9,
+      "angle": 0.7853981633974483,
+      "penumbra": 0.3,
+      "castShadow": true,
+      "offset": [
+        0.01,
+        0.1,
+        0.01
       ],
       "direction": [
         0,

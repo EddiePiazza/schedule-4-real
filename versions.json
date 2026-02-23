@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T13:31:25Z",
+  "generatedAt": "2026-02-23T16:24:37Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.69.1",
-      "archive": "s4r-web-1.69.1.tar.gz",
-      "sha256": "ba472e97e4c578a4bfa1226f9b459bea27d15b7bc52249f208b52d50caf2b476",
-      "size": 10683182,
+      "version": "1.70.0",
+      "archive": "s4r-web-1.70.0.tar.gz",
+      "sha256": "7184efc08552c452fa8992fe5600492bb5b53b43523bff7dc2ae4eb9d989d97f",
+      "size": 10682533,
       "changelog": [
+        {
+          "version": "1.70.0",
+          "changes": [
+            "Security hardening v2: 3-hop circuits, guard node persistence, SSRF protection, remove RTT data, PK-only routing"
+          ]
+        },
         {
           "version": "1.69.1",
           "changes": [
