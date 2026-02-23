@@ -8,6 +8,7 @@ const {
 } = require('./crypto.cjs')
 const { registerCircuit, getCircuit, destroyCircuit } = require('./circuits.cjs')
 const { establishRendezvous, joinRendezvous, relayRendezvousData } = require('./rendezvous.cjs')
+const gossip = require('./gossip.cjs')
 
 const MSG = {
   HANDSHAKE_INIT: 0x01,
@@ -287,7 +288,19 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
   }
 }
 
-function forwardToHop(hopUrl, payload, circuit) {
+function forwardToHop(hopIdentifier, payload, circuit) {
+  // Resolve PK-based routing: 64 hex chars without ':' = Ed25519 signPk
+  let hopUrl = hopIdentifier
+  if (/^[0-9a-f]{64}$/i.test(hopIdentifier) && !hopIdentifier.includes(':')) {
+    const resolved = gossip.lookupUrlBySignPk(hopIdentifier)
+    if (!resolved) {
+      console.warn(`[RELAY] PK ${hopIdentifier.slice(0, 16)}... not found in ${gossip.getPeerList().length} peers — cannot route`)
+      return
+    }
+    hopUrl = resolved
+    console.log(`[RELAY] PK ${hopIdentifier.slice(0, 16)}... resolved to ${hopUrl}`)
+  }
+
   // If circuit already has outbound WS (extend completed), forward directly
   if (circuit.outboundWs && circuit.outboundWs.readyState === WebSocket.OPEN) {
     console.log(`[RELAY] Forward ${payload.length}B to ${hopUrl} (existing WS) circuit=${circuit.circuitId}`)

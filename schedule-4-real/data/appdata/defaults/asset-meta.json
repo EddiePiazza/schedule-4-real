@@ -1282,6 +1282,101 @@
   "grow_led.glb": {
     "category": "lights",
     "animType": "static",
-    "isDoor": false
+    "isDoor": false,
+    "lampConfig": {
+      "color": "#ff00ea",
+      "intensity": 553,
+      "distance": 2.5,
+      "decay": 1.7,
+      "angle": 3.141592653589793,
+      "penumbra": 0.6,
+      "castShadow": true,
+      "offset": [
+        0,
+        1.05,
+        0
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "lightType": "spot"
+    }
+  },
+  "roof_light.glb": {
+    "category": "lights",
+    "animType": "static",
+    "isDoor": false,
+    "lampConfig": {
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "color": "#ffffff",
+      "intensity": 100,
+      "distance": 10,
+      "decay": 2,
+      "angle": 0.7853981633974483,
+      "penumbra": 0.3,
+      "castShadow": true,
+      "lightType": "spot"
+    }
+  },
+  "long_light.glb": {
+    "category": "lights",
+    "animType": "static",
+    "isDoor": false,
+    "lampConfig": {
+      "color": "#e5e6e0",
+      "intensity": 99,
+      "distance": 5.5,
+      "decay": 3,
+      "angle": 0.7853981633974483,
+      "penumbra": 0.3,
+      "castShadow": true,
+      "offset": [
+        0.01,
+        -0.25,
+        -0.03
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "lightType": "point"
+    }
+  },
+  "cc0_-_wall_lamp.glb": {
+    "category": "lights",
+    "animType": "static",
+    "isDoor": false,
+    "lampConfig": {
+      "color": "#ffffff",
+      "intensity": 38,
+      "distance": 3,
+      "decay": 1.1,
+      "angle": 0.7853981633974483,
+      "penumbra": 0.3,
+      "castShadow": true,
+      "offset": [
+        0,
+        -0.15,
+        0.39
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "lightType": "point"
+    }
   }
 }

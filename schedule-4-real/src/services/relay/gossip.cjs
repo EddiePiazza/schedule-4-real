@@ -599,6 +599,50 @@ function incrementFailure(peerUrl) {
   }
 }
 
+// ── PK-based routing lookups ────────────────────────────────────────
+
+/**
+ * Look up a peer's WebSocket URL by its Ed25519 signing public key.
+ * Used by relay.cjs to resolve PK-based EXTEND routing.
+ * @param {string} signPk - 64-char hex Ed25519 public key
+ * @returns {string|null} WebSocket URL or null if not found
+ */
+function lookupUrlBySignPk(signPk) {
+  if (!signPk || typeof signPk !== 'string') return null
+  const normalized = signPk.toLowerCase()
+  for (const [url, peer] of knownPeers) {
+    if (peer.signPk && peer.signPk.toLowerCase() === normalized) return url
+  }
+  return null
+}
+
+/**
+ * Look up a peer's Ed25519 signing public key by its WebSocket URL.
+ * Used by tracker.cjs to resolve PK for legacy URL-based registrations.
+ * @param {string} url - WebSocket URL
+ * @returns {string|null} 64-char hex signPk or null
+ */
+function lookupSignPkByUrl(url) {
+  const peer = knownPeers.get(url)
+  return peer?.signPk || null
+}
+
+/**
+ * Get peer list without URLs — for public-facing endpoints.
+ * Prevents leaking relay IPs to browsers/external queries.
+ */
+function getPeerListPublic() {
+  return getPeerList().map(p => ({
+    pk: p.pk,
+    signPk: p.signPk,
+    tracker: p.tracker,
+    ts: p.ts,
+    failures: p.failures,
+    lastSeen: p.lastSeen,
+    rtt: p.rtt || 0,
+  }))
+}
+
 // ── Exports ─────────────────────────────────────────────────────────
 
 module.exports = {
@@ -607,9 +651,12 @@ module.exports = {
   stop,
   mergePeers,
   getPeerList,
+  getPeerListPublic,
   getActivePeers,
   getAnnouncement,
   verifyAnnouncement,
   fetchPeersFrom,
   announceToAll,
+  lookupUrlBySignPk,
+  lookupSignPkByUrl,
 }

@@ -74,11 +74,6 @@
     "y": -1.5708,
     "z": 0
   },
-  "game_ready_light.glb": {
-    "x": 0,
-    "y": 0,
-    "z": 0
-  },
   "power_switch_1.glb": {
     "x": 0,
     "y": 0,
@@ -146,7 +141,22 @@
   },
   "grow_led.glb": {
     "x": 0,
-    "y": 1.5708,
+    "y": 3.1416,
+    "z": 0
+  },
+  "roof_light.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "long_light.glb": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "cc0_-_wall_lamp.glb": {
+    "x": 0,
+    "y": 0,
     "z": 0
   }
 }

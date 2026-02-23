@@ -1,6 +1,38 @@
 {
   "presets": [
     {
+      "id": "preset_1771799836215",
+      "name": "New Preset",
+      "lights": [],
+      "skyRotation": 0,
+      "exposure": 0.1,
+      "filters": {
+        "brightness": 0.64,
+        "contrast": 1,
+        "highlights": 0,
+        "shadows": 0,
+        "whites": 0,
+        "blacks": 0,
+        "saturation": 1,
+        "vibrance": 0,
+        "warmth": 0,
+        "tint": 0
+      },
+      "sceneFilters": {
+        "brightness": 1,
+        "contrast": 1,
+        "highlights": 0,
+        "shadows": 0,
+        "whites": 0,
+        "blacks": 0,
+        "saturation": 1,
+        "vibrance": 0,
+        "warmth": 0,
+        "tint": 0
+      },
+      "cycleWeight": 1
+    },
+    {
       "id": "preset_1770601614046",
       "name": "Default - Night",
       "lights": [
@@ -96,7 +128,7 @@
           "id": "light_1771035159380",
           "type": "point",
           "name": "Lamp 1",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 128.21,
           "position": {
@@ -111,7 +143,7 @@
           "id": "light_1771041505074",
           "type": "point",
           "name": "Lamp 2",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 109.89,
           "position": {
@@ -126,7 +158,7 @@
           "id": "light_1771041638691",
           "type": "point",
           "name": "Lamp 3",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 109.89,
           "position": {
@@ -141,7 +173,7 @@
           "id": "light_1771041763315",
           "type": "point",
           "name": "Lamp 4",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 73.26,
           "position": {
@@ -156,7 +188,7 @@
           "id": "light_1771041830678",
           "type": "point",
           "name": "Lamp 5",
-          "enabled": true,
+          "enabled": false,
           "color": "#ffffff",
           "intensity": 73.26,
           "position": {
@@ -184,16 +216,16 @@
           "id": "light_1771042107873",
           "type": "point",
           "name": "Ambient Grow 2",
-          "enabled": true,
+          "enabled": false,
           "color": "#fe62d4",
-          "intensity": 256.41,
+          "intensity": 1428.57,
           "position": {
-            "x": 664.8,
-            "y": 48.5,
-            "z": -432.9
+            "x": 634.3,
+            "y": 121.5,
+            "z": -556.3
           },
-          "distance": 580,
-          "decay": 0.8
+          "distance": 220,
+          "decay": 0.9
         },
         {
           "id": "light_1771042188429",
@@ -1189,9 +1221,10 @@
       }
     }
   ],
-  "mode": "cycle",
-  "activePresetId": "default",
+  "mode": "single",
+  "activePresetId": "preset_1770601614046",
   "cyclePresetIds": [
+    "preset_1771799836215",
     "preset_1770601614046",
     "preset_1771634616395",
     "preset_1771215080582",

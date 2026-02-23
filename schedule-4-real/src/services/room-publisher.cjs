@@ -211,6 +211,29 @@ function getEntryRelay() {
   return 'wss://schedule4real.com/rooms'
 }
 
+const RELAY_IDENTITY_PATH = path.join(PROJECT_ROOT, 'data/relay/relay-identity.json')
+
+/**
+ * Derive the relay's Ed25519 signing public key from the relay identity.
+ * Used as a stable, anonymous identifier for room registration (replaces URL).
+ * @returns {string} 64-char hex signPk, or '' if unavailable
+ */
+function getEntryRelaySignPk() {
+  try {
+    const identity = JSON.parse(fs.readFileSync(RELAY_IDENTITY_PATH, 'utf8'))
+    if (!identity.signSeed) return ''
+    const signSeed = Buffer.from(identity.signSeed, 'hex')
+    if (signSeed.length !== 32) return ''
+    const pk = Buffer.alloc(32)
+    const sk = sodium.sodium_malloc(64)
+    sodium.crypto_sign_seed_keypair(pk, sk, signSeed)
+    sk.fill(0) // Zero secret immediately
+    return pk.toString('hex')
+  } catch {
+    return ''
+  }
+}
+
 // ── 1-hop onion circuit to a tracker relay ──────────────────────────
 // Connects to the relay via WS, performs X25519 key exchange,
 // then sends encrypted tracker messages on the established circuit.
@@ -362,6 +385,9 @@ function checkSettingsChanged() {
 async function publishAll() {
   const rooms = loadRooms()
   const entryRelay = getEntryRelay()
+  // Prefer signPk as relay identifier (anonymous, stable) over URL
+  const entryRelayPk = getEntryRelaySignPk()
+  const relayIdentifier = entryRelayPk || entryRelay
 
   // Detect settings file changes → force re-register on all trackers
   const settingsChanged = checkSettingsChanged()
@@ -447,7 +473,7 @@ async function publishAll() {
         // First time or metadata changed — full REGISTER
         if (metaChanged) console.log(`[RoomPublisher] Metadata changed for ${room.id} — re-registering`)
         const metadata = encryptMetadata(Buffer.from(metaJson, 'utf8'), metadataKey)
-        payload = buildRegisterPayload(roomId, entryRelay, metadata)
+        payload = buildRegisterPayload(roomId, relayIdentifier, metadata)
         lastMetaHash.set(roomIdHex, metaHash)
       }
 
@@ -486,7 +512,8 @@ async function publishAll() {
 // ── Startup ─────────────────────────────────────────────────────────
 console.log('[RoomPublisher] Starting — onion circuit publisher')
 console.log(`[RoomPublisher] Trackers: ${knownTrackers.join(', ')}`)
-console.log(`[RoomPublisher] Entry relay: ${getEntryRelay()}`)
+const _startupPk = getEntryRelaySignPk()
+console.log(`[RoomPublisher] Entry relay: ${_startupPk ? `pk=${_startupPk.slice(0, 16)}...` : getEntryRelay()}`)
 
 // Initial publish after 5s
 setTimeout(() => {

@@ -5,6 +5,7 @@
 'use strict'
 
 const trackerDb = require('./tracker-db.cjs')
+const gossip = require('./gossip.cjs')
 
 // ── Message types ────────────────────────────────────────────────
 const MSG_REGISTER     = 0x40
@@ -19,11 +20,11 @@ let roomTtlMs = 120000
 let maxRooms  = 50000
 
 // ── Data structures ──────────────────────────────────────────────
-// roomId (hex) → { metadata: Buffer, entryRelay: string, isPrivate: boolean, createdAt: number, expiresAt: number }
+// roomId (hex) → { metadata: Buffer, entryRelay: string, entryRelayPk: string, isPrivate: boolean, createdAt: number, expiresAt: number }
 const rooms = new Map()
 // roomId (hex) → { ws, circuitId } for INTRODUCE routing
 const circuitSessions = new Map()
-// roomId (hex) → { metadata: Buffer, entryRelay: string, sourceRelay: string, expiresAt: number }
+// roomId (hex) → { metadata: Buffer, entryRelay: string, entryRelayPk: string, sourceRelay: string, expiresAt: number }
 // Rooms fetched from peer trackers — never re-shared to prevent loops
 const federatedRooms = new Map()
 
@@ -108,8 +109,18 @@ function handleRegister(data, ws, circuitId) {
   const relayLen = data.readUInt16BE(34)
 
   if (data.length < 36 + relayLen) return null
-  const entryRelay = data.subarray(36, 36 + relayLen).toString('utf8')
+  const entryRelayRaw = data.subarray(36, 36 + relayLen).toString('utf8')
   const metadata = Buffer.from(data.subarray(36 + relayLen))
+
+  // Detect if relay field is a signPk (64 hex chars, no protocol) or URL
+  let entryRelay = entryRelayRaw
+  let entryRelayPk = ''
+  if (/^[0-9a-f]{64}$/i.test(entryRelayRaw) && !entryRelayRaw.includes(':')) {
+    entryRelayPk = entryRelayRaw
+    entryRelay = gossip.lookupUrlBySignPk(entryRelayRaw) || ''
+  } else {
+    entryRelayPk = gossip.lookupSignPkByUrl(entryRelayRaw) || ''
+  }
 
   // Enforce room limit (allow re-registration of existing room)
   if (!rooms.has(roomId) && rooms.size >= maxRooms) {
@@ -122,6 +133,7 @@ function handleRegister(data, ws, circuitId) {
   rooms.set(roomId, {
     metadata,
     entryRelay,
+    entryRelayPk,
     isPrivate,
     createdAt: rooms.has(roomId) ? rooms.get(roomId).createdAt : now,
     expiresAt,
@@ -133,7 +145,8 @@ function handleRegister(data, ws, circuitId) {
   // Persist to DB (fire-and-forget)
   trackerDb.persistRoom(roomId, metadata.toString('base64'), entryRelay, isPrivate, false, '', expiresAt)
 
-  console.log(`[TRACKER] Room registered: ${roomId.slice(0, 16)}... relay=${entryRelay} private=${isPrivate} total=${rooms.size}`)
+  const relayDisplay = entryRelayPk ? `pk=${entryRelayPk.slice(0, 16)}...` : `url=${entryRelay}`
+  console.log(`[TRACKER] Room registered: ${roomId.slice(0, 16)}... ${relayDisplay} private=${isPrivate} total=${rooms.size}`)
   return Buffer.from([MSG_RESPONSE, 0x01])
 }
 
@@ -158,7 +171,7 @@ function handleQuery(data) {
   for (const [roomId, room] of federatedRooms) {
     if (room.expiresAt <= now) continue
     if (rooms.has(roomId)) continue // local takes priority
-    publicRooms.push({ roomId, metadata: room.metadata, entryRelay: room.entryRelay })
+    publicRooms.push({ roomId, metadata: room.metadata, entryRelay: room.entryRelay, entryRelayPk: room.entryRelayPk || '' })
   }
 
   // Cursor is an index offset into the public rooms list
@@ -172,7 +185,9 @@ function handleQuery(data) {
 
   for (const entry of slice) {
     const roomIdBuf = Buffer.from(entry.roomId, 'hex') // 32 bytes
-    const relayBuf = Buffer.from(entry.entryRelay, 'utf8')
+    // Prefer signPk over URL to avoid leaking relay IPs in circuit responses
+    const relayStr = entry.entryRelayPk || entry.entryRelay
+    const relayBuf = Buffer.from(relayStr, 'utf8')
     const relayLenBuf = Buffer.alloc(2)
     relayLenBuf.writeUInt16BE(relayBuf.length, 0)
     const metaLenBuf = Buffer.alloc(2)
@@ -295,7 +310,9 @@ function setFederatedRooms(sourceRelay, peerRooms) {
   const ttl = roomTtlMs * 1.5 // Federated rooms get slightly longer TTL
 
   for (const pr of peerRooms) {
-    if (!pr.roomId || !pr.metadata || !pr.entryRelay) continue
+    if (!pr.roomId || !pr.metadata) continue
+    // Accept rooms with either relay URL or relayPk
+    if (!pr.relay && !pr.entryRelay && !pr.relayPk) continue
     // Skip rooms we already have locally (local takes priority)
     if (rooms.has(pr.roomId)) continue
 
@@ -304,7 +321,8 @@ function setFederatedRooms(sourceRelay, peerRooms) {
     try {
       federatedRooms.set(pr.roomId, {
         metadata: Buffer.from(pr.metadata, 'base64'),
-        entryRelay: pr.entryRelay,
+        entryRelay: pr.relay || pr.entryRelay || '',
+        entryRelayPk: pr.relayPk || '',
         sourceRelay,
         expiresAt,
       })
@@ -328,6 +346,7 @@ function listPublicRooms() {
       roomId,
       metadata: room.metadata,
       entryRelay: room.entryRelay,
+      entryRelayPk: room.entryRelayPk || '',
       federated: false,
     })
   }
@@ -341,6 +360,7 @@ function listPublicRooms() {
       roomId,
       metadata: room.metadata,
       entryRelay: room.entryRelay,
+      entryRelayPk: room.entryRelayPk || '',
       federated: true,
     })
   }

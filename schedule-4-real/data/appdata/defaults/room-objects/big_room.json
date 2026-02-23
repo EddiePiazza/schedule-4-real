@@ -3356,11 +3356,11 @@
                   "config": {
                     "metric": "temperature",
                     "range": "24h",
-                    "lineColor": "#22c55e",
+                    "lineColor": "#b1c421",
                     "fillOpacity": 0.1,
-                    "showTitle": true,
+                    "showTitle": false,
                     "showAxes": true,
-                    "theme": "default"
+                    "theme": "chalk"
                   }
                 },
                 {
@@ -3451,9 +3451,9 @@
                   "config": {
                     "metric": "humidity",
                     "range": "24h",
-                    "lineColor": "#22c55e",
+                    "lineColor": "#21b1c4",
                     "fillOpacity": 0.1,
-                    "showTitle": true,
+                    "showTitle": false,
                     "showAxes": true,
                     "theme": "default"
                   }
@@ -3562,9 +3562,9 @@
                   "config": {
                     "metric": "vpd",
                     "range": "24h",
-                    "lineColor": "#22c55e",
+                    "lineColor": "#21c434",
                     "fillOpacity": 0.1,
-                    "showTitle": true,
+                    "showTitle": false,
                     "showAxes": true,
                     "theme": "default"
                   }
@@ -3579,9 +3579,9 @@
                   "config": {
                     "metric": "blower",
                     "range": "24h",
-                    "lineColor": "#22c55e",
+                    "lineColor": "#21c4b1",
                     "fillOpacity": 0.1,
-                    "showTitle": true,
+                    "showTitle": false,
                     "showAxes": true,
                     "theme": "default"
                   }
@@ -3844,7 +3844,7 @@
       "scale": 0.0576,
       "name": "power switch 1",
       "locked": false,
-      "toggleState": true,
+      "toggleState": false,
       "deviceBinding": {
         "deviceType": "socket",
         "deviceId": "O5",
@@ -3913,29 +3913,6 @@
       "locked": false
     },
     {
-      "id": "6cb4f922-f385-4e03-86af-d960ee1997eb",
-      "assetFile": "procedural://grow-tent",
-      "position": {
-        "x": 643.0142,
-        "y": 0.7496,
-        "z": -465.0141
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.0016,
-        "z": 0,
-        "w": -1
-      },
-      "scale": 1.2998,
-      "name": "Grow Tent 150×150×200cm",
-      "locked": false,
-      "toggleState": true,
-      "properties": {
-        "_tentConfig": "{\"width\":1.5,\"depth\":1.5,\"height\":2,\"ventDiameter\":0.15,\"vents\":[{\"wall\":\"right\",\"position\":\"top\"}]}"
-      },
-      "collisionEnabled": false
-    },
-    {
       "id": "46bece3d-fb47-487f-9f93-e0827fea2ea2",
       "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
       "position": {
@@ -3972,24 +3949,6 @@
       "locked": false
     },
     {
-      "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
-      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
-      "position": {
-        "x": 621.7169,
-        "y": 0.7509,
-        "z": -437.4806
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9872,
-        "z": 0,
-        "w": 0.1595
-      },
-      "scale": 45.4383,
-      "name": "cannabis sativa plant",
-      "locked": false
-    },
-    {
       "id": "e4a59188-35eb-4200-bd31-4a4094c71b51",
       "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
       "position": {
@@ -4008,40 +3967,219 @@
       "locked": false
     },
     {
-      "id": "ef9219a2-2857-4f01-a3e5-41b60e02a3fd",
-      "assetFile": "/data/appdata/models/assets/lights/grow_led.glb",
+      "id": "3d4810ed-bf5a-4b28-b898-16f9ce18875e",
+      "assetFile": "/data/appdata/models/assets/plants/cannabis_sativa_plant.glb",
       "position": {
-        "x": 642.1445,
-        "y": 22.8631,
-        "z": -484.5688
+        "x": 621.964,
+        "y": 0.7509,
+        "z": -447.4958
       },
       "quaternion": {
         "x": 0,
-        "y": -0.7037,
+        "y": -0.9997,
         "z": 0,
-        "w": -0.7105
+        "w": 0.0241
       },
-      "scale": 78.6287,
-      "name": "grow led",
+      "scale": 45.4383,
+      "name": "cannabis sativa plant",
       "locked": false
     },
     {
-      "id": "1e7a157c-2cb7-4425-8489-252282e39c3d",
-      "assetFile": "/data/appdata/models/assets/lights/grow_led.glb",
+      "id": "e426e194-c6f3-4292-8752-9f077c22dcaf",
+      "assetFile": "/data/appdata/models/assets/lights/long_light.glb",
       "position": {
-        "x": 642.5867,
-        "y": 22.9226,
-        "z": -440.7864
+        "x": 750.0277,
+        "y": 157.1676,
+        "z": -490.4811
       },
       "quaternion": {
         "x": 0,
-        "y": -0.7056,
+        "y": 1,
         "z": 0,
-        "w": 0.7086
+        "w": 0.0011
       },
-      "scale": 78.6287,
-      "name": "grow led",
+      "scale": 68.2163,
+      "name": "long light",
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#defedc",
+        "intensity": 26,
+        "distance": 5.5,
+        "decay": 3,
+        "angle": 0.7853981633974483,
+        "penumbra": 0.3,
+        "castShadow": true,
+        "offset": [
+          0.01,
+          -0.25,
+          -0.03
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "lightType": "point"
+      }
+    },
+    {
+      "id": "77bcc574-77a7-437c-a31a-abdfd1b33e1c",
+      "assetFile": "/data/appdata/models/assets/lights/cc0_-_wall_lamp.glb",
+      "position": {
+        "x": 558.9873,
+        "y": 115.0676,
+        "z": -427.8835
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "scale": 50.9287,
+      "name": "cc0   wall lamp",
       "locked": false
+    },
+    {
+      "id": "6e27a90f-d355-4707-9b53-54fa6fdbe86e",
+      "assetFile": "/data/appdata/models/assets/lights/cc0_-_wall_lamp.glb",
+      "position": {
+        "x": 443.3892,
+        "y": 114.6758,
+        "z": -427.8835
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "scale": 50.9287,
+      "name": "cc0   wall lamp",
+      "locked": false
+    },
+    {
+      "id": "38415410-9ee1-4cb1-9e43-2fd0e4389123",
+      "assetFile": "/data/appdata/models/assets/lights/cc0_-_wall_lamp.glb",
+      "position": {
+        "x": 232.5429,
+        "y": 114.5979,
+        "z": -427.8835
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "scale": 50.9287,
+      "name": "cc0   wall lamp",
+      "locked": false
+    },
+    {
+      "id": "3a3e33e3-ebc2-4e19-be7d-f31f02cf9836",
+      "assetFile": "/data/appdata/models/assets/lights/cc0_-_wall_lamp.glb",
+      "position": {
+        "x": 383.7044,
+        "y": 114.9992,
+        "z": -53.7959
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 1,
+        "z": 0,
+        "w": 0
+      },
+      "scale": 50.9287,
+      "name": "cc0   wall lamp",
+      "locked": false
+    },
+    {
+      "id": "69b9ceb3-27be-45e7-9bc3-3da17a2247f4",
+      "assetFile": "/data/appdata/models/assets/lights/cc0_-_wall_lamp.glb",
+      "position": {
+        "x": 627.6052,
+        "y": 115.6818,
+        "z": -53.7958
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 1,
+        "z": 0,
+        "w": 0
+      },
+      "scale": 50.9287,
+      "name": "cc0   wall lamp",
+      "locked": false
+    },
+    {
+      "id": "6cb4f922-f385-4e03-86af-d960ee1997eb",
+      "assetFile": "procedural://grow-tent",
+      "position": {
+        "x": 643.0142,
+        "y": 0.7496,
+        "z": -465.0141
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.0016,
+        "z": 0,
+        "w": -1
+      },
+      "scale": 1.2998,
+      "name": "Grow Tent 150×150×200cm",
+      "locked": false,
+      "toggleState": false,
+      "properties": {
+        "_tentConfig": "{\"width\":1.5,\"depth\":1.5,\"height\":2,\"ventDiameter\":0.15,\"vents\":[{\"wall\":\"right\",\"position\":\"top\"}]}"
+      },
+      "collisionEnabled": false
+    },
+    {
+      "id": "06f17fc6-ee36-4938-9500-16150bb48726",
+      "assetFile": "/data/appdata/models/assets/lights/grow_led.glb",
+      "position": {
+        "x": 642.6057,
+        "y": 14.49,
+        "z": -464.5767
+      },
+      "quaternion": {
+        "x": 0,
+        "y": 1,
+        "z": 0,
+        "w": 0.0038
+      },
+      "scale": 74.0274,
+      "name": "grow led",
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#ff00ea",
+        "intensity": 295,
+        "distance": 2.5,
+        "decay": 1.7,
+        "angle": 3.141592653589793,
+        "penumbra": 0.6,
+        "castShadow": true,
+        "offset": [
+          0,
+          1.05,
+          0
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "lightType": "spot"
+      }
     }
   ],
   "ducts": [

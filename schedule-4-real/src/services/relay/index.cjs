@@ -164,7 +164,7 @@ const server = createServer(async (req, res) => {
     const result = publicRooms.map(r => ({
       id: r.roomId,
       metadata: r.metadata.toString('base64'),
-      relay: r.entryRelay,
+      relayPk: r.entryRelayPk || '',
       federated: !!r.federated,
     }))
     res.writeHead(200, { 'Content-Type': 'application/json' })

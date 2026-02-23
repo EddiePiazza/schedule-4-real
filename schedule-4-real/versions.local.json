@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-22T16:42:01.933Z",
+  "lastCheck": "2026-02-23T05:21:18.033Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.68.3",
-      "installedAt": "2026-02-22T16:47:59Z"
+      "version": "1.69.0",
+      "installedAt": "2026-02-23T05:25:08Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -33,14 +33,20 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.3.3",
-      "installedAt": "2026-02-22T16:47:59Z"
+      "version": "1.4.0",
+      "installedAt": "2026-02-23T05:25:08Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.68.3",
+        "changes": [
+          "Save duct connections inside room JSON instead of separate file so they transfer with room data"
+        ]
+      },
       {
         "version": "1.68.2",
         "changes": [
@@ -397,18 +403,6 @@
           "Add model metadata editor with display name, category, and animation settings",
           "Show textured model during placement instead of green ghost material"
         ]
-      },
-      {
-        "version": "1.45.0",
-        "changes": [
-          "Add Cameras tab in Laboratory with live feeds, IP Webcam controls, and photo capture",
-          "Add Camera Service and Video Streaming to services panel",
-          "Fix environment editor loading user presets instead of system-only presets",
-          "Add model metadata editor with display name, category, and animation settings",
-          "Add customizable server-side photo overlay with day counter, date, time, and custom text",
-          "Show textured model during placement instead of green ghost material",
-          "Add timelapse photo scheduling with daily video generation via ffmpeg"
-        ]
       }
     ],
     "ingest": [
@@ -733,6 +727,13 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.3.3",
+        "changes": [
+          "Block deprecated weedlix.com domain from gossip propagation",
+          "Auto-evict dead trackers after 10 consecutive failures and prune stale gossip peers"
+        ]
+      },
       {
         "version": "1.3.2",
         "changes": [
