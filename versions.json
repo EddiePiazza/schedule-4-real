@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-24T00:40:51Z",
+  "generatedAt": "2026-02-24T01:02:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.71.1",
-      "archive": "s4r-web-1.71.1.tar.gz",
-      "sha256": "6d595d43c640e3e1ebe3ddbf495444cdd663e104f8eb3bf19eee4105d2cceb95",
-      "size": 10717770,
+      "version": "1.71.2",
+      "archive": "s4r-web-1.71.2.tar.gz",
+      "sha256": "49eebfa60ef23b934253ee3643dbadf54d8bb5393b05d4b2a722c32d4dfc0d54",
+      "size": 10719148,
       "changelog": [
+        {
+          "version": "1.71.2",
+          "changes": [
+            "Fix share links using tracker domain for anonymity instead of exposing local IP"
+          ]
+        },
         {
           "version": "1.71.1",
           "changes": [
