@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-24T01:01:18.421Z",
+  "lastCheck": "2026-02-24T02:51:18.428Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.71.2",
-      "installedAt": "2026-02-24T01:02:20Z"
+      "version": "1.71.3",
+      "installedAt": "2026-02-24T02:59:43Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.71.2",
+        "changes": [
+          "Fix share links using tracker domain for anonymity instead of exposing local IP"
+        ]
+      },
       {
         "version": "1.71.1",
         "changes": [
@@ -381,12 +387,6 @@
         "version": "1.49.0",
         "changes": [
           "Add fan gear level chart on dashboard"
-        ]
-      },
-      {
-        "version": "1.48.3",
-        "changes": [
-          "Fix HA Bridge fan default speed fallback using wrong scale"
         ]
       }
     ],

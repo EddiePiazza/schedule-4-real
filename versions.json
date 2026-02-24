@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-24T01:02:20Z",
+  "generatedAt": "2026-02-24T02:59:43Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.71.2",
-      "archive": "s4r-web-1.71.2.tar.gz",
-      "sha256": "49eebfa60ef23b934253ee3643dbadf54d8bb5393b05d4b2a722c32d4dfc0d54",
-      "size": 10719148,
+      "version": "1.71.3",
+      "archive": "s4r-web-1.71.3.tar.gz",
+      "sha256": "a237eddf54650571e6273f9bd91e7f1bd193a5e85d8cf61b5b43c94eee595350",
+      "size": 10716362,
       "changelog": [
+        {
+          "version": "1.71.3",
+          "changes": [
+            "Fix share links incorrectly falling back to relay-only domains"
+          ]
+        },
         {
           "version": "1.71.2",
           "changes": [
