@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-23T23:09:05Z",
+  "generatedAt": "2026-02-24T00:40:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.71.0",
-      "archive": "s4r-web-1.71.0.tar.gz",
-      "sha256": "6ae17b7192ece7c0175d398bd393e06e890469eca53b53116dc40c75f22a4f33",
-      "size": 10715437,
+      "version": "1.71.1",
+      "archive": "s4r-web-1.71.1.tar.gz",
+      "sha256": "6d595d43c640e3e1ebe3ddbf495444cdd663e104f8eb3bf19eee4105d2cceb95",
+      "size": 10717770,
       "changelog": [
+        {
+          "version": "1.71.1",
+          "changes": [
+            "Fix Copy Link generating relay domain URL instead of current domain"
+          ]
+        },
         {
           "version": "1.71.0",
           "changes": [
