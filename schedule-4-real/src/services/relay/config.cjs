@@ -68,7 +68,12 @@ function loadConfig() {
   if (fs.existsSync(configFile)) {
     try {
       const saved = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
-      return { ...defaults, ...saved }
+      const config = { ...defaults, ...saved }
+      // Normalize publicUrl — UI stores domain-only, add wss:// if missing
+      if (config.publicUrl && !config.publicUrl.startsWith('wss://') && !config.publicUrl.startsWith('ws://')) {
+        config.publicUrl = 'wss://' + config.publicUrl
+      }
+      return config
     } catch {}
   }
 

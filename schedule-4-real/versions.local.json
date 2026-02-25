@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-25T13:41:18.952Z",
+  "lastCheck": "2026-02-25T14:34:31.862Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.72.0",
-      "installedAt": "2026-02-25T13:49:24Z"
+      "version": "1.72.1",
+      "installedAt": "2026-02-25T14:40:24Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -33,14 +33,21 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.5.1",
-      "installedAt": "2026-02-25T13:49:24Z"
+      "version": "1.5.2",
+      "installedAt": "2026-02-25T14:40:24Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.72.0",
+        "changes": [
+          "Refactor Phenotype Journal to room-centric model with unified stage system",
+          "Harden multiplayer WebSocket with timing-safe auth and input validation"
+        ]
+      },
       {
         "version": "1.71.3",
         "changes": [
@@ -382,12 +389,6 @@
           "Block guests from editing or modifying owner-placed objects in 3D room",
           "Add sound effects for keypad interactions (key press, unlock, wrong code)"
         ]
-      },
-      {
-        "version": "1.49.1",
-        "changes": [
-          "Fix HA fan 0% turning on at max speed and preserve oscillation on speed change"
-        ]
       }
     ],
     "ingest": [
@@ -473,6 +474,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.14.2",
+        "changes": [
+          "Add HMAC challenge-response for tunnel registration and restrict private room metadata"
+        ]
+      },
       {
         "version": "1.14.1",
         "changes": [
@@ -712,6 +719,12 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.5.1",
+        "changes": [
+          "Add SSRF protection, HMAC tunnel auth, crypto randomness, and callback timeouts"
+        ]
+      },
       {
         "version": "1.5.0",
         "changes": [

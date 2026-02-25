@@ -449,15 +449,13 @@ async function publishAll() {
       const roomIdHex = roomId.toString('hex')
 
       // Build metadata JSON for this room (cache inviteToken to avoid random nonce changing metadata hash)
-      // Security: inviteOnly rooms do NOT publish inviteToken in metadata
-      // (anyone who decrypts metadata would get free access)
-      let inviteToken = ''
-      if (!room.inviteOnly) {
-        inviteToken = cachedInviteTokens.get(room.id) || ''
-        if (!inviteToken) {
-          inviteToken = generateInviteToken(room.id, roomKey)
-          if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
-        }
+      // Public rooms always include inviteToken (needed for join links).
+      // Only suppress inviteToken for rooms that are inviteOnly AND not publicly listed
+      // (which won't pass the isPublic filter in loadRooms anyway).
+      let inviteToken = cachedInviteTokens.get(room.id) || ''
+      if (!inviteToken) {
+        inviteToken = generateInviteToken(room.id, roomKey)
+        if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
       }
       const metaJson = JSON.stringify({
         envId: room.id,

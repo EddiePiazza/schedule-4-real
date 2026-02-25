@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-25T13:49:24Z",
+  "generatedAt": "2026-02-25T14:40:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.72.0",
-      "archive": "s4r-web-1.72.0.tar.gz",
-      "sha256": "801b91a1db859e5770df704349e384d59d999d2cf865fd6bccba4bbb82090827",
-      "size": 10798896,
+      "version": "1.72.1",
+      "archive": "s4r-web-1.72.1.tar.gz",
+      "sha256": "ed0f29d21e494fa6cc286593fce0c01ec3fda2c0f46066f83fef17390b213751",
+      "size": 10798941,
       "changelog": [
+        {
+          "version": "1.72.1",
+          "changes": [
+            "Fix relay auto-detect to use wss:// and normalize domain-only URLs"
+          ]
+        },
         {
           "version": "1.72.0",
           "changes": [
@@ -1695,11 +1701,19 @@
       ]
     },
     "relay": {
-      "version": "1.5.1",
-      "archive": "s4r-relay-1.5.1.tar.gz",
-      "sha256": "9d3fc4a1c6e3dbcaa725b6772c796c0e2521d8431aa3924150f4e1843d766e9c",
-      "size": 41957,
+      "version": "1.5.2",
+      "archive": "s4r-relay-1.5.2.tar.gz",
+      "sha256": "8bddf2989140a6ceb99ed6954bea18987041e0f36a9ea1a3ecb5d3d8fb659c59",
+      "size": 42330,
       "changelog": [
+        {
+          "version": "1.5.2",
+          "changes": [
+            "Normalize publicUrl to always include wss:// protocol prefix",
+            "Reject raw IP addresses in gossip peer validation to prevent IP leaks",
+            "Fix invite token always included for public room join links"
+          ]
+        },
         {
           "version": "1.5.1",
           "changes": [

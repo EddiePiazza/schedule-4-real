@@ -157,7 +157,7 @@ function start() {
 
   // Always ensure self is in the peer list with real pk so that
   // GET /peers returns our actual public key to other nodes
-  if (myUrl && myPk) {
+  if (myUrl && myPk && (myUrl.startsWith('wss://') || myUrl.startsWith('ws://')) && !isRawIpUrl(myUrl)) {
     const self = knownPeers.get(myUrl)
     if (self) {
       self.pk = myPk
@@ -405,6 +405,7 @@ function verifyAnnouncement(announcement) {
     }
     if (announcement.url.length > 256) return false
     if (isInternalUrl(announcement.url)) return false
+    if (isRawIpUrl(announcement.url)) return false
 
     const message = `${announcement.url}|${announcement.pk}|${announcement.ts}`
     const msgBuf = Buffer.from(message, 'utf-8')
@@ -658,6 +659,9 @@ function isValidPeer(p) {
   if (!/^[0-9a-f]{64}$/i.test(p.pk)) return false
   // Reject internal/private IPs
   if (isInternalUrl(p.url)) return false
+  // Reject raw IP addresses in URLs — relays must use domain names for gossip.
+  // Raw IPs leak infrastructure details and often point to un-NATed addresses.
+  if (isRawIpUrl(p.url)) return false
   return true
 }
 
@@ -679,6 +683,24 @@ function isInternalUrl(url) {
     return false
   } catch {
     return true // Invalid URL → treat as internal
+  }
+}
+
+/**
+ * Check if a URL uses a raw IP address instead of a domain name.
+ * Raw IPs leak infrastructure details and often don't have proper NAT/TLS.
+ */
+function isRawIpUrl(url) {
+  try {
+    const parsed = new URL(url.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:'))
+    const host = parsed.hostname
+    // IPv4: digits and dots only
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return true
+    // IPv6: contains colons (including bracketed form which URL parser strips)
+    if (host.includes(':')) return true
+    return false
+  } catch {
+    return true // Invalid URL → reject
   }
 }
 
