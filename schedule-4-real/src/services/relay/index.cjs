@@ -5,6 +5,7 @@
 'use strict'
 
 const { createServer } = require('node:http')
+const { createHmac, randomBytes: cryptoRandomBytes, timingSafeEqual } = require('node:crypto')
 const { WebSocketServer } = require('ws')
 
 const { loadConfig, loadIdentity, loadPeers, savePeers, SEED_NODES } = require('./config.cjs')
@@ -459,13 +460,17 @@ wssCircuit.on('connection', (ws) => {
   ws.on('error', () => {})
 })
 
-// Host tunnel registration
+// Host tunnel registration (HMAC challenge-response)
 wssTunnel.on('connection', (ws) => {
   let registered = false
+  const challenge = cryptoRandomBytes(32).toString('hex')
 
   const timeout = setTimeout(() => {
     if (!registered) ws.close(4001, 'registration timeout')
   }, 10000)
+
+  // Send challenge immediately
+  ws.send(JSON.stringify({ type: 'challenge', nonce: challenge }))
 
   ws.on('message', (data) => {
     if (!registered) {
@@ -473,6 +478,16 @@ wssTunnel.on('connection', (ws) => {
       try {
         const msg = JSON.parse(data.toString())
         if (msg.type === 'register' && msg.roomKey && /^[a-f0-9]{16,64}$/.test(msg.roomKey)) {
+          // Verify HMAC if provided (required for v1.72+, optional for older agents)
+          if (msg.hmac) {
+            const expected = createHmac('sha256', msg.roomKey).update(challenge).digest('hex')
+            const expectedBuf = Buffer.from(expected, 'hex')
+            const providedBuf = Buffer.from(msg.hmac, 'hex')
+            if (expectedBuf.length !== providedBuf.length || !timingSafeEqual(expectedBuf, providedBuf)) {
+              ws.close(4004, 'HMAC verification failed')
+              return
+            }
+          }
           registered = true
           registerHost(ws, msg.roomKey)
           ws.send(JSON.stringify({ type: 'registered', roomKey: msg.roomKey }))

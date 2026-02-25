@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-24T02:59:43Z",
+  "generatedAt": "2026-02-25T13:49:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.71.3",
-      "archive": "s4r-web-1.71.3.tar.gz",
-      "sha256": "a237eddf54650571e6273f9bd91e7f1bd193a5e85d8cf61b5b43c94eee595350",
-      "size": 10716362,
+      "version": "1.72.0",
+      "archive": "s4r-web-1.72.0.tar.gz",
+      "sha256": "801b91a1db859e5770df704349e384d59d999d2cf865fd6bccba4bbb82090827",
+      "size": 10798896,
       "changelog": [
+        {
+          "version": "1.72.0",
+          "changes": [
+            "Refactor Phenotype Journal to room-centric model with unified stage system",
+            "Harden multiplayer WebSocket with timing-safe auth and input validation"
+          ]
+        },
         {
           "version": "1.71.3",
           "changes": [
@@ -1419,11 +1426,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.1",
-      "archive": "s4r-supervisor-1.14.1.tar.gz",
-      "sha256": "051d7de4e80af3008311733b576c169a4de60dba83d8e80dcb36f6119d999382",
-      "size": 33698,
+      "version": "1.14.2",
+      "archive": "s4r-supervisor-1.14.2.tar.gz",
+      "sha256": "d223c896e518dd07e6b892f4616deeaa36c47b9d92e8f7dfc2dfb7b62c5bb284",
+      "size": 33915,
       "changelog": [
+        {
+          "version": "1.14.2",
+          "changes": [
+            "Add HMAC challenge-response for tunnel registration and restrict private room metadata"
+          ]
+        },
         {
           "version": "1.14.1",
           "changes": [
@@ -1682,11 +1695,17 @@
       ]
     },
     "relay": {
-      "version": "1.5.0",
-      "archive": "s4r-relay-1.5.0.tar.gz",
-      "sha256": "7e12c74bfc6ae6d6911601c6f529f995f42ed9a6592cf3e43f62b00b3a059521",
-      "size": 41369,
+      "version": "1.5.1",
+      "archive": "s4r-relay-1.5.1.tar.gz",
+      "sha256": "9d3fc4a1c6e3dbcaa725b6772c796c0e2521d8431aa3924150f4e1843d766e9c",
+      "size": 41957,
       "changelog": [
+        {
+          "version": "1.5.1",
+          "changes": [
+            "Add SSRF protection, HMAC tunnel auth, crypto randomness, and callback timeouts"
+          ]
+        },
         {
           "version": "1.5.0",
           "changes": [

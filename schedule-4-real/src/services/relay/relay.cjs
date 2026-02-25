@@ -117,7 +117,7 @@ function handlePacket(rawData, ws) {
 
   const plaintext = decrypt(encryptedPayload, circuit.rx, aad)
   if (!plaintext) {
-    console.log(`[RELAY] Decrypt failed for circuit ${circuitId} (${rawData.length}B)`)
+    console.log(`[RELAY] Decrypt failed (${rawData.length}B)`)
     return
   }
 
@@ -128,10 +128,11 @@ function handlePacket(rawData, ws) {
   const payload = plaintext.subarray(4 + nextHopLen, 4 + nextHopLen + payloadLen)
 
   if (msgType >= 0x40 && msgType <= 0x45) {
-    console.log(`[RELAY] Tracker msg 0x${msgType.toString(16)} on circuit ${circuitId} (${payload.length}B payload, hop=${nextHop || 'local'})`)
+    console.log(`[RELAY] Tracker msg 0x${msgType.toString(16)} (${payload.length}B, hop=${nextHop ? 'remote' : 'local'})`)
   }
 
-  const jitter = Math.random() * config.maxJitter
+  const jitterBuf = randomBytes(2)
+  const jitter = (jitterBuf.readUInt16BE(0) / 65535) * config.maxJitter
   setTimeout(() => processMessage(msgType, nextHop, payload, circuit, ws), jitter)
 }
 
@@ -263,7 +264,8 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
         const withCircuit = Buffer.alloc(4 + payload.length)
         withCircuit.writeUInt32BE(circuit.circuitId, 0)
         payload.copy(withCircuit, 4)
-        trackerPendingCallbacks.set(circuit.circuitId, (responsePayload) => {
+        const cbCircuitId = circuit.circuitId
+        trackerPendingCallbacks.set(cbCircuitId, (responsePayload) => {
           // Wrap tracker response in standard message envelope
           const rType = responsePayload[0] || 0x42
           const rData = responsePayload.subarray(1)
@@ -273,8 +275,10 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
           rWrapped.writeUInt16BE(rData.length, 2)
           rData.copy(rWrapped, 4)
           sendToCircuit(circuit, rWrapped)
-          trackerPendingCallbacks.delete(circuit.circuitId)
+          trackerPendingCallbacks.delete(cbCircuitId)
         })
+        // Auto-cleanup stale callback after 30s
+        setTimeout(() => trackerPendingCallbacks.delete(cbCircuitId), 30000)
         tw.send(withCircuit)
       } else if (nextHop) {
         forwardToHop(nextHop, payload, circuit)
@@ -288,22 +292,45 @@ function processMessage(msgType, nextHop, payload, circuit, ws) {
   }
 }
 
+/**
+ * SSRF prevention: block connections to internal/private IP ranges.
+ */
+function isInternalHop(url) {
+  try {
+    const parsed = new URL(url.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:'))
+    const host = parsed.hostname
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0') return true
+    if (/^10\./.test(host)) return true
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true
+    if (/^192\.168\./.test(host)) return true
+    if (/^169\.254\./.test(host)) return true
+    if (/^fc00:|^fd/.test(host)) return true
+    return false
+  } catch {
+    return true
+  }
+}
+
 function forwardToHop(hopIdentifier, payload, circuit) {
   // Resolve PK-based routing: 64 hex chars without ':' = Ed25519 signPk
   let hopUrl = hopIdentifier
   if (/^[0-9a-f]{64}$/i.test(hopIdentifier) && !hopIdentifier.includes(':')) {
     const resolved = gossip.lookupUrlBySignPk(hopIdentifier)
     if (!resolved) {
-      console.warn(`[RELAY] PK ${hopIdentifier.slice(0, 16)}... not found in ${gossip.getPeerList().length} peers — cannot route`)
+      console.warn(`[RELAY] PK route failed for circuit ${circuit.circuitId}`)
       return
     }
     hopUrl = resolved
-    console.log(`[RELAY] PK ${hopIdentifier.slice(0, 16)}... resolved to ${hopUrl}`)
+  }
+
+  // SSRF prevention: block connections to internal/private networks
+  if (isInternalHop(hopUrl)) {
+    console.warn(`[RELAY] Blocked internal hop target for circuit ${circuit.circuitId}`)
+    return
   }
 
   // If circuit already has outbound WS (extend completed), forward directly
   if (circuit.outboundWs && circuit.outboundWs.readyState === WebSocket.OPEN) {
-    console.log(`[RELAY] Forward ${payload.length}B to ${hopUrl} (existing WS) circuit=${circuit.circuitId}`)
     circuit.outboundWs.send(payload)
     return
   }

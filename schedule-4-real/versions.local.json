@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-24T02:51:18.428Z",
+  "lastCheck": "2026-02-25T13:41:18.952Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.71.3",
-      "installedAt": "2026-02-24T02:59:43Z"
+      "version": "1.72.0",
+      "installedAt": "2026-02-25T13:49:24Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.14.1",
-      "installedAt": "2026-02-22T06:01:04Z"
+      "version": "1.14.2",
+      "installedAt": "2026-02-25T13:49:24Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -33,14 +33,20 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.5.0",
-      "installedAt": "2026-02-23T23:09:05Z"
+      "version": "1.5.1",
+      "installedAt": "2026-02-25T13:49:24Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.71.3",
+        "changes": [
+          "Fix share links incorrectly falling back to relay-only domains"
+        ]
+      },
       {
         "version": "1.71.2",
         "changes": [
@@ -381,12 +387,6 @@
         "version": "1.49.1",
         "changes": [
           "Fix HA fan 0% turning on at max speed and preserve oscillation on speed change"
-        ]
-      },
-      {
-        "version": "1.49.0",
-        "changes": [
-          "Add fan gear level chart on dashboard"
         ]
       }
     ],

@@ -981,6 +981,99 @@ const tables = [
     `
   },
 
+  // ============================================
+  // LABORATORY HUNT SYSTEM
+  // ============================================
+
+  // Pheno hunts (cohort-based phenotype selection)
+  {
+    name: 'lab_hunts',
+    sql: `
+      CREATE TABLE IF NOT EXISTS lab_hunts (
+        timestamp TIMESTAMP,
+        id STRING,
+        name STRING,
+        strain_id STRING,
+        room_id STRING,
+        population_size INT,
+        status SYMBOL,
+        males STRING,
+        checkpoints STRING,
+        pressure_events STRING,
+        weekly_checklists STRING,
+        carb_allocation_data STRING,
+        started_at STRING,
+        completed_at STRING,
+        notes STRING,
+        is_deleted INT
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // Stacked hunts (wave-based selection across multiple runs)
+  {
+    name: 'lab_stacked_hunts',
+    sql: `
+      CREATE TABLE IF NOT EXISTS lab_stacked_hunts (
+        timestamp TIMESTAMP,
+        id STRING,
+        name STRING,
+        strain_id STRING,
+        wave_hunt_ids STRING,
+        confirmed_keepers STRING,
+        status SYMBOL,
+        notes STRING,
+        is_deleted INT
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // Timelapse projects (link camera footage to plants/stages)
+  {
+    name: 'lab_timelapse_projects',
+    sql: `
+      CREATE TABLE IF NOT EXISTS lab_timelapse_projects (
+        timestamp TIMESTAMP,
+        id STRING,
+        name STRING,
+        camera_id STRING,
+        room_id STRING,
+        plant_ids STRING,
+        hunt_id STRING,
+        stage_from SYMBOL,
+        stage_to SYMBOL,
+        date_from STRING,
+        date_to STRING,
+        compiled_video_url STRING,
+        status SYMBOL,
+        notes STRING,
+        is_deleted INT
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // Terpene jar assessments (post-harvest aroma evolution tracking)
+  {
+    name: 'lab_terpene_jar_assessments',
+    sql: `
+      CREATE TABLE IF NOT EXISTS lab_terpene_jar_assessments (
+        timestamp TIMESTAMP,
+        id STRING,
+        plant_id STRING,
+        assessed_at STRING,
+        days_since_jar INT,
+        aroma_notes STRING,
+        aroma_intensity INT,
+        aroma_evolution SYMBOL,
+        terpene_tags STRING,
+        burn_quality INT,
+        ash_color SYMBOL,
+        retention_vs_live INT,
+        notes STRING
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
   // IP Camera configurations
   {
     name: 'cameras',
@@ -1070,6 +1163,49 @@ const migrations = [
   {
     name: 'trigger_execution_log: add device_mac column',
     sql: `ALTER TABLE trigger_execution_log ADD COLUMN device_mac SYMBOL`
+  },
+  // Hunt system: extended scoring fields
+  {
+    name: 'lab_plant_scores: add medicinal_effect_total column',
+    sql: `ALTER TABLE lab_plant_scores ADD COLUMN medicinal_effect_total DOUBLE`
+  },
+  {
+    name: 'lab_plant_scores: add root_evaluation_total column',
+    sql: `ALTER TABLE lab_plant_scores ADD COLUMN root_evaluation_total DOUBLE`
+  },
+  {
+    name: 'lab_plant_scores: add keeper_tier column',
+    sql: `ALTER TABLE lab_plant_scores ADD COLUMN keeper_tier SYMBOL`
+  },
+  {
+    name: 'lab_plant_scores: add run_count column',
+    sql: `ALTER TABLE lab_plant_scores ADD COLUMN run_count INT`
+  },
+  // Hunt system: extended clone tracking fields
+  {
+    name: 'lab_clone_records: add clone_code column',
+    sql: `ALTER TABLE lab_clone_records ADD COLUMN clone_code STRING`
+  },
+  {
+    name: 'lab_clone_records: add destination_room_id column',
+    sql: `ALTER TABLE lab_clone_records ADD COLUMN destination_room_id STRING`
+  },
+  {
+    name: 'lab_clone_records: add purpose column',
+    sql: `ALTER TABLE lab_clone_records ADD COLUMN purpose SYMBOL`
+  },
+  // Hunt system: link plants to hunts
+  {
+    name: 'lab_plants: add hunt_id column',
+    sql: `ALTER TABLE lab_plants ADD COLUMN hunt_id STRING`
+  },
+  {
+    name: 'lab_plants: add keeper_tier column',
+    sql: `ALTER TABLE lab_plants ADD COLUMN keeper_tier SYMBOL`
+  },
+  {
+    name: 'lab_plants: add run_count column',
+    sql: `ALTER TABLE lab_plants ADD COLUMN run_count INT`
   }
 ];
 

@@ -705,9 +705,12 @@ function pickRandom(arr, n) {
   const copy = [...arr]
   const result = []
   for (let i = 0; i < n; i++) {
-    // Use crypto-quality randomness for index selection
-    const rnd = randomBytes(4).readUInt32BE(0)
-    const idx = rnd % copy.length
+    // Rejection sampling to avoid modulo bias
+    const len = copy.length
+    const max = 0xFFFFFFFF - (0xFFFFFFFF % len)
+    let rnd
+    do { rnd = randomBytes(4).readUInt32BE(0) } while (rnd >= max)
+    const idx = rnd % len
     result.push(copy[idx])
     copy[idx] = copy[copy.length - 1]
     copy.pop()

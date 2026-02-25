@@ -861,7 +861,26 @@ async function applyUpdates(components = [], onProgress = null) {
           }
         }
 
-        // 6d. Ensure system dependencies for camera features (ffmpeg, imagemagick)
+        // 6d. Schema: run init.js to create any missing tables (idempotent CREATE IF NOT EXISTS)
+        if (component === 'schema') {
+          try {
+            console.log('[Updater] Running schema init.js to ensure all tables exist...');
+            execSync(`node ${path.join(PROJECT_ROOT, 'src/db/init.js')}`, {
+              cwd: PROJECT_ROOT, stdio: 'pipe', timeout: 60000,
+              env: { ...process.env, PATH: process.env.PATH }
+            });
+            console.log('[Updater] Schema init.js completed successfully');
+          } catch (initErr) {
+            // init.js calls process.exit(0) on success which throws in execSync
+            if (initErr.status === 0) {
+              console.log('[Updater] Schema init.js completed successfully');
+            } else {
+              console.warn('[Updater] Schema init.js warning:', initErr.message?.substring(0, 200));
+            }
+          }
+        }
+
+        // 6e. Ensure system dependencies for camera features (ffmpeg, imagemagick)
         if (component === 'web') {
           try {
             execSync('command -v ffmpeg', { stdio: 'pipe' });

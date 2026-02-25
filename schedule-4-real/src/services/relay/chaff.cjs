@@ -50,8 +50,11 @@ function startChaff(peerUrls, packetSize = 512, intervalMs = 100) {
 }
 
 function stopChaff() {
-  for (const { iv } of chaffIntervals) {
-    clearInterval(iv)
+  for (const entry of chaffIntervals) {
+    clearInterval(entry.iv)
+    // Cancel any pending reconnect timer to prevent orphan connections
+    const timer = typeof entry.reconnectTimer === 'function' ? entry.reconnectTimer() : null
+    if (timer) clearTimeout(timer)
   }
   for (const [, ws] of chaffConnections) {
     try { ws.close() } catch {}

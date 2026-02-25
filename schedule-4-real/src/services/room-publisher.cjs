@@ -149,7 +149,7 @@ function loadOrCreateSecret() {
   sodium.randombytes_buf(secret)
   const dir = path.dirname(SECRET_PATH)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(SECRET_PATH, JSON.stringify({ secret: secret.toString('hex') }))
+  fs.writeFileSync(SECRET_PATH, JSON.stringify({ secret: secret.toString('hex') }), { mode: 0o600 })
   console.log('[RoomPublisher] Generated new room publisher secret')
   return secret
 }
@@ -201,6 +201,7 @@ function loadRooms() {
       publishName: rs.publicName || r.name,
       publishDescription: rs.publicDescription || r.description || '',
       passwordProtected: !!rs.password,
+      inviteOnly: !!rs.inviteOnly,
     }
   })
 }
@@ -448,10 +449,15 @@ async function publishAll() {
       const roomIdHex = roomId.toString('hex')
 
       // Build metadata JSON for this room (cache inviteToken to avoid random nonce changing metadata hash)
-      let inviteToken = cachedInviteTokens.get(room.id)
-      if (!inviteToken) {
-        inviteToken = generateInviteToken(room.id, roomKey)
-        if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
+      // Security: inviteOnly rooms do NOT publish inviteToken in metadata
+      // (anyone who decrypts metadata would get free access)
+      let inviteToken = ''
+      if (!room.inviteOnly) {
+        inviteToken = cachedInviteTokens.get(room.id) || ''
+        if (!inviteToken) {
+          inviteToken = generateInviteToken(room.id, roomKey)
+          if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
+        }
       }
       const metaJson = JSON.stringify({
         envId: room.id,

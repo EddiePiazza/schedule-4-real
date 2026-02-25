@@ -16,7 +16,7 @@
  */
 
 const http = require('node:http')
-const { randomBytes } = require('node:crypto')
+const { randomBytes, createHmac } = require('node:crypto')
 const path = require('node:path')
 const fs = require('node:fs')
 const WebSocket = require('ws')
@@ -161,7 +161,7 @@ function loadOrCreateRoomKey() {
   const roomKey = randomBytes(16).toString('hex')
   const dir = path.dirname(KEY_FILE)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(KEY_FILE, JSON.stringify({ roomKey }, null, 2))
+  fs.writeFileSync(KEY_FILE, JSON.stringify({ roomKey }, null, 2), { mode: 0o600 })
   console.log(`[TUNNEL-AGENT] Generated new room key: ${roomKey.substring(0, 8)}...`)
   return roomKey
 }
@@ -200,11 +200,8 @@ function connect() {
   })
 
   ws.on('open', () => {
-    console.log('[TUNNEL-AGENT] Connected to relay, registering...')
+    console.log('[TUNNEL-AGENT] Connected to relay, waiting for challenge...')
     reconnectDelay = RECONNECT_BASE
-
-    // Send registration
-    ws.send(JSON.stringify({ type: 'register', roomKey: ROOM_KEY }))
 
     // Start heartbeat
     heartbeatTimer = setInterval(() => {
@@ -218,7 +215,18 @@ function connect() {
     if (isBinary) {
       handleBinaryMessage(Buffer.from(data))
     } else {
-      handleTextMessage(data.toString())
+      const text = data.toString()
+      // Handle challenge before registration
+      try {
+        const msg = JSON.parse(text)
+        if (msg.type === 'challenge' && msg.nonce) {
+          const hmac = createHmac('sha256', ROOM_KEY).update(msg.nonce).digest('hex')
+          ws.send(JSON.stringify({ type: 'register', roomKey: ROOM_KEY, hmac }))
+          console.log('[TUNNEL-AGENT] Challenge received, registering with HMAC...')
+          return
+        }
+      } catch {}
+      handleTextMessage(text)
     }
   })
 
