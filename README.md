@@ -19,6 +19,7 @@
   <a href="#-spider-farmer-compatibility"><img src="https://img.shields.io/badge/Spider%20Farmer-GGS%20Compatible-blue?style=for-the-badge" alt="Spider Farmer" /></a>
   <a href="#-anonymous--encrypted-multiplayer"><img src="https://img.shields.io/badge/multiplayer-E2E%20encrypted-blueviolet?style=for-the-badge" alt="Encrypted" /></a>
   <a href="#-schedule-4-real-game"><img src="https://img.shields.io/badge/3D%20game-THREE.js-orange?style=for-the-badge" alt="3D Game" /></a>
+  <a href="#home-assistant-integration"><img src="https://img.shields.io/badge/Home%20Assistant-compatible-18BCF2?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" /></a>
 </p>
 
 <p align="center">
@@ -65,9 +66,9 @@ Schedule 4 Real is a **locally-hosted grow room control platform** that gives yo
 
 But this is not just another controller app.
 
-Schedule 4 Real integrates a **complete plant genetics laboratory** for tracking strains, breeding projects, phenotype hunts, clones, and full grow cycle journals. It includes a **visual automation engine** where you build complex trigger flows by wiring nodes together. And it wraps everything inside a **first-person 3D game** where you can walk through virtual rooms, place interactive objects, control your real devices from in-game switches, and invite anyone into **fully anonymous, end-to-end encrypted multiplayer sessions** — no accounts, no tracking, no metadata leaks.
+Schedule 4 Real integrates a **complete plant genetics laboratory** for tracking strains, breeding projects, phenotype hunts, clones, and full grow cycle journals. A **pheno hunt system** with weighted scoring across six categories, radar charts, and a Keeper Engine helps you identify your best mother plants. A built-in **grow encyclopedia** with 1,000+ searchable terms covers nutrients, diseases, pests, deficiencies, training techniques, and equipment — with an **interactive diagnostic tool** that walks you through identifying plant problems step by step (location → symptoms → probable causes with remedies). It includes a **visual automation engine** where you build complex trigger flows by wiring nodes together. And it wraps everything inside a **first-person 3D game** where you can walk through virtual rooms, place interactive objects, control your real devices from in-game switches, and invite anyone into **fully anonymous, end-to-end encrypted multiplayer sessions** — no accounts, no tracking, no metadata leaks.
 
-The game isn't just for growers. It's for anyone who wants to **learn about cultivation**, explore breeding and pheno hunting, or simply **have a private space to hang out** with friends. The communication protocol is built on onion-routed circuits with military-grade cryptography, and its source code is public.
+The game isn't just for growers. It's for anyone who wants to **learn about cultivation**, explore the encyclopedia, try the diagnostic tools, or simply **have a private space to hang out** with friends. The communication protocol is built on onion-routed circuits with military-grade cryptography, and its source code is public.
 
 ### Spider Farmer Compatibility
 
@@ -131,7 +132,6 @@ Each outlet supports 7 control modes:
 |:-----|:-------------|
 | **Manual** | Direct brightness 0–100% |
 | **Time Slot** | Daily schedule with brightness per period |
-| **Cycle** | Repeating on/off pattern |
 | **PPFD Auto** | Automatically adjusts intensity to hit target photosynthetic flux (umol/m2/s) |
 
 Sunrise/sunset simulation, dark temperature control, and per-light wattage configuration included.
@@ -183,7 +183,21 @@ Track every plant from seed to harvest across **15 lifecycle stages**: Germinati
 
 ### Observation System
 
-Log plant health, height, notes, and photos through a step-by-step wizard. The system automatically captures environment data (temperature, humidity, VPD) at the moment of each observation. Stage-based reminders tell you when it's time to check your plants.
+Log plant health, height, notes, and photos through a step-by-step wizard. The system automatically captures environment data (temperature, humidity, VPD) at the moment of each observation. Stage-based reminders tell you when it's time to check your plants. When you flag pest, disease, or deficiency issues, the wizard opens a **dedicated diagnostic step** that guides you through identifying the problem — select affected areas, match visible symptoms, and get ranked probable causes with remedies.
+
+### Grow Encyclopedia
+
+A searchable knowledge base with 1,000+ terms organized across domains: nutrients, diseases, pests, deficiencies, training methods, and grow equipment. Every entry includes detailed descriptions, visual guides, and stage-specific care recommendations. The encyclopedia is cross-linked with observations — diagnostic results link directly to the relevant encyclopedia entry for deeper reading. Supports metric and imperial units.
+
+### Plant Problem Diagnostic
+
+An interactive 3-step diagnostic tool integrated into both the observation wizard and the encyclopedia:
+
+1. **Affected Area** — Select where on the plant you see the problem (upper leaves, lower leaves, stems, roots, flowers...)
+2. **Symptoms** — Match what it looks like (yellowing, spots, curling, wilting, discoloration patterns...)
+3. **Results** — Get probability-ranked diagnoses with descriptions, matching symptoms highlighted, and suggested remedies
+
+The diagnostic considers your plant's current growth stage and grow medium to narrow down results. All diagnostic data is saved with the observation for historical tracking.
 
 ### Strain Library
 
@@ -264,7 +278,7 @@ You (Host)                 Relay Network                 Your Friend (Guest)
 - **No tracker sees room contents** — metadata encrypted with a key only you and your guests know
 - **Your IP is hidden from guests** — they connect through relays, never directly to you
 - **No accounts or registration** — guests join via encrypted invite tokens
-- **Chaff traffic** — dummy packets prevent traffic analysis
+- **Encrypted metadata** — room names, invite codes, and connection details are encrypted before reaching the relay
 - **Federated relays** — anyone can run a relay node; gossip protocol connects them
 
 The relay and onion routing source code is public. Even if every relay were compromised, the end-to-end encryption between host and guest remains unbreakable.
@@ -328,6 +342,16 @@ Bind virtual objects to your real Spider Farmer devices. Display live sensor dat
 
 ---
 
+## Voice Chat
+
+Built-in voice chat over peer-to-peer WebRTC. No Discord, no third-party app — just talk while you walk. See who's speaking, mute yourself, and adjust volume, all inside the game. Voice data flows directly between players, never through our relay servers.
+
+<p align="center">
+  <img src="https://schedule4real.com/dist/screenshots/room-crew.jpg" alt="Multiplayer session — friends exploring together with voice chat" width="100%" />
+</p>
+
+---
+
 ## TV & Streaming
 
 Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sports, News, Music, Gaming), add custom m3u8 streams, save favorites. Watch together with friends in multiplayer.
@@ -374,6 +398,8 @@ Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sp
 |:--------|:-:|
 | 15-stage plant lifecycle tracking | |
 | Observation wizard with auto environment capture | |
+| Dedicated diagnostic step (affected area → symptoms → results) | |
+| Grow encyclopedia with 1,000+ searchable terms | |
 | Photo gallery with lightbox | |
 | Strain library (breeder, genetics, flowering time, inventory) | |
 | Breeding projects with pollen bank and genetic trees | |
@@ -381,13 +407,13 @@ Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sp
 | Camera feeds, timelapse, scheduled captures | |
 | Reports, analytics, CSV export | |
 | Grow rooms with 2D floor plan and device binding | |
-| Achievement tracking and XP gamification | |
+| Notification system with reminders and alerts | |
 
 ### 3D Game
 
 | Feature | |
 |:--------|:-:|
-| First-person navigation (WASD, sprint, jump, crouch) | |
+| First-person navigation (WASD, sprint, jump) | |
 | Custom GLB room upload with floor calibration | |
 | Object placement (move, rotate, scale, duplicate, lock) | |
 | Environment presets and ambient lighting control | |
@@ -424,6 +450,7 @@ Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sp
 | Optional relay node (contribute to the network) | |
 | 90-day data retention with auto-cleanup | |
 | Fully local — works without internet | |
+| Home Assistant integration via MQTT auto-discovery | |
 | No telemetry, no analytics, no tracking | |
 
 ---
@@ -535,7 +562,7 @@ Mosquitto MQTT Broker (1883 / 1884 / 9001)
 |:------|:-----------|
 | Frontend | Nuxt 4 + Vue 3 + TypeScript + TailwindCSS |
 | 3D Engine | THREE.js |
-| Backend | Nuxt Nitro (166+ API endpoints + WebSocket) |
+| Backend | Nuxt Nitro (190+ API endpoints + WebSocket) |
 | Database | QuestDB (time-series, append-only) |
 | MQTT | Mosquitto |
 | Proxy | spiderproxy (PyInstaller binary) |
@@ -558,7 +585,47 @@ Schedule 4 Real works with the complete **Spider Farmer GGS** product line throu
 
 > The official Spider Farmer app continues to work alongside Schedule 4 Real. The cloud bridge is maintained by default — you get local control AND cloud access simultaneously.
 
-**Keywords:** Spider Farmer GGS, Spider Farmer Power Strip 5, Spider Farmer Light Controller, Spider Farmer Control Box, Spider Farmer local control, Spider Farmer automation, Spider Farmer alternative app, Spider Farmer MQTT, Spider Farmer grow controller, Spider Farmer smart controller, GGS grow controller, Spider Farmer home automation, SF-PS5, SF-LC, SF-CB, grow room controller, grow room automation, indoor grow controller, PPFD controller, VPD controller
+### Home Assistant Integration
+
+Bridge your Spider Farmer devices to [Home Assistant](https://www.home-assistant.io/) via MQTT auto-discovery. Every sensor, outlet, and light channel is exposed as a native entity — integrate your grow room into your full home automation setup with zero cloud dependency.
+
+| Entity Type | Examples |
+|:------------|:---------|
+| **Sensors** | Temperature, humidity, VPD, leaf VPD, CO2, soil moisture, soil EC |
+| **Switches** | 5 outlet sockets with on/off control |
+| **Dimmers** | Light 1 + Light 2 brightness as number entities |
+| **Fans** | Blower and circulation fan speed control |
+
+All communication stays local — Home Assistant talks to Schedule 4 Real's MQTT broker on your LAN. No cloud service, no API keys, no internet required.
+
+**Keywords:** Spider Farmer GGS, Spider Farmer Power Strip 5, Spider Farmer Light Controller, Spider Farmer Control Box, Spider Farmer local control, Spider Farmer automation, Spider Farmer alternative app, Spider Farmer MQTT, Spider Farmer grow controller, Spider Farmer smart controller, GGS grow controller, Spider Farmer home automation, Spider Farmer Home Assistant, SF-PS5, SF-LC, SF-CB, grow room controller, grow room automation, indoor grow controller, PPFD controller, VPD controller, Home Assistant grow room, MQTT grow controller, source available grow controller, self-hosted grow controller
+
+---
+
+## Source Available & Self-Hosted
+
+Schedule 4 Real runs entirely on your hardware. No cloud services, no subscriptions, no data leaving your network.
+
+- **Source available** — the onion relay network, encryption protocol, MQTT proxy, installer, and service infrastructure are fully open source. The web application is distributed as a compiled package while commercial partnerships with equipment brands are being finalized. A full open source release is planned for the future
+- **Self-hosted** — runs on a Raspberry Pi, a NUC, a Proxmox VM, or any Linux machine
+- **Works offline** — full functionality without internet access
+- **Zero telemetry** — nothing phones home, no analytics, no crash reports
+- **Auto-updates** — component-level updates with SHA-256 verification and automatic rollback on failure
+- **Backup & restore** — one-click database backups, downloadable, restorable to any point
+
+---
+
+## Community
+
+<p align="center">
+  <a href="https://discord.gg/wZU6mnY2Sn"><img src="https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>
+</p>
+
+---
+
+## Sponsor
+
+Schedule 4 Real is sponsored by [WEEDLIX](https://weedlix.com).
 
 ---
 
