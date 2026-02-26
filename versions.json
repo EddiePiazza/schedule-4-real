@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-26T04:06:31Z",
+  "generatedAt": "2026-02-26T04:13:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.1",
-      "archive": "s4r-web-1.73.1.tar.gz",
-      "sha256": "869b150316d73e41d043e16d5b3107f98e8f7581e53b69829ef6b6f00578c88e",
-      "size": 11106401,
+      "version": "1.73.2",
+      "archive": "s4r-web-1.73.2.tar.gz",
+      "sha256": "dac9c7439433c0b5025cf0a058684e6d1a68fdfc9b48fefb5beff08b85848469",
+      "size": 11106400,
       "changelog": [
+        {
+          "version": "1.73.2",
+          "changes": [
+            "Update README tagline and add table of contents"
+          ]
+        },
         {
           "version": "1.73.1",
           "changes": [

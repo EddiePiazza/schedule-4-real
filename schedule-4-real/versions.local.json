@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-26T04:01:19.396Z",
+  "lastCheck": "2026-02-26T04:11:19.396Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.1",
-      "installedAt": "2026-02-26T04:06:31Z"
+      "version": "1.73.2",
+      "installedAt": "2026-02-26T04:13:04Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.1",
+        "changes": [
+          "Fix publish script not updating README and showing all versions in commit"
+        ]
+      },
       {
         "version": "1.73.0",
         "changes": [
@@ -375,18 +381,6 @@
           "Fix E key interaction distance to match proximity glow range",
           "Fix lighting preset cycle showing wrong brightness on room load",
           "Fix proximity glow staying stuck on objects after moving away"
-        ]
-      },
-      {
-        "version": "1.52.0",
-        "changes": [
-          "Fix IP cameras not loading from external networks with MSE fallback",
-          "Add push-to-talk button for mobile in 3D rooms",
-          "Fix 3D room pointer not working after re-entering a room",
-          "Update proxy configuration guides with all WebSocket endpoints",
-          "Add O key shortcut for voice settings and Exit to Lobby option in 3D rooms",
-          "Fix voice chat not working between devices on different networks",
-          "Fix voice chat pitch distortion between devices with different sample rates"
         ]
       }
     ],

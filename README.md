@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <strong>Grow control system &bull; Plant genetics lab &bull; Encrypted multiplayer 3D game</strong>
+  <strong>Grow control &bull; Genetics lab &bull; Plant diagnostics &bull; Grow encyclopedia &bull; 3D multiplayer</strong>
 </p>
 
 <p align="center">
@@ -28,6 +28,27 @@
   <img src="https://img.shields.io/badge/license-source%20available-yellow" alt="License" />
   <img src="https://img.shields.io/badge/cloud-not%20required-success" alt="Local First" />
 </p>
+
+---
+
+## Table of Contents
+
+- [Quick Install](#quick-install)
+- [What Is Schedule 4 Real?](#what-is-schedule-4-real)
+- [Dashboard](#dashboard)
+- [Device Control](#device-control)
+- [Automation Engine](#automation-engine)
+- [Plant Genetics Laboratory](#plant-genetics-laboratory)
+  - [Grow Journal](#grow-journal) · [Observations](#observation-system) · [Encyclopedia](#grow-encyclopedia) · [Plant Diagnostics](#plant-problem-diagnostic) · [Strains](#strain-library) · [Breeding](#breeding-projects) · [Pheno Hunt](#pheno-hunt--keeper-selection) · [Cameras](#cameras--timelapse) · [Reports](#reports)
+- [Schedule 4 Real Game](#schedule-4-real-game)
+- [Anonymous & Encrypted Multiplayer](#anonymous--encrypted-multiplayer)
+- [Inside a Room](#inside-a-room) · [Infinite Rooms](#infinite-rooms--doors) · [Locked Doors](#locked-doors--private-zones) · [Sandbox](#sandbox-mode) · [Grow Control in 3D](#real-time-grow-control-in-3d) · [Voice Chat](#voice-chat) · [TV & Streaming](#tv--streaming)
+- [Complete Feature List](#complete-feature-list)
+- [Installation Guide](#installation-guide)
+- [Architecture](#architecture)
+- [Spider Farmer Compatibility](#spider-farmer-compatibility)
+- [Source Available & Self-Hosted](#source-available--self-hosted)
+- [Community](#community)
 
 ---
 
