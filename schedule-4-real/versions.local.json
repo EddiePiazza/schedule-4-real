@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-26T13:31:19.426Z",
+  "lastCheck": "2026-02-26T20:11:19.427Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.3",
-      "installedAt": "2026-02-26T13:34:36Z"
+      "version": "1.73.4",
+      "installedAt": "2026-02-26T20:14:42Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.3",
+        "changes": [
+          "Update README with grow tent builder, ducting, mobile controls, display charts, and phone casting"
+        ]
+      },
       {
         "version": "1.73.2",
         "changes": [
@@ -373,12 +379,6 @@
         "changes": [
           "Add relay proxy configuration guides and connection limits to install modal",
           "Enable Public rooms visibility by default in 3D room lobby"
-        ]
-      },
-      {
-        "version": "1.53.0",
-        "changes": [
-          "Add relay node management UI with tracker toggle and live stats"
         ]
       }
     ],

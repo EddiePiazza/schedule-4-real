@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-26T13:34:36Z",
+  "generatedAt": "2026-02-26T20:14:42Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.3",
-      "archive": "s4r-web-1.73.3.tar.gz",
-      "sha256": "4fec72f5ea229b1a24a4f0851afe4f32be79b3c09c6ebf2ff5a621dfbc0b181c",
-      "size": 11106152,
+      "version": "1.73.4",
+      "archive": "s4r-web-1.73.4.tar.gz",
+      "sha256": "8e751ccf3373f859bcfd723af37a27450ae9baa9887bdc40d2d8ae62e4a0c71c",
+      "size": 11104670,
       "changelog": [
+        {
+          "version": "1.73.4",
+          "changes": [
+            "Improve Firefox performance with half-resolution bloom",
+            "Optimize room loading: parallel asset downloads, batched shader compilation and texture upload",
+            "Fix phantom objects becoming invisible or unselectable when stacked",
+            "Reduce stuttering by pooling raycasters and caching lamp meshes"
+          ]
+        },
         {
           "version": "1.73.3",
           "changes": [
