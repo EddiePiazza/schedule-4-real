@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-25T14:34:31.862Z",
+  "lastCheck": "2026-02-26T03:51:19.399Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.72.1",
-      "installedAt": "2026-02-25T14:40:24Z"
+      "version": "1.73.0",
+      "installedAt": "2026-02-26T04:00:06Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.72.1",
+        "changes": [
+          "Fix relay auto-detect to use wss:// and normalize domain-only URLs"
+        ]
+      },
       {
         "version": "1.72.0",
         "changes": [
@@ -382,13 +388,6 @@
           "Block guests from editing or moving owner objects in radial menu",
           "Add sound effects for keypad interactions (key press, unlock, wrong code)"
         ]
-      },
-      {
-        "version": "1.50.0",
-        "changes": [
-          "Block guests from editing or modifying owner-placed objects in 3D room",
-          "Add sound effects for keypad interactions (key press, unlock, wrong code)"
-        ]
       }
     ],
     "ingest": [
@@ -719,6 +718,14 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.5.2",
+        "changes": [
+          "Normalize publicUrl to always include wss:// protocol prefix",
+          "Reject raw IP addresses in gossip peer validation to prevent IP leaks",
+          "Fix invite token always included for public room join links"
+        ]
+      },
       {
         "version": "1.5.1",
         "changes": [

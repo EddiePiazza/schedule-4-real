@@ -1206,6 +1206,21 @@ const migrations = [
   {
     name: 'lab_plants: add run_count column',
     sql: `ALTER TABLE lab_plants ADD COLUMN run_count INT`
+  },
+  // Plant diagnostic data storage
+  {
+    name: 'lab_observations: add diagnostic_data column',
+    sql: `ALTER TABLE lab_observations ADD COLUMN diagnostic_data STRING`
+  },
+  // Batch observation grouping
+  {
+    name: 'lab_observations: add batch_id column',
+    sql: `ALTER TABLE lab_observations ADD COLUMN batch_id STRING`
+  },
+  // Structured activity data (watering amount/pH, feeding nutrients/EC, per-activity notes)
+  {
+    name: 'lab_observations: add activity_data column',
+    sql: `ALTER TABLE lab_observations ADD COLUMN activity_data STRING`
   }
 ];
 

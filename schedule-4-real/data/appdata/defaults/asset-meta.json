@@ -1359,24 +1359,24 @@
     "animType": "static",
     "isDoor": false,
     "lampConfig": {
-      "color": "#ffffff",
-      "intensity": 38,
-      "distance": 3,
+      "color": "#fcfdd8",
+      "intensity": 62,
+      "distance": 5,
       "decay": 1.1,
-      "angle": 0.7853981633974483,
-      "penumbra": 0.3,
+      "angle": 3.141592653589793,
+      "penumbra": 0,
       "castShadow": true,
       "offset": [
         0,
-        -0.15,
-        0.39
+        -0.08,
+        0.22
       ],
       "direction": [
         0,
-        -1,
-        0
+        -0.19,
+        0.54
       ],
-      "lightType": "point"
+      "lightType": "spot"
     }
   },
   "super_bong_haze.glb": {

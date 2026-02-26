@@ -740,6 +740,11 @@ pm2 startup 2>/dev/null | grep -v "^\[" | bash 2>/dev/null || true
 pm2 save
 success "Auto-start configured"
 
+# Report installation (non-blocking, best-effort)
+curl -fsSL -X POST https://schedule4real.com/api/stats/install \
+  -H 'Content-Type: application/json' -d '{}' \
+  --connect-timeout 5 --max-time 10 >/dev/null 2>&1 || true
+
 echo ""
 
 # ═══════════════════════════════════════════

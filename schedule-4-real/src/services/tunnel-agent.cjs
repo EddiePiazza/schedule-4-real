@@ -168,7 +168,7 @@ function loadOrCreateRoomKey() {
 
 const ROOM_KEY = loadOrCreateRoomKey()
 console.log(`[TUNNEL-AGENT] Room key: ${ROOM_KEY.substring(0, 8)}...`)
-console.log(`[TUNNEL-AGENT] Primary relay: ${PRIMARY_RELAY_URL || '(none)'}`)
+console.log(`[TUNNEL-AGENT] Primary relay: ${getCurrentRelayUrl() || '(none)'}`)
 console.log(`[TUNNEL-AGENT] Local server: http://${LOCAL_HOST}:${LOCAL_PORT}`)
 
 // ── Active WebSocket channels (guest WS connections proxied through tunnel) ──

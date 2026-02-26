@@ -1,7 +1,7 @@
 {
   "tv_plasma.glb": 2.0144,
   "computer_terminal_refrigerator_sci-fi.glb": 3.0606,
-  "cannabis_sativa_plant.glb": 2.66,
+  "cannabis_sativa_plant.glb": 1.0035,
   "simple_basic_office__work_desk.glb": 1.3272,
   "realistic_blackboard.glb": 5.3529,
   "microscope.glb": 0.6585,
@@ -16,5 +16,6 @@
   "switch_keypad.glb": 0.4336,
   "keypad_codelock_2.glb": 0.2161,
   "door_metalic_keypad.glb": 2.0124,
-  "cc0_-_wall_lamp.glb": 0.1637
+  "cc0_-_wall_lamp.glb": 0.1637,
+  "tv_retro.glb": 0.4984
 }

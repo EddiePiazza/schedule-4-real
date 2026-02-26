@@ -3500,7 +3500,7 @@
       "scale": 0.0576,
       "name": "power switch 1",
       "locked": false,
-      "toggleState": true,
+      "toggleState": false,
       "deviceBinding": {
         "deviceType": "socket",
         "deviceId": "O4",
@@ -3676,7 +3676,31 @@
       },
       "scale": 50.9287,
       "name": "cc0   wall lamp",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#fcfdd8",
+        "intensity": 62,
+        "distance": 5,
+        "decay": 1.1,
+        "angle": 3.141592653589793,
+        "penumbra": 0,
+        "castShadow": true,
+        "offset": [
+          0,
+          -0.08,
+          0.22
+        ],
+        "direction": [
+          0,
+          -0.19,
+          0.54
+        ],
+        "lightType": "spot"
+      }
     },
     {
       "id": "6e27a90f-d355-4707-9b53-54fa6fdbe86e",
@@ -3694,7 +3718,31 @@
       },
       "scale": 50.9287,
       "name": "cc0   wall lamp",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#fcfdd8",
+        "intensity": 62,
+        "distance": 5,
+        "decay": 1.1,
+        "angle": 3.141592653589793,
+        "penumbra": 0,
+        "castShadow": true,
+        "offset": [
+          0,
+          -0.08,
+          0.22
+        ],
+        "direction": [
+          0,
+          -0.19,
+          0.54
+        ],
+        "lightType": "spot"
+      }
     },
     {
       "id": "38415410-9ee1-4cb1-9e43-2fd0e4389123",
@@ -3712,7 +3760,31 @@
       },
       "scale": 50.9287,
       "name": "cc0   wall lamp",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#fcfdd8",
+        "intensity": 62,
+        "distance": 5,
+        "decay": 1.1,
+        "angle": 3.141592653589793,
+        "penumbra": 0,
+        "castShadow": true,
+        "offset": [
+          0,
+          -0.08,
+          0.22
+        ],
+        "direction": [
+          0,
+          -0.19,
+          0.54
+        ],
+        "lightType": "spot"
+      }
     },
     {
       "id": "3a3e33e3-ebc2-4e19-be7d-f31f02cf9836",
@@ -3730,7 +3802,31 @@
       },
       "scale": 50.9287,
       "name": "cc0   wall lamp",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#fcfdd8",
+        "intensity": 62,
+        "distance": 5,
+        "decay": 1.1,
+        "angle": 3.141592653589793,
+        "penumbra": 0,
+        "castShadow": true,
+        "offset": [
+          0,
+          -0.08,
+          0.22
+        ],
+        "direction": [
+          0,
+          -0.19,
+          0.54
+        ],
+        "lightType": "spot"
+      }
     },
     {
       "id": "69b9ceb3-27be-45e7-9bc3-3da17a2247f4",
@@ -3748,7 +3844,31 @@
       },
       "scale": 50.9287,
       "name": "cc0   wall lamp",
-      "locked": false
+      "locked": false,
+      "behavior": {
+        "type": "lamp",
+        "config": {}
+      },
+      "lampOverride": {
+        "color": "#fcfdd8",
+        "intensity": 62,
+        "distance": 5,
+        "decay": 1.1,
+        "angle": 3.141592653589793,
+        "penumbra": 0,
+        "castShadow": true,
+        "offset": [
+          0,
+          -0.08,
+          0.22
+        ],
+        "direction": [
+          0,
+          -0.19,
+          0.54
+        ],
+        "lightType": "spot"
+      }
     },
     {
       "id": "6cb4f922-f385-4e03-86af-d960ee1997eb",

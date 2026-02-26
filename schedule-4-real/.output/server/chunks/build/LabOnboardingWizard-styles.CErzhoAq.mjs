@@ -1,1 +1,0 @@
-const e=["input[type=number][data-v-370ed248]::-webkit-inner-spin-button,input[type=number][data-v-370ed248]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number][data-v-370ed248]{-moz-appearance:textfield}"];export{e as default};
