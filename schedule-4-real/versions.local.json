@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-26T03:51:19.399Z",
+  "lastCheck": "2026-02-26T04:01:19.396Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.0",
-      "installedAt": "2026-02-26T04:00:06Z"
+      "version": "1.73.1",
+      "installedAt": "2026-02-26T04:06:31Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.0",
+        "changes": [
+          "Fix diagnostic data lost when editing existing observations",
+          "Move plant diagnostic to dedicated wizard step with guided navigation"
+        ]
+      },
       {
         "version": "1.72.1",
         "changes": [
@@ -380,13 +387,6 @@
           "Add O key shortcut for voice settings and Exit to Lobby option in 3D rooms",
           "Fix voice chat not working between devices on different networks",
           "Fix voice chat pitch distortion between devices with different sample rates"
-        ]
-      },
-      {
-        "version": "1.51.0",
-        "changes": [
-          "Block guests from editing or moving owner objects in radial menu",
-          "Add sound effects for keypad interactions (key press, unlock, wrong code)"
         ]
       }
     ],

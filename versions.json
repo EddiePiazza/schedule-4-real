@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-26T04:00:06Z",
+  "generatedAt": "2026-02-26T04:06:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.0",
-      "archive": "s4r-web-1.73.0.tar.gz",
-      "sha256": "4b01da134441ca94225e612f7f94c3a82f25eb97233cdeef463840e65f724b97",
-      "size": 11106300,
+      "version": "1.73.1",
+      "archive": "s4r-web-1.73.1.tar.gz",
+      "sha256": "869b150316d73e41d043e16d5b3107f98e8f7581e53b69829ef6b6f00578c88e",
+      "size": 11106401,
       "changelog": [
+        {
+          "version": "1.73.1",
+          "changes": [
+            "Fix publish script not updating README and showing all versions in commit"
+          ]
+        },
         {
           "version": "1.73.0",
           "changes": [
