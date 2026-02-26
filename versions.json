@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-26T04:13:04Z",
+  "generatedAt": "2026-02-26T13:34:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.2",
-      "archive": "s4r-web-1.73.2.tar.gz",
-      "sha256": "dac9c7439433c0b5025cf0a058684e6d1a68fdfc9b48fefb5beff08b85848469",
-      "size": 11106400,
+      "version": "1.73.3",
+      "archive": "s4r-web-1.73.3.tar.gz",
+      "sha256": "4fec72f5ea229b1a24a4f0851afe4f32be79b3c09c6ebf2ff5a621dfbc0b181c",
+      "size": 11106152,
       "changelog": [
+        {
+          "version": "1.73.3",
+          "changes": [
+            "Update README with grow tent builder, ducting, mobile controls, display charts, and phone casting"
+          ]
+        },
         {
           "version": "1.73.2",
           "changes": [

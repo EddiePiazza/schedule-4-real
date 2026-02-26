@@ -314,7 +314,7 @@ Upload any 3D model (GLB format) as a room. Calibrate the floor and scale, choos
   <img src="https://schedule4real.com/dist/screenshots/room-main.jpg" alt="Room — First-person 3D environment" width="100%" />
 </p>
 
-Navigate with WASD, sprint with Shift, jump with Space. Full physics: gravity, collision detection, dynamic ground tracking, auto step-up on small obstacles. Head bob while walking, smooth camera movement, and a radial quick-action menu on Q.
+Navigate with WASD, sprint with Shift, jump with Space. On mobile, use the dual-stick virtual joystick (with left-handed mode). Full physics: gravity, collision detection, dynamic ground tracking, auto step-up on small obstacles. Head bob while walking, smooth camera movement, ambient dust particles in light beams, and a radial quick-action menu on Q.
 
 ---
 
@@ -340,7 +340,7 @@ Put security keypads on any door. Only people who know the code can enter. Build
 
 ## Sandbox Mode
 
-Place furniture, decorations, screens, interactive objects — hundreds of 3D assets auto-discovered from the asset library. Move, rotate, scale, duplicate, lock objects in place. Every room is your canvas.
+Place furniture, decorations, screens, interactive objects — hundreds of 3D assets auto-discovered from the asset library. Move, rotate, scale, duplicate, lock objects in place. Build procedural grow tents with configurable dimensions, reflective mylar interiors, cloth door physics, and vent ports. Connect tents to fans and filters with flexible ducting tubes that use Verlet physics simulation. Every room is your canvas.
 
 <p align="center">
   <img src="https://schedule4real.com/dist/screenshots/room-sandbox.jpg" alt="Sandbox — Place and arrange 3D objects" width="100%" />
@@ -356,7 +356,8 @@ Bind virtual objects to your real Spider Farmer devices. Display live sensor dat
   <img src="https://schedule4real.com/dist/screenshots/room-sensors.jpg" alt="In-game device control — Live sensor data and switches" width="100%" />
 </p>
 
-- **Display zones** — Show live temperature, humidity, VPD, CO2 on wall-mounted screens
+- **Display zones** — Show live temperature, humidity, VPD, CO2 on wall-mounted screens, with real-time sensor charts
+- **Phone casting** — Stream your phone's Spider Farmer app to an in-game display zone via SSE
 - **Device switches** — Bind any object to a real outlet or light; toggle with a click
 - **Keypads** — Program action chains that execute device commands
 - **Behavior triggers** — Automate actions when a player enters a zone
@@ -440,9 +441,16 @@ Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sp
 | Environment presets and ambient lighting control | |
 | Interactive TVs with IPTV/HLS streaming | |
 | Keypads with security codes and door locks | |
-| Display zones (images, video, text, sensor widgets) | |
+| Display zones (images, video, text, sensor charts, phone casting) | |
 | Device bindings (control real outlets/lights from 3D) | |
 | Behavior system (proximity triggers, action chains) | |
+| Procedural grow tent builder (frame, mylar, cloth door, vent ports) | |
+| Flexible ducting system (Verlet physics, connects tents to fans/filters) | |
+| Mobile joystick controls (dual-stick, left-handed mode) | |
+| Room mesh editor (toggle visibility, adjust polygon count) | |
+| Surface polygon tracing tool for interactive zones | |
+| Audio SFX engine with haptic feedback | |
+| Particle effects (dust motes in light beams) | |
 | Post-processing (bloom, FXAA, color correction) | |
 
 ### Multiplayer
@@ -583,7 +591,7 @@ Mosquitto MQTT Broker (1883 / 1884 / 9001)
 |:------|:-----------|
 | Frontend | Nuxt 4 + Vue 3 + TypeScript + TailwindCSS |
 | 3D Engine | THREE.js |
-| Backend | Nuxt Nitro (190+ API endpoints + WebSocket) |
+| Backend | Nuxt Nitro (210+ API endpoints + WebSocket) |
 | Database | QuestDB (time-series, append-only) |
 | MQTT | Mosquitto |
 | Proxy | spiderproxy (PyInstaller binary) |

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-26T04:11:19.396Z",
+  "lastCheck": "2026-02-26T13:31:19.426Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.2",
-      "installedAt": "2026-02-26T04:13:04Z"
+      "version": "1.73.3",
+      "installedAt": "2026-02-26T13:34:36Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.2",
+        "changes": [
+          "Update README tagline and add table of contents"
+        ]
+      },
       {
         "version": "1.73.1",
         "changes": [
@@ -373,14 +379,6 @@
         "version": "1.53.0",
         "changes": [
           "Add relay node management UI with tracker toggle and live stats"
-        ]
-      },
-      {
-        "version": "1.52.1",
-        "changes": [
-          "Fix E key interaction distance to match proximity glow range",
-          "Fix lighting preset cycle showing wrong brightness on room load",
-          "Fix proximity glow staying stuck on objects after moving away"
         ]
       }
     ],
