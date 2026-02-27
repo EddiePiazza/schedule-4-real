@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-26T20:11:19.427Z",
+  "lastCheck": "2026-02-27T14:51:19.919Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.4",
-      "installedAt": "2026-02-26T20:14:42Z"
+      "version": "1.73.5",
+      "installedAt": "2026-02-27T14:53:10Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.4",
+        "changes": [
+          "Improve Firefox performance with half-resolution bloom",
+          "Optimize room loading: parallel asset downloads, batched shader compilation and texture upload",
+          "Fix phantom objects becoming invisible or unselectable when stacked",
+          "Reduce stuttering by pooling raycasters and caching lamp meshes"
+        ]
+      },
       {
         "version": "1.73.3",
         "changes": [
@@ -369,13 +378,6 @@
       },
       {
         "version": "1.55.0",
-        "changes": [
-          "Add relay proxy configuration guides and connection limits to install modal",
-          "Enable Public rooms visibility by default in 3D room lobby"
-        ]
-      },
-      {
-        "version": "1.54.0",
         "changes": [
           "Add relay proxy configuration guides and connection limits to install modal",
           "Enable Public rooms visibility by default in 3D room lobby"

@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-26T20:14:42Z",
+  "generatedAt": "2026-02-27T14:53:10Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.4",
-      "archive": "s4r-web-1.73.4.tar.gz",
-      "sha256": "8e751ccf3373f859bcfd723af37a27450ae9baa9887bdc40d2d8ae62e4a0c71c",
-      "size": 11104670,
+      "version": "1.73.5",
+      "archive": "s4r-web-1.73.5.tar.gz",
+      "sha256": "46877f2008fb3224b939973052f3a26dcea98d091cd4292652b5f271a94167b6",
+      "size": 11105665,
       "changelog": [
+        {
+          "version": "1.73.5",
+          "changes": [
+            "Fix private rooms making external relay connections on entry",
+            "Fix public rooms not appearing on landing page (missing invite token in metadata)"
+          ]
+        },
         {
           "version": "1.73.4",
           "changes": [
