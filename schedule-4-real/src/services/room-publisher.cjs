@@ -45,8 +45,8 @@ const RELAY_CONFIG = path.join(PROJECT_ROOT, 'data/relay/relay-config.json')
 
 // ── Dynamic tracker discovery ────────────────────────────────────────
 const SEED_TRACKERS = [
-  'wss://schedule4real.com/rooms',
-  'wss://r2.imaset.com',
+  'ws://127.0.0.1:9443',             // Local relay (direct)
+  'wss://schedule4real.com/rooms',    // OVH tracker (via Cloudflare — ~1 req/min, OK without chaff)
 ]
 const PEERS_FILE = path.join(PROJECT_ROOT, 'data/relay/peers.json')
 
@@ -57,8 +57,7 @@ function loadTrackersFromDisk() {
     const peers = JSON.parse(fs.readFileSync(PEERS_FILE, 'utf8'))
     if (!Array.isArray(peers)) return
     for (const p of peers) {
-      if (p.tracker && p.url && (p.failures || 0) < 3 && !knownTrackers.includes(p.url)
-        && !/weedlix\.com/i.test(p.url))
+      if (p.tracker && p.url && (p.failures || 0) < 3 && !knownTrackers.includes(p.url))
         knownTrackers.push(p.url)
     }
   } catch {}

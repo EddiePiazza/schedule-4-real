@@ -613,25 +613,29 @@ setInterval(() => {
   console.log(`[RELAY] Circuits: ${activeCount()} | Rooms: ${roomCount()} | Peers: ${peers} | Tunnel: ${ts.hosts}h/${ts.sessions}s`)
 }, 60000)
 
-// ── Chaff traffic to known peers ────────────────────────────────────
-// Start chaff to active peers (refreshed periodically)
-let chaffStarted = false
-function refreshChaff() {
-  const activePeers = gossip.getActivePeers()
-    .filter(p => p.url !== cfg.publicUrl)
-    .map(p => p.url)
-  if (activePeers.length > 0) {
-    startChaff(activePeers, cfg.packetSize || 512, cfg.chaffIntervalMs || 100)
-    if (!chaffStarted) {
-      console.log(`[RELAY] Chaff started to ${activePeers.length} peers`)
-      chaffStarted = true
+// ── Chaff traffic (conditional) ──────────────────────────────────────
+// Only activates when 2+ circuits exist (real users) and only sends to
+// direct peers (ws://) — never to Cloudflare-proxied URLs (wss://) which
+// count each WebSocket frame as an HTTP request.
+let chaffActive = false
+setInterval(() => {
+  const circuits = activeCount()
+  if (circuits >= 2 && !chaffActive) {
+    // Only chaff to direct (non-Cloudflare) peers
+    const directPeers = gossip.getPeerList()
+      .filter(p => p.url && p.url.startsWith('ws://'))
+      .map(p => p.url)
+    if (directPeers.length > 0) {
+      startChaff(directPeers, cfg.packetSize || 512, cfg.chaffIntervalMs || 1000)
+      chaffActive = true
+      console.log(`[RELAY] Chaff started → ${directPeers.length} direct peers (${circuits} circuits)`)
     }
+  } else if (circuits < 2 && chaffActive) {
+    stopChaff()
+    chaffActive = false
+    console.log('[RELAY] Chaff stopped — fewer than 2 circuits')
   }
-}
-
-// Refresh chaff targets every 5min
-setTimeout(refreshChaff, 10000) // initial delay for gossip to populate
-setInterval(refreshChaff, 300000)
+}, 30000)
 
 // ── Safety net ──────────────────────────────────────────────────────
 process.on('uncaughtException', (err) => {

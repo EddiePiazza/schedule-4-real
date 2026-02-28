@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-27T14:53:10Z",
+  "generatedAt": "2026-02-28T13:36:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1742,11 +1742,18 @@
       ]
     },
     "relay": {
-      "version": "1.5.2",
-      "archive": "s4r-relay-1.5.2.tar.gz",
-      "sha256": "8bddf2989140a6ceb99ed6954bea18987041e0f36a9ea1a3ecb5d3d8fb659c59",
-      "size": 42330,
+      "version": "1.5.3",
+      "archive": "s4r-relay-1.5.3.tar.gz",
+      "sha256": "d4741775b07027421f69138fe41e3b03a315c671ed64fb43a67c9771f215027b",
+      "size": 42554,
       "changelog": [
+        {
+          "version": "1.5.3",
+          "changes": [
+            "Fix excessive Cloudflare requests from chaff traffic and gossip intervals",
+            "Remove deprecated weedlix.com domain filter from peer discovery"
+          ]
+        },
         {
           "version": "1.5.2",
           "changes": [

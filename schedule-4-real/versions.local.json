@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-27T14:51:19.919Z",
+  "lastCheck": "2026-02-28T13:31:20.399Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
@@ -33,14 +33,21 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.5.2",
-      "installedAt": "2026-02-25T14:40:24Z"
+      "version": "1.5.3",
+      "installedAt": "2026-02-28T13:36:25Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.5",
+        "changes": [
+          "Fix private rooms making external relay connections on entry",
+          "Fix public rooms not appearing on landing page (missing invite token in metadata)"
+        ]
+      },
       {
         "version": "1.73.4",
         "changes": [
@@ -374,13 +381,6 @@
         "version": "1.55.2",
         "changes": [
           "Fix relay public URL not persisting on page reload"
-        ]
-      },
-      {
-        "version": "1.55.0",
-        "changes": [
-          "Add relay proxy configuration guides and connection limits to install modal",
-          "Enable Public rooms visibility by default in 3D room lobby"
         ]
       }
     ],

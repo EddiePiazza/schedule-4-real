@@ -86,8 +86,9 @@ let roomFederationInterval = null
 let onFederatedRooms = null
 
 const REQUEST_TIMEOUT_MS = 5000
-const GOSSIP_INTERVAL_MS = 60_000       // 60s
-const ANNOUNCE_INTERVAL_MS = 300_000    // 5min
+const GOSSIP_INTERVAL_MS = 300_000      // 5min (was 60s — reduced to lower Cloudflare request volume)
+const ROOM_FEDERATION_INTERVAL_MS = 300_000 // 5min (was 60s — rooms don't change that fast)
+const ANNOUNCE_INTERVAL_MS = 600_000    // 10min (was 5min)
 const PERSIST_INTERVAL_MS = 300_000     // 5min
 const MAX_FAILURES = 3
 const ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000   // 24h
@@ -209,10 +210,10 @@ function start() {
     savePeers(getPeerList())
   }, PERSIST_INTERVAL_MS)
 
-  // Room federation loop: every 60s fetch rooms from all peer trackers
+  // Room federation loop: every 5min fetch rooms from peer trackers
   roomFederationInterval = setInterval(() => {
     federateRooms().catch(() => {})
-  }, GOSSIP_INTERVAL_MS)
+  }, ROOM_FEDERATION_INTERVAL_MS)
 }
 
 function stop() {
@@ -653,8 +654,6 @@ function isValidPeer(p) {
   if (!p.url || typeof p.url !== 'string') return false
   if (!p.url.startsWith('ws://') && !p.url.startsWith('wss://')) return false
   if (p.url.length > 256) return false
-  // Block deprecated/dead domains from propagating through gossip
-  if (/weedlix\.com/i.test(p.url)) return false
   if (!p.pk || typeof p.pk !== 'string') return false
   if (!/^[0-9a-f]{64}$/i.test(p.pk)) return false
   // Reject internal/private IPs
