@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-01T01:02:04Z",
+  "generatedAt": "2026-03-01T18:19:54Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.6",
-      "archive": "s4r-web-1.73.6.tar.gz",
-      "sha256": "d3525e6aef4da793e50731b20697a8aec9186eaa09ca9d59713ccb46a55ac9e0",
-      "size": 11106643,
+      "version": "1.74.0",
+      "archive": "s4r-web-1.74.0.tar.gz",
+      "sha256": "4d5653e84b6ab06173f086094ce7c9dc6fab2a832dc6f0471d15e93bb3632a52",
+      "size": 11111796,
       "changelog": [
+        {
+          "version": "1.74.0",
+          "changes": [
+            "Redesign strain detail plant list with unified clone lineage groups"
+          ]
+        },
         {
           "version": "1.73.6",
           "changes": [

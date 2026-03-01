@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-01T01:01:20.913Z",
+  "lastCheck": "2026-03-01T18:11:20.943Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.6",
-      "installedAt": "2026-03-01T01:02:04Z"
+      "version": "1.74.0",
+      "installedAt": "2026-03-01T18:19:54Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.73.6",
+        "changes": [
+          "Fix diagnostic navigation buttons missing in encyclopedia"
+        ]
+      },
       {
         "version": "1.73.5",
         "changes": [
@@ -375,12 +381,6 @@
         "changes": [
           "Fix onion circuit extension failing due to SFPK magic prefix in handshake reply",
           "Add tracker federation for cross-relay public room discovery"
-        ]
-      },
-      {
-        "version": "1.55.2",
-        "changes": [
-          "Fix relay public URL not persisting on page reload"
         ]
       }
     ],
