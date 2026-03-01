@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-02-28T13:31:20.399Z",
+  "lastCheck": "2026-03-01T01:01:20.913Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.73.5",
-      "installedAt": "2026-02-27T14:53:10Z"
+      "version": "1.73.6",
+      "installedAt": "2026-03-01T01:02:04Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -712,6 +712,13 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.5.3",
+        "changes": [
+          "Fix excessive Cloudflare requests from chaff traffic and gossip intervals",
+          "Remove deprecated weedlix.com domain filter from peer discovery"
+        ]
+      },
       {
         "version": "1.5.2",
         "changes": [

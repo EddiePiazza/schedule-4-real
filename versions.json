@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-02-28T13:36:25Z",
+  "generatedAt": "2026-03-01T01:02:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.73.5",
-      "archive": "s4r-web-1.73.5.tar.gz",
-      "sha256": "46877f2008fb3224b939973052f3a26dcea98d091cd4292652b5f271a94167b6",
-      "size": 11105665,
+      "version": "1.73.6",
+      "archive": "s4r-web-1.73.6.tar.gz",
+      "sha256": "d3525e6aef4da793e50731b20697a8aec9186eaa09ca9d59713ccb46a55ac9e0",
+      "size": 11106643,
       "changelog": [
+        {
+          "version": "1.73.6",
+          "changes": [
+            "Fix diagnostic navigation buttons missing in encyclopedia"
+          ]
+        },
         {
           "version": "1.73.5",
           "changes": [
