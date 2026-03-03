@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-03T22:45:09Z",
+  "generatedAt": "2026-03-03T23:16:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.75.1",
-      "archive": "s4r-web-1.75.1.tar.gz",
-      "sha256": "5deedc738b28f01aef94b1d2522a92a0d8d79d9999eaa0aa25098823145c923c",
-      "size": 11143596,
+      "version": "1.76.0",
+      "archive": "s4r-web-1.76.0.tar.gz",
+      "sha256": "87d48726f3d55bbe538b073701ef43e99f06758ef9d75ecb766a57ab4ddc7d87",
+      "size": 11146608,
       "changelog": [
+        {
+          "version": "1.76.0",
+          "changes": [
+            "Add full backup with photos and data files, smart restore with schema sync"
+          ]
+        },
         {
           "version": "1.75.1",
           "changes": [
