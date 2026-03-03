@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-01T18:19:54Z",
+  "generatedAt": "2026-03-03T21:19:12Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.74.0",
-      "archive": "s4r-web-1.74.0.tar.gz",
-      "sha256": "4d5653e84b6ab06173f086094ce7c9dc6fab2a832dc6f0471d15e93bb3632a52",
-      "size": 11111796,
+      "version": "1.75.0",
+      "archive": "s4r-web-1.75.0.tar.gz",
+      "sha256": "f9638b920d2f5038af19bf271762ac9a4d392cdb4bb201b0174ad73e80ea6746",
+      "size": 11143503,
       "changelog": [
+        {
+          "version": "1.75.0",
+          "changes": [
+            "Add confirmation dialogs to undo checkpoint, camera photo delete, and schedule delete",
+            "Redesign plant detail panel with compact header and full-content scroll",
+            "Remove unused Quick Log floating button"
+          ]
+        },
         {
           "version": "1.74.0",
           "changes": [

@@ -1136,6 +1136,28 @@ const tables = [
     `
   },
 
+  // Soil Biology / Input Applications (recorded inputs applied to plants)
+  {
+    name: 'lab_inputs_applied',
+    sql: `
+      CREATE TABLE IF NOT EXISTS lab_inputs_applied (
+        timestamp TIMESTAMP,
+        id STRING,
+        plant_id STRING,
+        room_id STRING,
+        applied_at STRING,
+        input_type SYMBOL,
+        recipe_name STRING,
+        ingredients STRING,
+        method STRING,
+        application_notes STRING,
+        observed_response STRING,
+        photos STRING,
+        is_deleted INT
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
   // ============================================
   // TRACKER ROOMS (onion network room registry)
   // ============================================

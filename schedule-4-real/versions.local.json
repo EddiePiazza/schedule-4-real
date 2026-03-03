@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-01T18:11:20.943Z",
+  "lastCheck": "2026-03-03T21:11:21.939Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.74.0",
-      "installedAt": "2026-03-01T18:19:54Z"
+      "version": "1.75.0",
+      "installedAt": "2026-03-03T21:19:12Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.74.0",
+        "changes": [
+          "Redesign strain detail plant list with unified clone lineage groups"
+        ]
+      },
       {
         "version": "1.73.6",
         "changes": [
@@ -374,13 +380,6 @@
         "version": "1.56.1",
         "changes": [
           "Fix onion circuit packet format for multi-hop relay communication"
-        ]
-      },
-      {
-        "version": "1.56.0",
-        "changes": [
-          "Fix onion circuit extension failing due to SFPK magic prefix in handshake reply",
-          "Add tracker federation for cross-relay public room discovery"
         ]
       }
     ],
