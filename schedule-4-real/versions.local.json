@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-03T23:11:22.368Z",
+  "lastCheck": "2026-03-03T23:21:22.368Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.0",
-      "installedAt": "2026-03-03T23:16:36Z"
+      "version": "1.76.1",
+      "installedAt": "2026-03-03T23:30:52Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.0",
+        "changes": [
+          "Add full backup with photos and data files, smart restore with schema sync"
+        ]
+      },
       {
         "version": "1.75.1",
         "changes": [
@@ -374,12 +380,6 @@
         "version": "1.58.1",
         "changes": [
           "Remove duplicate invite token input from public rooms browser"
-        ]
-      },
-      {
-        "version": "1.58.0",
-        "changes": [
-          "Add per-room public/invite-only settings with custom public name and description"
         ]
       }
     ],

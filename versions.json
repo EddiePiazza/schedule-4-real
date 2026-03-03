@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-03T23:16:36Z",
+  "generatedAt": "2026-03-03T23:30:52Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.0",
-      "archive": "s4r-web-1.76.0.tar.gz",
-      "sha256": "87d48726f3d55bbe538b073701ef43e99f06758ef9d75ecb766a57ab4ddc7d87",
-      "size": 11146608,
+      "version": "1.76.1",
+      "archive": "s4r-web-1.76.1.tar.gz",
+      "sha256": "2efda4f081c8350f903cbc9e4748ea6a66b65a734a8ab6305f8b4f22987f97ef",
+      "size": 11147617,
       "changelog": [
+        {
+          "version": "1.76.1",
+          "changes": [
+            "Fix backup restore for large databases exceeding 512MB string limit"
+          ]
+        },
         {
           "version": "1.76.0",
           "changes": [
