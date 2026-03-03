@@ -77,13 +77,43 @@ echo ""
 # 1. QuestDB (Docker)
 # ═══════════════════════════════════════════
 info "Verificando QuestDB..."
-if docker ps --filter name=s4r-questdb --format '{{.Status}}' 2>/dev/null | grep -q "Up"; then
+EXPECTED_MOUNT="$SCRIPT_DIR/database/data"
+
+# Check if container exists and verify its bind mount path matches current directory
+NEEDS_RECREATE=false
+if docker ps -a --filter name=s4r-questdb --format '{{.Names}}' 2>/dev/null | grep -q "s4r-questdb"; then
+    CURRENT_MOUNT=$(docker inspect s4r-questdb --format '{{range .Mounts}}{{if eq .Destination "/var/lib/questdb"}}{{.Source}}{{end}}{{end}}' 2>/dev/null)
+    if [ "$CURRENT_MOUNT" != "$EXPECTED_MOUNT" ] && [ -n "$CURRENT_MOUNT" ]; then
+        warning "QuestDB bind mount mismatch!"
+        warning "  Container mount: $CURRENT_MOUNT"
+        warning "  Expected mount:  $EXPECTED_MOUNT"
+        # Migrate data from old mount to new mount if needed
+        if [ -d "$CURRENT_MOUNT/db" ] && [ ! -d "$EXPECTED_MOUNT/db" ]; then
+            info "Migrating QuestDB data from old path to new path..."
+            mkdir -p "$EXPECTED_MOUNT"
+            cp -a "$CURRENT_MOUNT/"* "$EXPECTED_MOUNT/" 2>/dev/null || true
+            success "Data migrated"
+        fi
+        info "Recreating container with correct path..."
+        docker stop s4r-questdb 2>/dev/null || true
+        docker rm s4r-questdb 2>/dev/null || true
+        NEEDS_RECREATE=true
+    fi
+fi
+
+if [ "$NEEDS_RECREATE" = "false" ] && docker ps --filter name=s4r-questdb --format '{{.Status}}' 2>/dev/null | grep -q "Up"; then
     success "QuestDB ya está corriendo"
 else
-    # Intentar arrancar container existente
-    if docker start s4r-questdb 2>/dev/null; then
-        success "QuestDB reiniciado"
-    else
+    if [ "$NEEDS_RECREATE" = "false" ]; then
+        # Intentar arrancar container existente
+        if docker start s4r-questdb 2>/dev/null; then
+            success "QuestDB reiniciado"
+            NEEDS_RECREATE=skip
+        else
+            NEEDS_RECREATE=true
+        fi
+    fi
+    if [ "$NEEDS_RECREATE" = "true" ]; then
         # Crear nuevo container
         info "Creando container QuestDB..."
         mkdir -p database/data
@@ -91,7 +121,7 @@ else
             --name s4r-questdb \
             --restart=always \
             -p ${QUESTDB_PG_PORT}:8812 -p ${QUESTDB_HTTP_PORT}:9000 -p ${QUESTDB_ILP_PORT}:9009 \
-            -v "$SCRIPT_DIR/database/data:/var/lib/questdb" \
+            -v "$EXPECTED_MOUNT:/var/lib/questdb" \
             -e QDB_PG_USER="$QUESTDB_USER" \
             -e QDB_PG_PASSWORD="$QUESTDB_PASSWORD" \
             -e QDB_TELEMETRY_ENABLED=false \

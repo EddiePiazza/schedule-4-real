@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-03T21:11:21.939Z",
+  "lastCheck": "2026-03-03T22:41:21.931Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.75.0",
-      "installedAt": "2026-03-03T21:19:12Z"
+      "version": "1.75.1",
+      "installedAt": "2026-03-03T22:45:09Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.14.2",
-      "installedAt": "2026-02-25T13:49:24Z"
+      "version": "1.14.3",
+      "installedAt": "2026-03-03T22:45:09Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.75.0",
+        "changes": [
+          "Add confirmation dialogs to undo checkpoint, camera photo delete, and schedule delete",
+          "Redesign plant detail panel with compact header and full-content scroll",
+          "Remove unused Quick Log floating button"
+        ]
+      },
       {
         "version": "1.74.0",
         "changes": [
@@ -374,12 +382,6 @@
           "Fix WebSocket proxy through relay for single-host tunnels",
           "Fix public room discovery with HTTP fallback when circuit fails",
           "Add room publisher service for automatic tracker registration"
-        ]
-      },
-      {
-        "version": "1.56.1",
-        "changes": [
-          "Fix onion circuit packet format for multi-hop relay communication"
         ]
       }
     ],

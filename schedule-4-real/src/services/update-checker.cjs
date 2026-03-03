@@ -55,7 +55,7 @@ const COMPONENT_DEFS = {
   },
   supervisor: {
     label: 'Supervisor Agent',
-    paths: ['src/services/supervisor-agent.cjs', 'src/services/update-checker.cjs'],
+    paths: ['src/services/supervisor-agent.cjs', 'src/services/update-checker.cjs', 'pm2-start.sh'],
     restart: 'pm2',
     pm2Name: 's4r-supervisor',
     pm2NameLegacy: 'spiderapp-supervisor',
@@ -862,7 +862,8 @@ async function applyUpdates(components = [], onProgress = null) {
         }
 
         // 6d. Schema: run init.js to create any missing tables (idempotent CREATE IF NOT EXISTS)
-        if (component === 'schema') {
+        //     Run for both 'schema' and 'web' updates — web updates can reference new tables
+        if (component === 'schema' || component === 'web') {
           try {
             console.log('[Updater] Running schema init.js to ensure all tables exist...');
             execSync(`node ${path.join(PROJECT_ROOT, 'src/db/init.js')}`, {
@@ -1346,12 +1347,47 @@ function runPostUpdateMigrations() {
           const needsFolderRename = currentName === 'spiderfarmer-dream';
           const finalDir = needsFolderRename ? path.join(parentDir, 'schedule-4-real') : currentDir;
 
-          // 1. Rename Docker container (safe, idempotent)
+          // 1. Recreate Docker container with new name AND correct bind mount path
+          //    docker rename only changes the name but keeps the old bind mount path,
+          //    which causes data loss when the folder is renamed later.
           try {
-            execSync('docker rename spiderapp-questdb s4r-questdb', { stdio: 'pipe', timeout: 10000 });
-            console.log('[Updater] Migration: Renamed Docker container to s4r-questdb');
-          } catch {
-            // Already renamed or doesn't exist — fine
+            // Get current container's bind mount and port config before removing
+            let oldMount = '';
+            try {
+              oldMount = execSync(
+                `docker inspect spiderapp-questdb --format '{{range .Mounts}}{{if eq .Destination "/var/lib/questdb"}}{{.Source}}{{end}}{{end}}'`,
+                { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' }
+              ).trim();
+            } catch {}
+
+            if (!oldMount) {
+              try {
+                oldMount = execSync(
+                  `docker inspect s4r-questdb --format '{{range .Mounts}}{{if eq .Destination "/var/lib/questdb"}}{{.Source}}{{end}}{{end}}'`,
+                  { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' }
+                ).trim();
+              } catch {}
+            }
+
+            // Determine the correct new mount path
+            const newMount = path.join(finalDir, 'database', 'data');
+
+            // If old mount exists and differs from new, migrate data
+            if (oldMount && oldMount !== newMount && fs.existsSync(path.join(oldMount, 'db'))) {
+              fs.mkdirSync(newMount, { recursive: true });
+              if (!fs.existsSync(path.join(newMount, 'db'))) {
+                execSync(`cp -a "${oldMount}/"* "${newMount}/" 2>/dev/null || true`, { stdio: 'pipe', timeout: 120000 });
+                console.log(`[Updater] Migration: Migrated QuestDB data from ${oldMount} to ${newMount}`);
+              }
+            }
+
+            // Stop and remove old container(s)
+            try { execSync('docker stop spiderapp-questdb 2>/dev/null; docker rm spiderapp-questdb 2>/dev/null', { stdio: 'pipe', timeout: 30000 }); } catch {}
+            try { execSync('docker stop s4r-questdb 2>/dev/null; docker rm s4r-questdb 2>/dev/null', { stdio: 'pipe', timeout: 30000 }); } catch {}
+
+            console.log('[Updater] Migration: Removed old Docker container(s), pm2-start.sh will recreate with correct path');
+          } catch (dockerErr) {
+            console.warn('[Updater] Migration: Docker migration warning:', dockerErr.message);
           }
 
           // 2. Rename nginx site config
@@ -1441,6 +1477,90 @@ rm -f "${migrateScript}"
           fs.writeFileSync(rebrandingFlag, JSON.stringify({ date: new Date().toISOString(), note: 'retroactive' }));
         } catch {}
       }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CRITICAL: Fix Docker QuestDB bind mount path mismatch
+    // After rebranding, the Docker container may still point to the old
+    // spiderfarmer-dream path. This migration detects and fixes it by
+    // migrating data to the correct path and recreating the container.
+    // Runs on EVERY startup (idempotent — skips if mount is already correct).
+    // ═══════════════════════════════════════════════════════════════════
+    try {
+      const expectedMount = path.join(PROJECT_ROOT, 'database', 'data');
+      let currentMount = '';
+      try {
+        currentMount = execSync(
+          `docker inspect s4r-questdb --format '{{range .Mounts}}{{if eq .Destination "/var/lib/questdb"}}{{.Source}}{{end}}{{end}}'`,
+          { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' }
+        ).trim();
+      } catch {
+        // Container doesn't exist — pm2-start.sh will create it with the correct path
+      }
+
+      if (currentMount && currentMount !== expectedMount) {
+        console.log(`[Updater] Docker mount mismatch detected!`);
+        console.log(`[Updater]   Current: ${currentMount}`);
+        console.log(`[Updater]   Expected: ${expectedMount}`);
+
+        // Migrate data from old mount to new mount if needed
+        const oldHasData = fs.existsSync(path.join(currentMount, 'db'));
+        const newHasData = fs.existsSync(path.join(expectedMount, 'db'));
+
+        if (oldHasData && !newHasData) {
+          console.log('[Updater] Migrating QuestDB data to correct path...');
+          fs.mkdirSync(expectedMount, { recursive: true });
+          execSync(`cp -a "${currentMount}/"* "${expectedMount}/" 2>/dev/null || true`, {
+            stdio: 'pipe', timeout: 300000
+          });
+          console.log('[Updater] Data migration complete');
+        } else if (oldHasData && newHasData) {
+          // Both have data — keep a backup of old, use new
+          const backupPath = currentMount + '-orphaned-' + Date.now();
+          try {
+            fs.renameSync(currentMount, backupPath);
+            console.log(`[Updater] Old data backed up to ${backupPath}`);
+          } catch {}
+        }
+
+        // Stop and recreate container with correct path
+        console.log('[Updater] Recreating Docker container with correct mount...');
+        try { execSync('docker stop s4r-questdb 2>/dev/null', { stdio: 'pipe', timeout: 30000 }); } catch {}
+        try { execSync('docker rm s4r-questdb 2>/dev/null', { stdio: 'pipe', timeout: 10000 }); } catch {}
+
+        // Read ports from .env
+        const pgPort = process.env.QUESTDB_PG_PORT || '8812';
+        const httpPort = process.env.QUESTDB_HTTP_PORT || '9000';
+        const ilpPort = process.env.QUESTDB_ILP_PORT || '9009';
+        const qdbUser = process.env.QUESTDB_USER || 'admin';
+        const qdbPass = process.env.QUESTDB_PASSWORD || 'quest';
+
+        fs.mkdirSync(expectedMount, { recursive: true });
+        execSync(
+          `docker run -d --name s4r-questdb --restart=always ` +
+          `-p ${pgPort}:8812 -p ${httpPort}:9000 -p ${ilpPort}:9009 ` +
+          `-v "${expectedMount}:/var/lib/questdb" ` +
+          `-e QDB_PG_USER="${qdbUser}" -e QDB_PG_PASSWORD="${qdbPass}" ` +
+          `-e QDB_TELEMETRY_ENABLED=false questdb/questdb:latest`,
+          { stdio: 'pipe', timeout: 60000 }
+        );
+        console.log('[Updater] Docker container recreated with correct mount');
+
+        // Wait for QuestDB to be ready
+        for (let i = 0; i < 15; i++) {
+          try {
+            execSync('docker exec s4r-questdb curl -s http://localhost:9000/exec?query=SELECT+1', {
+              stdio: 'pipe', timeout: 5000
+            });
+            console.log('[Updater] QuestDB ready');
+            break;
+          } catch {
+            execSync('sleep 1', { stdio: 'pipe' });
+          }
+        }
+      }
+    } catch (dockerFixErr) {
+      console.warn('[Updater] Docker mount fix warning:', dockerFixErr.message);
     }
 
     // ═══════════════════════════════════════════════════════════════════

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-03T21:19:12Z",
+  "generatedAt": "2026-03-03T22:45:09Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.75.0",
-      "archive": "s4r-web-1.75.0.tar.gz",
-      "sha256": "f9638b920d2f5038af19bf271762ac9a4d392cdb4bb201b0174ad73e80ea6746",
-      "size": 11143503,
+      "version": "1.75.1",
+      "archive": "s4r-web-1.75.1.tar.gz",
+      "sha256": "5deedc738b28f01aef94b1d2522a92a0d8d79d9999eaa0aa25098823145c923c",
+      "size": 11143596,
       "changelog": [
+        {
+          "version": "1.75.1",
+          "changes": [
+            "Fix backup restore timeout on large databases"
+          ]
+        },
         {
           "version": "1.75.0",
           "changes": [
@@ -1493,11 +1499,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.2",
-      "archive": "s4r-supervisor-1.14.2.tar.gz",
-      "sha256": "d223c896e518dd07e6b892f4616deeaa36c47b9d92e8f7dfc2dfb7b62c5bb284",
-      "size": 33915,
+      "version": "1.14.3",
+      "archive": "s4r-supervisor-1.14.3.tar.gz",
+      "sha256": "955c0c8aba7f8deaf45f182b59ed8fa6de3471e0b346919c7d937986197fa359",
+      "size": 35702,
       "changelog": [
+        {
+          "version": "1.14.3",
+          "changes": [
+            "Fix database wipe on Docker container restart after rebranding"
+          ]
+        },
         {
           "version": "1.14.2",
           "changes": [
