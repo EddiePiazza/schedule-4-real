@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-04T01:01:22.396Z",
+  "lastCheck": "2026-03-04T01:41:22.321Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.6",
-      "installedAt": "2026-03-04T01:07:02Z"
+      "version": "1.76.7",
+      "installedAt": "2026-03-04T01:42:27Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.6",
+        "changes": [
+          "Fix restore data loss for small tables, stop DB services during restore, block auto-updates"
+        ]
+      },
       {
         "version": "1.76.5",
         "changes": [
@@ -372,12 +378,6 @@
         "changes": [
           "Fix Tab key not closing inventory and display images not appearing after upload"
         ]
-      },
-      {
-        "version": "1.60.1",
-        "changes": [
-          "Fix update system failing on rebranded PM2 installations"
-        ]
       }
     ],
     "ingest": [
@@ -463,6 +463,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.14.4",
+        "changes": [
+          "Block auto-updates while backup or restore operation is in progress"
+        ]
+      },
       {
         "version": "1.14.3",
         "changes": [

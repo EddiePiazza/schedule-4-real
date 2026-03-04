@@ -327,15 +327,19 @@ const server = createServer(async (req, res) => {
     return
   }
 
-  // Stats (minimal — only expose non-sensitive info)
+  // Stats — expose relay metrics for the /system dashboard
   if (req.method === 'GET' && (url === '/api/stats' || url === '/stats')) {
     if (rateLimited(res, clientIp, 'general')) return
-    // Only return basic health info, not operational details
+    const ts = tunnelStats()
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({
       ok: true,
       trackerEnabled,
       peers: gossip.getPeerList().length,
+      circuits: activeCount(),
+      rooms: roomCount(),
+      tunnelHosts: ts.hosts,
+      tunnelSessions: ts.sessions,
     }))
     return
   }
