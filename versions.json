@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-04T00:36:47Z",
+  "generatedAt": "2026-03-04T01:07:02Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.5",
-      "archive": "s4r-web-1.76.5.tar.gz",
-      "sha256": "48061fdae61531c7d0bd2d5baa23cc45d0cba058f4e06524ad199068402006d3",
-      "size": 11147497,
+      "version": "1.76.6",
+      "archive": "s4r-web-1.76.6.tar.gz",
+      "sha256": "8cbf9fe092976862f88908e8b83fa964b413fbb027f7c359ea50d21fd84aede9",
+      "size": 11147040,
       "changelog": [
+        {
+          "version": "1.76.6",
+          "changes": [
+            "Fix restore data loss for small tables, stop DB services during restore, block auto-updates"
+          ]
+        },
         {
           "version": "1.76.5",
           "changes": [
@@ -1535,11 +1541,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.3",
-      "archive": "s4r-supervisor-1.14.3.tar.gz",
-      "sha256": "955c0c8aba7f8deaf45f182b59ed8fa6de3471e0b346919c7d937986197fa359",
-      "size": 35702,
+      "version": "1.14.4",
+      "archive": "s4r-supervisor-1.14.4.tar.gz",
+      "sha256": "bb86b243265f55d84479a1ff5c9bc2b078b923a4079a60be58644c5cad107a4f",
+      "size": 35914,
       "changelog": [
+        {
+          "version": "1.14.4",
+          "changes": [
+            "Block auto-updates while backup or restore operation is in progress"
+          ]
+        },
         {
           "version": "1.14.3",
           "changes": [

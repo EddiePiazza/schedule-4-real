@@ -22,6 +22,7 @@ const BACKUP_DIR = path.join(PROJECT_ROOT, '.backup');
 const TEMP_DIR = '/tmp/s4r-updates';
 const LOCK_FILE = '/tmp/s4r-update.lock';
 const PROGRESS_FILE = '/tmp/s4r-update-progress.json';
+const BACKUP_LOCK_FILE = '/tmp/s4r-backup.lock';
 
 // Remote manifest URL
 const MANIFEST_URL = 'https://schedule4real.com/dist/install/versions.json';
@@ -135,6 +136,24 @@ function isUpdateLocked() {
       clearProgress();
       return false;
     }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Check if a backup/restore operation is in progress (written by backup-restore.post.ts)
+function isBackupRunning() {
+  try {
+    if (!fs.existsSync(BACKUP_LOCK_FILE)) return false;
+    const lock = JSON.parse(fs.readFileSync(BACKUP_LOCK_FILE, 'utf-8'));
+    // Stale after 60 minutes (safety valve for very large restores)
+    if (Date.now() - lock.startedAt > 60 * 60 * 1000) {
+      console.log('[Updater] Clearing stale backup lock (60 minute timeout)');
+      try { fs.unlinkSync(BACKUP_LOCK_FILE); } catch {}
+      return false;
+    }
+    console.log(`[Updater] Backup/restore in progress: ${lock.operation} (pid ${lock.pid})`);
     return true;
   } catch {
     return false;
@@ -569,6 +588,11 @@ async function checkForUpdates(options = {}) {
     return { pending: [], inProgress: true };
   }
 
+  if (isBackupRunning()) {
+    console.log('[Updater] Backup/restore in progress, skipping update check');
+    return { pending: [], backupRunning: true };
+  }
+
   // Check if in dev environment and add warning
   const isDev = isDevEnvironment();
   if (isDev) {
@@ -670,6 +694,12 @@ async function applyUpdates(components = [], onProgress = null) {
       error: 'Updates blocked in development environment to protect source code',
       isDev: true
     };
+  }
+
+  // Block updates while backup/restore is running
+  if (isBackupRunning()) {
+    console.log('[Updater] BLOCKED: Backup/restore in progress, cannot apply updates');
+    return { success: false, error: 'Backup/restore in progress — updates blocked until it completes' };
   }
 
   // Use file-based lock (works across module instances)
@@ -1694,6 +1724,7 @@ module.exports = {
   getStatus,
   getBackups,
   isUpdateLocked,
+  isBackupRunning,
   getProgress,
   syncAppData,
   COMPONENT_DEFS
