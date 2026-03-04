@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-03T23:41:22.354Z",
+  "lastCheck": "2026-03-04T00:11:22.369Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.2",
-      "installedAt": "2026-03-03T23:49:55Z"
+      "version": "1.76.3",
+      "installedAt": "2026-03-04T00:13:07Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.2",
+        "changes": [
+          "Fix backup restore OOM crash on large databases with streaming parser"
+        ]
+      },
       {
         "version": "1.76.1",
         "changes": [
@@ -374,12 +380,6 @@
           "Redesign lobby room cards with compact toggle bar and expandable settings",
           "Fix custom port changes not applying after save or service restart",
           "Add password-protected rooms with inline prompts for public and guest joins"
-        ]
-      },
-      {
-        "version": "1.58.2",
-        "changes": [
-          "Fix lobby toggle labels: Public Visible/Hidden and Invite Only lobby text"
         ]
       }
     ],

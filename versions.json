@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-03T23:49:55Z",
+  "generatedAt": "2026-03-04T00:13:07Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.2",
-      "archive": "s4r-web-1.76.2.tar.gz",
-      "sha256": "65ad9c11625a9b7415578a5970f36aa5169d78919059084e6594df0f1b458347",
-      "size": 11148085,
+      "version": "1.76.3",
+      "archive": "s4r-web-1.76.3.tar.gz",
+      "sha256": "926c71ac84e1d5e61fa08f26f7fdcd276cbe9070b1deb18a2a4f0856d868d3c7",
+      "size": 11148505,
       "changelog": [
+        {
+          "version": "1.76.3",
+          "changes": [
+            "Fix streaming restore parser skipping all tables due to buffer compaction bug"
+          ]
+        },
         {
           "version": "1.76.2",
           "changes": [
