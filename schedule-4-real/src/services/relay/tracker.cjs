@@ -310,16 +310,17 @@ function setFederatedRooms(sourceRelay, peerRooms) {
   const ttl = roomTtlMs * 1.5 // Federated rooms get slightly longer TTL
 
   for (const pr of peerRooms) {
-    if (!pr.roomId || !pr.metadata) continue
+    const roomId = pr.roomId || pr.id
+    if (!roomId || !pr.metadata) continue
     // Accept rooms with either relay URL or relayPk
     if (!pr.relay && !pr.entryRelay && !pr.relayPk) continue
     // Skip rooms we already have locally (local takes priority)
-    if (rooms.has(pr.roomId)) continue
+    if (rooms.has(roomId)) continue
 
     const expiresAt = now + ttl
 
     try {
-      federatedRooms.set(pr.roomId, {
+      federatedRooms.set(roomId, {
         metadata: Buffer.from(pr.metadata, 'base64'),
         entryRelay: pr.relay || pr.entryRelay || '',
         entryRelayPk: pr.relayPk || '',
@@ -328,7 +329,7 @@ function setFederatedRooms(sourceRelay, peerRooms) {
       })
 
       // Persist federated room to DB
-      trackerDb.persistRoom(pr.roomId, pr.metadata, pr.entryRelay, false, true, sourceRelay, expiresAt)
+      trackerDb.persistRoom(roomId, pr.metadata, pr.entryRelay, false, true, sourceRelay, expiresAt)
     } catch { /* skip malformed entries */ }
   }
 }

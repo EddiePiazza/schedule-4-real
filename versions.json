@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-04T03:05:22Z",
+  "generatedAt": "2026-03-04T03:16:23Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1842,11 +1842,17 @@
       ]
     },
     "relay": {
-      "version": "1.6.0",
-      "archive": "s4r-relay-1.6.0.tar.gz",
-      "sha256": "4d4a1a078eadaa90e0af53772c907ff47009fe421c2668b26df442ccc1e84510",
-      "size": 44703,
+      "version": "1.6.1",
+      "archive": "s4r-relay-1.6.1.tar.gz",
+      "sha256": "e454d852570ad7a91e4f3465c5784f4d77e4263d2c6b632c27c04cc5067a9038",
+      "size": 44712,
       "changelog": [
+        {
+          "version": "1.6.1",
+          "changes": [
+            "Fix room federation not importing rooms from peer trackers"
+          ]
+        },
         {
           "version": "1.6.0",
           "changes": [
