@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-04T00:13:07Z",
+  "generatedAt": "2026-03-04T00:27:26Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.3",
-      "archive": "s4r-web-1.76.3.tar.gz",
-      "sha256": "926c71ac84e1d5e61fa08f26f7fdcd276cbe9070b1deb18a2a4f0856d868d3c7",
-      "size": 11148505,
+      "version": "1.76.4",
+      "archive": "s4r-web-1.76.4.tar.gz",
+      "sha256": "51f22c555028a9eef19b64849d3965c3ae3ffccd24744201bfc989e4058a595e",
+      "size": 11148620,
       "changelog": [
+        {
+          "version": "1.76.4",
+          "changes": [
+            "Fix backup restore hanging on large tables by using persistent ILP connection"
+          ]
+        },
         {
           "version": "1.76.3",
           "changes": [
