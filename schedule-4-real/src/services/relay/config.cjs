@@ -51,7 +51,7 @@ function loadConfig() {
   const configFile = path.join(DATA_DIR, 'relay-config.json')
   const defaults = {
     enabled: true,
-    trackerEnabled: false,             // Room registry (tracker) — off by default for privacy
+    trackerEnabled: true,              // Room registry (tracker) — on by default so local rooms work
     port: 9443,
     publicUrl: '',
     keyRotationIntervalMs: 3600000,    // 1 hour

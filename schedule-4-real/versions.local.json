@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-04T01:41:22.321Z",
+  "lastCheck": "2026-03-04T02:11:22.398Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.7",
-      "installedAt": "2026-03-04T01:42:27Z"
+      "version": "1.76.8",
+      "installedAt": "2026-03-04T02:15:45Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.14.4",
-      "installedAt": "2026-03-04T01:07:02Z"
+      "version": "1.14.5",
+      "installedAt": "2026-03-04T02:15:45Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.7",
+        "changes": [
+          "Persist MQTT device cache to disk and fix passive mode for forwarded data"
+        ]
+      },
       {
         "version": "1.76.6",
         "changes": [
@@ -371,12 +377,6 @@
           "Redesign radial menu for mobile: icon-only layout with tooltip, smaller buttons, tighter radius",
           "Add mobile touch controls: tappable proximity HUDs, keypad button bar, rotation confirm/cancel, and mobile tool bars for all editor modes",
           "Collapse mobile TV controls into single icon that expands on tap"
-        ]
-      },
-      {
-        "version": "1.60.2",
-        "changes": [
-          "Fix Tab key not closing inventory and display images not appearing after upload"
         ]
       }
     ],

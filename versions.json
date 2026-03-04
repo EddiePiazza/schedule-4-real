@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-04T01:42:27Z",
+  "generatedAt": "2026-03-04T02:15:45Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.7",
-      "archive": "s4r-web-1.76.7.tar.gz",
-      "sha256": "99ca874b2437b3f1c4b832847527ec820da33a4c79be280163c65971e6b1e9d1",
-      "size": 11148089,
+      "version": "1.76.8",
+      "archive": "s4r-web-1.76.8.tar.gz",
+      "sha256": "a7098739acc0f67717a632801651117996c54c0b28d4d1c29fcde1851cd333b0",
+      "size": 11148317,
       "changelog": [
+        {
+          "version": "1.76.8",
+          "changes": [
+            "Fix room discovery by always querying local tracker and fixing bootstrap peers"
+          ]
+        },
         {
           "version": "1.76.7",
           "changes": [
@@ -1547,11 +1553,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.4",
-      "archive": "s4r-supervisor-1.14.4.tar.gz",
-      "sha256": "bb86b243265f55d84479a1ff5c9bc2b078b923a4079a60be58644c5cad107a4f",
+      "version": "1.14.5",
+      "archive": "s4r-supervisor-1.14.5.tar.gz",
+      "sha256": "2d48f2fad1486e2a1a9bad2fc69952f8e66e5fac7d13bb395c0703d8bd676573",
       "size": 35914,
       "changelog": [
+        {
+          "version": "1.14.5",
+          "changes": [
+            "Make chaff traffic conditional on 2+ active circuits and direct peers only",
+            "Fix relay stats endpoint to expose circuits, rooms and tunnel metrics",
+            "Enable tracker by default so local rooms register without manual config"
+          ]
+        },
         {
           "version": "1.14.4",
           "changes": [
