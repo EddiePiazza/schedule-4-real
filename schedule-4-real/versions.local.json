@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-04T02:11:22.398Z",
+  "lastCheck": "2026-03-04T03:01:22.325Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
@@ -33,14 +33,20 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "relay": {
-      "version": "1.5.3",
-      "installedAt": "2026-02-28T13:36:25Z"
+      "version": "1.6.0",
+      "installedAt": "2026-03-04T03:05:22Z"
     }
   },
   "updateHistory": [],
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.8",
+        "changes": [
+          "Fix room discovery by always querying local tracker and fixing bootstrap peers"
+        ]
+      },
       {
         "version": "1.76.7",
         "changes": [
@@ -369,15 +375,6 @@
         "changes": [
           "Add unified /data/ endpoint for all static asset serving"
         ]
-      },
-      {
-        "version": "1.61.0",
-        "changes": [
-          "Fix lobby room cards on mobile: proper centering, swipe navigation, options overlay on image",
-          "Redesign radial menu for mobile: icon-only layout with tooltip, smaller buttons, tighter radius",
-          "Add mobile touch controls: tappable proximity HUDs, keypad button bar, rotation confirm/cancel, and mobile tool bars for all editor modes",
-          "Collapse mobile TV controls into single icon that expands on tap"
-        ]
       }
     ],
     "ingest": [
@@ -463,6 +460,14 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.14.5",
+        "changes": [
+          "Make chaff traffic conditional on 2+ active circuits and direct peers only",
+          "Fix relay stats endpoint to expose circuits, rooms and tunnel metrics",
+          "Enable tracker by default so local rooms register without manual config"
+        ]
+      },
       {
         "version": "1.14.4",
         "changes": [

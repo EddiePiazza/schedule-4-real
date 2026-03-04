@@ -10,7 +10,7 @@ const https = require('node:https')
 const fs = require('node:fs')
 const path = require('node:path')
 const { sign, verify, randomBytes } = require('./crypto.cjs')
-const { loadPeers, savePeers, SEED_NODES, DATA_DIR, loadBootstrapPeers } = require('./config.cjs')
+const { loadPeers, savePeers, SEED_NODES, DATA_DIR, loadBootstrapPeers, loadBundledPeers } = require('./config.cjs')
 
 // ── Module state ────────────────────────────────────────────────────
 const knownPeers = new Map()   // url or pk:signPk -> peer object
@@ -119,6 +119,9 @@ function start() {
     for (const p of saved) {
       if (isValidPeer(p)) {
         knownPeers.set(p.url, { ...p })
+      } else if (!p.url && p.signPk && /^[0-9a-f]{64}$/i.test(p.signPk) && p.pk) {
+        // pk-only peers (no URL — anonymous relays discovered via gossip)
+        knownPeers.set(`pk:${p.signPk}`, { ...p })
       }
     }
   }
@@ -126,6 +129,7 @@ function start() {
   // Merge seed nodes (always present, failures never increment)
   for (const seed of SEED_NODES) {
     if (!seed.url) continue
+    if (isSameHost(seed.url, myUrl)) continue
     const existing = knownPeers.get(seed.url)
     if (existing) {
       existing.failures = 0
@@ -142,9 +146,40 @@ function start() {
     }
   }
 
-  // If only seeds known, try encrypted bootstrap peers as fallback
+  // Load bundled peers from build (distributed with every update)
+  const bundled = loadBundledPeers()
+  if (bundled.length) {
+    let added = 0
+    for (const bp of bundled) {
+      if (!bp.url || isSameHost(bp.url, myUrl)) continue
+      if (isInternalUrl(bp.url)) continue
+      // Skip if we already have this signPk
+      if (bp.signPk) {
+        let exists = false
+        for (const [, ep] of knownPeers) {
+          if (ep.signPk && ep.signPk.toLowerCase() === bp.signPk.toLowerCase()) { exists = true; break }
+        }
+        if (exists) continue
+      }
+      if (knownPeers.has(bp.url)) continue
+      if (knownPeers.size >= MAX_PEERS) break
+      knownPeers.set(bp.url, {
+        url: bp.url,
+        pk: bp.pk || '',
+        signPk: bp.signPk || '',
+        tracker: !!bp.tracker,
+        ts: bp.ts || Date.now(),
+        failures: 0,
+        lastSeen: 0,
+      })
+      added++
+    }
+    if (added > 0) console.log(`[GOSSIP] Loaded ${added} bundled peers from build`)
+  }
+
+  // If only seeds/bundled known, try encrypted bootstrap peers as fallback
   const peersWithUrls = [...knownPeers.values()].filter(p => p.url)
-  if (peersWithUrls.length <= SEED_NODES.length) {
+  if (peersWithUrls.length <= SEED_NODES.length + bundled.length) {
     const bootstrap = loadBootstrapPeers()
     if (bootstrap.length) {
       for (const bp of bootstrap) {
@@ -178,16 +213,31 @@ function start() {
     }
   }
 
+  // Clean up same-host entries: if this node has a public URL,
+  // remove any other entries that share the same hostname (different paths
+  // on the same domain are the same relay). This catches stale seeds and
+  // gossip-learned duplicates loaded from saved peers.json.
+  if (myUrl) {
+    for (const [key, peer] of knownPeers) {
+      if (key === myUrl) continue
+      if (peer.url && isSameHost(peer.url, myUrl)) {
+        knownPeers.delete(key)
+      }
+    }
+  }
+
   console.log(`[GOSSIP] Started with ${knownPeers.size} known peers`)
 
-  // Immediate bootstrap: fetch peers + announce + federate rooms after HTTP server is ready
-  setTimeout(() => {
-    const peer = pickRandom(getOtherPeers(), 1)[0]
-    if (peer) {
-      fetchPeersFrom(peer.url).catch(() => {})
-    }
+  // Immediate bootstrap: fetch peers from ALL known peers (not just 1 random)
+  // This maximizes peer discovery on first boot and after updates
+  setTimeout(async () => {
+    const others = getOtherPeers()
+    const fetches = others.map(p => fetchPeersFrom(p.url).catch(() => {}))
+    await Promise.allSettled(fetches)
+    // Run dedup after initial fetch to clean up duplicates immediately
+    pruneDeadPeers()
+    // Announce self and federate rooms after peer lists are populated
     announceToAll().catch(() => {})
-    // Federate rooms after a short delay to let announcements propagate
     setTimeout(() => federateRooms().catch(() => {}), 5000)
   }, 3000)
 
@@ -228,6 +278,7 @@ function stop() {
 
 /**
  * Remove peers that have too many failures or haven't been seen in 48h.
+ * Also deduplicates by signPk — keeps the best entry per relay identity.
  * Seed nodes are never pruned.
  */
 function pruneDeadPeers() {
@@ -240,7 +291,45 @@ function pruneDeadPeers() {
       pruned++
     }
   }
-  if (pruned > 0) console.log(`[GOSSIP] Pruned ${pruned} dead peer(s)`)
+
+  // Deduplicate by signPk — same relay may appear with multiple URL paths
+  const bySignPk = new Map() // signPk -> { key, peer }
+  for (const [key, peer] of knownPeers) {
+    if (!peer.signPk) continue
+    const spk = peer.signPk.toLowerCase()
+    const existing = bySignPk.get(spk)
+    if (!existing) {
+      bySignPk.set(spk, { key, peer })
+      continue
+    }
+    // Decide which to keep: prefer URL over no URL, then fewer failures, then more recent lastSeen
+    const ep = existing.peer
+    const keepNew = (!ep.url && peer.url) ||
+      (ep.url && peer.url && (peer.failures || 0) < (ep.failures || 0)) ||
+      (ep.url && peer.url && (peer.failures || 0) === (ep.failures || 0) && (peer.lastSeen || 0) > (ep.lastSeen || 0))
+    if (keepNew) {
+      knownPeers.delete(existing.key)
+      bySignPk.set(spk, { key, peer })
+      pruned++
+    } else {
+      knownPeers.delete(key)
+      pruned++
+    }
+  }
+
+  // Hostname dedup: remove entries that share hostname with self
+  // (catches seeds or gossip-learned entries with different URL paths)
+  if (myUrl) {
+    for (const [key, peer] of knownPeers) {
+      if (key === myUrl) continue
+      if (peer.url && isSameHost(peer.url, myUrl)) {
+        knownPeers.delete(key)
+        pruned++
+      }
+    }
+  }
+
+  if (pruned > 0) console.log(`[GOSSIP] Pruned ${pruned} dead/duplicate peer(s)`)
 }
 
 // ── Peer merging ────────────────────────────────────────────────────
@@ -287,7 +376,28 @@ function mergePeers(remotePeers) {
     // Legacy format: peer with URL
     if (!isValidPeer(rp)) continue
     // Skip self
-    if (rp.url === myUrl) continue
+    if (isSameHost(rp.url, myUrl)) continue
+
+    // Deduplicate by signPk — if we already have this relay under a different URL, skip
+    if (rp.signPk && /^[0-9a-f]{64}$/i.test(rp.signPk)) {
+      let dominated = false
+      for (const [eKey, ep] of knownPeers) {
+        if (ep.signPk && ep.signPk.toLowerCase() === rp.signPk.toLowerCase() && eKey !== rp.url) {
+          // Same relay identity, different URL — keep the one with better URL or metrics
+          if (ep.url) {
+            // Already have a URL entry for this relay — skip new one unless it's clearly better
+            if ((ep.failures || 0) <= (rp.failures || 0)) { dominated = true; break }
+            // New one has fewer failures — remove old, add new
+            knownPeers.delete(eKey)
+          } else {
+            // Existing is pk-only — upgrade to URL-based by removing pk-only entry
+            knownPeers.delete(eKey)
+          }
+          break
+        }
+      }
+      if (dominated) continue
+    }
 
     const existing = knownPeers.get(rp.url)
     if (!existing) {
@@ -494,7 +604,7 @@ function fetchPeersFrom(peerUrl) {
  * Announce self to up to 3 random peers via HTTP POST /peers/announce.
  */
 async function announceToAll() {
-  if (!myUrl || !mySignSk) return
+  if (!mySignSk) return
 
   const announcement = getAnnouncement()
   const payload = JSON.stringify(announcement)
@@ -703,6 +813,23 @@ function isRawIpUrl(url) {
   }
 }
 
+
+/**
+ * Check whether two WebSocket URLs point to the same host.
+ * Compares hostname only, ignoring path and port differences.
+ * Used to prevent self-references when a relay has multiple URL paths.
+ */
+function isSameHost(url1, url2) {
+  if (!url1 || !url2) return false
+  try {
+    const h1 = new URL(url1.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:')).hostname
+    const h2 = new URL(url2.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:')).hostname
+    return h1 === h2
+  } catch {
+    return false
+  }
+}
+
 /**
  * Check whether a URL is one of the hardcoded seed nodes.
  */
@@ -715,7 +842,7 @@ function isSeedNode(url) {
  * Peers without URLs (signPk-only) cannot be contacted via HTTP.
  */
 function getOtherPeers() {
-  return getPeerList().filter(p => p.url && p.url !== myUrl)
+  return getPeerList().filter(p => p.url && !isSameHost(p.url, myUrl))
 }
 
 /**

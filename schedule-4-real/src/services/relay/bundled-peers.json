@@ -1,0 +1,14 @@
+[
+  {
+    "url": "wss://schedule4real.com/rooms",
+    "pk": "c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779",
+    "signPk": "37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f",
+    "tracker": true
+  },
+  {
+    "url": "wss://r2.imaset.com",
+    "pk": "78feb6b721ce2a7a700b4e847eead603f0655414899476091d231178ab98fd33",
+    "signPk": "ff36752073de11130dd2fd2f3f1a5aa9ea15590cb90548896e42492696a15aa2",
+    "tracker": true
+  }
+]

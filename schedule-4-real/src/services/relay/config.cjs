@@ -13,8 +13,8 @@ const DATA_DIR = path.join(process.cwd(), 'data', 'relay')
 // Seed nodes — hardcoded public URLs + public keys
 // These are always-available bootstrap nodes for new installations
 const SEED_NODES = [
-  { url: 'wss://schedule4real.com/rooms', pk: '' }, // pk filled at runtime from /pk endpoint
-  { url: 'wss://r2.imaset.com', pk: '' },
+  { url: 'wss://schedule4real.com/rooms', pk: 'c74ae0209399487d122fd39034392fab50f255360eb3e3116c73bf01e9b16779', signPk: '37d44f4e6bf58ff24bea477f782ca121a0d7eb5881516b7ea606f7dae5e83b3f', tracker: true },
+  { url: 'wss://r2.imaset.com', pk: '78feb6b721ce2a7a700b4e847eead603f0655414899476091d231178ab98fd33', signPk: 'ff36752073de11130dd2fd2f3f1a5aa9ea15590cb90548896e42492696a15aa2', tracker: true },
 ]
 
 function ensureDataDir() {
@@ -133,8 +133,25 @@ function loadBootstrapPeers() {
   } catch { return [] }
 }
 
+/**
+ * Load bundled peers distributed with the build.
+ * These are snapshotted from the dev machine's peers.json at build time,
+ * filtered to trackers with valid public URLs.
+ * This ensures new installations and updates start with a known tracker list
+ * beyond just the hardcoded SEED_NODES.
+ */
+function loadBundledPeers() {
+  const bundledFile = path.join(__dirname, 'bundled-peers.json')
+  if (!fs.existsSync(bundledFile)) return []
+  try {
+    const data = JSON.parse(fs.readFileSync(bundledFile, 'utf-8'))
+    if (!Array.isArray(data)) return []
+    return data.filter(p => p.url && p.pk && p.signPk)
+  } catch { return [] }
+}
+
 module.exports = {
   DATA_DIR, SEED_NODES,
   loadIdentity, loadConfig, saveConfig, loadPeers, savePeers,
-  loadBootstrapPeers, ensureDataDir,
+  loadBootstrapPeers, loadBundledPeers, ensureDataDir,
 }
