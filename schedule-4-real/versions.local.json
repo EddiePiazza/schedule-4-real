@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-04T00:21:22.372Z",
+  "lastCheck": "2026-03-04T00:31:22.365Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.4",
-      "installedAt": "2026-03-04T00:27:26Z"
+      "version": "1.76.5",
+      "installedAt": "2026-03-04T00:36:47Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.4",
+        "changes": [
+          "Fix backup restore hanging on large tables by using persistent ILP connection"
+        ]
+      },
       {
         "version": "1.76.3",
         "changes": [
@@ -371,12 +377,6 @@
         "version": "1.60.0",
         "changes": [
           "Rebrand to Schedule 4 Real with SVG logo in sidebar and mobile header"
-        ]
-      },
-      {
-        "version": "1.59.1",
-        "changes": [
-          "Fix authenticated users having full edit rights in public rooms they don't own"
         ]
       }
     ],
