@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-04T03:16:23Z",
+  "generatedAt": "2026-03-05T01:38:11Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.8",
-      "archive": "s4r-web-1.76.8.tar.gz",
-      "sha256": "a7098739acc0f67717a632801651117996c54c0b28d4d1c29fcde1851cd333b0",
-      "size": 11148317,
+      "version": "1.76.9",
+      "archive": "s4r-web-1.76.9.tar.gz",
+      "sha256": "eeb9ab28f5b641f3a0ddcada5b6add47f40d8b9f8a8381ca50aeef888018e296",
+      "size": 11149560,
       "changelog": [
+        {
+          "version": "1.76.9",
+          "changes": [
+            "Fix multiplayer guests seeing own data instead of host room"
+          ]
+        },
         {
           "version": "1.76.8",
           "changes": [
