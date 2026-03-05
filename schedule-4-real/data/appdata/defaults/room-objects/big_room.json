@@ -19,42 +19,6 @@
       "locked": true
     },
     {
-      "id": "6c713607-fc2c-4370-aa86-9c7f3bec3a2c",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 792.3479,
-        "y": 61.7336,
-        "z": -462.2992
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -1,
-        "z": 0,
-        "w": -0.0037
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
-      "id": "8e907ca6-a192-4063-91c1-872694a3d778",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 796.1786,
-        "y": 80.2806,
-        "z": -457.0772
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.1013,
-        "z": 0,
-        "w": -0.9949
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "b89aff59-1d92-4b99-b1d0-52c8ae6cf000",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -4206,24 +4170,6 @@
       "locked": true
     },
     {
-      "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 795.229,
-        "y": 80.0345,
-        "z": -413.8687
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.1305,
-        "z": 0,
-        "w": 0.9914
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "59486e4c-02c3-486c-a134-60fdb9ca25aa",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -4296,24 +4242,6 @@
       "locked": true
     },
     {
-      "id": "1ca3f4df-8344-422d-9fbe-a448f4fbba0c",
-      "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
-      "position": {
-        "x": 791.8543,
-        "y": 61.4203,
-        "z": -504.3075
-      },
-      "quaternion": {
-        "x": 0,
-        "y": 0.9969,
-        "z": 0,
-        "w": -0.0787
-      },
-      "scale": 129.6261,
-      "name": "weed brick 2",
-      "locked": true
-    },
-    {
       "id": "78ea956b-cc2c-4c9a-a5d1-8bd45c1ecf26",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
@@ -4332,58 +4260,22 @@
       "locked": true
     },
     {
-      "id": "ec891e0d-9f53-4085-9e76-99d6745aedf9",
+      "id": "2b5eebcc-17bd-4cc6-8654-d95ab9672df8",
       "assetFile": "/data/appdata/models/assets/plants/weed_brick_2.glb",
       "position": {
-        "x": 792.8506,
-        "y": 81.024,
-        "z": -509.3072
+        "x": 795.0565,
+        "y": 60.4878,
+        "z": -478.7838
       },
       "quaternion": {
         "x": 0,
-        "y": 0.1951,
+        "y": 0.1305,
         "z": 0,
-        "w": 0.9808
+        "w": 0.9914
       },
       "scale": 129.6261,
       "name": "weed brick 2",
       "locked": true
-    },
-    {
-      "id": "obj_1772727415934_2",
-      "assetFile": "/data/appdata/models/assets/animated/switches/keypad_codelock.glb",
-      "position": {
-        "x": 329.662,
-        "y": 36.0525,
-        "z": -214.8441
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.9995,
-        "z": 0,
-        "w": 0.0311
-      },
-      "scale": 322.5989,
-      "name": "keypad codelock",
-      "locked": false
-    },
-    {
-      "id": "obj_1772727795809_1",
-      "assetFile": "/data/appdata/models/assets/animated/switches/keypad_codelock.glb",
-      "position": {
-        "x": 326.1212,
-        "y": 8.9554,
-        "z": -136.1007
-      },
-      "quaternion": {
-        "x": 0,
-        "y": -0.4576,
-        "z": 0,
-        "w": 0.8891
-      },
-      "scale": 80.1336,
-      "name": "keypad codelock",
-      "locked": false
     }
   ],
   "ducts": [

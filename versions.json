@@ -1,14 +1,27 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T16:43:54Z",
+  "generatedAt": "2026-03-05T17:22:21Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.78.0",
-      "archive": "s4r-web-1.78.0.tar.gz",
-      "sha256": "9c6114148cebcce66a616cb4a8ca34fba5df7c24c18c19ee8f1c0a8296fa511a",
-      "size": 11152333,
+      "version": "1.79.0",
+      "archive": "s4r-web-1.79.0.tar.gz",
+      "sha256": "708c3d5931faa99ac9a13c7f06c96f5239aab39073d8b637f401bcb529c98826",
+      "size": 11153926,
       "changelog": [
+        {
+          "version": "1.79.0",
+          "changes": [
+            "Fix Power widget clipping Blower entry in 3D display zones",
+            "Show custom socket names and host sensor data in public room display zones"
+          ]
+        },
+        {
+          "version": "1.78.1",
+          "changes": [
+            "Load sensor history charts in remote room via relay API proxy"
+          ]
+        },
         {
           "version": "1.78.0",
           "changes": [
