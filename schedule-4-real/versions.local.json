@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T17:21:22.922Z",
+  "lastCheck": "2026-03-05T17:31:22.881Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.79.0",
-      "installedAt": "2026-03-05T17:22:21Z"
+      "version": "1.79.1",
+      "installedAt": "2026-03-05T17:36:08Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.79.0",
+        "changes": [
+          "Fix Power widget clipping Blower entry in 3D display zones",
+          "Show custom socket names and host sensor data in public room display zones"
+        ]
+      },
       {
         "version": "1.78.1",
         "changes": [
@@ -349,12 +356,6 @@
         "version": "1.66.0",
         "changes": [
           "Add latency-based relay selection for faster circuit routing"
-        ]
-      },
-      {
-        "version": "1.65.1",
-        "changes": [
-          "Fix CORS and public IP leak on peer discovery by using server-side proxy"
         ]
       }
     ],

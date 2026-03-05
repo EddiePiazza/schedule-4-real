@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T17:22:21Z",
+  "generatedAt": "2026-03-05T17:36:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.79.0",
-      "archive": "s4r-web-1.79.0.tar.gz",
-      "sha256": "708c3d5931faa99ac9a13c7f06c96f5239aab39073d8b637f401bcb529c98826",
-      "size": 11153926,
+      "version": "1.79.1",
+      "archive": "s4r-web-1.79.1.tar.gz",
+      "sha256": "46c26a2d8be35c771b301cd366ada0f9e7355f64fa53168acedf69d61ab5bac0",
+      "size": 11155382,
       "changelog": [
+        {
+          "version": "1.79.1",
+          "changes": [
+            "Fix missing imports for remote room store population"
+          ]
+        },
         {
           "version": "1.79.0",
           "changes": [
