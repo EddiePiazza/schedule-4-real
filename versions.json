@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T16:09:20Z",
+  "generatedAt": "2026-03-05T16:43:54Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.77.0",
-      "archive": "s4r-web-1.77.0.tar.gz",
-      "sha256": "748908e7fc22523b6f0226e55d741d914fb341d5c9da40700c8e56a7ee09fb43",
-      "size": 11151208,
+      "version": "1.78.0",
+      "archive": "s4r-web-1.78.0.tar.gz",
+      "sha256": "9c6114148cebcce66a616cb4a8ca34fba5df7c24c18c19ee8f1c0a8296fa511a",
+      "size": 11152333,
       "changelog": [
+        {
+          "version": "1.78.0",
+          "changes": [
+            "Show host sensor data in remote room display zones via relay proxy"
+          ]
+        },
         {
           "version": "1.77.0",
           "changes": [

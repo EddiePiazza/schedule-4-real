@@ -47,7 +47,7 @@ echo ""
 if [ "$MODE" = "app" ]; then
     # Solo detener la app web
     info "Deteniendo s4r-web..."
-    pm2 delete s4r-web 2>/dev/null || true
+    pm2 stop s4r-web 2>/dev/null || true
     sleep 1
 
     # Verificar puerto

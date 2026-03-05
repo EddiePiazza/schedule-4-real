@@ -145,24 +145,6 @@
       "locked": false
     },
     {
-      "id": "76637be8-8af0-4ff5-b003-65199690544e",
-      "assetFile": "/data/appdata/models/assets/plants/weed_in_a_bag.glb",
-      "position": {
-        "x": 458.8049,
-        "y": 16.2576,
-        "z": -244.8795
-      },
-      "quaternion": {
-        "x": 0.6585,
-        "y": -0.0374,
-        "z": 0.0328,
-        "w": 0.7509
-      },
-      "scale": 4.3369,
-      "name": "weed in a bag",
-      "locked": false
-    },
-    {
       "id": "3b2b9942-96e0-4992-a909-ca955ef52846",
       "assetFile": "/data/appdata/models/assets/parafernalia/joint.glb",
       "position": {
@@ -4366,6 +4348,42 @@
       "scale": 129.6261,
       "name": "weed brick 2",
       "locked": true
+    },
+    {
+      "id": "obj_1772727415934_2",
+      "assetFile": "/data/appdata/models/assets/animated/switches/keypad_codelock.glb",
+      "position": {
+        "x": 329.662,
+        "y": 36.0525,
+        "z": -214.8441
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.9995,
+        "z": 0,
+        "w": 0.0311
+      },
+      "scale": 322.5989,
+      "name": "keypad codelock",
+      "locked": false
+    },
+    {
+      "id": "obj_1772727795809_1",
+      "assetFile": "/data/appdata/models/assets/animated/switches/keypad_codelock.glb",
+      "position": {
+        "x": 326.1212,
+        "y": 8.9554,
+        "z": -136.1007
+      },
+      "quaternion": {
+        "x": 0,
+        "y": -0.4576,
+        "z": 0,
+        "w": 0.8891
+      },
+      "scale": 80.1336,
+      "name": "keypad codelock",
+      "locked": false
     }
   ],
   "ducts": [

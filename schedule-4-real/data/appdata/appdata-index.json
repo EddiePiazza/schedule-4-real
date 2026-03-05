@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-26T04:00:15Z",
+  "generated": "2026-03-05T16:44:03Z",
   "files": {
     "appdata-index.json": {
       "hash": "009f15e792c9a92d42f9c68a07087326",
@@ -470,8 +470,8 @@
       "size": 673
     },
     "defaults/asset-rotations.json": {
-      "hash": "265a1b529aba3c60da2e7df0cdbea069",
-      "size": 2276
+      "hash": "21d7010f69c7fbdc9a137b725061b5c9",
+      "size": 2268
     },
     "defaults/room-hidden-meshes.json": {
       "hash": "2e8d4e37ea66d78433a02066578bd14d",
@@ -554,8 +554,8 @@
       "size": 824
     },
     "defaults/room-objects/big_room.json": {
-      "hash": "3093131ea14373f1dd195693d74054eb",
-      "size": 138694
+      "hash": "6274680b6fa4bddd812461034bbc4c44",
+      "size": 139099
     },
     "defaults/room-objects/room_blank.json": {
       "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",

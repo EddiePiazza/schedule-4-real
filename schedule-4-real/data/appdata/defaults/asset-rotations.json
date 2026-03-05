@@ -101,7 +101,7 @@
   },
   "keypad_codelock.glb": {
     "x": 0,
-    "y": -1.5708,
+    "y": 0.5236,
     "z": 0
   },
   "tv_retro.glb": {
@@ -130,8 +130,8 @@
     "z": 0
   },
   "keypad_codelock_2.glb": {
-    "x": -1.5708,
-    "y": -3.2725,
+    "x": 0,
+    "y": 0.9163,
     "z": 0
   },
   "door_metalic_keypad.glb": {

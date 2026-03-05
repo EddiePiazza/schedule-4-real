@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T16:01:22.871Z",
+  "lastCheck": "2026-03-05T16:41:22.901Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.77.0",
-      "installedAt": "2026-03-05T16:09:20Z"
+      "version": "1.78.0",
+      "installedAt": "2026-03-05T16:43:54Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.77.0",
+        "changes": [
+          "Fix system ducts leaking into user savegame file",
+          "Fix user-placed objects not saving in room savegame",
+          "Add server-side relay proxy for multiplayer guest room data"
+        ]
+      },
       {
         "version": "1.76.12",
         "changes": [
@@ -360,14 +368,6 @@
           "Fix microphone permission prompt not showing on /join/ pages and improve denied state handling",
           "Fix real-time sensor data not updating on TV screens and dashboard widgets",
           "Fix TV remote control not appearing, channel shuffle breaking on removal, and default config not loading"
-        ]
-      },
-      {
-        "version": "1.64.1",
-        "changes": [
-          "Throttle CSS filter updates during lighting cycle to reduce compositor overhead",
-          "Fix microphone permission prompt not showing on some domains",
-          "Revert matrix freeze system that caused TV screen misplacement and FPS regression"
         ]
       }
     ],
