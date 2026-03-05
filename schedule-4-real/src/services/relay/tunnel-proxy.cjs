@@ -85,7 +85,18 @@ function handleHostText(tunnel, text) {
       delete headers['transfer-encoding']
       delete headers['connection']
 
+      // Preserve headers set via res.setHeader() before proxying
+      // (e.g. Set-Cookie: __sfr=... from /join handler)
+      // For set-cookie: merge both relay and host cookies
       try {
+        const presetHeaders = pending.res.getHeaders()
+        for (const [key, val] of Object.entries(presetHeaders)) {
+          if (key === 'set-cookie' && headers[key]) {
+            headers[key] = [].concat(val, headers[key])
+          } else if (!headers[key]) {
+            headers[key] = val
+          }
+        }
         pending.headersWritten = true
         pending.res.writeHead(msg.status || 200, headers)
       } catch {}

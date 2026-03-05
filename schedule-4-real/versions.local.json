@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T15:41:22.858Z",
+  "lastCheck": "2026-03-05T16:01:22.871Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.12",
-      "installedAt": "2026-03-05T15:46:11Z"
+      "version": "1.77.0",
+      "installedAt": "2026-03-05T16:09:20Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.12",
+        "changes": [
+          "Fix relay URL discovery with /relay prefix fallback for shared domains"
+        ]
+      },
       {
         "version": "1.76.11",
         "changes": [
@@ -362,13 +368,6 @@
           "Throttle CSS filter updates during lighting cycle to reduce compositor overhead",
           "Fix microphone permission prompt not showing on some domains",
           "Revert matrix freeze system that caused TV screen misplacement and FPS regression"
-        ]
-      },
-      {
-        "version": "1.64.0",
-        "changes": [
-          "Add voice init error tracking in debug overlay for cross-domain diagnostics",
-          "Add microphone permission indicator in lobby with re-request button"
         ]
       }
     ],

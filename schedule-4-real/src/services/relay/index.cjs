@@ -189,6 +189,48 @@ const server = createServer(async (req, res) => {
     return
   }
 
+  // ── Session creation via POST /rooms/session (for server-side relay proxies)
+  // Avoids relying on Set-Cookie which gets stripped by nginx/Cloudflare proxy chains
+  // Accepts: { inviteToken: "ROOMKEY.TOKEN" }
+  // Returns: { ok: true, session: "hex64" } or { ok: false, error: "..." }
+  if (req.method === 'POST' && (url === '/rooms/session' || url === '/api/session')) {
+    if (rateLimited(res, clientIp, 'query')) return
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    let body = ''
+    req.on('data', (chunk) => { body += chunk; if (body.length > 1024) req.destroy() })
+    req.on('end', () => {
+      try {
+        const { inviteToken } = JSON.parse(body)
+        if (!inviteToken || typeof inviteToken !== 'string') {
+          res.writeHead(400, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ ok: false, error: 'Missing inviteToken' }))
+          return
+        }
+        // Parse token same as /join/ path
+        const match = inviteToken.match(/^([a-f0-9]{16,64})\.(.+)/)
+        if (!match) {
+          res.writeHead(400, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ ok: false, error: 'Invalid token format' }))
+          return
+        }
+        const roomKey = match[1]
+        const tunnel = getHostTunnel(roomKey)
+        if (!tunnel) {
+          res.writeHead(503, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ ok: false, error: 'Room offline' }))
+          return
+        }
+        const sessionId = createSession(roomKey)
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: true, session: sessionId }))
+      } catch {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: false, error: 'Invalid JSON' }))
+      }
+    })
+    return
+  }
+
   // Room registration via HTTP (for server-side auto-publishers)
   // Accepts: { roomId (hex), metadata (base64), entryRelay (url), private (bool) }
   if (req.method === 'POST' && (url === '/api/register' || url === '/register')) {
@@ -378,6 +420,14 @@ const server = createServer(async (req, res) => {
     const sessionId = createSession(joinInfo.roomKey)
     const secure = (req.headers['x-forwarded-proto'] === 'https' || (cfg.publicUrl || '').startsWith('wss')) ? '; Secure' : ''
     res.setHeader('Set-Cookie', `__sfr=${sessionId}; Path=/; HttpOnly; SameSite=Lax${secure}`)
+
+    // If caller accepts JSON, return session directly (avoids cookie being stripped by proxies)
+    const accept = (req.headers['accept'] || '').toLowerCase()
+    if (accept.includes('application/json')) {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ ok: true, session: sessionId }))
+      return
+    }
 
     // Proxy the initial request to host
     const hostPath = `/join/${joinInfo.roomKey}.${joinInfo.token}`

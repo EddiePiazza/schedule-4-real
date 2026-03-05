@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T15:46:11Z",
+  "generatedAt": "2026-03-05T16:09:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.12",
-      "archive": "s4r-web-1.76.12.tar.gz",
-      "sha256": "57b7e22879fda3b7dc1adaef7a2db44729f0c9744310769765578e7afd7c4912",
-      "size": 11153227,
+      "version": "1.77.0",
+      "archive": "s4r-web-1.77.0.tar.gz",
+      "sha256": "748908e7fc22523b6f0226e55d741d914fb341d5c9da40700c8e56a7ee09fb43",
+      "size": 11151208,
       "changelog": [
+        {
+          "version": "1.77.0",
+          "changes": [
+            "Fix system ducts leaking into user savegame file",
+            "Fix user-placed objects not saving in room savegame",
+            "Add server-side relay proxy for multiplayer guest room data"
+          ]
+        },
         {
           "version": "1.76.12",
           "changes": [
