@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T13:41:37Z",
+  "generatedAt": "2026-03-05T15:46:11Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.11",
-      "archive": "s4r-web-1.76.11.tar.gz",
-      "sha256": "c1e7f704ce7996c3479d3576b53bda6a36310e9d2600d869bd2ddc8642401a1d",
-      "size": 11152997,
+      "version": "1.76.12",
+      "archive": "s4r-web-1.76.12.tar.gz",
+      "sha256": "57b7e22879fda3b7dc1adaef7a2db44729f0c9744310769765578e7afd7c4912",
+      "size": 11153227,
       "changelog": [
+        {
+          "version": "1.76.12",
+          "changes": [
+            "Fix relay URL discovery with /relay prefix fallback for shared domains"
+          ]
+        },
         {
           "version": "1.76.11",
           "changes": [

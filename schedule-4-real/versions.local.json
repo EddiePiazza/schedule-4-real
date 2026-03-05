@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T13:41:22.896Z",
+  "lastCheck": "2026-03-05T15:41:22.858Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.11",
-      "installedAt": "2026-03-05T13:41:37Z"
+      "version": "1.76.12",
+      "installedAt": "2026-03-05T15:46:11Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.11",
+        "changes": [
+          "Fix multiplayer guest seeing own data instead of host room via server-side relay proxy"
+        ]
+      },
       {
         "version": "1.76.10",
         "changes": [
@@ -363,17 +369,6 @@
         "changes": [
           "Add voice init error tracking in debug overlay for cross-domain diagnostics",
           "Add microphone permission indicator in lobby with re-request button"
-        ]
-      },
-      {
-        "version": "1.63.0",
-        "changes": [
-          "Fix unified /data/ route not serving files correctly",
-          "Add debug overlay setting in Graphics tab (Off / FPS / Full)",
-          "Remove confusing capacity number from public room list and sort favorites first",
-          "Fix pointer lock SecurityError and compileAsync crash during room transitions",
-          "Fix TV mute button indistinguishable from volume, reduce default TV volume",
-          "Add voice chat debug overlay for cross-domain diagnostics"
         ]
       }
     ],
