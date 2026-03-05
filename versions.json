@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T02:47:41Z",
+  "generatedAt": "2026-03-05T13:41:37Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.10",
-      "archive": "s4r-web-1.76.10.tar.gz",
-      "sha256": "ec86eae5ee09c676a91eeeb9021826d328e91f22fcde2cbba305bac97261b462",
-      "size": 11149542,
+      "version": "1.76.11",
+      "archive": "s4r-web-1.76.11.tar.gz",
+      "sha256": "c1e7f704ce7996c3479d3576b53bda6a36310e9d2600d869bd2ddc8642401a1d",
+      "size": 11152997,
       "changelog": [
+        {
+          "version": "1.76.11",
+          "changes": [
+            "Fix multiplayer guest seeing own data instead of host room via server-side relay proxy"
+          ]
+        },
         {
           "version": "1.76.10",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T02:41:22.852Z",
+  "lastCheck": "2026-03-05T13:41:22.896Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.10",
-      "installedAt": "2026-03-05T02:47:41Z"
+      "version": "1.76.11",
+      "installedAt": "2026-03-05T13:41:37Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.10",
+        "changes": [
+          "Fix relay URL fallback for public room join"
+        ]
+      },
       {
         "version": "1.76.9",
         "changes": [
@@ -368,12 +374,6 @@
           "Fix pointer lock SecurityError and compileAsync crash during room transitions",
           "Fix TV mute button indistinguishable from volume, reduce default TV volume",
           "Add voice chat debug overlay for cross-domain diagnostics"
-        ]
-      },
-      {
-        "version": "1.62.1",
-        "changes": [
-          "Fix file route paths and update default room models"
         ]
       }
     ],

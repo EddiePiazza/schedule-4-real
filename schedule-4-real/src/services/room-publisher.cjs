@@ -456,10 +456,6 @@ async function publishAll() {
         inviteToken = generateInviteToken(room.id, roomKey)
         if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
       }
-      // Convert relay WS URL to HTTPS for browser redirect
-      const relayHttpUrl = entryRelay
-        .replace(/^wss:\/\//, 'https://').replace(/^ws:\/\//, 'http://')
-        .replace(/\/rooms$/, '') // strip /rooms path suffix if present
       const metaJson = JSON.stringify({
         envId: room.id,
         name: room.publishName || room.name,
@@ -468,7 +464,6 @@ async function publishAll() {
         tags: [],
         inviteToken,
         passwordProtected: !!room.passwordProtected,
-        relayUrl: relayHttpUrl,
       })
 
       // Check if metadata changed since last REGISTER

@@ -390,35 +390,6 @@ const server = createServer(async (req, res) => {
     return
   }
 
-  // ── Query param session: ?sfr=ROOMKEY.TOKEN (browser redirect from public room join)
-  // Creates session cookie from token then proxies the request (with sfr= intact so host reads it)
-  {
-    const qIdx = url.indexOf('?')
-    if (qIdx >= 0) {
-      const params = new URLSearchParams(url.substring(qIdx))
-      const sfrParam = params.get('sfr')
-      if (sfrParam) {
-        const dotIdx = sfrParam.indexOf('.')
-        if (dotIdx > 0) {
-          const rk = sfrParam.substring(0, dotIdx)
-          const tunnel = getHostTunnel(rk)
-          if (tunnel) {
-            // Create session + set cookie, then proxy request (keep sfr= so host's room3d reads it)
-            const sessionId = createSession(rk)
-            const secure = (req.headers['x-forwarded-proto'] === 'https' || (cfg.publicUrl || '').startsWith('wss')) ? '; Secure' : ''
-            res.setHeader('Set-Cookie', `__sfr=${sessionId}; Path=/; HttpOnly; SameSite=Lax${secure}`)
-            const reqId = getNextReqId(tunnel)
-            const headers = { ...req.headers }
-            delete headers['host']
-            headers['x-forwarded-host'] = req.headers.host || ''
-            proxyHttpRequest(tunnel, reqId, req.method, url, headers, null, res)
-            return
-          }
-        }
-      }
-    }
-  }
-
   // ── Session-based proxy ──────────────────────────────────────────
   // Block /index.html — relay should not serve the host's main app
   if (url === '/index.html') {
@@ -576,9 +547,18 @@ server.on('upgrade', (req, socket, head) => {
     return
   }
 
-  // Guest WebSocket paths (need session cookie or single-host fallback)
+  // Guest WebSocket paths (need session cookie, ?rk= query param, or single-host fallback)
   if (url.startsWith('/_room3d-ws') || url.startsWith('/_ws') || url.startsWith('/mqtt')) {
     let roomKey = resolveSession(req.headers.cookie)
+    // Fallback: check ?rk=ROOMKEY query param (cross-origin WS connections can't send cookies)
+    if (!roomKey) {
+      const qIdx = url.indexOf('?')
+      if (qIdx >= 0) {
+        const params = new URLSearchParams(url.substring(qIdx))
+        const rk = params.get('rk')
+        if (rk && getHostTunnel(rk)) roomKey = rk
+      }
+    }
     // Fallback: if no session but exactly one host is tunneled, use it
     if (!roomKey) roomKey = getDefaultRoomKey()
     if (roomKey && getHostTunnel(roomKey)) {
