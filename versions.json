@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T01:38:11Z",
+  "generatedAt": "2026-03-05T02:47:41Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.76.9",
-      "archive": "s4r-web-1.76.9.tar.gz",
-      "sha256": "eeb9ab28f5b641f3a0ddcada5b6add47f40d8b9f8a8381ca50aeef888018e296",
-      "size": 11149560,
+      "version": "1.76.10",
+      "archive": "s4r-web-1.76.10.tar.gz",
+      "sha256": "ec86eae5ee09c676a91eeeb9021826d328e91f22fcde2cbba305bac97261b462",
+      "size": 11149542,
       "changelog": [
+        {
+          "version": "1.76.10",
+          "changes": [
+            "Fix relay URL fallback for public room join"
+          ]
+        },
         {
           "version": "1.76.9",
           "changes": [

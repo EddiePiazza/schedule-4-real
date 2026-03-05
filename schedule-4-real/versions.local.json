@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-05T01:31:22.898Z",
+  "lastCheck": "2026-03-05T02:41:22.852Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.76.9",
-      "installedAt": "2026-03-05T01:38:11Z"
+      "version": "1.76.10",
+      "installedAt": "2026-03-05T02:47:41Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.76.9",
+        "changes": [
+          "Fix multiplayer guests seeing own data instead of host room"
+        ]
+      },
       {
         "version": "1.76.8",
         "changes": [
@@ -368,12 +374,6 @@
         "version": "1.62.1",
         "changes": [
           "Fix file route paths and update default room models"
-        ]
-      },
-      {
-        "version": "1.62.0",
-        "changes": [
-          "Add unified /data/ endpoint for all static asset serving"
         ]
       }
     ],
