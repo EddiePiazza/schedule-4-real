@@ -57,6 +57,7 @@ let lastSensorValues = {};  // Legacy: merged sensor values from all devices
 let lastActionTimes = {}; // Track last action time per device:socket for hysteresis cooldown
 let lastSocketStates = {}; // Legacy: socket states from default PS5
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
+const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
 
 // Per-device state tracking for multi-device support
 const sensorValuesByDevice = new Map();  // mac -> { temp, humi, vpd, co2, ... }
@@ -74,6 +75,14 @@ let activeGrowPhase = null; // Current grow phase from DB
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
 let blowerCurveEscalationState = {}; // { curveId: { lastValue, lastCheck, escalationBoost } }
 let lastBlowerSpeed = null; // Last commanded speed to avoid redundant commands
+
+// Calibration lock — when running, supervisor skips all trigger/blower evaluation
+function isCalibrationLocked() {
+  try {
+    const lockPath = path.resolve(__dirname, '../../data/calibration-lock.json');
+    return fs.existsSync(lockPath);
+  } catch { return false; }
+}
 
 // Database query helper
 async function query(text, params = []) {
@@ -133,7 +142,25 @@ function loadVpdFromFlow() {
 }
 
 /**
+ * Determine if current time is during the day period
+ */
+function getCurrentPeriod() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const hhmm = `${hh}:${mm}`;
+  const dayStart = dayNightSchedule.dayStart;
+  const dayEnd = dayNightSchedule.dayEnd;
+  if (dayEnd > dayStart) {
+    return hhmm >= dayStart && hhmm < dayEnd ? 'day' : 'night';
+  }
+  // Overnight schedule (e.g., 06:00 - 00:00)
+  return hhmm >= dayStart || hhmm < dayEnd ? 'day' : 'night';
+}
+
+/**
  * Load Blower Curve config from the flow's blower_curve node
+ * Merges period-specific curves (day/night) with general curves
  */
 function loadBlowerCurveFromFlow() {
   blowerCurveConfig = null;
@@ -142,10 +169,19 @@ function loadBlowerCurveFromFlow() {
     for (const node of flow.flow.nodes) {
       if (node.type === 'blower_curve') {
         blowerCurveConfig = node.data.config;
-        const enabledCurves = blowerCurveConfig.curves?.filter(c => c.enabled) || [];
+
+        // Select period-appropriate curves (day or night)
+        const period = getCurrentPeriod();
+        const periodCurves = period === 'day'
+          ? (blowerCurveConfig.dayCurves || [])
+          : (blowerCurveConfig.nightCurves || []);
+
+        blowerCurveConfig._activeCurves = periodCurves;
+
         console.log('[Supervisor] Blower Curve node found:', {
           standbySpeed: blowerCurveConfig.standbySpeed,
-          curves: enabledCurves.map(c => c.sensor).join(', ') || 'none'
+          period,
+          activeCurves: blowerCurveConfig._activeCurves.map(c => c.sensor).join(', ') || 'none'
         });
         return;
       }
@@ -788,10 +824,10 @@ async function executeActions(actions) {
 function evaluateVpdIntelligent() {
   if (!vpdNodeConfig || !vpdNodeConfig.roles || vpdNodeConfig.roles.length === 0) return [];
 
-  // Get VPD from specified sensor device or legacy global
+  // Calculate Leaf VPD from sensor temp + humidity (NOT air VPD from device)
   const sensorValues = getSensorValues(vpdNodeConfig.sensorDeviceMac);
-  const currentVpd = sensorValues.vpd;
-  if (!currentVpd || currentVpd <= 0) return [];
+  const currentVpd = calculateLeafVpd(sensorValues.temp, sensorValues.humi);
+  if (currentVpd == null || currentVpd <= 0) return [];
 
   const target = getVpdTargetRange();
   if (!target) return []; // Phase disabled or no target
@@ -887,37 +923,43 @@ function evaluateVpdIntelligent() {
   }
 
   if (direction === 'too_high') {
-    // VPD too high -> need to lower: humidifier first, then cooler
-    activateRole('humidifier', `VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
+    // Leaf VPD too high -> need to lower: humidifier first, then cooler
+    activateRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
 
     if (isMaxedOut('humidifier')) {
-      activateRole('cooler', `Humidifier maxed, VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
+      activateRole('cooler', `Humidifier maxed, Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
     }
 
     // Deactivate opposing roles
-    deactivateRole('extractor', 'VPD too high');
-    deactivateRole('heater', 'VPD too high');
+    deactivateRole('extractor', 'Leaf VPD too high');
+    deactivateRole('heater', 'Leaf VPD too high');
+    deactivateRole('dehumidifier', 'Leaf VPD too high');
 
   } else if (direction === 'too_low') {
-    // VPD too low -> need to raise: extractor first, then heater
-    activateRole('extractor', `VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
+    // Leaf VPD too low -> need to raise: extractor first, then dehumidifier, then heater
+    activateRole('extractor', `Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
 
     if (isMaxedOut('extractor')) {
-      activateRole('heater', `Extractor maxed, VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
+      activateRole('dehumidifier', `Extractor maxed, Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
+    }
+
+    if (isMaxedOut('extractor') && isMaxedOut('dehumidifier')) {
+      activateRole('heater', `Extractor+Dehumidifier maxed, Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
     }
 
     // Deactivate opposing roles
-    deactivateRole('humidifier', 'VPD too low');
-    deactivateRole('cooler', 'VPD too low');
+    deactivateRole('humidifier', 'Leaf VPD too low');
+    deactivateRole('cooler', 'Leaf VPD too low');
 
   } else {
     // In range - check if in comfort zone before deactivating (hysteresis)
     if (currentVpd >= comfortMin && currentVpd <= comfortMax) {
       // Well within range - deactivate in reverse priority order
-      deactivateRole('cooler', 'VPD in comfort zone');
-      deactivateRole('heater', 'VPD in comfort zone');
-      deactivateRole('humidifier', 'VPD in comfort zone');
-      deactivateRole('extractor', 'VPD in comfort zone');
+      deactivateRole('cooler', 'Leaf VPD in comfort zone');
+      deactivateRole('heater', 'Leaf VPD in comfort zone');
+      deactivateRole('dehumidifier', 'Leaf VPD in comfort zone');
+      deactivateRole('humidifier', 'Leaf VPD in comfort zone');
+      deactivateRole('extractor', 'Leaf VPD in comfort zone');
     }
     // If in range but not in comfort zone, keep current state (hysteresis)
   }
@@ -973,17 +1015,17 @@ function interpolateCurve(points, sensorValue) {
  * @returns {number|null} - Desired blower speed (25-100) or null if no change needed
  */
 function evaluateBlowerCurve() {
-  if (!blowerCurveConfig || !blowerCurveConfig.curves || blowerCurveConfig.curves.length === 0) {
+  const activeCurves = blowerCurveConfig?._activeCurves;
+  if (!blowerCurveConfig || !activeCurves || activeCurves.length === 0) {
     return null;
   }
 
-  const { standbySpeed, curves } = blowerCurveConfig;
+  const { standbySpeed } = blowerCurveConfig;
+  const curves = activeCurves;
   let maxSpeed = 0;
   const now = Date.now();
 
   for (const curve of curves) {
-    if (!curve.enabled) continue;
-
     const sensorValue = lastSensorValues[curve.sensor];
     if (sensorValue === undefined || sensorValue === null) continue;
 
@@ -1069,7 +1111,7 @@ async function sendBlowerCommand(speed, on = true) {
       }
     },
     msgId: String(Date.now()),
-    uid: String(deviceUid)
+    uid: String(getDevice(defaultPrimaryMac)?.uid || '')
   };
 
   console.log(`[BlowerCurve] Sending command: speed=${speed}%, on=${on}`);
@@ -1117,6 +1159,11 @@ async function processSensorData(sensorData, deviceMac) {
   if (sensorData.tempSoil !== undefined) lastSensorValues.temp_soil = sensorData.tempSoil;
   if (sensorData.humiSoil !== undefined) lastSensorValues.humi_soil = sensorData.humiSoil;
   if (sensorData.ECSoil !== undefined) lastSensorValues.ec_soil = sensorData.ECSoil;
+
+  // Skip all trigger/blower evaluation while calibration is running
+  if (isCalibrationLocked()) {
+    return;
+  }
 
   // Evaluate all enabled flows
   const allActions = [];
@@ -1349,6 +1396,18 @@ function getSensorValues(deviceMac) {
   }
   // Fallback to legacy merged values
   return lastSensorValues;
+}
+
+/**
+ * Calculate Leaf VPD from air temp and humidity
+ * Formula: SVP(T_leaf) - SVP(T_air) × (RH/100)
+ * where T_leaf = T_air - LEAF_TEMP_OFFSET
+ */
+function calculateLeafVpd(airTemp, humi) {
+  if (airTemp == null || humi == null) return null;
+  const svp = (t) => 0.6108 * Math.exp((17.27 * t) / (t + 237.3));
+  const leafTemp = airTemp - LEAF_TEMP_OFFSET;
+  return svp(leafTemp) - svp(airTemp) * (humi / 100);
 }
 
 /**

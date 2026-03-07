@@ -589,8 +589,8 @@ server.on('upgrade', (req, socket, head) => {
     return
   }
 
-  // Host tunnel
-  if (url === '/tunnel') {
+  // Host tunnel (accept /tunnel at any prefix — nginx may not strip path)
+  if (url === '/tunnel' || url.endsWith('/tunnel')) {
     wssTunnel.handleUpgrade(req, socket, head, (ws) => {
       wssTunnel.emit('connection', ws, req)
     })
@@ -598,7 +598,8 @@ server.on('upgrade', (req, socket, head) => {
   }
 
   // Guest WebSocket paths (need session cookie, ?rk= query param, or single-host fallback)
-  if (url.startsWith('/_room3d-ws') || url.startsWith('/_ws') || url.startsWith('/mqtt')) {
+  // Use includes() to handle nginx path prefixes (e.g., /relay/_room3d-ws)
+  if (url.includes('/_room3d-ws') || url.includes('/_ws') || url.includes('/mqtt')) {
     let roomKey = resolveSession(req.headers.cookie)
     // Fallback: check ?rk=ROOMKEY query param (cross-origin WS connections can't send cookies)
     if (!roomKey) {

@@ -456,6 +456,13 @@ async function publishAll() {
         inviteToken = generateInviteToken(room.id, roomKey)
         if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
       }
+      // Include relay URL in metadata so guests know where to create sessions.
+      // Convert WSS to HTTPS for HTTP session creation.
+      const relayHttpUrl = entryRelay
+        .replace(/^wss:/, 'https:')
+        .replace(/^ws:/, 'http:')
+        .replace(/\/+$/, '')
+
       const metaJson = JSON.stringify({
         envId: room.id,
         name: room.publishName || room.name,
@@ -464,6 +471,7 @@ async function publishAll() {
         tags: [],
         inviteToken,
         passwordProtected: !!room.passwordProtected,
+        relayUrl: relayHttpUrl,
       })
 
       // Check if metadata changed since last REGISTER

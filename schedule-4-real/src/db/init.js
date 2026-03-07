@@ -1177,6 +1177,36 @@ const tables = [
         expires_at LONG
       ) TIMESTAMP(timestamp) PARTITION BY DAY;
     `
+  },
+
+  // AI chat history (conversation persistence)
+  {
+    name: 'ai_chat_history',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ai_chat_history (
+        timestamp TIMESTAMP,
+        session_id SYMBOL,
+        role SYMBOL,
+        content STRING,
+        tool_name STRING,
+        tool_args STRING
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // AI decision log (audit trail of AI-driven actions)
+  {
+    name: 'ai_decision_log',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ai_decision_log (
+        timestamp TIMESTAMP,
+        trigger_type SYMBOL,
+        reasoning STRING,
+        actions STRING,
+        sensor_snapshot STRING,
+        plant_stage SYMBOL
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
   }
 ];
 

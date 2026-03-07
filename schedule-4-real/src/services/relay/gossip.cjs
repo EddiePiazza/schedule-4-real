@@ -891,6 +891,8 @@ function lookupUrlBySignPk(signPk) {
   if (!signPk || typeof signPk !== 'string') return null
   const normalized = signPk.toLowerCase()
   for (const [url, peer] of knownPeers) {
+    // Skip peers with empty URLs — they can't be routed to
+    if (!url) continue
     if (peer.signPk && peer.signPk.toLowerCase() === normalized) return url
   }
   return null

@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-05T17:36:08Z",
+  "generatedAt": "2026-03-07T16:29:32Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.79.1",
-      "archive": "s4r-web-1.79.1.tar.gz",
-      "sha256": "46c26a2d8be35c771b301cd366ada0f9e7355f64fa53168acedf69d61ab5bac0",
-      "size": 11155382,
+      "version": "1.80.0",
+      "archive": "s4r-web-1.80.0.tar.gz",
+      "sha256": "4b632154c736bd16eeafe1a74ae54cd46d4cb8af52c1bbc1867102c25a5bda2a",
+      "size": 11198491,
       "changelog": [
+        {
+          "version": "1.80.0",
+          "changes": [
+            "Fix BlowerCurve card text sizes and make speed Y-axis adaptive to data range",
+            "Switch entire VPD system from air VPD to leaf VPD with corrected 5-zone model",
+            "Fix public room joining via relay session and improved URL fallbacks",
+            "Fix banned font sizes across all node config panels in RightPanel",
+            "Redesign VPD Control device roles with fixed-role assignment like Blower Curve",
+            "Enrich VPD Control canvas card with live leaf VPD, device badges and VPD table button"
+          ]
+        },
         {
           "version": "1.79.1",
           "changes": [
@@ -1610,11 +1621,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.14.5",
-      "archive": "s4r-supervisor-1.14.5.tar.gz",
-      "sha256": "2d48f2fad1486e2a1a9bad2fc69952f8e66e5fac7d13bb395c0703d8bd676573",
-      "size": 35914,
+      "version": "1.15.0",
+      "archive": "s4r-supervisor-1.15.0.tar.gz",
+      "sha256": "a521165da5f7b96a2ca5732a792143f668f1910943731fc0b6591df5edff55e4",
+      "size": 36649,
       "changelog": [
+        {
+          "version": "1.15.0",
+          "changes": [
+            "Use leaf VPD instead of air VPD for automation decisions with dehumidifier support",
+            "Add multi-relay tunnel agent for room redundancy across relays"
+          ]
+        },
         {
           "version": "1.14.5",
           "changes": [
@@ -1899,11 +1917,17 @@
       ]
     },
     "relay": {
-      "version": "1.6.1",
-      "archive": "s4r-relay-1.6.1.tar.gz",
-      "sha256": "e454d852570ad7a91e4f3465c5784f4d77e4263d2c6b632c27c04cc5067a9038",
-      "size": 44712,
+      "version": "1.6.2",
+      "archive": "s4r-relay-1.6.2.tar.gz",
+      "sha256": "3aebfe5f019274a4b2a67135da212970c0a245e50c9e6dc697f66e6624b804fc",
+      "size": 46950,
       "changelog": [
+        {
+          "version": "1.6.2",
+          "changes": [
+            "Fix tunnel path matching and URL validation for relay proxying"
+          ]
+        },
         {
           "version": "1.6.1",
           "changes": [

@@ -1,1 +1,8 @@
-error code: 524
+{
+  "rooms": {
+    "big_room": {
+      "inviteOnly": true,
+      "isPublic": false
+    }
+  }
+}

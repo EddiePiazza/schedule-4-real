@@ -1,16 +1,12 @@
 'use strict'
 /**
- * Tunnel Agent — connects to an onion relay and proxies guest traffic
- * to the local Nuxt server (localhost:3000).
+ * Tunnel Agent — connects to ALL available relays simultaneously and proxies
+ * guest traffic to the local Nuxt server (localhost:3000).
  *
- * The relay acts as a transparent reverse proxy. This agent maintains
- * a persistent WebSocket to the relay and handles:
- * - HTTP request/response forwarding (JSON text frames)
- * - WebSocket channel bridging (multiplayer, voice, MQTT)
- * - Binary data streaming (GLB models, images)
+ * Maintains persistent WebSocket connections to every known relay, so the room
+ * is reachable via any relay. If one relay goes down, others still work.
  *
  * Config (from .env or environment):
- *   TUNNEL_RELAY_URL  — e.g. wss://r2.imaset.com
  *   TUNNEL_ENABLED    — set to "true" to activate
  *   API_PORT          — local Nuxt port (default 3000)
  */
@@ -32,7 +28,6 @@ if (fs.existsSync(envPath)) {
     if (eq < 1) continue
     const key = trimmed.substring(0, eq)
     let val = trimmed.substring(eq + 1)
-    // Strip surrounding quotes
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1)
     }
@@ -47,27 +42,40 @@ const LOCAL_HOST = '127.0.0.1'
 const KEY_FILE = path.join(__dirname, '../../data/room3d/tunnel-key.json')
 const PEERS_FILE = path.join(__dirname, '../../data/relay/peers.json')
 const RELAY_CONFIG_FILE = path.join(__dirname, '../../data/relay/relay-config.json')
-const HEARTBEAT_INTERVAL = 30_000
-const RECONNECT_BASE = 2000
-const RECONNECT_MAX = 60_000
-const RELAY_ROTATE_INTERVAL = 4 * 60 * 60 * 1000 // Rotate relay every 4 hours
+const HEARTBEAT_INTERVAL = 20_000
+const RECONNECT_BASE = 3000
+const RECONNECT_MAX = 120_000
+const PEER_REFRESH_INTERVAL = 300_000 // 5 minutes
 
 if (!ENABLED) {
   console.log('[TUNNEL-AGENT] Disabled (TUNNEL_ENABLED != true). Exiting.')
   process.exit(0)
 }
 
-// ── Multi-relay URL management ────────────────────────────────────
-let relayUrls = []  // Ordered list of relay URLs to try
-let currentRelayIdx = 0
+// ── Room key ────────────────────────────────────────────────────────
+function loadOrCreateRoomKey() {
+  try {
+    const data = JSON.parse(fs.readFileSync(KEY_FILE, 'utf-8'))
+    if (data.roomKey && /^[a-f0-9]{32}$/.test(data.roomKey)) return data.roomKey
+  } catch {}
 
+  const roomKey = randomBytes(16).toString('hex')
+  const dir = path.dirname(KEY_FILE)
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  fs.writeFileSync(KEY_FILE, JSON.stringify({ roomKey }, null, 2), { mode: 0o600 })
+  console.log(`[TUNNEL-AGENT] Generated new room key: ${roomKey.substring(0, 8)}...`)
+  return roomKey
+}
+
+const ROOM_KEY = loadOrCreateRoomKey()
+let destroyed = false
+
+// ── Relay URL discovery ─────────────────────────────────────────────
 function getLocalRelayUrl() {
   try {
     if (fs.existsSync(RELAY_CONFIG_FILE)) {
       const cfg = JSON.parse(fs.readFileSync(RELAY_CONFIG_FILE, 'utf-8'))
-      if (cfg.enabled) {
-        return `ws://127.0.0.1:${cfg.port || 9443}`
-      }
+      if (cfg.enabled) return `ws://127.0.0.1:${cfg.port || 9443}`
     }
   } catch {}
   return null
@@ -83,229 +91,331 @@ function getRelayPublicUrl() {
   return null
 }
 
-function loadRelayUrls() {
-  const urls = new Set()
+/**
+ * Normalize a URL to have a valid WebSocket protocol.
+ * Returns null if the URL is invalid.
+ */
+function normalizeWsUrl(url) {
+  if (!url || typeof url !== 'string') return null
+  let u = url.trim()
+  // Add protocol if missing
+  if (!u.match(/^wss?:\/\//)) {
+    u = `wss://${u}`
+  }
+  // Validate
+  try {
+    new URL(u.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:'))
+    return u
+  } catch {
+    return null
+  }
+}
 
-  // 1. Local relay first (lowest latency, most trusted)
+/**
+ * Discover all relay URLs. Returns de-duplicated list by hostname.
+ * For each relay, generates tunnel URL candidates (the peer URL might need
+ * different paths for the /tunnel WebSocket endpoint).
+ */
+function discoverRelayUrls() {
+  const byHost = new Map() // hostname → url (dedup by host)
+
+  function addUrl(url) {
+    const norm = normalizeWsUrl(url)
+    if (!norm) return
+    try {
+      const h = new URL(norm.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:')).hostname
+      if (!byHost.has(h)) byHost.set(h, norm)
+    } catch {}
+  }
+
+  // 1. Local relay (lowest latency)
   const localUrl = getLocalRelayUrl()
-  if (localUrl) urls.add(localUrl)
+  if (localUrl) addUrl(localUrl)
 
-  // 2. Public URL from relay-config.json (set by user in UI)
-  const publicUrl = getRelayPublicUrl()
-  if (publicUrl) urls.add(publicUrl)
+  // 2. Public URL from relay-config.json (the host's own relay)
+  addUrl(getRelayPublicUrl())
 
-  // 3. Known peers from gossip
+  // 3. Known peers from gossip (other relays)
   try {
     if (fs.existsSync(PEERS_FILE)) {
       const peers = JSON.parse(fs.readFileSync(PEERS_FILE, 'utf-8'))
       if (Array.isArray(peers)) {
-        // Shuffle peers for load distribution
-        const shuffled = peers.filter(p => p.url && p.failures < 3).sort(() => Math.random() - 0.5)
-        for (const peer of shuffled) {
-          urls.add(peer.url)
+        for (const peer of peers) {
+          if (peer.url && (peer.failures || 0) < 5) addUrl(peer.url)
         }
       }
     }
   } catch {}
 
-  relayUrls = Array.from(urls)
-  if (relayUrls.length > 0) {
-    console.log(`[TUNNEL-AGENT] ${relayUrls.length} relay(s) available: ${relayUrls.map(u => u.replace(/^wss?:\/\//, '')).join(', ')}`)
-  }
+  return Array.from(byHost.values())
 }
 
-function getCurrentRelayUrl() {
-  if (relayUrls.length === 0) return null
-  return relayUrls[currentRelayIdx % relayUrls.length]
-}
-
-function advanceToNextRelay() {
-  if (relayUrls.length <= 1) return
-  currentRelayIdx = (currentRelayIdx + 1) % relayUrls.length
-  console.log(`[TUNNEL-AGENT] Switching to relay: ${getCurrentRelayUrl()}`)
-}
-
-// Load initial relay list
-loadRelayUrls()
-
-// Refresh peer list every 5 minutes
-setInterval(loadRelayUrls, 300_000)
-
-// Rotate relay every 4 hours for diversity
-setInterval(() => {
-  if (relayUrls.length > 1) {
-    advanceToNextRelay()
-    // Trigger reconnect to new relay
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      console.log('[TUNNEL-AGENT] Rotating to a different relay...')
-      ws.close(1000, 'relay rotation')
-    }
-  }
-}, RELAY_ROTATE_INTERVAL)
-
-if (relayUrls.length === 0) {
-  console.error('[TUNNEL-AGENT] No relay URLs available (no local relay, no publicUrl in relay-config, no peers). Exiting.')
-  process.exit(1)
-}
-
-// ── Room key management ────────────────────────────────────────────
-function loadOrCreateRoomKey() {
+/**
+ * Generate tunnel URL candidates for a relay URL.
+ * The relay might accept /tunnel at different paths depending on nginx config.
+ * Returns array of URLs to try in order.
+ */
+function getTunnelCandidates(relayUrl) {
+  const candidates = []
   try {
-    const data = JSON.parse(fs.readFileSync(KEY_FILE, 'utf-8'))
-    if (data.roomKey && /^[a-f0-9]{32}$/.test(data.roomKey)) {
-      return data.roomKey
-    }
-  } catch {}
+    const parsed = new URL(relayUrl.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:'))
+    const proto = relayUrl.startsWith('ws://') ? 'ws:' : 'wss:'
+    const origin = `${proto}//${parsed.host}`
 
-  // Generate new room key
-  const roomKey = randomBytes(16).toString('hex')
-  const dir = path.dirname(KEY_FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(KEY_FILE, JSON.stringify({ roomKey }, null, 2), { mode: 0o600 })
-  console.log(`[TUNNEL-AGENT] Generated new room key: ${roomKey.substring(0, 8)}...`)
-  return roomKey
+    // 1. Root path first: origin + /tunnel — works on all relay versions
+    candidates.push(origin + '/tunnel')
+
+    // 2. Direct append: peer URL + /tunnel (e.g., wss://host/rooms/tunnel)
+    const withPath = relayUrl.replace(/\/$/, '') + '/tunnel'
+    if (withPath !== candidates[0]) {
+      candidates.push(withPath)
+    }
+
+    // 3. Common relay path: origin + /relay/tunnel
+    if (!relayUrl.includes('/relay')) {
+      candidates.push(origin + '/relay/tunnel')
+    }
+  } catch {
+    // Fallback: just append /tunnel
+    candidates.push(relayUrl.replace(/\/$/, '') + '/tunnel')
+  }
+  return candidates
 }
 
-const ROOM_KEY = loadOrCreateRoomKey()
-console.log(`[TUNNEL-AGENT] Room key: ${ROOM_KEY.substring(0, 8)}...`)
-console.log(`[TUNNEL-AGENT] Primary relay: ${getCurrentRelayUrl() || '(none)'}`)
-console.log(`[TUNNEL-AGENT] Local server: http://${LOCAL_HOST}:${LOCAL_PORT}`)
+// ── Multi-relay connection manager ──────────────────────────────────
+// relayUrl → { ws, heartbeatTimer, reconnectDelay, reconnectTimer, registered, localWsChannels }
+const connections = new Map()
 
-// ── Active WebSocket channels (guest WS connections proxied through tunnel) ──
-// channelId → WebSocket to local server
-const localWsChannels = new Map()
+function getShortUrl(url) {
+  return url.replace(/^wss?:\/\//, '')
+}
 
-// ── Relay connection ───────────────────────────────────────────────
-let ws = null
-let reconnectDelay = RECONNECT_BASE
-let heartbeatTimer = null
-let destroyed = false
+/**
+ * Ensure a connection exists for each known relay URL.
+ * New relays get a fresh connection. Removed relays are cleaned up.
+ */
+function syncConnections() {
+  const urls = discoverRelayUrls()
 
-function connect() {
-  if (destroyed) return
-
-  const relayUrl = getCurrentRelayUrl()
-  if (!relayUrl) {
-    console.error('[TUNNEL-AGENT] No relay available. Retrying in 30s...')
-    setTimeout(() => { loadRelayUrls(); connect() }, 30000)
+  if (urls.length === 0) {
+    console.error('[TUNNEL-AGENT] No relay URLs available. Will retry in 30s...')
+    setTimeout(syncConnections, 30000)
     return
   }
 
-  const tunnelUrl = `${relayUrl}/tunnel`
+  // Start connections for new URLs
+  for (const url of urls) {
+    if (!connections.has(url)) {
+      const conn = {
+        url,
+        ws: null,
+        heartbeatTimer: null,
+        reconnectDelay: RECONNECT_BASE,
+        reconnectTimer: null,
+        registered: false,
+        localWsChannels: new Map(),
+        tunnelAttempt: 0,
+        workingTunnelUrl: null,
+      }
+      connections.set(url, conn)
+      connectRelay(conn)
+    }
+  }
+
+  // Remove relays that are no longer in the discovered list
+  const urlSet = new Set(urls)
+  for (const [url, conn] of connections) {
+    if (!urlSet.has(url)) {
+      console.log(`[TUNNEL-AGENT] Removing stale relay: ${getShortUrl(url)}`)
+      disconnectRelay(conn)
+      connections.delete(url)
+    }
+  }
+
+  // Log status
+  const connected = Array.from(connections.values()).filter(c => c.registered).length
+  console.log(`[TUNNEL-AGENT] ${connections.size} relay(s), ${connected} connected: ${urls.map(getShortUrl).join(', ')}`)
+}
+
+function connectRelay(conn) {
+  if (destroyed || !conn) return
+
+  // If we previously found a working URL, use it directly
+  let tunnelUrl
+  if (conn.workingTunnelUrl) {
+    tunnelUrl = conn.workingTunnelUrl
+  } else {
+    const candidates = getTunnelCandidates(conn.url)
+    const candidateIdx = conn.tunnelAttempt % candidates.length
+    tunnelUrl = candidates[candidateIdx]
+    conn.tunnelAttempt++
+  }
+
   console.log(`[TUNNEL-AGENT] Connecting to ${tunnelUrl}...`)
 
-  ws = new WebSocket(tunnelUrl, {
-    perMessageDeflate: false,
-    maxPayload: 64 * 1024 * 1024,
-  })
+  let ws
+  try {
+    ws = new WebSocket(tunnelUrl, {
+      perMessageDeflate: false,
+      maxPayload: 64 * 1024 * 1024,
+    })
+  } catch (err) {
+    console.error(`[TUNNEL-AGENT] Invalid URL ${tunnelUrl}: ${err.message}`)
+    scheduleReconnect(conn)
+    return
+  }
+  conn.ws = ws
+
+  // Challenge timeout — if no challenge received in 10s, the path is wrong
+  let challengeReceived = false
+  const challengeTimeout = setTimeout(() => {
+    if (!challengeReceived && ws.readyState === WebSocket.OPEN) {
+      console.log(`[TUNNEL-AGENT] No challenge from ${getShortUrl(conn.url)} — trying different path...`)
+      ws.close(4000, 'no challenge')
+    }
+  }, 10000)
 
   ws.on('open', () => {
-    console.log('[TUNNEL-AGENT] Connected to relay, waiting for challenge...')
-    reconnectDelay = RECONNECT_BASE
+    console.log(`[TUNNEL-AGENT] Connected to ${getShortUrl(conn.url)}, waiting for challenge...`)
+    conn.reconnectDelay = RECONNECT_BASE
+    conn.pongReceived = true
 
-    // Start heartbeat
-    heartbeatTimer = setInterval(() => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.ping()
+    conn.heartbeatTimer = setInterval(() => {
+      if (ws.readyState !== WebSocket.OPEN) return
+      if (!conn.pongReceived) {
+        console.log(`[TUNNEL-AGENT] No pong from ${getShortUrl(conn.url)} — forcing reconnect`)
+        ws.terminate()
+        return
       }
+      conn.pongReceived = false
+      ws.ping()
     }, HEARTBEAT_INTERVAL)
   })
 
+  ws.on('pong', () => { conn.pongReceived = true })
+
   ws.on('message', (data, isBinary) => {
     if (isBinary) {
-      handleBinaryMessage(Buffer.from(data))
+      handleBinaryMessage(conn, Buffer.from(data))
     } else {
       const text = data.toString()
-      // Handle challenge before registration
       try {
         const msg = JSON.parse(text)
         if (msg.type === 'challenge' && msg.nonce) {
+          challengeReceived = true
+          clearTimeout(challengeTimeout)
+          // Remember working tunnel URL for this relay
+          conn.workingTunnelUrl = tunnelUrl
           const hmac = createHmac('sha256', ROOM_KEY).update(msg.nonce).digest('hex')
           ws.send(JSON.stringify({ type: 'register', roomKey: ROOM_KEY, hmac }))
-          console.log('[TUNNEL-AGENT] Challenge received, registering with HMAC...')
+          console.log(`[TUNNEL-AGENT] Challenge from ${getShortUrl(conn.url)}, registering...`)
           return
         }
       } catch {}
-      handleTextMessage(text)
+      handleTextMessage(conn, text)
     }
   })
 
   ws.on('close', (code, reason) => {
-    console.log(`[TUNNEL-AGENT] Disconnected (${code}: ${reason || 'no reason'}). Reconnecting in ${reconnectDelay}ms...`)
-    cleanup()
-    scheduleReconnect()
+    clearTimeout(challengeTimeout)
+    const wasRegistered = conn.registered
+    conn.registered = false
+    cleanupConn(conn)
+
+    if (reason?.toString() === 'replaced') {
+      console.log(`[TUNNEL-AGENT] Replaced on ${getShortUrl(conn.url)} — reconnecting in ${conn.reconnectDelay}ms...`)
+    } else if (wasRegistered) {
+      console.log(`[TUNNEL-AGENT] Lost connection to ${getShortUrl(conn.url)} (${code}). Reconnecting in ${conn.reconnectDelay}ms...`)
+    } else {
+      // Don't spam logs for expected path-probing failures
+      if (code !== 4000) {
+        console.log(`[TUNNEL-AGENT] Disconnected from ${getShortUrl(conn.url)} (${code}: ${reason || ''}). Reconnecting...`)
+      }
+    }
+
+    scheduleReconnect(conn)
   })
 
   ws.on('error', (err) => {
-    console.error(`[TUNNEL-AGENT] Connection error: ${err.message}`)
+    clearTimeout(challengeTimeout)
+    if (ws.readyState !== WebSocket.CLOSING && ws.readyState !== WebSocket.CLOSED) {
+      console.error(`[TUNNEL-AGENT] Error on ${getShortUrl(conn.url)}: ${err.message}`)
+    }
   })
 }
 
-function cleanup() {
-  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null }
-  // Close all local WS channels
-  for (const [id, localWs] of localWsChannels) {
+function cleanupConn(conn) {
+  if (conn.heartbeatTimer) { clearInterval(conn.heartbeatTimer); conn.heartbeatTimer = null }
+  for (const [, localWs] of conn.localWsChannels) {
     try { localWs.close(1001, 'tunnel disconnected') } catch {}
   }
-  localWsChannels.clear()
-  ws = null
+  conn.localWsChannels.clear()
+  conn.ws = null
 }
 
-function scheduleReconnect() {
+function disconnectRelay(conn) {
+  if (conn.reconnectTimer) { clearTimeout(conn.reconnectTimer); conn.reconnectTimer = null }
+  // Close ws BEFORE cleanupConn (which nulls conn.ws)
+  if (conn.ws) {
+    try { conn.ws.close(1000, 'shutdown') } catch {}
+  }
+  cleanupConn(conn)
+}
+
+function scheduleReconnect(conn) {
   if (destroyed) return
-  // On disconnect, try the next relay (failover)
-  advanceToNextRelay()
-  setTimeout(() => {
-    reconnectDelay = Math.min(reconnectDelay * 1.5, RECONNECT_MAX)
-    // Refresh peer list in case new relays appeared
-    loadRelayUrls()
-    connect()
-  }, reconnectDelay)
+  if (conn.reconnectTimer) clearTimeout(conn.reconnectTimer)
+  conn.reconnectTimer = setTimeout(() => {
+    conn.reconnectTimer = null
+    conn.reconnectDelay = Math.min(conn.reconnectDelay * 1.5, RECONNECT_MAX)
+    if (connections.has(conn.url)) connectRelay(conn)
+  }, conn.reconnectDelay)
 }
 
 // ── Handle text messages from relay ────────────────────────────────
-function handleTextMessage(text) {
+function handleTextMessage(conn, text) {
   let msg
   try { msg = JSON.parse(text) } catch { return }
 
   switch (msg.type) {
     case 'registered':
-      console.log(`[TUNNEL-AGENT] Registered with relay. Room key: ${msg.roomKey?.substring(0, 8)}...`)
+      conn.registered = true
+      conn.reconnectDelay = RECONNECT_BASE
+      console.log(`[TUNNEL-AGENT] Registered on ${getShortUrl(conn.url)}`)
       break
 
     case 'http-request':
-      handleHttpRequest(msg)
+      handleHttpRequest(conn, msg)
       break
 
     case 'ws-open':
-      handleWsOpen(msg)
+      handleWsOpen(conn, msg)
       break
 
     case 'ws-message':
-      handleWsMessage(msg)
+      handleWsMessage(conn, msg)
       break
 
     case 'ws-close':
-      handleWsClose(msg)
+      handleWsClose(conn, msg)
       break
   }
 }
 
 // ── Handle binary messages from relay ──────────────────────────────
-function handleBinaryMessage(buf) {
+function handleBinaryMessage(conn, buf) {
   if (buf.length < 4) return
   const channelId = buf.readUInt32BE(0)
   const payload = buf.subarray(4)
 
-  // Forward to local WS channel
-  const localWs = localWsChannels.get(channelId)
+  const localWs = conn.localWsChannels.get(channelId)
   if (localWs && localWs.readyState === WebSocket.OPEN) {
     localWs.send(payload, { binary: true })
   }
 }
 
-// ── HTTP request proxy (streaming) ────────────────────────────────
-function handleHttpRequest(msg) {
+// ── HTTP request proxy ─────────────────────────────────────────────
+function handleHttpRequest(conn, msg) {
   const { id, method, path: reqPath, headers, body } = msg
 
   const options = {
@@ -315,40 +425,35 @@ function handleHttpRequest(msg) {
     method: method || 'GET',
     headers: { ...headers },
   }
-
-  // Set correct host header for local server
   options.headers['host'] = `${LOCAL_HOST}:${LOCAL_PORT}`
 
   const req = http.request(options, (res) => {
-    // Send headers immediately
-    sendToRelay(JSON.stringify({
+    sendToRelay(conn, JSON.stringify({
       type: 'http-response-head',
       id,
       status: res.statusCode,
       headers: filterResponseHeaders(res.headers),
     }))
 
-    // Stream body as binary chunks: [4-byte uint32 id][payload]
     res.on('data', (chunk) => {
       const frame = Buffer.alloc(4 + chunk.length)
       frame.writeUInt32BE(id, 0)
       chunk.copy(frame, 4)
-      sendBinaryToRelay(frame)
+      sendBinaryToRelay(conn, frame)
     })
 
     res.on('end', () => {
-      sendToRelay(JSON.stringify({ type: 'http-response-end', id }))
+      sendToRelay(conn, JSON.stringify({ type: 'http-response-end', id }))
     })
 
     res.on('error', () => {
-      sendToRelay(JSON.stringify({ type: 'http-response-end', id }))
+      sendToRelay(conn, JSON.stringify({ type: 'http-response-end', id }))
     })
   })
 
   req.on('error', (err) => {
     console.error(`[TUNNEL-AGENT] Local request failed (${reqPath}): ${err.message}`)
-    // Send error as a complete streaming response
-    sendToRelay(JSON.stringify({
+    sendToRelay(conn, JSON.stringify({
       type: 'http-response-head',
       id,
       status: 502,
@@ -358,8 +463,8 @@ function handleHttpRequest(msg) {
     const frame = Buffer.alloc(4 + errBuf.length)
     frame.writeUInt32BE(id, 0)
     errBuf.copy(frame, 4)
-    sendBinaryToRelay(frame)
-    sendToRelay(JSON.stringify({ type: 'http-response-end', id }))
+    sendBinaryToRelay(conn, frame)
+    sendToRelay(conn, JSON.stringify({ type: 'http-response-end', id }))
   })
 
   req.setTimeout(120000, () => {
@@ -375,7 +480,6 @@ function handleHttpRequest(msg) {
 function filterResponseHeaders(headers) {
   const filtered = {}
   for (const [k, v] of Object.entries(headers)) {
-    // Skip hop-by-hop headers
     if (['connection', 'keep-alive', 'transfer-encoding'].includes(k.toLowerCase())) continue
     filtered[k] = v
   }
@@ -383,7 +487,7 @@ function filterResponseHeaders(headers) {
 }
 
 // ── WebSocket channel proxy ────────────────────────────────────────
-function handleWsOpen(msg) {
+function handleWsOpen(conn, msg) {
   const { id, path: wsPath, headers } = msg
 
   const localUrl = `ws://${LOCAL_HOST}:${LOCAL_PORT}${wsPath}`
@@ -392,24 +496,19 @@ function handleWsOpen(msg) {
     perMessageDeflate: false,
   })
 
-  localWsChannels.set(id, localWs)
-
-  localWs.on('open', () => {
-    // Channel is ready — relay doesn't need explicit ack
-  })
+  conn.localWsChannels.set(id, localWs)
 
   localWs.on('message', (data, isBinary) => {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return
+    if (!conn.ws || conn.ws.readyState !== WebSocket.OPEN) return
     try {
       if (isBinary) {
-        // Binary: [4-byte channelId][payload]
         const buf = Buffer.isBuffer(data) ? data : Buffer.from(data)
         const frame = Buffer.alloc(4 + buf.length)
         frame.writeUInt32BE(id, 0)
         buf.copy(frame, 4)
-        sendBinaryToRelay(frame)
+        sendBinaryToRelay(conn, frame)
       } else {
-        sendToRelay(JSON.stringify({
+        sendToRelay(conn, JSON.stringify({
           type: 'ws-message',
           id,
           data: data.toString(),
@@ -420,8 +519,8 @@ function handleWsOpen(msg) {
   })
 
   localWs.on('close', (code, reason) => {
-    localWsChannels.delete(id)
-    sendToRelay(JSON.stringify({
+    conn.localWsChannels.delete(id)
+    sendToRelay(conn, JSON.stringify({
       type: 'ws-close',
       id,
       code,
@@ -431,8 +530,8 @@ function handleWsOpen(msg) {
 
   localWs.on('error', (err) => {
     console.error(`[TUNNEL-AGENT] Local WS error (channel ${id}): ${err.message}`)
-    localWsChannels.delete(id)
-    sendToRelay(JSON.stringify({
+    conn.localWsChannels.delete(id)
+    sendToRelay(conn, JSON.stringify({
       type: 'ws-close',
       id,
       code: 1001,
@@ -441,8 +540,8 @@ function handleWsOpen(msg) {
   })
 }
 
-function handleWsMessage(msg) {
-  const localWs = localWsChannels.get(msg.id)
+function handleWsMessage(conn, msg) {
+  const localWs = conn.localWsChannels.get(msg.id)
   if (!localWs || localWs.readyState !== WebSocket.OPEN) return
 
   if (msg.binary) {
@@ -452,40 +551,45 @@ function handleWsMessage(msg) {
   }
 }
 
-function handleWsClose(msg) {
-  const localWs = localWsChannels.get(msg.id)
+function handleWsClose(conn, msg) {
+  const localWs = conn.localWsChannels.get(msg.id)
   if (localWs) {
     try { localWs.close(msg.code || 1000, msg.reason || '') } catch {}
-    localWsChannels.delete(msg.id)
+    conn.localWsChannels.delete(msg.id)
   }
 }
 
 // ── Send helpers ───────────────────────────────────────────────────
-function sendToRelay(text) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    try { ws.send(text) } catch {}
+function sendToRelay(conn, text) {
+  if (conn.ws && conn.ws.readyState === WebSocket.OPEN) {
+    try { conn.ws.send(text) } catch {}
   }
 }
 
-function sendBinaryToRelay(buf) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    try { ws.send(buf) } catch {}
+function sendBinaryToRelay(conn, buf) {
+  if (conn.ws && conn.ws.readyState === WebSocket.OPEN) {
+    try { conn.ws.send(buf) } catch {}
   }
 }
+
+// ── Startup ────────────────────────────────────────────────────────
+console.log(`[TUNNEL-AGENT] Room key: ${ROOM_KEY.substring(0, 8)}...`)
+console.log(`[TUNNEL-AGENT] Local server: http://${LOCAL_HOST}:${LOCAL_PORT}`)
+
+// Initial sync + periodic refresh
+syncConnections()
+setInterval(syncConnections, PEER_REFRESH_INTERVAL)
 
 // ── Graceful shutdown ──────────────────────────────────────────────
 function shutdown() {
   console.log('[TUNNEL-AGENT] Shutting down...')
   destroyed = true
-  cleanup()
-  if (ws) {
-    try { ws.close(1000, 'shutdown') } catch {}
+  for (const [, conn] of connections) {
+    disconnectRelay(conn)
   }
+  connections.clear()
   setTimeout(() => process.exit(0), 1000)
 }
 
 process.on('SIGTERM', shutdown)
 process.on('SIGINT', shutdown)
-
-// ── Start ──────────────────────────────────────────────────────────
-connect()

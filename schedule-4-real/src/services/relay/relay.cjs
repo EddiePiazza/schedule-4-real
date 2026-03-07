@@ -323,6 +323,12 @@ function forwardToHop(hopIdentifier, payload, circuit) {
     hopUrl = resolved
   }
 
+  // Validate hop URL has a valid protocol
+  if (!hopUrl || !hopUrl.match(/^wss?:\/\//)) {
+    console.warn(`[RELAY] Invalid hop URL for circuit ${circuit.circuitId}: ${hopUrl}`)
+    return
+  }
+
   // SSRF prevention: block connections to internal/private networks
   if (isInternalHop(hopUrl)) {
     console.warn(`[RELAY] Blocked internal hop target for circuit ${circuit.circuitId}`)
@@ -336,7 +342,13 @@ function forwardToHop(hopIdentifier, payload, circuit) {
   }
 
   // New extend: open per-circuit WS to next hop
-  const ws = new WebSocket(hopUrl)
+  let ws
+  try {
+    ws = new WebSocket(hopUrl)
+  } catch (err) {
+    console.warn(`[RELAY] Failed to connect to hop ${hopUrl}: ${err.message}`)
+    return
+  }
   ws.on('open', () => {
     ws.send(padPacket(payload, config.packetSize))
   })
