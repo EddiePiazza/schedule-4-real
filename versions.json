@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-07T16:29:32Z",
+  "generatedAt": "2026-03-12T18:50:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.80.0",
-      "archive": "s4r-web-1.80.0.tar.gz",
-      "sha256": "4b632154c736bd16eeafe1a74ae54cd46d4cb8af52c1bbc1867102c25a5bda2a",
-      "size": 11198491,
+      "version": "1.81.0",
+      "archive": "s4r-web-1.81.0.tar.gz",
+      "sha256": "94bdc51af3de69eb68f36b811bc666993f7eeb8e5277a25a7a3c1dfd5bd93cf4",
+      "size": 11201922,
       "changelog": [
+        {
+          "version": "1.81.0",
+          "changes": [
+            "Add Wi-Fi Hotspot setup in Connect Devices tab with interactive UI controls",
+            "Fix auth errors and tab UX issues in How to Install modal",
+            "Fix invite tokens with empty roomKey failing to parse on join",
+            "Fix tunnel-info and other endpoints using wrong CWD to find data files"
+          ]
+        },
         {
           "version": "1.80.0",
           "changes": [
@@ -1621,11 +1630,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.15.0",
-      "archive": "s4r-supervisor-1.15.0.tar.gz",
-      "sha256": "a521165da5f7b96a2ca5732a792143f668f1910943731fc0b6591df5edff55e4",
-      "size": 36649,
+      "version": "1.15.1",
+      "archive": "s4r-supervisor-1.15.1.tar.gz",
+      "sha256": "f3cc30daca8363a3f770e3a95f5a5c18095ffdabc9b97956282b91b557cd28ad",
+      "size": 40074,
       "changelog": [
+        {
+          "version": "1.15.1",
+          "changes": [
+            "Fix tunnel agent connecting to own relay via both localhost and public URL"
+          ]
+        },
         {
           "version": "1.15.0",
           "changes": [

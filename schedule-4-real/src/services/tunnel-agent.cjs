@@ -92,6 +92,18 @@ function getRelayPublicUrl() {
 }
 
 /**
+ * Check if two relay URLs point to the same relay (by hostname).
+ */
+function isSameRelay(url1, url2) {
+  try {
+    const toHttp = u => u.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:')
+    const h1 = new URL(toHttp(url1)).hostname
+    const h2 = new URL(toHttp(url2)).hostname
+    return h1 === h2
+  } catch { return false }
+}
+
+/**
  * Normalize a URL to have a valid WebSocket protocol.
  * Returns null if the URL is invalid.
  */
@@ -128,20 +140,25 @@ function discoverRelayUrls() {
     } catch {}
   }
 
-  // 1. Local relay (lowest latency)
+  // 1. Local relay (lowest latency) — if running, connects via loopback
   const localUrl = getLocalRelayUrl()
-  if (localUrl) addUrl(localUrl)
+  let localPublicUrl = null
+  if (localUrl) {
+    addUrl(localUrl)
+    // Remember the publicUrl so we skip it in peers (same relay, reached via loopback)
+    localPublicUrl = getRelayPublicUrl()
+  }
 
-  // 2. Public URL from relay-config.json (the host's own relay)
-  addUrl(getRelayPublicUrl())
-
-  // 3. Known peers from gossip (other relays)
+  // 2. Known peers from gossip (other relays — skip our own publicUrl)
   try {
     if (fs.existsSync(PEERS_FILE)) {
       const peers = JSON.parse(fs.readFileSync(PEERS_FILE, 'utf-8'))
       if (Array.isArray(peers)) {
         for (const peer of peers) {
-          if (peer.url && (peer.failures || 0) < 5) addUrl(peer.url)
+          if (!peer.url || (peer.failures || 0) >= 5) continue
+          // Skip our own relay's publicUrl (already connected via loopback)
+          if (localPublicUrl && isSameRelay(peer.url, localPublicUrl)) continue
+          addUrl(peer.url)
         }
       }
     }

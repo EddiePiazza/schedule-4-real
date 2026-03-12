@@ -564,6 +564,7 @@ chmod +x pm2-start.sh kill.sh
 [ -f "start-vital.sh" ] && chmod +x start-vital.sh
 [ -f "stop-vital.sh" ] && chmod +x stop-vital.sh
 [ -f "update.sh" ] && chmod +x update.sh
+[ -f "setup-hotspot.sh" ] && chmod +x setup-hotspot.sh
 
 ./pm2-start.sh
 
@@ -733,6 +734,56 @@ fi
 echo ""
 
 # ═══════════════════════════════════════════
+# 10c. Optional: Wi-Fi Hotspot for GGS controllers (Pi)
+# ═══════════════════════════════════════════
+
+# Detect if Wi-Fi interface exists (Raspberry Pi or machine with Wi-Fi)
+HAS_WIFI=false
+WIFI_IFACE_DETECT=$(iw dev 2>/dev/null | awk '/Interface/{print $2}' | head -1)
+[ -n "$WIFI_IFACE_DETECT" ] && HAS_WIFI=true
+
+if $HAS_WIFI; then
+    echo -e "${CYAN}── DEVICE CONNECTION METHOD ────────────${NC}"
+    echo ""
+    echo -e "  To control GGS devices, their MQTT traffic (port 8883) must reach this machine."
+    echo -e "  There are two ways to do this:"
+    echo ""
+    echo -e "  ${BOLD}A)${NC} ${BOLD}Router NAT${NC} — Configure port redirection on your router"
+    echo -e "     ${DIM}(Requires OpenWrt, OPNsense, pfSense, or advanced router)${NC}"
+    echo ""
+    echo -e "  ${BOLD}B)${NC} ${BOLD}Wi-Fi Hotspot${NC} — This machine creates a Wi-Fi network for controllers"
+    echo -e "     ${DIM}(Works with ANY router. Requires Ethernet + Wi-Fi on this machine)${NC}"
+    echo ""
+    echo -ne "  Set up Wi-Fi hotspot now? [y/N]: "
+    read SETUP_HOTSPOT
+    SETUP_HOTSPOT=${SETUP_HOTSPOT:-n}
+
+    if [[ "$SETUP_HOTSPOT" =~ ^[Yy]$ ]]; then
+        if [ -f "setup-hotspot.sh" ]; then
+            echo ""
+            echo -ne "  Hotspot Wi-Fi name (SSID) [${BOLD}S4R-Grow${NC}]: "
+            read HOTSPOT_SSID
+            HOTSPOT_SSID=${HOTSPOT_SSID:-S4R-Grow}
+
+            echo -ne "  Hotspot password (min 8 chars) [${BOLD}growroom1${NC}]: "
+            read HOTSPOT_PASS
+            HOTSPOT_PASS=${HOTSPOT_PASS:-growroom1}
+
+            echo ""
+            bash setup-hotspot.sh --ssid "$HOTSPOT_SSID" --password "$HOTSPOT_PASS"
+        else
+            warning "setup-hotspot.sh not found in package. You can download it later."
+        fi
+    else
+        info "Skipping hotspot. You can set it up later: sudo bash setup-hotspot.sh"
+    fi
+else
+    info "No Wi-Fi interface detected. Use router NAT to redirect port 8883 to this machine."
+fi
+
+echo ""
+
+# ═══════════════════════════════════════════
 # 11. Configure auto-start on boot
 # ═══════════════════════════════════════════
 info "Configuring auto-start on boot..."
@@ -774,11 +825,20 @@ echo -e "  MQTT Broker:   ${BOLD}${LOCAL_IP}:${MQTT_PORT:-1883}${NC} (internal) 
 echo -e "  MQTT Proxy:    ${BOLD}${LOCAL_IP}:${PROXY_PORT:-8883}${NC} (TLS)"
 echo -e "  QuestDB:       ${BOLD}http://${LOCAL_IP}:${QDB_HTTP}${NC} (console)"
 echo ""
-echo -e "${CYAN}── NEXT STEPS ─────────────────────────${NC}"
+echo -e "${CYAN}── CONNECT YOUR DEVICES ───────────────${NC}"
 echo ""
-echo -e "  1. Point NAT port ${BOLD}${PROXY_PORT:-8883}${NC} on your router to this machine (${LOCAL_IP})"
-echo -e "  2. Devices auto-detect once traffic flows through the proxy"
-echo -e "  3. Access the web app and configure your grow environment"
+echo -e "  To see your GGS controllers in the dashboard, their traffic"
+echo -e "  needs to reach this machine. Choose one method:"
+echo ""
+echo -e "  ${BOLD}Option A: Router NAT${NC}"
+echo -e "    Redirect port ${BOLD}${PROXY_PORT:-8883}${NC} on your router to ${LOCAL_IP}"
+echo -e "    ${DIM}(Requires OpenWrt/OPNsense/pfSense or advanced router)${NC}"
+echo ""
+echo -e "  ${BOLD}Option B: Wi-Fi Hotspot${NC} (Raspberry Pi)"
+echo -e "    ${BOLD}sudo bash setup-hotspot.sh${NC}"
+echo -e "    ${DIM}(Creates a Wi-Fi network for controllers — no router config needed)${NC}"
+echo ""
+echo -e "  Once connected, devices auto-detect within seconds."
 echo ""
 echo -e "${CYAN}── USEFUL COMMANDS ────────────────────${NC}"
 echo ""

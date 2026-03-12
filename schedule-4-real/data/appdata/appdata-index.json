@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-05T17:22:30Z",
+  "generated": "2026-03-12T18:50:41Z",
   "files": {
     "appdata-index.json": {
       "hash": "009f15e792c9a92d42f9c68a07087326",
@@ -454,8 +454,8 @@
       "size": 18067
     },
     "defaults/room-settings.json": {
-      "hash": "167cc66e54fe90dd50806e80f3946c1d",
-      "size": 94
+      "hash": "995132f8c77dd14ec0e19fb46a3a4192",
+      "size": 118
     },
     "defaults/asset-anim-meta.json": {
       "hash": "55bd8a458b30db16aaf74913eb01f338",

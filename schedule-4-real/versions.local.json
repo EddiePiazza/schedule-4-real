@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-07T16:23:45.540Z",
+  "lastCheck": "2026-03-12T18:49:57.566Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.80.0",
-      "installedAt": "2026-03-07T16:29:32Z"
+      "version": "1.81.0",
+      "installedAt": "2026-03-12T18:50:31Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.15.0",
-      "installedAt": "2026-03-07T16:29:32Z"
+      "version": "1.15.1",
+      "installedAt": "2026-03-12T18:50:31Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.80.0",
+        "changes": [
+          "Fix BlowerCurve card text sizes and make speed Y-axis adaptive to data range",
+          "Switch entire VPD system from air VPD to leaf VPD with corrected 5-zone model",
+          "Fix public room joining via relay session and improved URL fallbacks",
+          "Fix banned font sizes across all node config panels in RightPanel",
+          "Redesign VPD Control device roles with fixed-role assignment like Blower Curve",
+          "Enrich VPD Control canvas card with live leaf VPD, device badges and VPD table button"
+        ]
+      },
       {
         "version": "1.79.1",
         "changes": [
@@ -351,12 +362,6 @@
           "Fix guest mode showing empty rooms by loading defaults and overrides for all users",
           "Reduce relay proxy timeout from 8s to 3s for faster room discovery"
         ]
-      },
-      {
-        "version": "1.67.0",
-        "changes": [
-          "Add latency-based relay selection and parallel room discovery"
-        ]
       }
     ],
     "ingest": [
@@ -442,6 +447,13 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.15.0",
+        "changes": [
+          "Use leaf VPD instead of air VPD for automation decisions with dehumidifier support",
+          "Add multi-relay tunnel agent for room redundancy across relays"
+        ]
+      },
       {
         "version": "1.14.5",
         "changes": [
@@ -707,6 +719,12 @@
       }
     ],
     "relay": [
+      {
+        "version": "1.6.2",
+        "changes": [
+          "Fix tunnel path matching and URL validation for relay proxying"
+        ]
+      },
       {
         "version": "1.6.1",
         "changes": [

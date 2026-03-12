@@ -2,7 +2,8 @@
   "rooms": {
     "big_room": {
       "inviteOnly": true,
-      "isPublic": false
+      "isPublic": false,
+      "publicName": ""
     }
   }
 }
