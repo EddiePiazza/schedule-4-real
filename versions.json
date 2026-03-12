@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-12T18:50:31Z",
+  "generatedAt": "2026-03-12T20:08:50Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.81.0",
-      "archive": "s4r-web-1.81.0.tar.gz",
-      "sha256": "94bdc51af3de69eb68f36b811bc666993f7eeb8e5277a25a7a3c1dfd5bd93cf4",
-      "size": 11201922,
+      "version": "1.82.0",
+      "archive": "s4r-web-1.82.0.tar.gz",
+      "sha256": "236f2a6931ea5f058dcf1afada6f3eb3f20c6301d20d4792cc28a95f3435d30e",
+      "size": 11205820,
       "changelog": [
+        {
+          "version": "1.82.0",
+          "changes": [
+            "Add multi-provider AI support: Groq, OpenAI, OpenRouter alongside Ollama"
+          ]
+        },
         {
           "version": "1.81.0",
           "changes": [

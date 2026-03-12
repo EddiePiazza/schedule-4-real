@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-12T18:49:57.566Z",
+  "lastCheck": "2026-03-12T20:00:59.248Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.81.0",
-      "installedAt": "2026-03-12T18:50:31Z"
+      "version": "1.82.0",
+      "installedAt": "2026-03-12T20:08:50Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.81.0",
+        "changes": [
+          "Add Wi-Fi Hotspot setup in Connect Devices tab with interactive UI controls",
+          "Fix auth errors and tab UX issues in How to Install modal",
+          "Fix invite tokens with empty roomKey failing to parse on join",
+          "Fix tunnel-info and other endpoints using wrong CWD to find data files"
+        ]
+      },
       {
         "version": "1.80.0",
         "changes": [
@@ -355,13 +364,6 @@
           "Fix slow room discovery by racing HTTP and circuit methods instead of waiting for both",
           "Add rooms API endpoint for landing page room discovery"
         ]
-      },
-      {
-        "version": "1.67.1",
-        "changes": [
-          "Fix guest mode showing empty rooms by loading defaults and overrides for all users",
-          "Reduce relay proxy timeout from 8s to 3s for faster room discovery"
-        ]
       }
     ],
     "ingest": [
@@ -447,6 +449,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.15.1",
+        "changes": [
+          "Fix tunnel agent connecting to own relay via both localhost and public URL"
+        ]
+      },
       {
         "version": "1.15.0",
         "changes": [
