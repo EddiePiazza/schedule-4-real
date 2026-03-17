@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-17T18:00:59.436Z",
+  "lastCheck": "2026-03-17T18:30:59.380Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.83.0",
-      "installedAt": "2026-03-17T18:04:08Z"
+      "version": "1.83.1",
+      "installedAt": "2026-03-17T18:37:32Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.15.1",
-      "installedAt": "2026-03-12T18:50:31Z"
+      "version": "1.15.2",
+      "installedAt": "2026-03-17T18:37:32Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,16 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.83.0",
+        "changes": [
+          "Fix camera service not auto-starting when cameras are configured",
+          "Add camera setup directly from Laboratory without going to System",
+          "Show observation wizard plant name in header for context",
+          "Fix plant edit failing due to boolean type mismatch",
+          "Fix QuestDB lag causing 404/missing data after create/update operations"
+        ]
+      },
       {
         "version": "1.82.0",
         "changes": [
@@ -353,14 +363,6 @@
         "version": "1.68.2",
         "changes": [
           "Fix ducts not following moved tents and not being removed when a tent is deleted",
-          "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
-        ]
-      },
-      {
-        "version": "1.68.1",
-        "changes": [
-          "Fix ducts not following moved tents and not being removed when a tent is deleted",
-          "Fix landing page to show rooms from all relays instead of only local",
           "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
         ]
       }

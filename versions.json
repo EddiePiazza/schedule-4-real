@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-17T18:04:08Z",
+  "generatedAt": "2026-03-17T18:37:32Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.83.0",
-      "archive": "s4r-web-1.83.0.tar.gz",
-      "sha256": "f9a2d74569ab8460f86f339956e8278fcf0f8ee27d65f7732c0fc0f72edf2ede",
-      "size": 11211363,
+      "version": "1.83.1",
+      "archive": "s4r-web-1.83.1.tar.gz",
+      "sha256": "de8c3a8ca906096404576e4c44873745375732517c5b95b72c02fe9e49eba37a",
+      "size": 11211330,
       "changelog": [
+        {
+          "version": "1.83.1",
+          "changes": [
+            "Add SSRF protection to relay proxy endpoints (remote-file, remote-api, remote-room-bundle)",
+            "Require authentication to read tunnel room key from API"
+          ]
+        },
         {
           "version": "1.83.0",
           "changes": [
@@ -1646,11 +1653,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.15.1",
-      "archive": "s4r-supervisor-1.15.1.tar.gz",
-      "sha256": "f3cc30daca8363a3f770e3a95f5a5c18095ffdabc9b97956282b91b557cd28ad",
-      "size": 40074,
+      "version": "1.15.2",
+      "archive": "s4r-supervisor-1.15.2.tar.gz",
+      "sha256": "2f3f06ea0b72925e11547a3f77854231e313b51cdf05f69c3051eb5344471eac",
+      "size": 40073,
       "changelog": [
+        {
+          "version": "1.15.2",
+          "changes": [
+            "Remove unauthenticated fallback proxy on relay when single host connected",
+            "Fix room metadata exposing host IP and causing 502 for unreachable relays"
+          ]
+        },
         {
           "version": "1.15.1",
           "changes": [

@@ -214,6 +214,28 @@ function getEntryRelay() {
   return 'wss://schedule4real.com/rooms'
 }
 
+/**
+ * Get a publicly accessible relay URL for room metadata.
+ * This is what guests use to create relay sessions (POST /rooms/session).
+ * NEVER use the host's own relay IP — it may not be reachable, and it leaks the host's IP.
+ * Instead, pick a public tracker/relay from knownTrackers (the tunnel agent is connected to all of them).
+ */
+function getPublicRelayUrl() {
+  for (const url of knownTrackers) {
+    try {
+      const httpUrl = url.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:')
+      const parsed = new URL(httpUrl)
+      const h = parsed.hostname
+      // Skip local/private addresses
+      if (h === '127.0.0.1' || h === 'localhost' || h === '::1') continue
+      if (h.startsWith('192.168.') || h.startsWith('10.') || h.startsWith('172.')) continue
+      return httpUrl.replace(/\/+$/, '')
+    } catch {}
+  }
+  // Fallback — always reachable
+  return 'https://schedule4real.com/rooms'
+}
+
 const RELAY_IDENTITY_PATH = path.join(PROJECT_ROOT, 'data/relay/relay-identity.json')
 
 /**
@@ -456,12 +478,11 @@ async function publishAll() {
         inviteToken = generateInviteToken(room.id, roomKey)
         if (inviteToken) cachedInviteTokens.set(room.id, inviteToken)
       }
-      // Include relay URL in metadata so guests know where to create sessions.
-      // Convert WSS to HTTPS for HTTP session creation.
-      const relayHttpUrl = entryRelay
-        .replace(/^wss:/, 'https:')
-        .replace(/^ws:/, 'http:')
-        .replace(/\/+$/, '')
+      // Include a PUBLIC relay URL in metadata so guests know where to create sessions.
+      // Uses a publicly accessible tracker (not the host's own relay) to:
+      // 1. Ensure guests can reach the relay (host's relay may have closed ports)
+      // 2. Never leak the host's IP address in room metadata
+      const relayHttpUrl = getPublicRelayUrl()
 
       const metaJson = JSON.stringify({
         envId: room.id,

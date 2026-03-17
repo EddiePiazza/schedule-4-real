@@ -17,7 +17,7 @@ const { startChaff, stopChaff } = require('./chaff.cjs')
 const { configure: configureTracker, handleTrackerMessage, setCircuitPush, listPublicRooms, setFederatedRooms, roomCount, cleanupExpiredRooms } = require('./tracker.cjs')
 const gossip = require('./gossip.cjs')
 const {
-  registerHost, resolveSession, createSession, getHostTunnel, getDefaultRoomKey,
+  registerHost, resolveSession, createSession, getHostTunnel,
   proxyHttpRequest, getNextReqId, proxyWebSocket,
   cleanupExpiredSessions, tunnelStats,
 } = require('./tunnel-proxy.cjs')
@@ -449,8 +449,7 @@ const server = createServer(async (req, res) => {
   }
 
   let roomKey = resolveSession(req.headers.cookie)
-  // Fallback: if no session but exactly one host is tunneled, use it
-  if (!roomKey) roomKey = getDefaultRoomKey()
+  // Require a valid session — no fallback to default host (SSRF / auth bypass risk)
   if (roomKey) {
     const tunnel = getHostTunnel(roomKey)
     if (!tunnel) {
@@ -610,8 +609,7 @@ server.on('upgrade', (req, socket, head) => {
         if (rk && getHostTunnel(rk)) roomKey = rk
       }
     }
-    // Fallback: if no session but exactly one host is tunneled, use it
-    if (!roomKey) roomKey = getDefaultRoomKey()
+    // Require session or ?rk= — no fallback to default host (auth bypass risk)
     if (roomKey && getHostTunnel(roomKey)) {
       req._roomKey = roomKey // pass to wssGuest handler
       wssGuest.handleUpgrade(req, socket, head, (ws) => {
