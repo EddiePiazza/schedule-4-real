@@ -1,14 +1,24 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-12T20:08:50Z",
+  "generatedAt": "2026-03-17T18:04:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.82.0",
-      "archive": "s4r-web-1.82.0.tar.gz",
-      "sha256": "236f2a6931ea5f058dcf1afada6f3eb3f20c6301d20d4792cc28a95f3435d30e",
-      "size": 11205820,
+      "version": "1.83.0",
+      "archive": "s4r-web-1.83.0.tar.gz",
+      "sha256": "f9a2d74569ab8460f86f339956e8278fcf0f8ee27d65f7732c0fc0f72edf2ede",
+      "size": 11211363,
       "changelog": [
+        {
+          "version": "1.83.0",
+          "changes": [
+            "Fix camera service not auto-starting when cameras are configured",
+            "Add camera setup directly from Laboratory without going to System",
+            "Show observation wizard plant name in header for context",
+            "Fix plant edit failing due to boolean type mismatch",
+            "Fix QuestDB lag causing 404/missing data after create/update operations"
+          ]
+        },
         {
           "version": "1.82.0",
           "changes": [

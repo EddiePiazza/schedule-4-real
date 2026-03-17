@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-12T20:00:59.248Z",
+  "lastCheck": "2026-03-17T18:00:59.436Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.82.0",
-      "installedAt": "2026-03-12T20:08:50Z"
+      "version": "1.83.0",
+      "installedAt": "2026-03-17T18:04:08Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.82.0",
+        "changes": [
+          "Add multi-provider AI support: Groq, OpenAI, OpenRouter alongside Ollama"
+        ]
+      },
       {
         "version": "1.81.0",
         "changes": [
@@ -356,13 +362,6 @@
           "Fix ducts not following moved tents and not being removed when a tent is deleted",
           "Fix landing page to show rooms from all relays instead of only local",
           "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
-        ]
-      },
-      {
-        "version": "1.68.0",
-        "changes": [
-          "Fix slow room discovery by racing HTTP and circuit methods instead of waiting for both",
-          "Add rooms API endpoint for landing page room discovery"
         ]
       }
     ],
