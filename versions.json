@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-17T18:37:32Z",
+  "generatedAt": "2026-03-17T21:37:11Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.83.1",
-      "archive": "s4r-web-1.83.1.tar.gz",
-      "sha256": "de8c3a8ca906096404576e4c44873745375732517c5b95b72c02fe9e49eba37a",
-      "size": 11211330,
+      "version": "1.84.0",
+      "archive": "s4r-web-1.84.0.tar.gz",
+      "sha256": "63800f5f0d5e9926979a57d706cc3585dafa245d6079f95273a68ad9d4e459a6",
+      "size": 11213309,
       "changelog": [
+        {
+          "version": "1.84.0",
+          "changes": [
+            "Add external MQTT bridge to forward HA discovery to existing broker"
+          ]
+        },
         {
           "version": "1.83.1",
           "changes": [

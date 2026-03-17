@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-17T18:30:59.380Z",
+  "lastCheck": "2026-03-17T21:30:46.310Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.83.1",
-      "installedAt": "2026-03-17T18:37:32Z"
+      "version": "1.84.0",
+      "installedAt": "2026-03-17T21:37:11Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.83.1",
+        "changes": [
+          "Add SSRF protection to relay proxy endpoints (remote-file, remote-api, remote-room-bundle)",
+          "Require authentication to read tunnel room key from API"
+        ]
+      },
       {
         "version": "1.83.0",
         "changes": [
@@ -358,13 +365,6 @@
         "changes": [
           "Save duct connections inside room JSON instead of separate file so they transfer with room data"
         ]
-      },
-      {
-        "version": "1.68.2",
-        "changes": [
-          "Fix ducts not following moved tents and not being removed when a tent is deleted",
-          "Fix grow tent bugs: all tents opening at once, unwanted configure modal on placement, and door state not persisting"
-        ]
       }
     ],
     "ingest": [
@@ -450,6 +450,13 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.15.2",
+        "changes": [
+          "Remove unauthenticated fallback proxy on relay when single host connected",
+          "Fix room metadata exposing host IP and causing 502 for unreachable relays"
+        ]
+      },
       {
         "version": "1.15.1",
         "changes": [
