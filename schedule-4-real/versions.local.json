@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-17T21:30:46.310Z",
+  "lastCheck": "2026-03-18T01:10:46.309Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.84.0",
-      "installedAt": "2026-03-17T21:37:11Z"
+      "version": "1.85.0",
+      "installedAt": "2026-03-18T01:14:51Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.84.0",
+        "changes": [
+          "Add external MQTT bridge to forward HA discovery to existing broker"
+        ]
+      },
       {
         "version": "1.83.1",
         "changes": [
@@ -358,12 +364,6 @@
         "version": "1.69.0",
         "changes": [
           "Add anonymous relay routing via Ed25519 public keys and deduplicate rooms by envId"
-        ]
-      },
-      {
-        "version": "1.68.3",
-        "changes": [
-          "Save duct connections inside room JSON instead of separate file so they transfer with room data"
         ]
       }
     ],

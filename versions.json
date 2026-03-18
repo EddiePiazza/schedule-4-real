@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-17T21:37:11Z",
+  "generatedAt": "2026-03-18T01:14:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.84.0",
-      "archive": "s4r-web-1.84.0.tar.gz",
-      "sha256": "63800f5f0d5e9926979a57d706cc3585dafa245d6079f95273a68ad9d4e459a6",
-      "size": 11213309,
+      "version": "1.85.0",
+      "archive": "s4r-web-1.85.0.tar.gz",
+      "sha256": "548701176be6d81b7caeb312a6c73faa4740c74f5e2c5df34d26c373b96e7215",
+      "size": 11216690,
       "changelog": [
+        {
+          "version": "1.85.0",
+          "changes": [
+            "Fix camera stream not retrying when go2rtc is still starting",
+            "Fix go2rtc status showing incorrectly when cameras are disabled",
+            "Add multi-device support with per-MAC command routing and DeviceSelector",
+            "Add PS10 Power Strip 10 device type with 10 outlets",
+            "Fix save buttons always enabled in settings, now disabled when no changes",
+            "Fix settings page not reflecting real-time socket state changes"
+          ]
+        },
         {
           "version": "1.84.0",
           "changes": [
