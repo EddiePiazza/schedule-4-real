@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T03:20:46.321Z",
+  "lastCheck": "2026-03-18T03:50:46.292Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.1",
-      "installedAt": "2026-03-18T03:25:24Z"
+      "version": "1.88.2",
+      "installedAt": "2026-03-18T03:56:51Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.1",
+        "changes": [
+          "Only show additional blowers/fans when actively configured",
+          "Hide DeviceSelector when CB centralizes all devices"
+        ]
+      },
       {
         "version": "1.88.0",
         "changes": [
@@ -369,12 +376,6 @@
         "version": "1.70.3",
         "changes": [
           "Fix public room browser using direct API instead of complex onion circuit"
-        ]
-      },
-      {
-        "version": "1.70.2",
-        "changes": [
-          "Fix room discovery race discarding slower results"
         ]
       }
     ],

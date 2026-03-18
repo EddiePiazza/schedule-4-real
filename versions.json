@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T03:25:24Z",
+  "generatedAt": "2026-03-18T03:56:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.1",
-      "archive": "s4r-web-1.88.1.tar.gz",
-      "sha256": "fd9f0206d5fca81db589f56b3e2916f8ecfae924dd32283ac668b197f5a46627",
-      "size": 11219989,
+      "version": "1.88.2",
+      "archive": "s4r-web-1.88.2.tar.gz",
+      "sha256": "af2343fb7bdeffd414f881940d8bde349f75373674feb119f7a2d67b6d9f3ace",
+      "size": 11221513,
       "changelog": [
+        {
+          "version": "1.88.2",
+          "changes": [
+            "Fix CO2 and PPFD sensor cards missing status indicator and glow",
+            "Fix slow dashboard loading in passive/forwarded mode by skipping device commands"
+          ]
+        },
         {
           "version": "1.88.1",
           "changes": [
