@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T03:50:46.292Z",
+  "lastCheck": "2026-03-18T04:20:46.328Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.2",
-      "installedAt": "2026-03-18T03:56:51Z"
+      "version": "1.88.3",
+      "installedAt": "2026-03-18T04:24:03Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.2",
+        "changes": [
+          "Fix CO2 and PPFD sensor cards missing status indicator and glow",
+          "Fix slow dashboard loading in passive/forwarded mode by skipping device commands"
+        ]
+      },
       {
         "version": "1.88.1",
         "changes": [
@@ -370,12 +377,6 @@
         "version": "1.70.4",
         "changes": [
           "Fix public room discovery with server-side decryption endpoint"
-        ]
-      },
-      {
-        "version": "1.70.3",
-        "changes": [
-          "Fix public room browser using direct API instead of complex onion circuit"
         ]
       }
     ],

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T03:56:51Z",
+  "generatedAt": "2026-03-18T04:24:03Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.2",
-      "archive": "s4r-web-1.88.2.tar.gz",
-      "sha256": "af2343fb7bdeffd414f881940d8bde349f75373674feb119f7a2d67b6d9f3ace",
-      "size": 11221513,
+      "version": "1.88.3",
+      "archive": "s4r-web-1.88.3.tar.gz",
+      "sha256": "72058fa5516c216b65e5d95c1e0db2d2e2edfbb47d78aef297e7288d82e71ebe",
+      "size": 11220090,
       "changelog": [
+        {
+          "version": "1.88.3",
+          "changes": [
+            "Fix soil sensors not loading on dashboard initial load"
+          ]
+        },
         {
           "version": "1.88.2",
           "changes": [
