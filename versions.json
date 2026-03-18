@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T11:52:04Z",
+  "generatedAt": "2026-03-18T11:59:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.6",
-      "archive": "s4r-web-1.88.6.tar.gz",
-      "sha256": "98813f75fbc6880ec7763d851e4a1754a07d863be04c17dc6e12be1df301a62c",
-      "size": 11218240,
+      "version": "1.88.7",
+      "archive": "s4r-web-1.88.7.tar.gz",
+      "sha256": "25ee152e90f7e911a54cef4046875e3fd39de25565338cae47f6e9b8a539bcfe",
+      "size": 11220057,
       "changelog": [
+        {
+          "version": "1.88.7",
+          "changes": [
+            "Fix SSR hydration mismatches with ClientOnly and v-show for data-dependent UI"
+          ]
+        },
         {
           "version": "1.88.6",
           "changes": [
