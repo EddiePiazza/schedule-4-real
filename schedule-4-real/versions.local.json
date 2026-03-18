@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T04:40:46.290Z",
+  "lastCheck": "2026-03-18T11:40:46.352Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.4",
-      "installedAt": "2026-03-18T04:41:13Z"
+      "version": "1.88.5",
+      "installedAt": "2026-03-18T11:44:21Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.4",
+        "changes": [
+          "Fix CO2 and PPFD cards missing stats in 3+ soil sensor layout"
+        ]
+      },
       {
         "version": "1.88.3",
         "changes": [
@@ -371,12 +377,6 @@
         "version": "1.70.6",
         "changes": [
           "Deduplicate rooms by name and sort Welcome Demo Room first"
-        ]
-      },
-      {
-        "version": "1.70.5",
-        "changes": [
-          "Fix room dedup removing distinct rooms with same envId"
         ]
       }
     ],

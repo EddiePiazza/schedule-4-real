@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T04:41:13Z",
+  "generatedAt": "2026-03-18T11:44:21Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.4",
-      "archive": "s4r-web-1.88.4.tar.gz",
-      "sha256": "05ed06945f73d2f4025b83830c8429464e7f53ffcc06ecc7be5cc0964443a690",
-      "size": 11221362,
+      "version": "1.88.5",
+      "archive": "s4r-web-1.88.5.tar.gz",
+      "sha256": "cd49ab8bd5787359e24f0d835c1a111ebe0a4bce578003c4a2b27a568d94b1ce",
+      "size": 11220519,
       "changelog": [
+        {
+          "version": "1.88.5",
+          "changes": [
+            "Fix soil sensor layout flicker and hydration mismatch"
+          ]
+        },
         {
           "version": "1.88.4",
           "changes": [
