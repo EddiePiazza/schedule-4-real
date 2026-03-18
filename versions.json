@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T11:59:20Z",
+  "generatedAt": "2026-03-18T13:08:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.7",
-      "archive": "s4r-web-1.88.7.tar.gz",
-      "sha256": "25ee152e90f7e911a54cef4046875e3fd39de25565338cae47f6e9b8a539bcfe",
-      "size": 11220057,
+      "version": "1.88.9",
+      "archive": "s4r-web-1.88.9.tar.gz",
+      "sha256": "78c9f5debabaa871d6af269879707048c60802718c07ca23770c92eb6953bacb",
+      "size": 11218261,
       "changelog": [
+        {
+          "version": "1.88.9",
+          "changes": [
+            "Fix dashboard layout, socket duplication, and soil sensor column"
+          ]
+        },
+        {
+          "version": "1.88.8",
+          "changes": [
+            "Fix socket duplication by always prefixing with device type"
+          ]
+        },
         {
           "version": "1.88.7",
           "changes": [

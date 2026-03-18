@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T11:50:46.332Z",
+  "lastCheck": "2026-03-18T13:00:46.410Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.7",
-      "installedAt": "2026-03-18T11:59:20Z"
+      "version": "1.88.9",
+      "installedAt": "2026-03-18T13:08:36Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,25 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.8",
+        "changes": [
+          "Fix socket duplication by always prefixing with device type"
+        ]
+      },
+      {
+        "version": "1.88.7",
+        "changes": [
+          "Fix SSR hydration mismatches with ClientOnly and v-show for data-dependent UI"
+        ]
+      },
+      {
+        "version": "1.88.6",
+        "changes": [
+          "Fix sensor layout flicker by unifying dual layouts into single adaptive layout",
+          "Fix duplicate sockets appearing from standalone PS5/PS10 when CB is present"
+        ]
+      },
       {
         "version": "1.88.5",
         "changes": [
@@ -358,25 +377,6 @@
         "version": "1.71.2",
         "changes": [
           "Fix share links using tracker domain for anonymity instead of exposing local IP"
-        ]
-      },
-      {
-        "version": "1.71.1",
-        "changes": [
-          "Fix Copy Link generating relay domain URL instead of current domain"
-        ]
-      },
-      {
-        "version": "1.71.0",
-        "changes": [
-          "Add encrypted bootstrap peer fallback for network resilience"
-        ]
-      },
-      {
-        "version": "1.70.7",
-        "changes": [
-          "Hide invite-only rooms from non-authenticated users in lobby",
-          "Fix invite token decryption failure (key mismatch between server and client)"
         ]
       }
     ],
