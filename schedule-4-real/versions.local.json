@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T01:30:46.282Z",
+  "lastCheck": "2026-03-18T01:50:46.285Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.86.0",
-      "installedAt": "2026-03-18T01:38:49Z"
+      "version": "1.87.0",
+      "installedAt": "2026-03-18T02:00:14Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.86.0",
+        "changes": [
+          "Fix CB outlets not showing - parse embedded ps5/ps10 outlet data",
+          "Fix Light 2 hidden by default when wattage not configured",
+          "Add PPFD light sensor card to dashboard"
+        ]
+      },
       {
         "version": "1.85.0",
         "changes": [
@@ -363,12 +371,6 @@
         "version": "1.70.0",
         "changes": [
           "Security hardening v2: 3-hop circuits, guard node persistence, SSRF protection, remove RTT data, PK-only routing"
-        ]
-      },
-      {
-        "version": "1.69.1",
-        "changes": [
-          "Update peer proxy to work with URL-stripped peer data"
         ]
       }
     ],

@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T01:38:49Z",
+  "generatedAt": "2026-03-18T02:00:14Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.86.0",
-      "archive": "s4r-web-1.86.0.tar.gz",
-      "sha256": "1410f4dd74759d4b19350328066a337bf78c051fd31fd24e000a35251647be6c",
-      "size": 11215142,
+      "version": "1.87.0",
+      "archive": "s4r-web-1.87.0.tar.gz",
+      "sha256": "89e4b4bc4cfb0044cfed3bb6baa0b063feb3cb7a99d55ae15bfacfa30c274696",
+      "size": 11216808,
       "changelog": [
+        {
+          "version": "1.87.0",
+          "changes": [
+            "Fix CB outlet labels showing SNaN and duplicate sockets",
+            "Add PPFD light sensor chart",
+            "Hide empty soil sensor charts when no data available"
+          ]
+        },
         {
           "version": "1.86.0",
           "changes": [
