@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T03:13:18Z",
+  "generatedAt": "2026-03-18T03:25:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.0",
-      "archive": "s4r-web-1.88.0.tar.gz",
-      "sha256": "b70f24c07320c73829c30461987e167f31bf86a051c66259cd5103086e9a3e92",
-      "size": 11220856,
+      "version": "1.88.1",
+      "archive": "s4r-web-1.88.1.tar.gz",
+      "sha256": "fd9f0206d5fca81db589f56b3e2916f8ecfae924dd32283ac668b197f5a46627",
+      "size": 11219989,
       "changelog": [
+        {
+          "version": "1.88.1",
+          "changes": [
+            "Only show additional blowers/fans when actively configured",
+            "Hide DeviceSelector when CB centralizes all devices"
+          ]
+        },
         {
           "version": "1.88.0",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T03:10:46.309Z",
+  "lastCheck": "2026-03-18T03:20:46.321Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.0",
-      "installedAt": "2026-03-18T03:13:18Z"
+      "version": "1.88.1",
+      "installedAt": "2026-03-18T03:25:24Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.0",
+        "changes": [
+          "Add multiple blowers and fans from power strips",
+          "Fix socket duplicates, NaN labels, sticky chart, and PPFD DB compatibility",
+          "Add socket visibility toggles with time in Socket Activity chart"
+        ]
+      },
       {
         "version": "1.87.0",
         "changes": [
@@ -368,15 +376,15 @@
         "changes": [
           "Fix room discovery race discarding slower results"
         ]
-      },
-      {
-        "version": "1.70.1",
-        "changes": [
-          "Fix public room discovery not showing rooms in lobby"
-        ]
       }
     ],
     "ingest": [
+      {
+        "version": "1.8.0",
+        "changes": [
+          "Store PPFD sensor data in QuestDB"
+        ]
+      },
       {
         "version": "1.7.1",
         "changes": [
@@ -718,6 +726,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "8",
+        "changes": [
+          "Add ppfd column to sensors_environment table"
+        ]
+      },
       {
         "version": "7",
         "changes": [
