@@ -1273,6 +1273,11 @@ const migrations = [
   {
     name: 'lab_observations: add activity_data column',
     sql: `ALTER TABLE lab_observations ADD COLUMN activity_data STRING`
+  },
+  // PPFD light sensor data
+  {
+    name: 'sensors_environment: add ppfd column',
+    sql: `ALTER TABLE sensors_environment ADD COLUMN ppfd DOUBLE`
   }
 ];
 

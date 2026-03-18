@@ -359,15 +359,16 @@ async function storeEnvironmentData(deviceMac, data) {
 
   try {
     await query(`
-      INSERT INTO sensors_environment (timestamp, device_mac, temp, humi, vpd, co2)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO sensors_environment (timestamp, device_mac, temp, humi, vpd, co2, ppfd)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
     `, [
       timestamp,
       deviceMac,
       sensor.temp || null,
       sensor.humi || null,
       sensor.vpd || null,
-      sensor.co2 || null
+      sensor.co2 || null,
+      sensor.ppfd || null
     ]);
 
     // Emit for real-time display
@@ -378,7 +379,8 @@ async function storeEnvironmentData(deviceMac, data) {
       temp: sensor.temp,
       humi: sensor.humi,
       vpd: sensor.vpd,
-      co2: sensor.co2
+      co2: sensor.co2,
+      ppfd: sensor.ppfd
     });
 
   } catch (err) {

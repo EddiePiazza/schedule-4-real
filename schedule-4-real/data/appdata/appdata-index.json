@@ -1,6 +1,10 @@
 {
-  "generated": "2026-03-12T18:50:41Z",
+  "generated": "2026-03-18T03:13:29Z",
   "files": {
+    "socket-chart-visibility.json": {
+      "hash": "bb13fcd4ba8ccfca555465f4d6006ab3",
+      "size": 30
+    },
     "appdata-index.json": {
       "hash": "009f15e792c9a92d42f9c68a07087326",
       "size": 10149

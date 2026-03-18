@@ -1,16 +1,16 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T01:50:46.285Z",
+  "lastCheck": "2026-03-18T03:10:46.309Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.87.0",
-      "installedAt": "2026-03-18T02:00:14Z"
+      "version": "1.88.0",
+      "installedAt": "2026-03-18T03:13:18Z"
     },
     "ingest": {
-      "version": "1.7.1",
-      "installedAt": "2026-02-19T21:36:55Z"
+      "version": "1.8.0",
+      "installedAt": "2026-03-18T03:13:18Z"
     },
     "retention": {
       "version": "1.0.5",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "7",
-      "installedAt": "2026-02-19T21:36:55Z"
+      "version": "8",
+      "installedAt": "2026-03-18T03:13:18Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.87.0",
+        "changes": [
+          "Fix CB outlet labels showing SNaN and duplicate sockets",
+          "Add PPFD light sensor chart",
+          "Hide empty soil sensor charts when no data available"
+        ]
+      },
       {
         "version": "1.86.0",
         "changes": [
@@ -365,12 +373,6 @@
         "version": "1.70.1",
         "changes": [
           "Fix public room discovery not showing rooms in lobby"
-        ]
-      },
-      {
-        "version": "1.70.0",
-        "changes": [
-          "Security hardening v2: 3-hop circuits, guard node persistence, SSRF protection, remove RTT data, PK-only routing"
         ]
       }
     ],

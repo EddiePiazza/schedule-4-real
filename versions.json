@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T02:00:14Z",
+  "generatedAt": "2026-03-18T03:13:18Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.87.0",
-      "archive": "s4r-web-1.87.0.tar.gz",
-      "sha256": "89e4b4bc4cfb0044cfed3bb6baa0b063feb3cb7a99d55ae15bfacfa30c274696",
-      "size": 11216808,
+      "version": "1.88.0",
+      "archive": "s4r-web-1.88.0.tar.gz",
+      "sha256": "b70f24c07320c73829c30461987e167f31bf86a051c66259cd5103086e9a3e92",
+      "size": 11220856,
       "changelog": [
+        {
+          "version": "1.88.0",
+          "changes": [
+            "Add multiple blowers and fans from power strips",
+            "Fix socket duplicates, NaN labels, sticky chart, and PPFD DB compatibility",
+            "Add socket visibility toggles with time in Socket Activity chart"
+          ]
+        },
         {
           "version": "1.87.0",
           "changes": [
@@ -1592,11 +1600,17 @@
       ]
     },
     "ingest": {
-      "version": "1.7.1",
-      "archive": "s4r-ingest-1.7.1.tar.gz",
-      "sha256": "d77f280bb18c78b9a7eadb77f61b5d6841de8d428571f029095a7aac8f5efd54",
-      "size": 6701,
+      "version": "1.8.0",
+      "archive": "s4r-ingest-1.8.0.tar.gz",
+      "sha256": "b73dca740fea8582f9a21c997fe493ebdfdafc445badc46f905235ead62f9c3e",
+      "size": 6722,
       "changelog": [
+        {
+          "version": "1.8.0",
+          "changes": [
+            "Store PPFD sensor data in QuestDB"
+          ]
+        },
         {
           "version": "1.7.1",
           "changes": [
@@ -1963,11 +1977,17 @@
       ]
     },
     "schema": {
-      "version": "7",
-      "archive": "s4r-schema-7.tar.gz",
-      "sha256": "e712b69117fb2f05a1e1da05eea8e39927f220161755ff53613f7bb6e997e4f7",
-      "size": 6347,
+      "version": "8",
+      "archive": "s4r-schema-8.tar.gz",
+      "sha256": "893b4188f7fdb675e20f39d24ea8457851435c3f26db355703370f12cf611c4c",
+      "size": 7365,
       "changelog": [
+        {
+          "version": "8",
+          "changes": [
+            "Add ppfd column to sensors_environment table"
+          ]
+        },
         {
           "version": "7",
           "changes": [
