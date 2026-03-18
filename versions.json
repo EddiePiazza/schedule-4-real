@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T04:24:03Z",
+  "generatedAt": "2026-03-18T04:41:13Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.3",
-      "archive": "s4r-web-1.88.3.tar.gz",
-      "sha256": "72058fa5516c216b65e5d95c1e0db2d2e2edfbb47d78aef297e7288d82e71ebe",
-      "size": 11220090,
+      "version": "1.88.4",
+      "archive": "s4r-web-1.88.4.tar.gz",
+      "sha256": "05ed06945f73d2f4025b83830c8429464e7f53ffcc06ecc7be5cc0964443a690",
+      "size": 11221362,
       "changelog": [
+        {
+          "version": "1.88.4",
+          "changes": [
+            "Fix CO2 and PPFD cards missing stats in 3+ soil sensor layout"
+          ]
+        },
         {
           "version": "1.88.3",
           "changes": [

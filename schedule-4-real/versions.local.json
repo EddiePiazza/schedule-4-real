@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T04:20:46.328Z",
+  "lastCheck": "2026-03-18T04:40:46.290Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.3",
-      "installedAt": "2026-03-18T04:24:03Z"
+      "version": "1.88.4",
+      "installedAt": "2026-03-18T04:41:13Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.3",
+        "changes": [
+          "Fix soil sensors not loading on dashboard initial load"
+        ]
+      },
       {
         "version": "1.88.2",
         "changes": [
@@ -371,12 +377,6 @@
         "version": "1.70.5",
         "changes": [
           "Fix room dedup removing distinct rooms with same envId"
-        ]
-      },
-      {
-        "version": "1.70.4",
-        "changes": [
-          "Fix public room discovery with server-side decryption endpoint"
         ]
       }
     ],
