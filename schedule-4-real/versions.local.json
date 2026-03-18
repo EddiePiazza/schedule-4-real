@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T11:40:46.352Z",
+  "lastCheck": "2026-03-18T11:50:46.332Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.5",
-      "installedAt": "2026-03-18T11:44:21Z"
+      "version": "1.88.6",
+      "installedAt": "2026-03-18T11:52:04Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.5",
+        "changes": [
+          "Fix soil sensor layout flicker and hydration mismatch"
+        ]
+      },
       {
         "version": "1.88.4",
         "changes": [
@@ -371,12 +377,6 @@
         "changes": [
           "Hide invite-only rooms from non-authenticated users in lobby",
           "Fix invite token decryption failure (key mismatch between server and client)"
-        ]
-      },
-      {
-        "version": "1.70.6",
-        "changes": [
-          "Deduplicate rooms by name and sort Welcome Demo Room first"
         ]
       }
     ],

@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T11:44:21Z",
+  "generatedAt": "2026-03-18T11:52:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.5",
-      "archive": "s4r-web-1.88.5.tar.gz",
-      "sha256": "cd49ab8bd5787359e24f0d835c1a111ebe0a4bce578003c4a2b27a568d94b1ce",
-      "size": 11220519,
+      "version": "1.88.6",
+      "archive": "s4r-web-1.88.6.tar.gz",
+      "sha256": "98813f75fbc6880ec7763d851e4a1754a07d863be04c17dc6e12be1df301a62c",
+      "size": 11218240,
       "changelog": [
+        {
+          "version": "1.88.6",
+          "changes": [
+            "Fix sensor layout flicker by unifying dual layouts into single adaptive layout",
+            "Fix duplicate sockets appearing from standalone PS5/PS10 when CB is present"
+          ]
+        },
         {
           "version": "1.88.5",
           "changes": [
