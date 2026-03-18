@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T01:10:46.309Z",
+  "lastCheck": "2026-03-18T01:30:46.282Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 7,
   "components": {
     "web": {
-      "version": "1.85.0",
-      "installedAt": "2026-03-18T01:14:51Z"
+      "version": "1.86.0",
+      "installedAt": "2026-03-18T01:38:49Z"
     },
     "ingest": {
       "version": "1.7.1",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.85.0",
+        "changes": [
+          "Fix camera stream not retrying when go2rtc is still starting",
+          "Fix go2rtc status showing incorrectly when cameras are disabled",
+          "Add multi-device support with per-MAC command routing and DeviceSelector",
+          "Add PS10 Power Strip 10 device type with 10 outlets",
+          "Fix save buttons always enabled in settings, now disabled when no changes",
+          "Fix settings page not reflecting real-time socket state changes"
+        ]
+      },
       {
         "version": "1.84.0",
         "changes": [
@@ -358,12 +369,6 @@
         "version": "1.69.1",
         "changes": [
           "Update peer proxy to work with URL-stripped peer data"
-        ]
-      },
-      {
-        "version": "1.69.0",
-        "changes": [
-          "Add anonymous relay routing via Ed25519 public keys and deduplicate rooms by envId"
         ]
       }
     ],
