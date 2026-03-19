@@ -58,6 +58,8 @@ let lastActionTimes = {}; // Track last action time per device:socket for hyster
 let lastSocketStates = {}; // Legacy: socket states from default PS5
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
 const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
+/** Saturation vapor pressure (Tetens formula) */
+function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
 // Per-device state tracking for multi-device support
 const sensorValuesByDevice = new Map();  // mac -> { temp, humi, vpd, co2, ... }
@@ -69,7 +71,16 @@ let vpdEscalationState = {
   roles: {}, // { roleName: { activatedAt, vpdAtActivation, maxedOut } }
   currentDirection: 'in_range', // 'too_high' | 'too_low' | 'in_range'
 };
-let activeGrowPhase = null; // Current grow phase from DB
+let activeGrowPhase = null; // Current grow phase from DB (9-stage key)
+let vpdBlowerMinSpeed = 0; // VPD-driven blower speed floor (when too_low: boost extraction)
+let vpdBlowerMaxSpeed = 100; // VPD-driven blower speed ceiling (when too_high: reduce extraction to conserve humidity)
+let lastVpdLogKey = ''; // Throttle VPD log: only log when conditions change
+
+// Thermal inertia tracking — devices have residual effect after deactivation
+let lastHeaterOffTime = 0;   // When heater was last turned off (ms)
+let lastHumidifierOffTime = 0; // When humidifier was last turned off (ms)
+const HEATER_GRACE_MS = 5 * 60 * 1000;     // 5 min: after heater off, don't cool — residual heat dissipates
+const HUMIDIFIER_GRACE_MS = 3 * 60 * 1000; // 3 min: after humidifier off, don't extract — residual moisture
 
 // Blower Curve Control State
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
@@ -82,6 +93,85 @@ function isCalibrationLocked() {
     const lockPath = path.resolve(__dirname, '../../data/calibration-lock.json');
     return fs.existsSync(lockPath);
   } catch { return false; }
+}
+
+// Blower calibration data — measured capacity at each speed level
+let calibrationData = null; // { day: { measurements, saturationTemp, ... }, night: { ... } }
+function loadCalibrationData() {
+  try {
+    const calPath = path.resolve(__dirname, '../../data/ai-calibration.json');
+    if (fs.existsSync(calPath)) {
+      calibrationData = JSON.parse(fs.readFileSync(calPath, 'utf8'));
+      const dayPts = calibrationData?.day?.measurements?.length || 0;
+      const nightPts = calibrationData?.night?.measurements?.length || 0;
+      if (dayPts || nightPts) {
+        console.log(`[Supervisor] Calibration data loaded: day=${dayPts} pts, night=${nightPts} pts`);
+      }
+    }
+  } catch (err) {
+    console.error('[Supervisor] Failed to load calibration data:', err.message);
+  }
+}
+
+/**
+ * Calculate optimal blower speed from calibration data.
+ * Uses inverse lookup: given how much we need to reduce temp/humi,
+ * find the minimum speed whose measured capacity meets the need.
+ *
+ * @param {number} tempDelta - How much temp needs to drop (positive = need cooling)
+ * @param {number} humiDelta - How much humi needs to drop (positive = need drying)
+ * @param {string} period - 'day' or 'night'
+ * @returns {number} Optimal speed (0 if no calibration or no reduction needed)
+ */
+function calcSpeedFromCalibration(tempDelta, humiDelta, period) {
+  const cal = calibrationData?.[period];
+  if (!cal || !cal.measurements?.length) return 0;
+
+  const measurements = cal.measurements;
+  let speedForTemp = 0;
+  let speedForHumi = 0;
+
+  // Find minimum speed that can achieve the needed temp reduction
+  // deltaTemp must be NEGATIVE (actual cooling). Positive delta = blower warms the room → skip.
+  if (tempDelta > 0) {
+    for (const m of measurements) {
+      if (m.deltaTemp < 0 && Math.abs(m.deltaTemp) >= tempDelta) {
+        speedForTemp = m.speed;
+        break;
+      }
+    }
+    // No single speed achieves it — use the highest speed that actually cools
+    if (speedForTemp === 0) {
+      for (let i = measurements.length - 1; i >= 0; i--) {
+        if (measurements[i].deltaTemp < 0) {
+          speedForTemp = measurements[i].speed;
+          break;
+        }
+      }
+    }
+  }
+
+  // Find minimum speed that can achieve the needed humi reduction
+  // deltaHumi must be NEGATIVE (actual drying). Positive delta = blower adds humidity → skip.
+  if (humiDelta > 0) {
+    for (const m of measurements) {
+      if (m.deltaHumi < 0 && Math.abs(m.deltaHumi) >= humiDelta) {
+        speedForHumi = m.speed;
+        break;
+      }
+    }
+    if (speedForHumi === 0) {
+      for (let i = measurements.length - 1; i >= 0; i--) {
+        if (measurements[i].deltaHumi < 0) {
+          speedForHumi = measurements[i].speed;
+          break;
+        }
+      }
+    }
+  }
+
+  // Use the higher of the two (worst case drives the speed)
+  return Math.max(speedForTemp, speedForHumi);
 }
 
 // Database query helper
@@ -193,23 +283,35 @@ function loadBlowerCurveFromFlow() {
  * Map Laboratory plant status to VPD phase
  * Lab statuses are more granular, VPD phases are simpler
  */
-function mapLabStatusToVpdPhase(labStatus) {
-  const mapping = {
-    'germinating': 'germination',
-    'seedling': 'seedling',
-    'early_veg': 'vegetative',
-    'mid_veg': 'vegetative',
-    'late_veg': 'vegetative',
-    'pre_flower': 'flower',
-    'early_flower': 'flower',
-    'mid_flower': 'flower',
-    'late_flower': 'flower',
-    'flush': 'flush',
-    'harvest': 'flush', // harvest uses same VPD as flush
-    'drying': 'drying',
-    'curing': 'curing'
-  };
-  return mapping[labStatus] || null;
+// Built-in VPD stage reference data (from docs/VPD/vpd_cannabis_data.json)
+const VPD_STAGES = [
+  { key: 'clones',           min: 0.40, max: 0.70 },
+  { key: 'seedling',         min: 0.60, max: 0.90 },
+  { key: 'vegetative_early', min: 0.80, max: 1.00 },
+  { key: 'vegetative_late',  min: 0.85, max: 1.10 },
+  { key: 'transition',       min: 0.95, max: 1.15 },
+  { key: 'flower_early',     min: 1.00, max: 1.20 },
+  { key: 'flower_mid',       min: 1.10, max: 1.35 },
+  { key: 'flower_late',      min: 1.20, max: 1.50 },
+  { key: 'ripening',         min: 1.30, max: 1.60 },
+];
+
+const LAB_STATUS_TO_VPD_STAGE = {
+  'germinating':  'clones',
+  'seedling':     'seedling',
+  'early_veg':    'vegetative_early',
+  'mid_veg':      'vegetative_early',
+  'late_veg':     'vegetative_late',
+  'pre_flower':   'transition',
+  'early_flower': 'flower_early',
+  'mid_flower':   'flower_mid',
+  'late_flower':  'flower_late',
+  'flush':        'ripening',
+  'harvest':      'ripening',
+};
+
+function mapLabStatusToVpdStage(labStatus) {
+  return LAB_STATUS_TO_VPD_STAGE[labStatus] || null;
 }
 
 /**
@@ -229,7 +331,7 @@ async function loadActiveGrowPhase() {
 
     if (rows.length > 0) {
       const labStatus = rows[0].status;
-      activeGrowPhase = mapLabStatusToVpdPhase(labStatus);
+      activeGrowPhase = mapLabStatusToVpdStage(labStatus);
     } else {
       activeGrowPhase = null;
     }
@@ -250,14 +352,28 @@ function getVpdTargetRange() {
     return vpdNodeConfig.manualTarget;
   }
 
-  // Support both 'grow_phase' (legacy) and 'plant_stage' (new)
-  if ((vpdNodeConfig.mode === 'grow_phase' || vpdNodeConfig.mode === 'plant_stage') && activeGrowPhase) {
-    const target = vpdNodeConfig.phaseTargets?.[activeGrowPhase];
-    if (target && target.min > 0 && target.max > 0) {
-      return target;
-    }
-    // Phase disabled (sentinel -1)
-    return null;
+  // fixed_stage: use selectedStage directly from built-in targets
+  if (vpdNodeConfig.mode === 'fixed_stage') {
+    const stageKey = vpdNodeConfig.selectedStage;
+    const stage = stageKey && VPD_STAGES.find(s => s.key === stageKey);
+    return stage ? { min: stage.min, max: stage.max } : null;
+  }
+
+  // auto_stage (+ legacy plant_stage/grow_phase): selectedStage override → lab auto-detect → legacy fallback
+  if (vpdNodeConfig.selectedStage) {
+    const stage = VPD_STAGES.find(s => s.key === vpdNodeConfig.selectedStage);
+    if (stage) return { min: stage.min, max: stage.max };
+  }
+
+  if (activeGrowPhase) {
+    const stage = VPD_STAGES.find(s => s.key === activeGrowPhase);
+    if (stage) return { min: stage.min, max: stage.max };
+  }
+
+  // Legacy fallback: old phaseTargets from config
+  if (vpdNodeConfig.phaseTargets && activeGrowPhase) {
+    const t = vpdNodeConfig.phaseTargets[activeGrowPhase];
+    if (t && t.min > 0 && t.max > 0) return t;
   }
 
   return null;
@@ -696,10 +812,10 @@ async function sendSocketCommand(deviceMac, socket, action) {
     return false;
   }
 
-  // Get device info (with fallback to default PS5)
-  const device = getDevice(deviceMac);
+  // Get device: explicit MAC > find by socket type > fallback
+  const device = deviceMac ? getDevice(deviceMac) : (findDeviceForSocket(socket) || getDevice());
   if (!device) {
-    console.error(`[Supervisor] No device found for MAC: ${deviceMac || 'default'}`);
+    console.error(`[Supervisor] No device found for socket ${socket} (MAC: ${deviceMac || 'auto'})`);
     return false;
   }
 
@@ -781,6 +897,7 @@ async function executeActions(actions) {
     if (currentState === targetState) {
       continue;
     }
+    console.log(`[Supervisor] Executing: ${socket} → ${targetAction} (was ${currentState}) | ${reason || 'no reason'}`);
 
     // Check cooldown
     if (now - lastTime < HYSTERESIS_COOLDOWN_MS) {
@@ -815,156 +932,350 @@ async function executeActions(actions) {
 }
 
 /**
- * Intelligent VPD auto-calibration engine
- * - Tracks device effectiveness over time
- * - Escalates to secondary devices when primary ones max out
- * - Uses hysteresis to prevent oscillation
- * - Supports multi-device: sensorDeviceMac for VPD reading, deviceMac per role for actions
+ * Temperature-first, humidity-second VPD auto-calibration engine
+ *
+ * Priority: maintain ideal air temperature, then adapt humidity to achieve target VPD.
+ *
+ * Rules:
+ * 1. Temp > idealMax (and no heater grace) → Blower ON. Stops at idealMax. Cooler if maxed.
+ * 2. Humidity low → Humidifier ON, cap blower (unless temp needs it).
+ * 3. Temp < idealMin → Heater ON.
+ * 4. Humidity > idealMax (humidifier off) → Blower ON (force extraction).
+ * 5. Blower ON + temp drops → Heater ON to compensate.
+ * 6. Everything in range → all devices OFF, blower OFF. Let environment settle.
  */
 function evaluateVpdIntelligent() {
   if (!vpdNodeConfig || !vpdNodeConfig.roles || vpdNodeConfig.roles.length === 0) return [];
 
-  // Calculate Leaf VPD from sensor temp + humidity (NOT air VPD from device)
   const sensorValues = getSensorValues(vpdNodeConfig.sensorDeviceMac);
-  const currentVpd = calculateLeafVpd(sensorValues.temp, sensorValues.humi);
+  const temp = sensorValues.temp;
+  const humi = sensorValues.humi;
+  if (temp == null || humi == null) return [];
+
+  const currentVpd = calculateLeafVpd(temp, humi);
   if (currentVpd == null || currentVpd <= 0) return [];
 
   const target = getVpdTargetRange();
-  if (!target) return []; // Phase disabled or no target
+  if (!target) return [];
 
   const { min: targetMin, max: targetMax } = target;
   const actions = [];
   const now = Date.now();
   const timeoutMs = (vpdNodeConfig.escalationTimeoutSeconds || 180) * 1000;
 
-  // Calculate hysteresis comfort zone (inner X% of range)
-  const rangeWidth = targetMax - targetMin;
-  const hystPercent = (vpdNodeConfig.hysteresisPercent || 60) / 100;
-  const hystMargin = rangeWidth * (1 - hystPercent) / 2;
-  const comfortMin = targetMin + hystMargin;
-  const comfortMax = targetMax - hystMargin;
+  // Ideal temperature range (day/night)
+  const isDaytime = getCurrentPeriod() === 'day';
+  const idealTemp = isDaytime
+    ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
+    : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
 
-  // Determine direction
-  let direction = 'in_range';
-  if (currentVpd > targetMax) direction = 'too_high';
-  else if (currentVpd < targetMin) direction = 'too_low';
+  // Calculate ideal humidity from VPD target at CURRENT temperature
+  // Leaf VPD = SVP(T_leaf) - SVP(T_air) × (RH/100)
+  // → RH = (SVP(T_leaf) - VPD) / SVP(T_air) × 100
+  const leafTemp = temp - LEAF_TEMP_OFFSET;
+  const svpLeaf = svp(leafTemp);
+  const svpAir = svp(temp);
+  const idealHumiMax = Math.min(90, (svpLeaf - targetMin) / svpAir * 100); // low VPD → high humi limit
+  const idealHumiMin = Math.max(30, (svpLeaf - targetMax) / svpAir * 100); // high VPD → low humi limit
+  // Target humidity = midpoint VPD → this is WHERE we want humidity to converge
+  const vpdTarget = (targetMin + targetMax) / 2;
+  const idealHumiTarget = Math.max(idealHumiMin, Math.min(idealHumiMax, (svpLeaf - vpdTarget) / svpAir * 100));
 
-  // If direction changed, reset escalation state
-  if (direction !== vpdEscalationState.currentDirection) {
-    vpdEscalationState.roles = {};
-    vpdEscalationState.currentDirection = direction;
+  // Grace periods — after device off, let residual effects settle naturally
+  const heaterRecentlyOff = (now - lastHeaterOffTime) < HEATER_GRACE_MS;
+  const humidifierRecentlyOff = (now - lastHumidifierOffTime) < HUMIDIFIER_GRACE_MS;
+
+  // Temperature thresholds
+  // Blower activates at idealTemp.max (not higher) — during heater grace, blower is fully suppressed
+  const tempHighThreshold = idealTemp.max;
+  const tempLowThreshold = idealTemp.min - 0.2; // Quick activation: 0.2°C below ideal min
+
+  // Humidity thresholds
+  // Activate humidifier when below TARGET (not just below range min)
+  // This ensures the system actively pushes toward ideal VPD, not just reacting at extremes
+  const humiLowThreshold = humidifierRecentlyOff
+    ? idealHumiTarget - 3  // After humidifier off: wider tolerance, moisture still settling
+    : idealHumiTarget - 1; // Normal: 1% below target
+  const humiHighThreshold = idealHumiMax + 2; // 2% above ideal max
+
+  // Evaluate conditions
+  const tempHigh = temp > tempHighThreshold && !heaterRecentlyOff; // Suppress cooling during heater grace
+  const tempLow = temp < tempLowThreshold;
+  const humiLow = humi < humiLowThreshold;
+  const humiHigh = humi > humiHighThreshold;
+
+  // Deactivation thresholds (device turns off when solidly in ideal range)
+  const tempOk = temp >= idealTemp.min && temp <= idealTemp.max;
+  const humiOk = humi >= idealHumiTarget && humi <= idealHumiMax;
+
+  // Throttled log — only print when conditions change
+  const graceFlags = `${heaterRecentlyOff ? 'Hgrace' : ''}${humidifierRecentlyOff ? 'Ugrace' : ''}`;
+  const curState = `${tempHigh ? 'TH' : tempLow ? 'TL' : 'T_'}|${humiLow ? 'HL' : humiHigh ? 'HH' : 'H_'}`;
+  const logKey = `${curState}|${graceFlags}|${currentVpd.toFixed(1)}|${temp.toFixed(0)}|${Math.round(humi/2)}`;
+  if (logKey !== lastVpdLogKey) {
+    lastVpdLogKey = logKey;
+    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}`);
   }
 
-  // Helper: get socket and deviceMac for a role
+  // Track condition changes for escalation reset
+  const prevState = vpdEscalationState.conditions || '';
+  if (curState !== prevState) {
+    console.log(`[VPD] Conditions changed: ${prevState || 'none'} → ${curState}`);
+    vpdEscalationState.conditions = curState;
+  }
+
+  // --- Helpers ---
+
   function getRoleAssignment(roleName) {
     const assignment = vpdNodeConfig.roles.find(r => r.role === roleName);
     return assignment ? { socket: assignment.socket, deviceMac: assignment.deviceMac } : null;
   }
 
-  // Helper: check if a role's device has maxed out (not improving VPD)
-  function isMaxedOut(roleName) {
+  const extAssignment = getRoleAssignment('extractor');
+  const extIsBlower = extAssignment && extAssignment.socket === 'blower';
+
+  // Check if a role has been active long enough without improvement → maxed out
+  function isMaxedOut(roleName, metricNow, metricAtActivation, wantLower) {
     const state = vpdEscalationState.roles[roleName];
     if (!state) return false;
     if (state.maxedOut) return true;
-
-    // Check if enough time has passed since activation
     if (now - state.activatedAt >= timeoutMs) {
-      const movingRight = (direction === 'too_high' && currentVpd < state.vpdAtActivation) ||
-                          (direction === 'too_low' && currentVpd > state.vpdAtActivation);
-      const improvement = Math.abs(state.vpdAtActivation - currentVpd);
-
-      if (!movingRight || improvement < 0.02) {
-        // Device not helping - mark as maxed out
+      const improved = wantLower
+        ? (metricNow < metricAtActivation - 0.2)
+        : (metricNow > metricAtActivation + 0.2);
+      if (!improved) {
         state.maxedOut = true;
-        console.log(`[VPD] Role "${roleName}" maxed out. VPD at activation: ${state.vpdAtActivation.toFixed(2)}, now: ${currentVpd.toFixed(2)}`);
+        console.log(`[VPD] Role "${roleName}" maxed out — metric: ${metricAtActivation.toFixed(1)} → ${metricNow.toFixed(1)}`);
         return true;
       }
-      // Device is working but hasn't reached target yet - reset timer
+      // Still improving, reset timer
       state.activatedAt = now;
-      state.vpdAtActivation = currentVpd;
+      state.metricAtActivation = metricNow;
     }
     return false;
   }
 
-  // Helper: activate a role (with multi-device support)
-  function activateRole(roleName, reason) {
+  // Activate a socket-based role (ON)
+  function activateSocketRole(roleName, reason) {
     const assignment = getRoleAssignment(roleName);
-    if (!assignment || !assignment.socket) return;
-
+    if (!assignment || !assignment.socket || assignment.socket === 'blower') return;
     const { socket, deviceMac } = assignment;
     const aiModeKey = deviceMac ? `${deviceMac}:${socket}` : socket;
-
-    // Check AI mode (try device-specific key first, then legacy)
-    if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) return;
-
+    if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) {
+      if (curState !== prevState) console.log(`[VPD] ${roleName} (${socket}) NOT in AI mode, skip`);
+      return;
+    }
     if (!vpdEscalationState.roles[roleName]) {
-      vpdEscalationState.roles[roleName] = {
-        activatedAt: now,
-        vpdAtActivation: currentVpd,
-        maxedOut: false
-      };
+      vpdEscalationState.roles[roleName] = { activatedAt: now, metricAtActivation: 0, maxedOut: false };
+      console.log(`[VPD] → ${roleName} ON (${socket}): ${reason}`);
     }
     actions.push({ deviceMac, socket, action: 'on', reason: `VPD: ${reason}` });
   }
 
-  // Helper: deactivate a role (with multi-device support)
-  function deactivateRole(roleName, reason) {
+  // Deactivate a socket-based role (OFF)
+  function deactivateSocketRole(roleName, reason) {
     const assignment = getRoleAssignment(roleName);
-    if (!assignment || !assignment.socket) return;
-
+    if (!assignment || !assignment.socket || assignment.socket === 'blower') return;
     const { socket, deviceMac } = assignment;
     const aiModeKey = deviceMac ? `${deviceMac}:${socket}` : socket;
-
-    // Check AI mode (try device-specific key first, then legacy)
     if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) return;
-
-    delete vpdEscalationState.roles[roleName];
+    if (vpdEscalationState.roles[roleName]) {
+      console.log(`[VPD] → ${roleName} OFF (${socket}): ${reason}`);
+      delete vpdEscalationState.roles[roleName];
+      // Track deactivation time for thermal inertia grace periods
+      if (roleName === 'heater') lastHeaterOffTime = now;
+      if (roleName === 'humidifier') lastHumidifierOffTime = now;
+    }
     actions.push({ deviceMac, socket, action: 'off', reason: `VPD: ${reason}` });
   }
 
-  if (direction === 'too_high') {
-    // Leaf VPD too high -> need to lower: humidifier first, then cooler
-    activateRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
-
-    if (isMaxedOut('humidifier')) {
-      activateRole('cooler', `Humidifier maxed, Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax}`);
-    }
-
-    // Deactivate opposing roles
-    deactivateRole('extractor', 'Leaf VPD too high');
-    deactivateRole('heater', 'Leaf VPD too high');
-    deactivateRole('dehumidifier', 'Leaf VPD too high');
-
-  } else if (direction === 'too_low') {
-    // Leaf VPD too low -> need to raise: extractor first, then dehumidifier, then heater
-    activateRole('extractor', `Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
-
-    if (isMaxedOut('extractor')) {
-      activateRole('dehumidifier', `Extractor maxed, Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
-    }
-
-    if (isMaxedOut('extractor') && isMaxedOut('dehumidifier')) {
-      activateRole('heater', `Extractor+Dehumidifier maxed, Leaf VPD ${currentVpd.toFixed(2)} < ${targetMin}`);
-    }
-
-    // Deactivate opposing roles
-    deactivateRole('humidifier', 'Leaf VPD too low');
-    deactivateRole('cooler', 'Leaf VPD too low');
-
-  } else {
-    // In range - check if in comfort zone before deactivating (hysteresis)
-    if (currentVpd >= comfortMin && currentVpd <= comfortMax) {
-      // Well within range - deactivate in reverse priority order
-      deactivateRole('cooler', 'Leaf VPD in comfort zone');
-      deactivateRole('heater', 'Leaf VPD in comfort zone');
-      deactivateRole('dehumidifier', 'Leaf VPD in comfort zone');
-      deactivateRole('humidifier', 'Leaf VPD in comfort zone');
-      deactivateRole('extractor', 'Leaf VPD in comfort zone');
-    }
-    // If in range but not in comfort zone, keep current state (hysteresis)
+  function isRoleActive(roleName) {
+    return !!vpdEscalationState.roles[roleName];
   }
 
-  // Circulator always ON when VPD control is active (with multi-device support)
+  // --- Blower floor/ceiling ---
+  // PRINCIPLE: blower is OFF by default. It only runs when something NEEDS extraction:
+  //   - Rule 1 lifts ceiling when temp > idealTemp.max (needs cooling)
+  //   - Rule 4 lifts ceiling when humi > idealHumiMax (needs dehumidifying)
+  // When cooling, blower stops at idealTemp.max (not min) to avoid triggering heater.
+  // After heater off, 5-min grace period before allowing blower (thermal inertia).
+  let newBlowerFloor = 0;
+  let newBlowerCeiling = 0; // OFF by default — only Rules 1 and 4 can lift this
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 1: Temperature too high → Blower ON (override ceiling)
+  // ═══════════════════════════════════════════════════════
+  if (tempHigh) {
+    // Temp needs cooling — lift ceiling
+    newBlowerCeiling = 100;
+
+    // If extractor is a socket (not blower), turn it ON
+    if (!extIsBlower) {
+      activateSocketRole('extractor', `Temp ${temp.toFixed(1)}°C > ${idealTemp.max}°C`);
+      if (!vpdEscalationState.roles['extractor']) {
+        vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp, maxedOut: false };
+      }
+    } else {
+      // Blower extractor: calculate speed from calibration capacity data
+      const tempExcess = temp - idealTemp.max;
+      const period = isDaytime ? 'day' : 'night';
+      const calSpeed = calcSpeedFromCalibration(tempExcess, 0, period);
+      // Fallback: crude formula if no calibration
+      const baseFloor = calSpeed > 0
+        ? calSpeed
+        : Math.min(80, Math.round(30 + tempExcess * 15));
+      newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+
+      if (!vpdEscalationState.roles['extractor_temp']) {
+        vpdEscalationState.roles['extractor_temp'] = { activatedAt: now, metricAtActivation: temp, maxedOut: false, escalationBoost: 0 };
+        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${idealTemp.max}°C (excess ${tempExcess.toFixed(1)}°C)`);
+      } else if (isMaxedOut('extractor_temp', temp, vpdEscalationState.roles['extractor_temp'].metricAtActivation, true)) {
+        // Plateau: temp stopped dropping at current speed → escalate (cumulative)
+        const state = vpdEscalationState.roles['extractor_temp'];
+        state.escalationBoost = Math.min(50, (state.escalationBoost || 0) + 10);
+        console.log(`[VPD] Blower escalation +${state.escalationBoost}% — temp plateau at current speed`);
+      }
+      // Apply cumulative escalation boost on top of calibration speed
+      newBlowerFloor += (vpdEscalationState.roles['extractor_temp']?.escalationBoost || 0);
+      newBlowerFloor = Math.min(100, newBlowerFloor);
+    }
+
+    // Escalate to cooler if extractor maxed
+    if (vpdEscalationState.roles['extractor']?.maxedOut || vpdEscalationState.roles['extractor_temp']?.maxedOut) {
+      activateSocketRole('cooler', `Extractor maxed, temp ${temp.toFixed(1)}°C still > ${idealTemp.max}°C`);
+    }
+
+    // Temp too high → no heater needed
+    deactivateSocketRole('heater', 'Temp too high');
+
+  } else if (temp <= idealTemp.max || tempLow) {
+    // Temp dropped back to idealMax or below — stop cooling
+    // NOTE: we stop at idealMax (not idealMin) to avoid triggering heater immediately
+    delete vpdEscalationState.roles['extractor_temp'];
+    deactivateSocketRole('cooler', 'Temp OK');
+    if (!extIsBlower) deactivateSocketRole('extractor', 'Temp OK');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 2: Humidity management
+  // Blower ceiling already handled by default (0 when humi < idealHumiMin).
+  // If temp also needs cooling (tempHigh), allow compromise blower.
+  // ═══════════════════════════════════════════════════════
+  if (humi < idealHumiMin && tempHigh) {
+    // Temp needs cooling but humidity is low — compromise: minimal blower
+    newBlowerCeiling = Math.min(newBlowerCeiling, 35);
+  }
+
+  // Activate humidifier when humiLow threshold met
+  if (humiLow) {
+    activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${humiLowThreshold.toFixed(0)}% (target ${idealHumiTarget.toFixed(0)}%)`);
+    if (!vpdEscalationState.roles['humidifier']) {
+      vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi, maxedOut: false };
+    }
+    deactivateSocketRole('dehumidifier', 'Humi too low');
+  } else if (humi >= idealHumiTarget) {
+    // Humidity reached TARGET (VPD midpoint) — turn off humidifier
+    // Don't stop at idealHumiMin (range edge) — that gives worst-case VPD
+    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target ${idealHumiTarget.toFixed(0)}%`);
+    delete vpdEscalationState.roles['humidifier'];
+  }
+  // Between humiLow and idealHumiTarget: humidifier stays in whatever state it's in (keeps pushing)
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 3: Temperature too low → Heater ON
+  // ═══════════════════════════════════════════════════════
+  if (tempLow) {
+    activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${idealTemp.min}°C`);
+    // Blower already capped by default ceiling (temp < idealMin → ceiling=0)
+    deactivateSocketRole('cooler', 'Temp too low');
+  } else if (tempOk) {
+    // Only deactivate heater if temp is solidly in range
+    // (not if blower is actively running and may cause drops)
+    if (!isRoleActive('extractor_humi') || temp > idealTemp.min + 1) {
+      deactivateSocketRole('heater', 'Temp OK');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 4: Humidity too high (humidifier off) → Blower ON to extract
+  // ═══════════════════════════════════════════════════════
+  if (humiHigh && !isRoleActive('humidifier')) {
+    if (extIsBlower) {
+      // Humidity too high — override ceiling to allow extraction
+      newBlowerCeiling = 100;
+      // Calculate speed from calibration capacity
+      const humiExcess = humi - idealHumiMax;
+      const period = isDaytime ? 'day' : 'night';
+      const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
+      const baseFloor = calSpeed > 0 ? calSpeed : 40;
+
+      if (!vpdEscalationState.roles['extractor_humi']) {
+        vpdEscalationState.roles['extractor_humi'] = { activatedAt: now, metricAtActivation: humi, maxedOut: false, escalationBoost: 0 };
+        newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — extract excess humidity (${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}%)`);
+      } else if (isMaxedOut('extractor_humi', humi, vpdEscalationState.roles['extractor_humi'].metricAtActivation, true)) {
+        const state = vpdEscalationState.roles['extractor_humi'];
+        state.escalationBoost = Math.min(50, (state.escalationBoost || 0) + 10);
+        console.log(`[VPD] Blower escalation +${state.escalationBoost}% — humidity plateau at current speed`);
+      }
+      // Apply cumulative escalation + calibration base
+      newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+      newBlowerFloor += (vpdEscalationState.roles['extractor_humi']?.escalationBoost || 0);
+      newBlowerFloor = Math.min(100, newBlowerFloor);
+    } else {
+      activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}%`);
+    }
+
+    // Escalate to dehumidifier if extraction maxed
+    if (vpdEscalationState.roles['extractor_humi']?.maxedOut || vpdEscalationState.roles['extractor']?.maxedOut) {
+      activateSocketRole('dehumidifier', `Extractor maxed, humi ${humi.toFixed(0)}% still > ${idealHumiMax.toFixed(0)}%`);
+    }
+
+    deactivateSocketRole('humidifier', 'Humi too high');
+
+  } else if (!humiHigh) {
+    // Humidity no longer too high — stop forced extraction
+    if (vpdEscalationState.roles['extractor_humi']) {
+      delete vpdEscalationState.roles['extractor_humi'];
+      if (!tempHigh) {
+        // Only deactivate socket extractor if temp doesn't need it either
+        if (!extIsBlower) deactivateSocketRole('extractor', 'Humi OK');
+      }
+    }
+    deactivateSocketRole('dehumidifier', 'Humi OK');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 5: Blower ON + temp dropping → Heater compensates
+  // ═══════════════════════════════════════════════════════
+  if ((newBlowerFloor > 0 || isRoleActive('extractor_humi')) && temp < idealTemp.min + 0.3) {
+    activateSocketRole('heater', `Compensate blower: temp ${temp.toFixed(1)}°C dropping below ${idealTemp.min}°C`);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 6: Everything in range → deactivate all, blower OFF
+  // ═══════════════════════════════════════════════════════
+  if (tempOk && humiOk) {
+    // Full comfort — no devices needed, let the environment settle
+    // Blower stays OFF (ceiling=0): no extraction when everything is fine
+    newBlowerFloor = 0;
+    newBlowerCeiling = 0;
+    deactivateSocketRole('humidifier', 'All in range');
+    deactivateSocketRole('dehumidifier', 'All in range');
+    deactivateSocketRole('heater', 'All in range');
+    deactivateSocketRole('cooler', 'All in range');
+    if (!extIsBlower) deactivateSocketRole('extractor', 'All in range');
+    // Clean escalation state
+    for (const key of Object.keys(vpdEscalationState.roles)) {
+      if (key !== 'circulator') delete vpdEscalationState.roles[key];
+    }
+  }
+
+  // Apply blower overrides
+  vpdBlowerMinSpeed = newBlowerFloor;
+  vpdBlowerMaxSpeed = newBlowerCeiling;
+
+  // Circulator always ON when VPD control is active
   const circAssignment = getRoleAssignment('circulator');
   if (circAssignment && circAssignment.socket) {
     const { socket: circSocket, deviceMac: circDeviceMac } = circAssignment;
@@ -1020,12 +1331,22 @@ function evaluateBlowerCurve() {
     return null;
   }
 
+  // When VPD+calibration is active, skip temp/humi curves — calibration is more accurate.
+  // Only keep curves for other sensors (CO2, etc.) that VPD doesn't control.
+  const vpdActive = !!vpdNodeConfig && vpdNodeConfig.roles?.length > 0;
+  const hasCalibration = !!calibrationData;
+
   const { standbySpeed } = blowerCurveConfig;
   const curves = activeCurves;
   let maxSpeed = 0;
   const now = Date.now();
 
   for (const curve of curves) {
+    // Skip temp/humi curves when VPD+calibration handles them scientifically
+    if (vpdActive && hasCalibration && (curve.sensor === 'temp' || curve.sensor === 'humi')) {
+      continue;
+    }
+
     const sensorValue = lastSensorValues[curve.sensor];
     if (sensorValue === undefined || sensorValue === null) continue;
 
@@ -1075,12 +1396,6 @@ function evaluateBlowerCurve() {
   // If no curve is demanding, use standby speed
   const finalSpeed = maxSpeed > 0 ? maxSpeed : (standbySpeed || 0);
 
-  // Return null if speed hasn't changed (avoid redundant commands)
-  if (lastBlowerSpeed === finalSpeed) {
-    return null;
-  }
-
-  lastBlowerSpeed = finalSpeed;
   return finalSpeed;
 }
 
@@ -1090,15 +1405,16 @@ function evaluateBlowerCurve() {
  * @param {boolean} on - Whether blower should be on
  */
 async function sendBlowerCommand(speed, on = true) {
-  if (!defaultPrimaryMac) {
-    console.error('[BlowerCurve] No primary device MAC available');
+  const device = findDeviceForSocket('blower');
+  if (!device) {
+    console.error('[BlowerCurve] No device found for blower');
     return false;
   }
 
-  const topic = `ggs/${defaultPrimaryType}/${defaultPrimaryMac}/cmd`;
+  const topic = `ggs/${device.type}/${device.mac}/cmd`;
   const command = {
     method: 'setConfigField',
-    pid: defaultPrimaryMac,
+    pid: device.mac,
     params: {
       keyPath: ['device', 'blower'],
       blower: {
@@ -1111,7 +1427,7 @@ async function sendBlowerCommand(speed, on = true) {
       }
     },
     msgId: String(Date.now()),
-    uid: String(getDevice(defaultPrimaryMac)?.uid || '')
+    uid: String(device.uid || '')
   };
 
   console.log(`[BlowerCurve] Sending command: speed=${speed}%, on=${on}`);
@@ -1195,11 +1511,33 @@ async function processSensorData(sensorData, deviceMac) {
     actionMap.set(key, action);
   }
 
+  // When VPD is capping the blower, reset curve escalation BEFORE evaluation
+  // to prevent pointless accumulation that would spike when ceiling lifts
+  if (vpdBlowerMaxSpeed < 100) {
+    for (const key in blowerCurveEscalationState) {
+      if (blowerCurveEscalationState[key]) {
+        blowerCurveEscalationState[key].escalationBoost = 0;
+        blowerCurveEscalationState[key].lastCheck = Date.now();
+      }
+    }
+  }
+
   // Evaluate Blower Curve control (proportional speed based on sensor curves)
-  const blowerSpeed = evaluateBlowerCurve();
-  if (blowerSpeed !== null) {
-    const isOn = blowerSpeed > 0;
-    await sendBlowerCommand(blowerSpeed, isOn);
+  // VPD floor/ceiling override the curve when needed
+  const curveSpeed = evaluateBlowerCurve();
+
+  if (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100) {
+    let effectiveSpeed = Math.max(curveSpeed ?? lastBlowerSpeed ?? 0, vpdBlowerMinSpeed);
+    effectiveSpeed = Math.min(effectiveSpeed, vpdBlowerMaxSpeed);
+    // When VPD is capping the blower (ceiling < 100), respect it fully — don't force a minimum
+    if (vpdBlowerMaxSpeed >= 100 && effectiveSpeed > 0) {
+      effectiveSpeed = Math.max(effectiveSpeed, 25); // Minimum when actively running
+    }
+    if (effectiveSpeed !== lastBlowerSpeed) {
+      console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)`);
+      lastBlowerSpeed = effectiveSpeed;
+      await sendBlowerCommand(effectiveSpeed, effectiveSpeed > 0);
+    }
   }
 
   // Execute deduplicated actions
@@ -1325,6 +1663,7 @@ async function refreshData() {
   await loadFlows();
   await loadSocketAiModes();
   await loadDayNightSchedule();
+  loadCalibrationData();
   loadVpdFromFlow();
   loadBlowerCurveFromFlow();
   // Load plant stage for phase-based VPD mode (supports both legacy 'grow_phase' and new 'plant_stage')
@@ -1357,8 +1696,11 @@ async function loadDeviceInfo() {
           mac
         });
 
-        // Set default primary device (first PS5 or CB detected)
-        if ((type === 'ps5' || type === 'cb') && !defaultPrimaryMac) {
+        // Set default primary device — prefer PS5 (has outlets), CB as fallback
+        if (type === 'ps5') {
+          defaultPrimaryMac = mac;
+          defaultPrimaryType = type;
+        } else if (type === 'cb' && !defaultPrimaryMac) {
           defaultPrimaryMac = mac;
           defaultPrimaryType = type;
         }
@@ -1380,9 +1722,25 @@ function getDevice(mac) {
   if (mac && deviceRegistry.has(mac)) {
     return deviceRegistry.get(mac);
   }
-  // Fallback to default PS5 for backward compatibility
+  // Fallback to default primary for backward compatibility
   if (defaultPrimaryMac && deviceRegistry.has(defaultPrimaryMac)) {
     return deviceRegistry.get(defaultPrimaryMac);
+  }
+  return null;
+}
+
+/**
+ * Find the correct device for a socket type.
+ * Outlets (O1-O5) and blower live on PS5 (or CB). No guessing — find by device type.
+ */
+function findDeviceForSocket(socketId) {
+  // If explicit MAC provided in role, that's used before calling this
+  // This handles the fallback: find PS5 first (has outlets + blower), then CB
+  for (const [mac, dev] of deviceRegistry) {
+    if (dev.type === 'ps5') return dev;
+  }
+  for (const [mac, dev] of deviceRegistry) {
+    if (dev.type === 'cb') return dev;
   }
   return null;
 }

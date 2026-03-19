@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-18T13:00:46.410Z",
+  "lastCheck": "2026-03-19T02:34:40.587Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.88.9",
-      "installedAt": "2026-03-18T13:08:36Z"
+      "version": "1.89.0",
+      "installedAt": "2026-03-19T02:42:26Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.15.2",
-      "installedAt": "2026-03-17T18:37:32Z"
+      "version": "1.16.0",
+      "installedAt": "2026-03-19T02:42:26Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.88.9",
+        "changes": [
+          "Fix dashboard layout, socket duplication, and soil sensor column"
+        ]
+      },
       {
         "version": "1.88.8",
         "changes": [
@@ -371,12 +377,6 @@
         "version": "1.71.3",
         "changes": [
           "Fix share links incorrectly falling back to relay-only domains"
-        ]
-      },
-      {
-        "version": "1.71.2",
-        "changes": [
-          "Fix share links using tracker domain for anonymity instead of exposing local IP"
         ]
       }
     ],

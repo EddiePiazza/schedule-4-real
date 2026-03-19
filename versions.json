@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-18T13:08:36Z",
+  "generatedAt": "2026-03-19T02:42:26Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.88.9",
-      "archive": "s4r-web-1.88.9.tar.gz",
-      "sha256": "78c9f5debabaa871d6af269879707048c60802718c07ca23770c92eb6953bacb",
-      "size": 11218261,
+      "version": "1.89.0",
+      "archive": "s4r-web-1.89.0.tar.gz",
+      "sha256": "c4517509b64a291167fa38a5ee03aa302d3ef2814270dfbd3970ff1442b54fcc",
+      "size": 11224985,
       "changelog": [
+        {
+          "version": "1.89.0",
+          "changes": [
+            "Fix AI assistant using Air VPD instead of Leaf VPD for recommendations",
+            "Add calibration capacity charts showing blower reduction per speed level",
+            "Redesign VPD Control with 9 built-in stages, 3 modes, and blower as extractor option"
+          ]
+        },
         {
           "version": "1.88.9",
           "changes": [
@@ -1757,11 +1765,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.15.2",
-      "archive": "s4r-supervisor-1.15.2.tar.gz",
-      "sha256": "2f3f06ea0b72925e11547a3f77854231e313b51cdf05f69c3051eb5344471eac",
-      "size": 40073,
+      "version": "1.16.0",
+      "archive": "s4r-supervisor-1.16.0.tar.gz",
+      "sha256": "dea0ebf472d47b8601d79e2ea80e52b5a4a91a088c7ca95c83883041c1b6d1c7",
+      "size": 45036,
       "changelog": [
+        {
+          "version": "1.16.0",
+          "changes": [
+            "Add scientific VPD algorithm with calibration-based blower speed and thermal grace periods"
+          ]
+        },
         {
           "version": "1.15.2",
           "changes": [
