@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-20T23:02:59Z",
+  "generatedAt": "2026-03-20T23:13:29Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1771,11 +1771,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.0",
-      "archive": "s4r-supervisor-1.16.0.tar.gz",
-      "sha256": "dea0ebf472d47b8601d79e2ea80e52b5a4a91a088c7ca95c83883041c1b6d1c7",
-      "size": 45036,
+      "version": "1.16.1",
+      "archive": "s4r-supervisor-1.16.1.tar.gz",
+      "sha256": "c143f00ceb8d96311af1a1d0014b8fae21ded03cd899f3abbab6cfba61a42acb",
+      "size": 52738,
       "changelog": [
+        {
+          "version": "1.16.1",
+          "changes": [
+            "Auto-start camera service on update if not registered in PM2"
+          ]
+        },
         {
           "version": "1.16.0",
           "changes": [

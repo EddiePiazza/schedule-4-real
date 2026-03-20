@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-20T23:02:43.202Z",
+  "lastCheck": "2026-03-20T23:12:43.204Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.0",
-      "installedAt": "2026-03-19T02:42:26Z"
+      "version": "1.16.1",
+      "installedAt": "2026-03-20T23:13:29Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.0",
+        "changes": [
+          "Add temperature unit selector (\u00b0C/\u00b0F) with conversion across dashboard, settings, charts, and soil sensors"
+        ]
+      },
       {
         "version": "1.89.0",
         "changes": [
@@ -372,13 +378,6 @@
         "version": "1.72.1",
         "changes": [
           "Fix relay auto-detect to use wss:// and normalize domain-only URLs"
-        ]
-      },
-      {
-        "version": "1.72.0",
-        "changes": [
-          "Refactor Phenotype Journal to room-centric model with unified stage system",
-          "Harden multiplayer WebSocket with timing-safe auth and input validation"
         ]
       }
     ],

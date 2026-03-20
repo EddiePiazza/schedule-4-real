@@ -1062,8 +1062,29 @@ async function applyUpdates(components = [], onProgress = null) {
       // Note: clearProgress() intentionally NOT called here — the new process
       // will start clean, and clients use the WS disconnect to detect restart.
       // Also restart camera service (shares src/services/ with web package)
-      try { execSync('pm2 restart s4r-cameras', { stdio: 'pipe' }); } catch {
-        try { execSync('pm2 restart spiderapp-cameras', { stdio: 'pipe' }); } catch {}
+      // If camera-service.cjs exists but PM2 process doesn't, start it for the first time
+      const cameraScript = path.join(getProjectRoot(), 'src/services/camera-service.cjs');
+      if (fs.existsSync(cameraScript)) {
+        let cameraRunning = false;
+        try {
+          const pmList = execSync('pm2 jlist', { stdio: 'pipe' }).toString();
+          const procs = JSON.parse(pmList);
+          cameraRunning = procs.some(p => p.name === 's4r-cameras' || p.name === 'spiderapp-cameras');
+        } catch {}
+        if (cameraRunning) {
+          try { execSync('pm2 restart s4r-cameras', { stdio: 'pipe' }); } catch {
+            try { execSync('pm2 restart spiderapp-cameras', { stdio: 'pipe' }); } catch {}
+          }
+        } else {
+          console.log('[Updater] Camera service not registered in PM2 — starting it...');
+          try {
+            execSync(`pm2 start "${cameraScript}" --name s4r-cameras --cwd "${getProjectRoot()}" --max-memory-restart 256M`, { stdio: 'pipe' });
+            execSync('pm2 save', { stdio: 'pipe' });
+            console.log('[Updater] Camera service started and saved to PM2');
+          } catch (e) {
+            console.error('[Updater] Failed to start camera service:', e.message);
+          }
+        }
       }
       try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2Name}`, { stdio: 'pipe' }); } catch {
         try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2NameLegacy}`, { stdio: 'pipe' }); } catch {}
