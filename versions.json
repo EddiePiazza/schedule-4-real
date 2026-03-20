@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-20T23:19:46Z",
+  "generatedAt": "2026-03-20T23:30:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1771,11 +1771,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.3",
-      "archive": "s4r-supervisor-1.16.3.tar.gz",
-      "sha256": "21c450d881f9464945441bf32d8bbbf6738bcbb411ff5481397f6e2591e317b2",
-      "size": 52734,
+      "version": "1.16.4",
+      "archive": "s4r-supervisor-1.16.4.tar.gz",
+      "sha256": "d0826314f8d320f96cc5901318095792a6e79de45bdc020dbb74ed324b286233",
+      "size": 52825,
       "changelog": [
+        {
+          "version": "1.16.4",
+          "changes": [
+            "Fix rebranding migration re-running on every update and killing mosquitto/proxy"
+          ]
+        },
         {
           "version": "1.16.3",
           "changes": [

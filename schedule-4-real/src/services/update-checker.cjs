@@ -1386,9 +1386,17 @@ function runPostUpdateMigrations() {
     // ═══════════════════════════════════════════════════════════════════
     const rebrandingFlag = path.join(PROJECT_ROOT, 'data', '.rebranding-done');
     if (!fs.existsSync(rebrandingFlag)) {
+      // If already installed as schedule-4-real (new installs), just write the flag and skip migration
+      if (PROJECT_ROOT.endsWith('schedule-4-real') && path.basename(PROJECT_ROOT) === 'schedule-4-real') {
+        console.log('[Updater] Migration: Already schedule-4-real, writing flag (no migration needed)');
+        try {
+          fs.mkdirSync(path.join(PROJECT_ROOT, 'data'), { recursive: true });
+          fs.writeFileSync(rebrandingFlag, JSON.stringify({ date: new Date().toISOString(), note: 'native-install' }));
+        } catch {}
+      }
       // Also check in schedule-4-real if folder was already renamed but flag failed
       const altFlag = path.join(path.dirname(PROJECT_ROOT), 'schedule-4-real', 'data', '.rebranding-done');
-      if (PROJECT_ROOT.endsWith('schedule-4-real') || !fs.existsSync(altFlag)) {
+      if (!fs.existsSync(rebrandingFlag) && !fs.existsSync(altFlag)) {
         console.log('[Updater] Migration: Running rebranding (spiderfarmer → s4r)...');
         try {
           // Determine the working directory (current or after rename)
