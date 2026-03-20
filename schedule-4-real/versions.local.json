@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-20T23:12:43.204Z",
+  "lastCheck": "2026-03-20T23:14:12.341Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.1",
-      "installedAt": "2026-03-20T23:13:29Z"
+      "version": "1.16.2",
+      "installedAt": "2026-03-20T23:17:51Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -470,6 +470,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.1",
+        "changes": [
+          "Auto-start camera service on update if not registered in PM2"
+        ]
+      },
       {
         "version": "1.16.0",
         "changes": [

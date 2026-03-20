@@ -1063,7 +1063,7 @@ async function applyUpdates(components = [], onProgress = null) {
       // will start clean, and clients use the WS disconnect to detect restart.
       // Also restart camera service (shares src/services/ with web package)
       // If camera-service.cjs exists but PM2 process doesn't, start it for the first time
-      const cameraScript = path.join(getProjectRoot(), 'src/services/camera-service.cjs');
+      const cameraScript = path.join(PROJECT_ROOT, 'src/services/camera-service.cjs');
       if (fs.existsSync(cameraScript)) {
         let cameraRunning = false;
         try {
@@ -1078,7 +1078,7 @@ async function applyUpdates(components = [], onProgress = null) {
         } else {
           console.log('[Updater] Camera service not registered in PM2 — starting it...');
           try {
-            execSync(`pm2 start "${cameraScript}" --name s4r-cameras --cwd "${getProjectRoot()}" --max-memory-restart 256M`, { stdio: 'pipe' });
+            execSync(`pm2 start "${cameraScript}" --name s4r-cameras --cwd "${PROJECT_ROOT}" --max-memory-restart 256M`, { stdio: 'pipe' });
             execSync('pm2 save', { stdio: 'pipe' });
             console.log('[Updater] Camera service started and saved to PM2');
           } catch (e) {

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-20T23:13:29Z",
+  "generatedAt": "2026-03-20T23:17:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1771,11 +1771,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.1",
-      "archive": "s4r-supervisor-1.16.1.tar.gz",
-      "sha256": "c143f00ceb8d96311af1a1d0014b8fae21ded03cd899f3abbab6cfba61a42acb",
-      "size": 52738,
+      "version": "1.16.2",
+      "archive": "s4r-supervisor-1.16.2.tar.gz",
+      "sha256": "b3573f5ec22e49e5e966177f4b0ddd958430bb105886590cd18e4dcebca4c2ea",
+      "size": 52739,
       "changelog": [
+        {
+          "version": "1.16.2",
+          "changes": [
+            "Fix camera service auto-start using correct PROJECT_ROOT variable"
+          ]
+        },
         {
           "version": "1.16.1",
           "changes": [
