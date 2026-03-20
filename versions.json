@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-20T23:17:51Z",
+  "generatedAt": "2026-03-20T23:19:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1771,11 +1771,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.2",
-      "archive": "s4r-supervisor-1.16.2.tar.gz",
-      "sha256": "b3573f5ec22e49e5e966177f4b0ddd958430bb105886590cd18e4dcebca4c2ea",
-      "size": 52739,
+      "version": "1.16.3",
+      "archive": "s4r-supervisor-1.16.3.tar.gz",
+      "sha256": "21c450d881f9464945441bf32d8bbbf6738bcbb411ff5481397f6e2591e317b2",
+      "size": 52734,
       "changelog": [
+        {
+          "version": "1.16.3",
+          "changes": [
+            "Include camera-service.cjs in supervisor update extraction paths"
+          ]
+        },
         {
           "version": "1.16.2",
           "changes": [

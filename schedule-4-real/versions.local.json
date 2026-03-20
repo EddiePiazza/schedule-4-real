@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-20T23:14:12.341Z",
+  "lastCheck": "2026-03-20T23:18:36.729Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.2",
-      "installedAt": "2026-03-20T23:17:51Z"
+      "version": "1.16.3",
+      "installedAt": "2026-03-20T23:19:46Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -470,6 +470,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.2",
+        "changes": [
+          "Fix camera service auto-start using correct PROJECT_ROOT variable"
+        ]
+      },
       {
         "version": "1.16.1",
         "changes": [

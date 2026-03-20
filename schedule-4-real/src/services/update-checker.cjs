@@ -56,7 +56,7 @@ const COMPONENT_DEFS = {
   },
   supervisor: {
     label: 'Supervisor Agent',
-    paths: ['src/services/supervisor-agent.cjs', 'src/services/update-checker.cjs', 'pm2-start.sh'],
+    paths: ['src/services/supervisor-agent.cjs', 'src/services/update-checker.cjs', 'src/services/camera-service.cjs', 'pm2-start.sh'],
     restart: 'pm2',
     pm2Name: 's4r-supervisor',
     pm2NameLegacy: 'spiderapp-supervisor',
