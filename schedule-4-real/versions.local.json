@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-19T02:34:40.587Z",
+  "lastCheck": "2026-03-20T23:02:43.202Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.89.0",
-      "installedAt": "2026-03-19T02:42:26Z"
+      "version": "1.90.0",
+      "installedAt": "2026-03-20T23:02:59Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.89.0",
+        "changes": [
+          "Fix AI assistant using Air VPD instead of Leaf VPD for recommendations",
+          "Add calibration capacity charts showing blower reduction per speed level",
+          "Redesign VPD Control with 9 built-in stages, 3 modes, and blower as extractor option"
+        ]
+      },
       {
         "version": "1.88.9",
         "changes": [
@@ -372,12 +380,6 @@
           "Refactor Phenotype Journal to room-centric model with unified stage system",
           "Harden multiplayer WebSocket with timing-safe auth and input validation"
         ]
-      },
-      {
-        "version": "1.71.3",
-        "changes": [
-          "Fix share links incorrectly falling back to relay-only domains"
-        ]
       }
     ],
     "ingest": [
@@ -469,6 +471,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.0",
+        "changes": [
+          "Add scientific VPD algorithm with calibration-based blower speed and thermal grace periods"
+        ]
+      },
       {
         "version": "1.15.2",
         "changes": [

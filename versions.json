@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-19T02:42:26Z",
+  "generatedAt": "2026-03-20T23:02:59Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.89.0",
-      "archive": "s4r-web-1.89.0.tar.gz",
-      "sha256": "c4517509b64a291167fa38a5ee03aa302d3ef2814270dfbd3970ff1442b54fcc",
-      "size": 11224985,
+      "version": "1.90.0",
+      "archive": "s4r-web-1.90.0.tar.gz",
+      "sha256": "62ebcb9d77a9d997f6e41b83f476aa13f90e42ac8ecccc6194c33d91cc0e7dbf",
+      "size": 11239240,
       "changelog": [
+        {
+          "version": "1.90.0",
+          "changes": [
+            "Add temperature unit selector (\u00b0C/\u00b0F) with conversion across dashboard, settings, charts, and soil sensors"
+          ]
+        },
         {
           "version": "1.89.0",
           "changes": [
