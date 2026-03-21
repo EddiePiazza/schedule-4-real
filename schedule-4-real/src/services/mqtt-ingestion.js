@@ -599,7 +599,7 @@ async function storeLightStates(deviceMac, data) {
         light.id,
         light.data.modeType ?? null,
         light.data.level ?? light.data.mLevel ?? null,
-        light.data.mOnOff ?? null
+        light.data.mOnOff ?? (light.data.level > 0 || light.data.mLevel > 0 ? 1 : null)
       ]);
 
       emitSensorData({

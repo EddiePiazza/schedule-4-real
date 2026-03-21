@@ -1,16 +1,16 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T12:27:21.283Z",
+  "lastCheck": "2026-03-21T14:17:21.309Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.1",
-      "installedAt": "2026-03-21T12:28:27Z"
+      "version": "1.90.2",
+      "installedAt": "2026-03-21T14:18:44Z"
     },
     "ingest": {
-      "version": "1.8.0",
-      "installedAt": "2026-03-18T03:13:18Z"
+      "version": "1.8.1",
+      "installedAt": "2026-03-21T14:18:44Z"
     },
     "retention": {
       "version": "1.0.5",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.1",
+        "changes": [
+          "Fix \u00b0C/\u00b0F not persisting, save button greyed out, PPFD alarm MIN, power stats PS10, soil sensor blur save, and climate module auto mode display"
+        ]
+      },
       {
         "version": "1.90.0",
         "changes": [
@@ -372,12 +378,6 @@
         "changes": [
           "Fix diagnostic data lost when editing existing observations",
           "Move plant diagnostic to dedicated wizard step with guided navigation"
-        ]
-      },
-      {
-        "version": "1.72.1",
-        "changes": [
-          "Fix relay auto-detect to use wss:// and normalize domain-only URLs"
         ]
       }
     ],

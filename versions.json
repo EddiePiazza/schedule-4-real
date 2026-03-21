@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T12:28:27Z",
+  "generatedAt": "2026-03-21T14:18:44Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.1",
-      "archive": "s4r-web-1.90.1.tar.gz",
-      "sha256": "1f9a619c52c3aa909bc6873bf05ab696ab27e5507f555378c8946bef4f68a99e",
-      "size": 11240510,
+      "version": "1.90.2",
+      "archive": "s4r-web-1.90.2.tar.gz",
+      "sha256": "6e30e87eecd68eecbc686f199a0e2700c9054b582c2ab2691f74f7a6dc6b4a6b",
+      "size": 11240474,
       "changelog": [
+        {
+          "version": "1.90.2",
+          "changes": [
+            "Fix Light 2 power consumption showing 0 kWh when is_on field is null"
+          ]
+        },
         {
           "version": "1.90.1",
           "changes": [
@@ -1677,11 +1683,17 @@
       ]
     },
     "ingest": {
-      "version": "1.8.0",
-      "archive": "s4r-ingest-1.8.0.tar.gz",
-      "sha256": "b73dca740fea8582f9a21c997fe493ebdfdafc445badc46f905235ead62f9c3e",
-      "size": 6722,
+      "version": "1.8.1",
+      "archive": "s4r-ingest-1.8.1.tar.gz",
+      "sha256": "0a5ce05f279e3b9e7d8bd0329e497056406f8206ce521bd9397693718102f3d9",
+      "size": 6738,
       "changelog": [
+        {
+          "version": "1.8.1",
+          "changes": [
+            "Derive light is_on from brightness level when mOnOff field is missing"
+          ]
+        },
         {
           "version": "1.8.0",
           "changes": [
