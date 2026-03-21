@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T14:17:21.309Z",
+  "lastCheck": "2026-03-21T16:37:21.295Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.2",
-      "installedAt": "2026-03-21T14:18:44Z"
+      "version": "1.90.3",
+      "installedAt": "2026-03-21T16:42:05Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.2",
+        "changes": [
+          "Fix Light 2 power consumption showing 0 kWh when is_on field is null"
+        ]
+      },
       {
         "version": "1.90.1",
         "changes": [
@@ -372,16 +378,15 @@
         "changes": [
           "Fix publish script not updating README and showing all versions in commit"
         ]
-      },
-      {
-        "version": "1.73.0",
-        "changes": [
-          "Fix diagnostic data lost when editing existing observations",
-          "Move plant diagnostic to dedicated wizard step with guided navigation"
-        ]
       }
     ],
     "ingest": [
+      {
+        "version": "1.8.1",
+        "changes": [
+          "Derive light is_on from brightness level when mOnOff field is missing"
+        ]
+      },
       {
         "version": "1.8.0",
         "changes": [

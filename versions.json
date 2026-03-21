@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T14:18:44Z",
+  "generatedAt": "2026-03-21T16:42:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.2",
-      "archive": "s4r-web-1.90.2.tar.gz",
-      "sha256": "6e30e87eecd68eecbc686f199a0e2700c9054b582c2ab2691f74f7a6dc6b4a6b",
-      "size": 11240474,
+      "version": "1.90.3",
+      "archive": "s4r-web-1.90.3.tar.gz",
+      "sha256": "07c83da07d8a87993ab0efca3836061a255676f024bdb80aff818b2cb3027b73",
+      "size": 11241082,
       "changelog": [
+        {
+          "version": "1.90.3",
+          "changes": [
+            "Fix \u00b0C/\u00b0F toggle activating Save button and power consumption showing all device sockets"
+          ]
+        },
         {
           "version": "1.90.2",
           "changes": [
