@@ -1,14 +1,32 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T16:42:05Z",
+  "generatedAt": "2026-03-21T17:04:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.3",
-      "archive": "s4r-web-1.90.3.tar.gz",
-      "sha256": "07c83da07d8a87993ab0efca3836061a255676f024bdb80aff818b2cb3027b73",
-      "size": 11241082,
+      "version": "1.90.6",
+      "archive": "s4r-web-1.90.6.tar.gz",
+      "sha256": "7392a129505b5e245384dfe90482560857efb6bdb6c32faf5e9fc699a499dcee",
+      "size": 11239816,
       "changelog": [
+        {
+          "version": "1.90.6",
+          "changes": [
+            "Fix settings page crash from variable declaration order"
+          ]
+        },
+        {
+          "version": "1.90.5",
+          "changes": [
+            "Fix settings page crash caused by variable used before declaration"
+          ]
+        },
+        {
+          "version": "1.90.4",
+          "changes": [
+            "Fix settings page crash caused by watch accessing uninitialized ref"
+          ]
+        },
         {
           "version": "1.90.3",
           "changes": [

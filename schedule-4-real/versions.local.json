@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T16:37:21.295Z",
+  "lastCheck": "2026-03-21T16:57:21.235Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.3",
-      "installedAt": "2026-03-21T16:42:05Z"
+      "version": "1.90.6",
+      "installedAt": "2026-03-21T17:04:20Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.4",
+        "changes": [
+          "Fix settings page crash caused by watch accessing uninitialized ref"
+        ]
+      },
+      {
+        "version": "1.90.3",
+        "changes": [
+          "Fix \u00b0C/\u00b0F toggle activating Save button and power consumption showing all device sockets"
+        ]
+      },
       {
         "version": "1.90.2",
         "changes": [
@@ -365,18 +377,6 @@
         "version": "1.73.3",
         "changes": [
           "Update README with grow tent builder, ducting, mobile controls, display charts, and phone casting"
-        ]
-      },
-      {
-        "version": "1.73.2",
-        "changes": [
-          "Update README tagline and add table of contents"
-        ]
-      },
-      {
-        "version": "1.73.1",
-        "changes": [
-          "Fix publish script not updating README and showing all versions in commit"
         ]
       }
     ],
