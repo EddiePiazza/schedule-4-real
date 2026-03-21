@@ -177,6 +177,13 @@ async function startGo2rtc() {
     child = null;
   }
 
+  // Kill any orphaned go2rtc processes (e.g., from previous camera service restart)
+  try {
+    execFile('pkill', ['-9', '-f', 'go2rtc'], (err) => { /* ignore */ });
+    // Wait for port 1984 to be free
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  } catch { /* ignore */ }
+
   if (!fs.existsSync(BIN_PATH)) {
     const ok = await downloadBinary();
     if (!ok) {
@@ -248,8 +255,17 @@ async function stopGo2rtc() {
   if (child) {
     console.log('[Camera] Stopping go2rtc...');
     try { child.kill('SIGTERM'); } catch { /* ignore */ }
+    // Force kill after 2s if still alive
+    const pid = child?.pid;
     child = null;
+    if (pid) {
+      setTimeout(() => {
+        try { process.kill(pid, 'SIGKILL'); } catch { /* already dead */ }
+      }, 2000);
+    }
   }
+  // Also kill any orphaned go2rtc processes
+  try { execFile('pkill', ['-9', '-f', 'go2rtc'], () => {}); } catch { /* ignore */ }
 }
 
 async function reloadGo2rtc() {

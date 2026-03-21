@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T17:17:21.272Z",
+  "lastCheck": "2026-03-21T17:27:21.288Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.4",
-      "installedAt": "2026-03-20T23:30:31Z"
+      "version": "1.16.5",
+      "installedAt": "2026-03-21T17:35:49Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.7",
+        "changes": [
+          "Group sockets by device (PS5/PS10) in dashboard and settings, fetch full outlet configs with timePeriod"
+        ]
+      },
       {
         "version": "1.90.6",
         "changes": [
@@ -367,13 +373,6 @@
         "version": "1.73.6",
         "changes": [
           "Fix diagnostic navigation buttons missing in encyclopedia"
-        ]
-      },
-      {
-        "version": "1.73.5",
-        "changes": [
-          "Fix private rooms making external relay connections on entry",
-          "Fix public rooms not appearing on landing page (missing invite token in metadata)"
         ]
       }
     ],

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T17:18:20Z",
+  "generatedAt": "2026-03-21T17:35:49Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1819,11 +1819,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.4",
-      "archive": "s4r-supervisor-1.16.4.tar.gz",
-      "sha256": "d0826314f8d320f96cc5901318095792a6e79de45bdc020dbb74ed324b286233",
-      "size": 52825,
+      "version": "1.16.5",
+      "archive": "s4r-supervisor-1.16.5.tar.gz",
+      "sha256": "2a6cd90d4959dcdbb2ac9047be12cb3d36dd2c43d106217b50add86f7eba873c",
+      "size": 54274,
       "changelog": [
+        {
+          "version": "1.16.5",
+          "changes": [
+            "Fix go2rtc orphan process blocking camera restart after service update"
+          ]
+        },
         {
           "version": "1.16.4",
           "changes": [
