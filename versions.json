@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T17:04:20Z",
+  "generatedAt": "2026-03-21T17:18:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.6",
-      "archive": "s4r-web-1.90.6.tar.gz",
-      "sha256": "7392a129505b5e245384dfe90482560857efb6bdb6c32faf5e9fc699a499dcee",
-      "size": 11239816,
+      "version": "1.90.7",
+      "archive": "s4r-web-1.90.7.tar.gz",
+      "sha256": "bb20c3784d99983357c3e53321621d233cd5a89d03e870524541678d984b04df",
+      "size": 11241271,
       "changelog": [
+        {
+          "version": "1.90.7",
+          "changes": [
+            "Group sockets by device (PS5/PS10) in dashboard and settings, fetch full outlet configs with timePeriod"
+          ]
+        },
         {
           "version": "1.90.6",
           "changes": [
