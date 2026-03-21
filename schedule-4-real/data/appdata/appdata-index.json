@@ -1,1 +1,577 @@
-error code: 524
+{
+  "generated": "2026-03-21T12:28:35Z",
+  "files": {
+    "socket-chart-visibility.json": {
+      "hash": "5be12b8e102f3614f4a03b47f647e451",
+      "size": 32
+    },
+    "appdata-index.json": {
+      "hash": "009f15e792c9a92d42f9c68a07087326",
+      "size": 10149
+    },
+    "images/SCHEDULE-4-REAL.svg": {
+      "hash": "be5762495e3fa0620c5248b87c8378af",
+      "size": 8542
+    },
+    "images/equirectangular/rogland_clear_night_2k.jpg": {
+      "hash": "2c625a64b35abb54951fe76ba41c71bc",
+      "size": 8307930
+    },
+    "video/loby-background.mp4": {
+      "hash": "d9e4bd629b8bd858982c5abb1c568043",
+      "size": 5301395
+    },
+    "display-images/timelapse.mp4": {
+      "hash": "03c3efe4ace061b5b62db572d8dc2eb1",
+      "size": 6106535
+    },
+    "display-images/our-strains-bolo-runtz.jpg": {
+      "hash": "1b8581d0ef2bc8585c01cd036b471949",
+      "size": 477790
+    },
+    "models/plant_pot.glb": {
+      "hash": "4c799fae66a7fd469c0cd528478d2cff",
+      "size": 2456484
+    },
+    "models/plant_veg.glb": {
+      "hash": "9210b7049037f5a0b0db016b7205f9a3",
+      "size": 98436
+    },
+    "models/grow_led.glb": {
+      "hash": "cea82dace62eb3ce2d956e812b80df91",
+      "size": 2782760
+    },
+    "models/cannabis_plant.glb": {
+      "hash": "0af0baef149f9747e6562f804e87825c",
+      "size": 3511796
+    },
+    "models/plant_flower.glb": {
+      "hash": "764476e8d70b382d22cc7f8dac54cb18",
+      "size": 195160
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Color.jpg": {
+      "hash": "9ac72f3a42e8957e696ffd954d011cbd",
+      "size": 358091
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_NormalGL.jpg": {
+      "hash": "f37d9f9fc89476ba98ede4f474af338b",
+      "size": 618413
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Roughness.jpg": {
+      "hash": "2e62725363b8bd88155badfa872eb724",
+      "size": 256230
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Displacement.jpg": {
+      "hash": "d5cb5df9f1c45d8e4625a6920cccfa92",
+      "size": 313782
+    },
+    "models/textures/metal1/Metal061A_1K-JPG_Metalness.jpg": {
+      "hash": "30c1d68817e2f9bca92997179b81723f",
+      "size": 11054
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Roughness.jpg": {
+      "hash": "918e7648c0ac88090349704c063dc051",
+      "size": 866950
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Displacement.jpg": {
+      "hash": "283bd551f90cba3ce14e0b14670235d8",
+      "size": 831560
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_AmbientOcclusion.jpg": {
+      "hash": "cc72b3b03bd5ea54c22ce16e91f57290",
+      "size": 835879
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_NormalGL.jpg": {
+      "hash": "f325f80796d2627ab9215e881f4b134c",
+      "size": 2682952
+    },
+    "models/textures/leader1/Fabric030_1K-JPG_Color.jpg": {
+      "hash": "8952c51aaecb6708a5d3a9928f29846b",
+      "size": 1681447
+    },
+    "models/userassets/simple_tv_remote.glb": {
+      "hash": "9859547adb4bcb3ded9400c1ac5b7198",
+      "size": 312616
+    },
+    "models/userassets/remote_control_modules.glb": {
+      "hash": "a70b242b16dcf5b40cb7737c193cd1df",
+      "size": 4462548
+    },
+    "models/rooms/big_room.glb": {
+      "hash": "09c0c9e4e488669375538fa5f62ed90d",
+      "size": 12839344
+    },
+    "models/rooms/art_gallery.webp": {
+      "hash": "bfc9c70d0ef4425ccb49c5514a1687c2",
+      "size": 114652
+    },
+    "models/rooms/vr_gallery.webp": {
+      "hash": "65c0d1bf517791f2122790697d96a7af",
+      "size": 298040
+    },
+    "models/rooms/vr_room_baked.webp": {
+      "hash": "b7356df0a02f01ccb55de344d2415bc5",
+      "size": 155518
+    },
+    "models/rooms/room_blank.webp": {
+      "hash": "6d72916ec65168321ee09f840dbd0ba4",
+      "size": 114662
+    },
+    "models/rooms/vr_gallery.glb": {
+      "hash": "b122281ec559be607a67e6b8c284c400",
+      "size": 47121744
+    },
+    "models/rooms/underground.webp": {
+      "hash": "81362ba246c447566ae3f7ca1ebcfdcc",
+      "size": 581148
+    },
+    "models/rooms/big_room.webp": {
+      "hash": "322f5314d9e6cb070c51771588f961d2",
+      "size": 378758
+    },
+    "models/rooms/art_gallery.glb": {
+      "hash": "7b9e6983763ed836aa302c1afb33cbb9",
+      "size": 2550788
+    },
+    "models/rooms/mammoth_structure_062822.glb": {
+      "hash": "6e7369a80e43948170434f334c5b7d39",
+      "size": 3797896
+    },
+    "models/rooms/rooms.json": {
+      "hash": "f8f80fc599f9119a5c69dab3fd3b20b6",
+      "size": 1802
+    },
+    "models/rooms/mammoth_structure_062822_copy.webp": {
+      "hash": "3c4dbdbed2478e90c23e1f118e576b1c",
+      "size": 355586
+    },
+    "models/rooms/underground.glb": {
+      "hash": "81ece1414438dd43420ac8e37a6d75c1",
+      "size": 29926260
+    },
+    "models/rooms/vr_room.webp": {
+      "hash": "25d9535a338d6a9f9505f49cbd3ad7f7",
+      "size": 203476
+    },
+    "models/rooms/room_blank.glb": {
+      "hash": "3c8e927fc9c910a218549bc820f11f22",
+      "size": 12591404
+    },
+    "models/rooms/vr_room_baked.glb": {
+      "hash": "52fbad392cecc10e892d9594f5688ad5",
+      "size": 25158564
+    },
+    "models/rooms/texture-test.webp": {
+      "hash": "3fc916acaeffcfc026b91dc2ef83f810",
+      "size": 131460
+    },
+    "models/assets/picture_frame_1.glb": {
+      "hash": "3f68a8318c9b576c96e0bad1e640bfb5",
+      "size": 35392
+    },
+    "models/assets/picture_frame_2.glb": {
+      "hash": "1c9cf2cb7c2345b922b9e056a2e953c2",
+      "size": 240380
+    },
+    "models/assets/keypad_codelock.glb": {
+      "hash": "0fe294b1c84ad602b3bd6d07e87510b5",
+      "size": 2142704
+    },
+    "models/assets/fourniture/simple_basic_office__work_desk.glb": {
+      "hash": "d3274497906b9e9296512c2d3ea6b964",
+      "size": 224200
+    },
+    "models/assets/fourniture/realistic_blackboard.glb": {
+      "hash": "ea548d23621555882076e1ac5d802073",
+      "size": 2243912
+    },
+    "models/assets/fourniture/wooden_back_bar_cabinet.glb": {
+      "hash": "70adf61d990ebf60591eea393a86cfa7",
+      "size": 4105972
+    },
+    "models/assets/fourniture/carpets_from_asia.glb": {
+      "hash": "6a5404da5e15926e390b0e33b2c80543",
+      "size": 5105456
+    },
+    "models/assets/fourniture/unfc_computer_suitcase.glb": {
+      "hash": "dedf674c185ae877e3b279437d6a673c",
+      "size": 3012424
+    },
+    "models/assets/fourniture/monitor-curve.glb": {
+      "hash": "dd57215cddff057b1fb0493a2a3f74cc",
+      "size": 972072
+    },
+    "models/assets/lights/grow_led.glb": {
+      "hash": "cea82dace62eb3ce2d956e812b80df91",
+      "size": 2782760
+    },
+    "models/assets/lights/long_light.glb": {
+      "hash": "d5011cdce7b5692aee6647a6277f4ae9",
+      "size": 2003420
+    },
+    "models/assets/lights/cc0_-_wall_lamp.glb": {
+      "hash": "d2adc599d856106136c844b261c45421",
+      "size": 1110820
+    },
+    "models/assets/lights/wall_lamp_game-ready.glb": {
+      "hash": "dea643924e536cde10a11525761256b5",
+      "size": 92376
+    },
+    "models/assets/plants/compost_bag.glb": {
+      "hash": "9365944d4f0fdad8ccabae6c5bfb0d0e",
+      "size": 3905924
+    },
+    "models/assets/plants/compost_bags.glb": {
+      "hash": "0b1c1fdfbd13efa1e55c9523aed6b075",
+      "size": 5955304
+    },
+    "models/assets/plants/cannabis_sativa_plant.glb": {
+      "hash": "8dff0912b6cb5fef460fadb247505b11",
+      "size": 6203928
+    },
+    "models/assets/plants/seed.glb": {
+      "hash": "66f5b879ebaa94495626752dff077096",
+      "size": 3379180
+    },
+    "models/assets/plants/weed_brick_open.glb": {
+      "hash": "76dd0cfd1ddf33eb718b7cd3c1d9ed98",
+      "size": 440464
+    },
+    "models/assets/plants/weed_brick_2.glb": {
+      "hash": "38745e9ff4ab7354d15eceacab0bbcd2",
+      "size": 606876
+    },
+    "models/assets/plants/weed_in_a_bag.glb": {
+      "hash": "0f0201e7d9cdee0e64d1cd54af7cfa13",
+      "size": 6367280
+    },
+    "models/assets/parafernalia/microscope.glb": {
+      "hash": "79f6ff82323e12c3e2a7ce0f6b90014f",
+      "size": 1390872
+    },
+    "models/assets/parafernalia/lsd_drug_lab_kit.glb": {
+      "hash": "41dccb116d79a44159e0944376d8a65c",
+      "size": 1894588
+    },
+    "models/assets/parafernalia/super_bong_haze.glb": {
+      "hash": "417a4a2ee97a2bd8b1b9b6c38216539d",
+      "size": 5754888
+    },
+    "models/assets/parafernalia/joint.glb": {
+      "hash": "99a16680b706039ec4c19ee28dbab820",
+      "size": 288244
+    },
+    "models/assets/construction/door.glb": {
+      "hash": "daa0ffa175dcf292e3590c1a21fde53c",
+      "size": 2736144
+    },
+    "models/assets/construction/door2.glb": {
+      "hash": "adec4cbb685bf30f71c15b8dd27b2a3a",
+      "size": 7354032
+    },
+    "models/assets/construction/doors/door_metalic_keypad.glb": {
+      "hash": "d5fb5ec92a8493a9df45852a38dc0bb8",
+      "size": 18649260
+    },
+    "models/assets/digital/tv_retro.glb": {
+      "hash": "d9db5b03ac58bca5cd10528a41862596",
+      "size": 4024028
+    },
+    "models/assets/digital/tv_plasma.glb": {
+      "hash": "09569ec53962d93e964e5627d7ceff8b",
+      "size": 68812
+    },
+    "models/assets/animated/switches/keypad_codelock_2.glb": {
+      "hash": "687af0771987b5e78a19e1bfe1bc231a",
+      "size": 2039400
+    },
+    "models/assets/animated/switches/switch_keypad.glb": {
+      "hash": "4f58c15caba327b168aa503b0bd14105",
+      "size": 8530516
+    },
+    "models/assets/animated/switches/power_switch_1.glb": {
+      "hash": "e5d197e1ae8304515f96026ef7b51056",
+      "size": 822208
+    },
+    "models/assets/animated/switches/keypad_codelock.glb": {
+      "hash": "0fe294b1c84ad602b3bd6d07e87510b5",
+      "size": 2142704
+    },
+    "models/assets/animated/doors/elevator-door.glb": {
+      "hash": "8d3894e1d7843c07d86af197835b0070",
+      "size": 1962028
+    },
+    "models/assets/animated/doors/elevator.glb": {
+      "hash": "65c38d1855a0bd6c481a04f9af6e6266",
+      "size": 607116
+    },
+    "models/assets/animated/avatars/anime_girl_mia_ter_excited.glb": {
+      "hash": "70d9127ca36046f24ba2ab7fbb2bcd26",
+      "size": 33338152
+    },
+    "models/characters/Hazmat Zombie.glb": {
+      "hash": "1cd192c161dac35b3926d51164a982d5",
+      "size": 19618952
+    },
+    "models/characters/Chinese Girl.glb": {
+      "hash": "35caf056e918f61066ee11f414d83888",
+      "size": 18415224
+    },
+    "models/characters/Katherine Langford.glb": {
+      "hash": "c5eed6dafd36c02bcb40187ec352d794",
+      "size": 3358820
+    },
+    "models/characters/Natalia.glb": {
+      "hash": "6d036c1dae290d6dfccd443b5acbf55a",
+      "size": 9270160
+    },
+    "models/characters/Thug.glb": {
+      "hash": "ef60a972a66990bf54f85d00b7e41a2e",
+      "size": 22783592
+    },
+    "models/characters/Mask Warrior.glb": {
+      "hash": "91f5a9ac308dbf957f0c0db7a389020a",
+      "size": 4133188
+    },
+    "models/characters/Allison.glb": {
+      "hash": "b745dcc5c444e06fe58983e94f16bea0",
+      "size": 3665580
+    },
+    "models/characters/Zombie.glb": {
+      "hash": "1670b1614eda3c424edaf10d340b27af",
+      "size": 11373732
+    },
+    "models/characters/Male Cop.glb": {
+      "hash": "ed5694aea14cd94a9a4cac4f6282b6bf",
+      "size": 19390984
+    },
+    "models/characters/Stylish Man.glb": {
+      "hash": "da77787d578ae9636c5bec07b37195c8",
+      "size": 7874052
+    },
+    "models/characters/Stylish Executive.glb": {
+      "hash": "4a315973a7b97e7c6e30519c0cdf4111",
+      "size": 11691524
+    },
+    "models/characters/Farmer.glb": {
+      "hash": "c528c19b7fca7f3ebc55d9626758ecd6",
+      "size": 23151264
+    },
+    "models/characters/animations/Idle Turn Left.glb": {
+      "hash": "918f768727f6da50665cad51f0beb5a1",
+      "size": 2540616
+    },
+    "models/characters/animations/Walk Start.glb": {
+      "hash": "8f66ac605b53ac6ab9d315d868bb7dd3",
+      "size": 2536436
+    },
+    "models/characters/animations/Idle Turn Backward Left.glb": {
+      "hash": "9f19d3b1c02fbc827bc4c088f96b316d",
+      "size": 2540624
+    },
+    "models/characters/animations/Idle Turn Right.glb": {
+      "hash": "9996bbe5152c6442fcd9277f2128e161",
+      "size": 2539528
+    },
+    "models/characters/animations/Walk Forward Left.glb": {
+      "hash": "27b9a270c642341c3c512313fd6806a3",
+      "size": 2527300
+    },
+    "models/characters/animations/Idle.glb": {
+      "hash": "9325ab6b7c66e46768cbf3aa7d151303",
+      "size": 2618532
+    },
+    "models/characters/animations/Idle Turn Backward Right.glb": {
+      "hash": "849af90495b2da6a14d2c4ff5c014212",
+      "size": 2540624
+    },
+    "models/characters/animations/Walk Backward Left.glb": {
+      "hash": "9f738f59b8dcdd1e2a67b519a283a8ab",
+      "size": 2527300
+    },
+    "models/characters/animations/Walk Backward.glb": {
+      "hash": "b7d002a88d1b90ca5e3e54f1a63ed6c7",
+      "size": 2527296
+    },
+    "models/characters/animations/Walk Forward Right.glb": {
+      "hash": "8c22e545a0d035a43ac91c82123ff2c2",
+      "size": 2527300
+    },
+    "models/characters/animations/Walk Stop.glb": {
+      "hash": "820421af6f3d78a80858af272ed1bb86",
+      "size": 2539776
+    },
+    "models/characters/animations/Walk Right.glb": {
+      "hash": "627023fe3dc886077e771a67b84ae8af",
+      "size": 2527292
+    },
+    "models/characters/animations/Walk Forward.glb": {
+      "hash": "e17cc5e78a61e67806e85f8d6940cabb",
+      "size": 2527296
+    },
+    "models/characters/animations/Walk Left.glb": {
+      "hash": "5d8b9431a0a3ac99574ca27234c7c4a4",
+      "size": 2527292
+    },
+    "sound/zipper.mp3": {
+      "hash": "c83b45abe96ecbb06c15154de754dc46",
+      "size": 34524
+    },
+    "sound/unlock-door.mp3": {
+      "hash": "592d05b2be74c327bfa76b41f5e2ebb7",
+      "size": 19724
+    },
+    "sound/didital-lock-key-press.mp3": {
+      "hash": "071dc72ec5f0d26362c983f97d3289c9",
+      "size": 35108
+    },
+    "sound/key-press.mp3": {
+      "hash": "c5be5d9a9be39d62ad7423a2bf7869ff",
+      "size": 6732
+    },
+    "sound/stop.mp3": {
+      "hash": "3f9747f07780f0df8aa3b33ac1d90469",
+      "size": 198116
+    },
+    "sound/Footsteps.mp3": {
+      "hash": "221a1a804e875f8807d1bc10ea872949",
+      "size": 142037
+    },
+    "sound/smoking.mp3": {
+      "hash": "d29932d6b91d16d414342a6aaa23c203",
+      "size": 278016
+    },
+    "sound/wrong.mp3": {
+      "hash": "d7a5a46ec05e2554811d2298c9a8c8c8",
+      "size": 4845
+    },
+    "fonts/Silkscreen-Regular.ttf": {
+      "hash": "25fe3c5b81c19abcba746ad98e241919",
+      "size": 31960
+    },
+    "fonts/GloriaHallelujah-Regular.ttf": {
+      "hash": "88f5925529f9048eb49ac81f5360a2a3",
+      "size": 54232
+    },
+    "defaults/tv-channels.json": {
+      "hash": "0106dc713b87ed5c6695fa4e2ddfd501",
+      "size": 18067
+    },
+    "defaults/room-settings.json": {
+      "hash": "995132f8c77dd14ec0e19fb46a3a4192",
+      "size": 118
+    },
+    "defaults/asset-anim-meta.json": {
+      "hash": "55bd8a458b30db16aaf74913eb01f338",
+      "size": 145
+    },
+    "defaults/asset-scales.json": {
+      "hash": "7609e198927a82e85fdb74f4366b3606",
+      "size": 668
+    },
+    "defaults/room-calibrations.json": {
+      "hash": "12dca4fd09d7e38e522fb0c30ffb7f70",
+      "size": 673
+    },
+    "defaults/asset-rotations.json": {
+      "hash": "21d7010f69c7fbdc9a137b725061b5c9",
+      "size": 2268
+    },
+    "defaults/room-hidden-meshes.json": {
+      "hash": "2e8d4e37ea66d78433a02066578bd14d",
+      "size": 38
+    },
+    "defaults/asset-thumb-offsets.json": {
+      "hash": "b9400bdb7efafefebe9c8eecfcd1308d",
+      "size": 2341
+    },
+    "defaults/character-calibration.json": {
+      "hash": "6300cb3d65e417c5968440015d23f7db",
+      "size": 1235
+    },
+    "defaults/room-mesh-simplifications.json": {
+      "hash": "99914b932bd37a50b983c5e7c90ae93b",
+      "size": 2
+    },
+    "defaults/asset-meta.json": {
+      "hash": "05ef30ce021a6b17fd8f2972f36348fa",
+      "size": 42039
+    },
+    "defaults/room-spawns.json": {
+      "hash": "4375059e4283175a17177ac4dbb94bf3",
+      "size": 1224
+    },
+    "defaults/room-lighting/vr_gallery.json": {
+      "hash": "389c31b1b13fe81cbb1e30414916a57a",
+      "size": 17973
+    },
+    "defaults/room-lighting/texture-test.json": {
+      "hash": "5e9b80ba325acf4ea4fac265dc3736a8",
+      "size": 28812
+    },
+    "defaults/room-lighting/vr_room.json": {
+      "hash": "a3543499f1395dfe031bc6d905884e48",
+      "size": 11227
+    },
+    "defaults/room-lighting/mammoth_structure_062822_copy.json": {
+      "hash": "926d3ab9b5e28d677f1d751667c8e401",
+      "size": 19416
+    },
+    "defaults/room-lighting/underground.json": {
+      "hash": "e20c837f7ba8fa60f57e47e3a6d597e9",
+      "size": 11221
+    },
+    "defaults/room-lighting/big_room.json": {
+      "hash": "be78451c2b529d1d340ad2114232a3ee",
+      "size": 28819
+    },
+    "defaults/room-lighting/gallery.json": {
+      "hash": "d5e35aad6149e5b000b405e6e568dba0",
+      "size": 17988
+    },
+    "defaults/room-lighting/room_blank.json": {
+      "hash": "296ea58a07d42aa85d1505f7d59c7260",
+      "size": 17641
+    },
+    "defaults/room-lighting/art_gallery.json": {
+      "hash": "00ece6faa271e29e1ae2d51c8a674253",
+      "size": 15255
+    },
+    "defaults/room-objects/vr_gallery.json": {
+      "hash": "62b06a06d84958f976729819d46368ee",
+      "size": 819
+    },
+    "defaults/room-objects/vr_room.json": {
+      "hash": "c320092dd3511a6c61715d686dbad488",
+      "size": 817
+    },
+    "defaults/room-objects/richards_art_gallery.json": {
+      "hash": "d751713988987e9331980363e24189ce",
+      "size": 2
+    },
+    "defaults/room-objects/mammoth_structure_062822_copy.json": {
+      "hash": "89fd214fbc1c4ea232154a383b526ac1",
+      "size": 829
+    },
+    "defaults/room-objects/underground.json": {
+      "hash": "c57efcb32019e9c6994f60f97aa1913e",
+      "size": 824
+    },
+    "defaults/room-objects/big_room.json": {
+      "hash": "567eada99fc80c704acb38cbc43f62af",
+      "size": 136605
+    },
+    "defaults/room-objects/room_blank.json": {
+      "hash": "ddba1ea14d8a19a6ba96bd4a5ede16b9",
+      "size": 827
+    },
+    "defaults/room-objects/art_gallery.json": {
+      "hash": "9bbecea45a6ac0b6c8558303d3735806",
+      "size": 787
+    },
+    "defaults/room-objects/brutalist_interior.json": {
+      "hash": "4f2f4773a4b8cbaa57a0bef474218ebd",
+      "size": 19
+    }
+  }
+}

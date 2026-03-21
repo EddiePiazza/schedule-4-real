@@ -201,6 +201,9 @@ async function startGo2rtc() {
   }
   lastError = null;
 
+  // Ensure binary is executable (may lose +x after copy/extract)
+  try { fs.chmodSync(BIN_PATH, 0o755); } catch { /* ignore */ }
+
   console.log(`[Camera] Starting go2rtc with ${count} camera(s)...`);
   child = spawn(BIN_PATH, ['-config', CONFIG_PATH], {
     stdio: ['ignore', 'pipe', 'pipe'],

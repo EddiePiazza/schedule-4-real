@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T17:27:21.288Z",
+  "lastCheck": "2026-03-21T17:46:02.959Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.7",
-      "installedAt": "2026-03-21T17:18:20Z"
+      "version": "1.90.8",
+      "installedAt": "2026-03-21T17:49:42Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -471,6 +471,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.5",
+        "changes": [
+          "Fix go2rtc orphan process blocking camera restart after service update"
+        ]
+      },
       {
         "version": "1.16.4",
         "changes": [
