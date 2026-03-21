@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T17:46:02.959Z",
+  "lastCheck": "2026-03-21T19:06:02.944Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.8",
-      "installedAt": "2026-03-21T17:49:42Z"
+      "version": "1.90.9",
+      "installedAt": "2026-03-21T19:12:34Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.8",
+        "changes": [
+          "Add device group separators in socket settings, fetch outlet configs from CB for timePeriod data"
+        ]
+      },
       {
         "version": "1.90.7",
         "changes": [
@@ -367,12 +373,6 @@
         "version": "1.74.0",
         "changes": [
           "Redesign strain detail plant list with unified clone lineage groups"
-        ]
-      },
-      {
-        "version": "1.73.6",
-        "changes": [
-          "Fix diagnostic navigation buttons missing in encyclopedia"
         ]
       }
     ],

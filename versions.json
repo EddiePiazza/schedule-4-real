@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-21T17:49:42Z",
+  "generatedAt": "2026-03-21T19:12:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.8",
-      "archive": "s4r-web-1.90.8.tar.gz",
-      "sha256": "d3dfd86d71150bd1aa2e10a54361d8fd86bdeeb6f86db88a0d99c4eaf4f12523",
-      "size": 11241963,
+      "version": "1.90.9",
+      "archive": "s4r-web-1.90.9.tar.gz",
+      "sha256": "91e6dd32fff84dd93f6031a5cfdd34c834b1cf5ab9f4e61cb9ef332a9ccf1042",
+      "size": 11240814,
       "changelog": [
+        {
+          "version": "1.90.9",
+          "changes": [
+            "Hide camera IP/port and controls when not authenticated, make port optional for domain-based cameras"
+          ]
+        },
         {
           "version": "1.90.8",
           "changes": [
