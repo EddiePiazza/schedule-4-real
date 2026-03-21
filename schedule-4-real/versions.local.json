@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-20T23:29:59.068Z",
+  "lastCheck": "2026-03-21T12:27:21.283Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.0",
-      "installedAt": "2026-03-20T23:02:59Z"
+      "version": "1.90.1",
+      "installedAt": "2026-03-21T12:28:27Z"
     },
     "ingest": {
       "version": "1.8.0",
@@ -470,6 +470,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.4",
+        "changes": [
+          "Fix rebranding migration re-running on every update and killing mosquitto/proxy"
+        ]
+      },
       {
         "version": "1.16.3",
         "changes": [

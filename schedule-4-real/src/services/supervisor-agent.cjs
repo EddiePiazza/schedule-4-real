@@ -58,6 +58,11 @@ let lastActionTimes = {}; // Track last action time per device:socket for hyster
 let lastSocketStates = {}; // Legacy: socket states from default PS5
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
 const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
+
+// Activation hysteresis — dead band to prevent oscillation
+// Devices activate when EXCEEDING target + hysteresis, deactivate at target (no hysteresis)
+const TEMP_HIGH_HYSTERESIS = 1.0; // °C above idealTemp.max before cooling activates (blower ON at max+1)
+const TEMP_LOW_HYSTERESIS = 0.5;  // °C below idealTemp.min before heating activates (heater ON at min-0.5)
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
@@ -79,8 +84,9 @@ let lastVpdLogKey = ''; // Throttle VPD log: only log when conditions change
 // Thermal inertia tracking — devices have residual effect after deactivation
 let lastHeaterOffTime = 0;   // When heater was last turned off (ms)
 let lastHumidifierOffTime = 0; // When humidifier was last turned off (ms)
-const HEATER_GRACE_MS = 5 * 60 * 1000;     // 5 min: after heater off, don't cool — residual heat dissipates
-const HUMIDIFIER_GRACE_MS = 3 * 60 * 1000; // 3 min: after humidifier off, don't extract — residual moisture
+const HEATER_GRACE_MS = 2 * 60 * 1000;     // 2 min: after heater off, suppress cooling (hysteresis handles the rest)
+const HUMIDIFIER_GRACE_MS = 4 * 60 * 1000; // 4 min: after humidifier off, suppress extraction — residual moisture needs time to settle
+const DEHUM_ESCALATION_MS = 2 * 60 * 1000; // 2 min: dehumidifier must run this long before blower escalation
 
 // Blower Curve Control State
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
@@ -985,36 +991,40 @@ function evaluateVpdIntelligent() {
   const heaterRecentlyOff = (now - lastHeaterOffTime) < HEATER_GRACE_MS;
   const humidifierRecentlyOff = (now - lastHumidifierOffTime) < HUMIDIFIER_GRACE_MS;
 
-  // Temperature thresholds
-  // Blower activates at idealTemp.max (not higher) — during heater grace, blower is fully suppressed
-  const tempHighThreshold = idealTemp.max;
-  const tempLowThreshold = idealTemp.min - 0.2; // Quick activation: 0.2°C below ideal min
+  // ── ACTIVATION thresholds (with hysteresis dead band) ──
+  // Devices activate when exceeding target + hysteresis margin.
+  // This prevents oscillation: heater off at 25°C → temp overshoots to 25.5°C → blower stays OFF (25.5 < 26).
+  const tempHighThreshold = idealTemp.max + TEMP_HIGH_HYSTERESIS; // e.g., 25+1=26°C
+  const tempLowThreshold = idealTemp.min - TEMP_LOW_HYSTERESIS;  // e.g., 24-0.5=23.5°C
 
   // Humidity thresholds
-  // Activate humidifier when below TARGET (not just below range min)
-  // This ensures the system actively pushes toward ideal VPD, not just reacting at extremes
   const humiLowThreshold = humidifierRecentlyOff
     ? idealHumiTarget - 3  // After humidifier off: wider tolerance, moisture still settling
     : idealHumiTarget - 1; // Normal: 1% below target
-  const humiHighThreshold = idealHumiMax + 2; // 2% above ideal max
+  const humiHighThreshold = idealHumiMax + 4; // 4% above ideal max (absorbs post-humidifier overshoot)
 
-  // Evaluate conditions
+  // Activation conditions (first trigger — require exceeding hysteresis threshold)
   const tempHigh = temp > tempHighThreshold && !heaterRecentlyOff; // Suppress cooling during heater grace
   const tempLow = temp < tempLowThreshold;
   const humiLow = humi < humiLowThreshold;
   const humiHigh = humi > humiHighThreshold;
 
-  // Deactivation thresholds (device turns off when solidly in ideal range)
-  const tempOk = temp >= idealTemp.min && temp <= idealTemp.max;
+  // Continuation flags — already-active devices keep running until reaching target (no hysteresis on deactivation)
+  const coolingActive = !!vpdEscalationState.roles['extractor_temp'];
+  const humiExtractionActive = !!vpdEscalationState.roles['extractor_humi'];
+
+  // ── DEACTIVATION thresholds (at target, instant, no hysteresis) ──
+  const tempInRange = temp >= idealTemp.min && temp <= idealTemp.max;
+  const tempReachedMax = temp >= idealTemp.max; // Heater heats to TOP of range, then OFF
   const humiOk = humi >= idealHumiTarget && humi <= idealHumiMax;
 
   // Throttled log — only print when conditions change
   const graceFlags = `${heaterRecentlyOff ? 'Hgrace' : ''}${humidifierRecentlyOff ? 'Ugrace' : ''}`;
-  const curState = `${tempHigh ? 'TH' : tempLow ? 'TL' : 'T_'}|${humiLow ? 'HL' : humiHigh ? 'HH' : 'H_'}`;
+  const curState = `${tempHigh ? 'TH' : tempLow ? 'TL' : (coolingActive && temp > idealTemp.max) ? 'Tc' : 'T_'}|${humiLow ? 'HL' : humiHigh ? 'HH' : (humiExtractionActive && humi > idealHumiMax) ? 'Hc' : 'H_'}`;
   const logKey = `${curState}|${graceFlags}|${currentVpd.toFixed(1)}|${temp.toFixed(0)}|${Math.round(humi/2)}`;
   if (logKey !== lastVpdLogKey) {
     lastVpdLogKey = logKey;
-    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}`);
+    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}`);
   }
 
   // Track condition changes for escalation reset
@@ -1104,14 +1114,19 @@ function evaluateVpdIntelligent() {
 
   // ═══════════════════════════════════════════════════════
   // RULE 1: Temperature too high → Blower ON (override ceiling)
+  // Activation: temp > idealMax + hysteresis (e.g., 26°C)
+  // Continuation: once active, keep running while temp > idealMax (dead zone)
+  // Deactivation: temp <= idealMax (back to target)
   // ═══════════════════════════════════════════════════════
-  if (tempHigh) {
-    // Temp needs cooling — lift ceiling
+  const needsCooling = temp > idealTemp.max && (tempHigh || coolingActive) && !heaterRecentlyOff;
+
+  if (needsCooling) {
+    // Cooling needed — lift ceiling
     newBlowerCeiling = 100;
 
     // If extractor is a socket (not blower), turn it ON
     if (!extIsBlower) {
-      activateSocketRole('extractor', `Temp ${temp.toFixed(1)}°C > ${idealTemp.max}°C`);
+      activateSocketRole('extractor', `Temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C`);
       if (!vpdEscalationState.roles['extractor']) {
         vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp, maxedOut: false };
       }
@@ -1123,12 +1138,13 @@ function evaluateVpdIntelligent() {
       // Fallback: crude formula if no calibration
       const baseFloor = calSpeed > 0
         ? calSpeed
-        : Math.min(80, Math.round(30 + tempExcess * 15));
+        : Math.min(80, Math.round(25 + tempExcess * 15));
       newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
 
-      if (!vpdEscalationState.roles['extractor_temp']) {
+      if (!coolingActive) {
+        // First activation — create escalation state
         vpdEscalationState.roles['extractor_temp'] = { activatedAt: now, metricAtActivation: temp, maxedOut: false, escalationBoost: 0 };
-        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${idealTemp.max}°C (excess ${tempExcess.toFixed(1)}°C)`);
+        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C (excess ${tempExcess.toFixed(1)}°C)`);
       } else if (isMaxedOut('extractor_temp', temp, vpdEscalationState.roles['extractor_temp'].metricAtActivation, true)) {
         // Plateau: temp stopped dropping at current speed → escalate (cumulative)
         const state = vpdEscalationState.roles['extractor_temp'];
@@ -1149,8 +1165,10 @@ function evaluateVpdIntelligent() {
     deactivateSocketRole('heater', 'Temp too high');
 
   } else if (temp <= idealTemp.max || tempLow) {
-    // Temp dropped back to idealMax or below — stop cooling
-    // NOTE: we stop at idealMax (not idealMin) to avoid triggering heater immediately
+    // Temp reached target or dropped below min — stop ALL cooling
+    if (coolingActive) {
+      console.log(`[VPD] Cooling done: temp ${temp.toFixed(1)}°C reached target ${idealTemp.max}°C`);
+    }
     delete vpdEscalationState.roles['extractor_temp'];
     deactivateSocketRole('cooler', 'Temp OK');
     if (!extIsBlower) deactivateSocketRole('extractor', 'Temp OK');
@@ -1161,7 +1179,7 @@ function evaluateVpdIntelligent() {
   // Blower ceiling already handled by default (0 when humi < idealHumiMin).
   // If temp also needs cooling (tempHigh), allow compromise blower.
   // ═══════════════════════════════════════════════════════
-  if (humi < idealHumiMin && tempHigh) {
+  if (humi < idealHumiMin && needsCooling) {
     // Temp needs cooling but humidity is low — compromise: minimal blower
     newBlowerCeiling = Math.min(newBlowerCeiling, 35);
   }
@@ -1183,79 +1201,112 @@ function evaluateVpdIntelligent() {
 
   // ═══════════════════════════════════════════════════════
   // RULE 3: Temperature too low → Heater ON
+  // Activation: temp < idealMin - hysteresis (e.g., 23.5°C)
+  // Deactivation: temp >= idealMax (heater heats to TOP of range, then OFF)
+  // This creates a dead band: heater OFF at 25°C → blower ON at 26°C → 1°C gap
   // ═══════════════════════════════════════════════════════
   if (tempLow) {
-    activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${idealTemp.min}°C`);
+    activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C`);
     // Blower already capped by default ceiling (temp < idealMin → ceiling=0)
     deactivateSocketRole('cooler', 'Temp too low');
-  } else if (tempOk) {
-    // Only deactivate heater if temp is solidly in range
-    // (not if blower is actively running and may cause drops)
-    if (!isRoleActive('extractor_humi') || temp > idealTemp.min + 1) {
-      deactivateSocketRole('heater', 'Temp OK');
-    }
+  } else if (tempReachedMax) {
+    // Heater heated room to top of ideal range — turn off
+    // (not at idealMin — that causes short cycles and rapid oscillation)
+    deactivateSocketRole('heater', `Temp ${temp.toFixed(1)}°C reached ideal max ${idealTemp.max}°C`);
   }
 
   // ═══════════════════════════════════════════════════════
-  // RULE 4: Humidity too high (humidifier off) → Blower ON to extract
+  // RULE 4: Humidity too high → Dehumidifier first, blower LAST RESORT
+  // After humidifier off, residual moisture causes overshoot — wait for it to settle.
+  // Step 1: Dehumidifier (if available)
+  // Step 2: Only if dehumidifier has run 2+ min without effect → blower
+  // Activation: humi > idealHumiMax + 4% (hysteresis)
+  // Continuation: once active, keep running while humi > idealHumiMax
+  // Deactivation: humi <= idealHumiMax
   // ═══════════════════════════════════════════════════════
-  if (humiHigh && !isRoleActive('humidifier')) {
-    if (extIsBlower) {
-      // Humidity too high — override ceiling to allow extraction
-      newBlowerCeiling = 100;
-      // Calculate speed from calibration capacity
-      const humiExcess = humi - idealHumiMax;
-      const period = isDaytime ? 'day' : 'night';
-      const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
-      const baseFloor = calSpeed > 0 ? calSpeed : 40;
+  const needsHumiAction = humi > idealHumiMax
+    && (humiHigh || humiExtractionActive || isRoleActive('dehumidifier'))
+    && !isRoleActive('humidifier')
+    && !humidifierRecentlyOff; // CRITICAL: suppress during humidifier grace — residual moisture is expected
 
-      if (!vpdEscalationState.roles['extractor_humi']) {
-        vpdEscalationState.roles['extractor_humi'] = { activatedAt: now, metricAtActivation: humi, maxedOut: false, escalationBoost: 0 };
-        newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
-        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — extract excess humidity (${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}%)`);
-      } else if (isMaxedOut('extractor_humi', humi, vpdEscalationState.roles['extractor_humi'].metricAtActivation, true)) {
-        const state = vpdEscalationState.roles['extractor_humi'];
-        state.escalationBoost = Math.min(50, (state.escalationBoost || 0) + 10);
-        console.log(`[VPD] Blower escalation +${state.escalationBoost}% — humidity plateau at current speed`);
-      }
-      // Apply cumulative escalation + calibration base
-      newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
-      newBlowerFloor += (vpdEscalationState.roles['extractor_humi']?.escalationBoost || 0);
-      newBlowerFloor = Math.min(100, newBlowerFloor);
-    } else {
-      activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}%`);
-    }
-
-    // Escalate to dehumidifier if extraction maxed
-    if (vpdEscalationState.roles['extractor_humi']?.maxedOut || vpdEscalationState.roles['extractor']?.maxedOut) {
-      activateSocketRole('dehumidifier', `Extractor maxed, humi ${humi.toFixed(0)}% still > ${idealHumiMax.toFixed(0)}%`);
-    }
-
+  if (needsHumiAction) {
     deactivateSocketRole('humidifier', 'Humi too high');
 
-  } else if (!humiHigh) {
-    // Humidity no longer too high — stop forced extraction
-    if (vpdEscalationState.roles['extractor_humi']) {
+    // Step 1: Try dehumidifier first (if role exists)
+    const dehumRole = getRoleAssignment('dehumidifier');
+    if (dehumRole && dehumRole.socket) {
+      activateSocketRole('dehumidifier', `Humi ${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}% — dehumidifier first`);
+      if (!vpdEscalationState.roles['dehumidifier']) {
+        vpdEscalationState.roles['dehumidifier'] = { activatedAt: now, metricAtActivation: humi, maxedOut: false };
+      }
+    }
+
+    // Step 2: Escalate to blower ONLY if:
+    // - No dehumidifier role assigned, OR
+    // - Dehumidifier has been running 2+ min without meaningful improvement
+    const dehumState = vpdEscalationState.roles['dehumidifier'];
+    const hasDehumRole = dehumRole && dehumRole.socket;
+    const dehumExhausted = hasDehumRole
+      ? (dehumState && now - dehumState.activatedAt > DEHUM_ESCALATION_MS && humi >= dehumState.metricAtActivation - 1)
+      : true; // No dehumidifier → skip straight to blower
+
+    // Temperature safety: blower for humidity extraction would COOL the room.
+    // Don't fire it if temp is already near or below idealTemp.min — that would trigger the heater.
+    const tempSafeForBlower = temp > idealTemp.min + 0.5;
+
+    if (dehumExhausted && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
+      if (extIsBlower) {
+        newBlowerCeiling = 100;
+        const humiExcess = humi - idealHumiMax;
+        const period = isDaytime ? 'day' : 'night';
+        const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
+        const baseFloor = calSpeed > 0 ? calSpeed : 40;
+
+        if (!humiExtractionActive) {
+          vpdEscalationState.roles['extractor_humi'] = { activatedAt: now, metricAtActivation: humi, maxedOut: false, escalationBoost: 0 };
+          newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+          console.log(`[VPD] Blower floor ${newBlowerFloor}% — last resort humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
+        } else if (isMaxedOut('extractor_humi', humi, vpdEscalationState.roles['extractor_humi'].metricAtActivation, true)) {
+          const state = vpdEscalationState.roles['extractor_humi'];
+          state.escalationBoost = Math.min(50, (state.escalationBoost || 0) + 10);
+          console.log(`[VPD] Blower escalation +${state.escalationBoost}% — humidity plateau at current speed`);
+        }
+        newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+        newBlowerFloor += (vpdEscalationState.roles['extractor_humi']?.escalationBoost || 0);
+        newBlowerFloor = Math.min(100, newBlowerFloor);
+      } else {
+        activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
+      }
+    }
+
+  } else if (humi <= idealHumiMax) {
+    // Humidity reached target — stop ALL humidity extraction
+    if (humiExtractionActive) {
+      console.log(`[VPD] Humidity extraction done: ${humi.toFixed(0)}% reached target ${idealHumiMax.toFixed(0)}%`);
       delete vpdEscalationState.roles['extractor_humi'];
-      if (!tempHigh) {
-        // Only deactivate socket extractor if temp doesn't need it either
+      if (!needsCooling) {
         if (!extIsBlower) deactivateSocketRole('extractor', 'Humi OK');
       }
     }
+    if (vpdEscalationState.roles['dehumidifier']) {
+      delete vpdEscalationState.roles['dehumidifier'];
+    }
     deactivateSocketRole('dehumidifier', 'Humi OK');
   }
+  // Between idealHumiMax and humiHighThreshold: if nothing was activated, stays off (hysteresis)
+  // During humidifierRecentlyOff: everything suppressed, residual moisture settles naturally
 
   // ═══════════════════════════════════════════════════════
   // RULE 5: Blower ON + temp dropping → Heater compensates
   // ═══════════════════════════════════════════════════════
-  if ((newBlowerFloor > 0 || isRoleActive('extractor_humi')) && temp < idealTemp.min + 0.3) {
+  if (newBlowerFloor > 0 && temp < idealTemp.min + 0.3) {
     activateSocketRole('heater', `Compensate blower: temp ${temp.toFixed(1)}°C dropping below ${idealTemp.min}°C`);
   }
 
   // ═══════════════════════════════════════════════════════
   // RULE 6: Everything in range → deactivate all, blower OFF
   // ═══════════════════════════════════════════════════════
-  if (tempOk && humiOk) {
+  if (tempInRange && humiOk) {
     // Full comfort — no devices needed, let the environment settle
     // Blower stays OFF (ceiling=0): no extraction when everything is fine
     newBlowerFloor = 0;

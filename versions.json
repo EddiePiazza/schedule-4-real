@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-20T23:30:31Z",
+  "generatedAt": "2026-03-21T12:28:27Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.0",
-      "archive": "s4r-web-1.90.0.tar.gz",
-      "sha256": "62ebcb9d77a9d997f6e41b83f476aa13f90e42ac8ecccc6194c33d91cc0e7dbf",
-      "size": 11239240,
+      "version": "1.90.1",
+      "archive": "s4r-web-1.90.1.tar.gz",
+      "sha256": "1f9a619c52c3aa909bc6873bf05ab696ab27e5507f555378c8946bef4f68a99e",
+      "size": 11240510,
       "changelog": [
+        {
+          "version": "1.90.1",
+          "changes": [
+            "Fix \u00b0C/\u00b0F not persisting, save button greyed out, PPFD alarm MIN, power stats PS10, soil sensor blur save, and climate module auto mode display"
+          ]
+        },
         {
           "version": "1.90.0",
           "changes": [
