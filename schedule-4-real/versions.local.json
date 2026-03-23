@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T15:59:23.427Z",
+  "lastCheck": "2026-03-23T16:16:25.564Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.16",
-      "installedAt": "2026-03-23T15:32:34Z"
+      "version": "1.90.17",
+      "installedAt": "2026-03-23T16:17:28Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.7",
-      "installedAt": "2026-03-23T16:06:12Z"
+      "version": "1.16.8",
+      "installedAt": "2026-03-23T16:17:28Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -469,6 +469,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.7",
+        "changes": [
+          "Retry camera snapshot capture with 30s timeout and 5 attempts for slow RTSP connections"
+        ]
+      },
       {
         "version": "1.16.6",
         "changes": [

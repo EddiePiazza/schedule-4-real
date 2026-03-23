@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T16:06:12Z",
+  "generatedAt": "2026-03-23T16:17:28Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.16",
-      "archive": "s4r-web-1.90.16.tar.gz",
-      "sha256": "cecbed1c7e865be3cf35d3ebb4aa610efe2ffce84224cde399ce839367c360be",
-      "size": 11242839,
+      "version": "1.90.17",
+      "archive": "s4r-web-1.90.17.tar.gz",
+      "sha256": "dc43acaea57f6c622716b803328b6c78fd433d4d587052da433c06539304161b",
+      "size": 11241569,
       "changelog": [
+        {
+          "version": "1.90.17",
+          "changes": [
+            "Fix PPFD showing 0 instead of hiding, socket names with device prefix, custom names on dashboard"
+          ]
+        },
         {
           "version": "1.90.16",
           "changes": [
@@ -1873,11 +1879,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.7",
-      "archive": "s4r-supervisor-1.16.7.tar.gz",
-      "sha256": "e6fea97cf7bad02cde0d3381cf3f13f78fbb0ba2ab9bc3109fd4a59949aefc36",
-      "size": 54754,
+      "version": "1.16.8",
+      "archive": "s4r-supervisor-1.16.8.tar.gz",
+      "sha256": "e1c053703c30d072106af3ac0cbd5dce19afe6cca0ad72621ea9dbaf18509c87",
+      "size": 54804,
       "changelog": [
+        {
+          "version": "1.16.8",
+          "changes": [
+            "Fix update UI hanging when supervisor restarts by signaling done before restart"
+          ]
+        },
         {
           "version": "1.16.7",
           "changes": [

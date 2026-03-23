@@ -947,6 +947,11 @@ async function applyUpdates(components = [], onProgress = null) {
 
           console.log('[Updater] Restarting supervisor — remaining updates will apply on next check');
           results.push({ component, success: true, version: remote.version });
+          // Signal done BEFORE restart so frontend UI doesn't hang on "Installing..."
+          updateInProgress = false;
+          emitProgress('done', null, toUpdate.length, toUpdate.length);
+          releaseUpdateLock();
+          clearProgress();
           try {
             execSync(`pm2 restart ${COMPONENT_DEFS.supervisor.pm2Name}`, { stdio: 'pipe' });
           } catch {
