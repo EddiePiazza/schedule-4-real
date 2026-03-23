@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T15:09:23.467Z",
+  "lastCheck": "2026-03-23T15:29:23.451Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.15",
-      "installedAt": "2026-03-23T15:10:40Z"
+      "version": "1.90.16",
+      "installedAt": "2026-03-23T15:32:34Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.15",
+        "changes": [
+          "Fix camera stream buffering delay through nginx with X-Accel-Buffering header"
+        ]
+      },
       {
         "version": "1.90.14",
         "changes": [
@@ -365,12 +371,6 @@
         "version": "1.76.4",
         "changes": [
           "Fix backup restore hanging on large tables by using persistent ILP connection"
-        ]
-      },
-      {
-        "version": "1.76.3",
-        "changes": [
-          "Fix streaming restore parser skipping all tables due to buffer compaction bug"
         ]
       }
     ],

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T15:10:40Z",
+  "generatedAt": "2026-03-23T15:32:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.15",
-      "archive": "s4r-web-1.90.15.tar.gz",
-      "sha256": "5ef133d59c4434214fc74cb501d92e84043f09ac77fa9352282daf42b0c96d2e",
-      "size": 11242645,
+      "version": "1.90.16",
+      "archive": "s4r-web-1.90.16.tar.gz",
+      "sha256": "cecbed1c7e865be3cf35d3ebb4aa610efe2ffce84224cde399ce839367c360be",
+      "size": 11242839,
       "changelog": [
+        {
+          "version": "1.90.16",
+          "changes": [
+            "Hide empty timelapse days with 0 photos and no video"
+          ]
+        },
         {
           "version": "1.90.15",
           "changes": [
