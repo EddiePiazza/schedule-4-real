@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-21T19:06:02.944Z",
+  "lastCheck": "2026-03-23T13:46:03.031Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.9",
-      "installedAt": "2026-03-21T19:12:34Z"
+      "version": "1.90.10",
+      "installedAt": "2026-03-23T13:49:06Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.5",
-      "installedAt": "2026-03-21T17:35:49Z"
+      "version": "1.16.6",
+      "installedAt": "2026-03-23T13:49:06Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.9",
+        "changes": [
+          "Hide camera IP/port and controls when not authenticated, make port optional for domain-based cameras"
+        ]
+      },
       {
         "version": "1.90.8",
         "changes": [
@@ -367,12 +373,6 @@
           "Add confirmation dialogs to undo checkpoint, camera photo delete, and schedule delete",
           "Redesign plant detail panel with compact header and full-content scroll",
           "Remove unused Quick Log floating button"
-        ]
-      },
-      {
-        "version": "1.74.0",
-        "changes": [
-          "Redesign strain detail plant list with unified clone lineage groups"
         ]
       }
     ],

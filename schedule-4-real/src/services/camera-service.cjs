@@ -675,7 +675,11 @@ async function checkScheduledCaptures() {
       const timeStr = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
       const outputPath = path.join(DATA_DIR, cam.id, 'timelapse', dateStr, `${timeStr}.jpg`);
 
-      const success = await captureFromCamera(cam.host, cam.port, outputPath);
+      // Try direct HTTP capture first, fall back to go2rtc frame capture
+      let success = await captureFromCamera(cam.host, cam.port, outputPath);
+      if (!success) {
+        success = await captureSnapshot(cam.id, outputPath);
+      }
       if (success) {
         lastCaptureBySchedule.set(schedule.id, now);
         // Apply overlay if enabled
