@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T17:29:32Z",
+  "generatedAt": "2026-03-23T17:32:38Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.91.1",
-      "archive": "s4r-web-1.91.1.tar.gz",
-      "sha256": "a5da117f771b6f48cd95d1b0f5300c59141ae326101cabf06c5db07645fd1438",
-      "size": 11244034,
+      "version": "1.92.0",
+      "archive": "s4r-web-1.92.0.tar.gz",
+      "sha256": "9cb9f8ea2df99055bf8f7e03ebe1ffacc1bd4b4264e2cb44b8fecd8305bd24f5",
+      "size": 11244104,
       "changelog": [
+        {
+          "version": "1.92.0",
+          "changes": [
+            "Add PPFD sensor to Home Assistant MQTT discovery bridge"
+          ]
+        },
         {
           "version": "1.91.1",
           "changes": [
