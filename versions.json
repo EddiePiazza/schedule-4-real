@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T14:03:52Z",
+  "generatedAt": "2026-03-23T14:24:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.11",
-      "archive": "s4r-web-1.90.11.tar.gz",
-      "sha256": "c5e997193901f0870f3067c539c0e801a5936ae7326b69545b76d15d67b47558",
-      "size": 11240445,
+      "version": "1.90.13",
+      "archive": "s4r-web-1.90.13.tar.gz",
+      "sha256": "4c7f739af761009b99c972516b3b740fe740daa096b979ff5eee75cceaa38dd4",
+      "size": 11240624,
       "changelog": [
+        {
+          "version": "1.90.13",
+          "changes": [
+            "Fix camera port: show 554 by default, allow clearing for portless domains"
+          ]
+        },
+        {
+          "version": "1.90.12",
+          "changes": [
+            "Fix camera port defaulting to 554 when field is empty"
+          ]
+        },
         {
           "version": "1.90.11",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T13:59:23.432Z",
+  "lastCheck": "2026-03-23T14:19:23.457Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.11",
-      "installedAt": "2026-03-23T14:03:52Z"
+      "version": "1.90.13",
+      "installedAt": "2026-03-23T14:24:01Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.12",
+        "changes": [
+          "Fix camera port defaulting to 554 when field is empty"
+        ]
+      },
+      {
+        "version": "1.90.11",
+        "changes": [
+          "Fix camera test and URL generation for domains without port"
+        ]
+      },
       {
         "version": "1.90.10",
         "changes": [
@@ -359,18 +371,6 @@
         "version": "1.76.1",
         "changes": [
           "Fix backup restore for large databases exceeding 512MB string limit"
-        ]
-      },
-      {
-        "version": "1.76.0",
-        "changes": [
-          "Add full backup with photos and data files, smart restore with schema sync"
-        ]
-      },
-      {
-        "version": "1.75.1",
-        "changes": [
-          "Fix backup restore timeout on large databases"
         ]
       }
     ],
