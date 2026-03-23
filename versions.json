@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T14:24:01Z",
+  "generatedAt": "2026-03-23T14:51:57Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.13",
-      "archive": "s4r-web-1.90.13.tar.gz",
-      "sha256": "4c7f739af761009b99c972516b3b740fe740daa096b979ff5eee75cceaa38dd4",
-      "size": 11240624,
+      "version": "1.90.14",
+      "archive": "s4r-web-1.90.14.tar.gz",
+      "sha256": "d557796b13d8aad0c686928ae456aef40865cfd5e31a3937996182259058751f",
+      "size": 11243745,
       "changelog": [
+        {
+          "version": "1.90.14",
+          "changes": [
+            "Fix camera streaming via WebSocket MSE for external networks and reverse proxies"
+          ]
+        },
         {
           "version": "1.90.13",
           "changes": [

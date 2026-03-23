@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T14:19:23.457Z",
+  "lastCheck": "2026-03-23T14:49:23.451Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.13",
-      "installedAt": "2026-03-23T14:24:01Z"
+      "version": "1.90.14",
+      "installedAt": "2026-03-23T14:51:57Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.13",
+        "changes": [
+          "Fix camera port: show 554 by default, allow clearing for portless domains"
+        ]
+      },
       {
         "version": "1.90.12",
         "changes": [
@@ -365,12 +371,6 @@
         "version": "1.76.2",
         "changes": [
           "Fix backup restore OOM crash on large databases with streaming parser"
-        ]
-      },
-      {
-        "version": "1.76.1",
-        "changes": [
-          "Fix backup restore for large databases exceeding 512MB string limit"
         ]
       }
     ],
