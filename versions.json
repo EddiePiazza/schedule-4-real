@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T16:17:28Z",
+  "generatedAt": "2026-03-23T17:21:17Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.17",
-      "archive": "s4r-web-1.90.17.tar.gz",
-      "sha256": "dc43acaea57f6c622716b803328b6c78fd433d4d587052da433c06539304161b",
-      "size": 11241569,
+      "version": "1.91.0",
+      "archive": "s4r-web-1.91.0.tar.gz",
+      "sha256": "896bbbb2a2990c1ad34b05df9105e338ec073d8d5fd7d5ecbd1ddd051e4d5836",
+      "size": 11242573,
       "changelog": [
+        {
+          "version": "1.91.0",
+          "changes": [
+            "Add wattage fields for blower, fan, heater, humidifier, dehumidifier in power consumption settings"
+          ]
+        },
         {
           "version": "1.90.17",
           "changes": [
@@ -1773,11 +1779,17 @@
       ]
     },
     "ingest": {
-      "version": "1.8.1",
-      "archive": "s4r-ingest-1.8.1.tar.gz",
-      "sha256": "0a5ce05f279e3b9e7d8bd0329e497056406f8206ce521bd9397693718102f3d9",
-      "size": 6738,
+      "version": "1.9.0",
+      "archive": "s4r-ingest-1.9.0.tar.gz",
+      "sha256": "26ae5a8dbdabe694c8def5347333cb23a108deaf92fe186ad283e693156e13e0",
+      "size": 7033,
       "changelog": [
+        {
+          "version": "1.9.0",
+          "changes": [
+            "Store heater, humidifier, dehumidifier on/off states for power consumption tracking"
+          ]
+        },
         {
           "version": "1.8.1",
           "changes": [
@@ -2210,11 +2222,17 @@
       ]
     },
     "schema": {
-      "version": "8",
-      "archive": "s4r-schema-8.tar.gz",
-      "sha256": "893b4188f7fdb675e20f39d24ea8457851435c3f26db355703370f12cf611c4c",
-      "size": 7365,
+      "version": "9",
+      "archive": "s4r-schema-9.tar.gz",
+      "sha256": "21ebb033edfe7e3c72665a30d136bc18015ca8e0b42e843bb8cb506dff60236c",
+      "size": 7491,
       "changelog": [
+        {
+          "version": "9",
+          "changes": [
+            "Add heater_states, humidifier_states, dehumidifier_states tables"
+          ]
+        },
         {
           "version": "8",
           "changes": [

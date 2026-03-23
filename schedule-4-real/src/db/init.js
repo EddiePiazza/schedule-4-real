@@ -99,6 +99,44 @@ const tables = [
     `
   },
 
+  // Climate module states (heater, humidifier, dehumidifier)
+  {
+    name: 'heater_states',
+    sql: `
+      CREATE TABLE IF NOT EXISTS heater_states (
+        timestamp TIMESTAMP,
+        device_mac SYMBOL,
+        mode_type INT,
+        level INT,
+        is_on INT
+      ) TIMESTAMP(timestamp) PARTITION BY DAY;
+    `
+  },
+  {
+    name: 'humidifier_states',
+    sql: `
+      CREATE TABLE IF NOT EXISTS humidifier_states (
+        timestamp TIMESTAMP,
+        device_mac SYMBOL,
+        mode_type INT,
+        level INT,
+        is_on INT
+      ) TIMESTAMP(timestamp) PARTITION BY DAY;
+    `
+  },
+  {
+    name: 'dehumidifier_states',
+    sql: `
+      CREATE TABLE IF NOT EXISTS dehumidifier_states (
+        timestamp TIMESTAMP,
+        device_mac SYMBOL,
+        mode_type INT,
+        level INT,
+        is_on INT
+      ) TIMESTAMP(timestamp) PARTITION BY DAY;
+    `
+  },
+
   // System info (less frequent)
   {
     name: 'system_status',

@@ -575,6 +575,40 @@ async function storeFanState(deviceMac, fan) {
   }
 }
 
+// ─── Climate Module States (heater, humidifier, dehumidifier) ───
+
+let lastHeaterState = '';
+let lastHumidifierState = '';
+let lastDehumidifierState = '';
+
+async function storeClimateModuleState(tableName, deviceMac, data, lastStateRef, moduleType) {
+  if (!data) return lastStateRef;
+
+  const timestamp = new Date().toISOString();
+  const isOn = data.on ?? data.mOnOff ?? (data.level > 0 ? 1 : 0);
+  const level = data.level ?? data.mLevel ?? 0;
+  const modeType = data.modeType ?? 0;
+  const stateKey = `${isOn}:${level}:${modeType}`;
+
+  try {
+    if (lastStateRef !== stateKey) {
+      await query(`
+        INSERT INTO ${tableName} (timestamp, device_mac, mode_type, level, is_on)
+        VALUES ($1, $2, $3, $4, $5)
+      `, [timestamp, deviceMac, modeType, level, isOn]);
+
+      if (isOn !== (lastStateRef.split(':')[0] === '1' ? 1 : 0)) {
+        console.log(`[Store] ${moduleType} state: on=${isOn}, level=${level}, mode=${modeType}`);
+      }
+    }
+
+    emitSensorData({ type: moduleType, deviceMac, timestamp, modeType, level, isOn });
+  } catch (err) {
+    console.error(`[Store] ${moduleType} state error:`, err.message);
+  }
+  return stateKey;
+}
+
 /**
  * Parse and store light states
  */
@@ -688,6 +722,9 @@ async function processMessage(topic, payload) {
         if (data.light || data.light2) await storeLightStates(deviceMac, data);
         if (data.blower) await storeBlowerState(deviceMac, data.blower);
         if (data.fan) await storeFanState(deviceMac, data.fan);
+        if (data.heater) lastHeaterState = await storeClimateModuleState('heater_states', deviceMac, data.heater, lastHeaterState, 'heater');
+        if (data.humidifier) lastHumidifierState = await storeClimateModuleState('humidifier_states', deviceMac, data.humidifier, lastHumidifierState, 'humidifier');
+        if (data.dehumidifier) lastDehumidifierState = await storeClimateModuleState('dehumidifier_states', deviceMac, data.dehumidifier, lastDehumidifierState, 'dehumidifier');
         // For Light Controller (LC) - different structure
         if (data.brightness !== undefined && data.mode !== undefined) {
           await storeLightStates(deviceMac, {
