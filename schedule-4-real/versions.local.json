@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T17:17:43.632Z",
+  "lastCheck": "2026-03-23T17:27:43.639Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.91.0",
-      "installedAt": "2026-03-23T17:21:17Z"
+      "version": "1.91.1",
+      "installedAt": "2026-03-23T17:29:32Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.91.0",
+        "changes": [
+          "Add wattage fields for blower, fan, heater, humidifier, dehumidifier in power consumption settings"
+        ]
+      },
       {
         "version": "1.90.17",
         "changes": [
@@ -366,15 +372,15 @@
         "changes": [
           "Persist MQTT device cache to disk and fix passive mode for forwarded data"
         ]
-      },
-      {
-        "version": "1.76.6",
-        "changes": [
-          "Fix restore data loss for small tables, stop DB services during restore, block auto-updates"
-        ]
       }
     ],
     "ingest": [
+      {
+        "version": "1.9.0",
+        "changes": [
+          "Store heater, humidifier, dehumidifier on/off states for power consumption tracking"
+        ]
+      },
       {
         "version": "1.8.1",
         "changes": [
@@ -782,6 +788,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "9",
+        "changes": [
+          "Add heater_states, humidifier_states, dehumidifier_states tables"
+        ]
+      },
       {
         "version": "8",
         "changes": [

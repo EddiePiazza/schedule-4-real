@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T17:21:17Z",
+  "generatedAt": "2026-03-23T17:29:32Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.91.0",
-      "archive": "s4r-web-1.91.0.tar.gz",
-      "sha256": "896bbbb2a2990c1ad34b05df9105e338ec073d8d5fd7d5ecbd1ddd051e4d5836",
-      "size": 11242573,
+      "version": "1.91.1",
+      "archive": "s4r-web-1.91.1.tar.gz",
+      "sha256": "a5da117f771b6f48cd95d1b0f5300c59141ae326101cabf06c5db07645fd1438",
+      "size": 11244034,
       "changelog": [
+        {
+          "version": "1.91.1",
+          "changes": [
+            "Load heater, humidifier, dehumidifier stores from socket API for power consumption detection"
+          ]
+        },
         {
           "version": "1.91.0",
           "changes": [
