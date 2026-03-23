@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T17:32:38Z",
+  "generatedAt": "2026-03-23T17:49:43Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.92.0",
-      "archive": "s4r-web-1.92.0.tar.gz",
-      "sha256": "9cb9f8ea2df99055bf8f7e03ebe1ffacc1bd4b4264e2cb44b8fecd8305bd24f5",
-      "size": 11244104,
+      "version": "1.92.1",
+      "archive": "s4r-web-1.92.1.tar.gz",
+      "sha256": "b24fc1ba103a9ac84b1e43855c600cd1cb3a68e2981067a7d627b25f69a3d1c9",
+      "size": 11240944,
       "changelog": [
+        {
+          "version": "1.92.1",
+          "changes": [
+            "Move module wattage fields inside power consumption block, enable HA long-term statistics for sensors"
+          ]
+        },
         {
           "version": "1.92.0",
           "changes": [

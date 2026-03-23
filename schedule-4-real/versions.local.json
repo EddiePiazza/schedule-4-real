@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T17:27:43.639Z",
+  "lastCheck": "2026-03-23T17:47:43.640Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.92.0",
-      "installedAt": "2026-03-23T17:32:38Z"
+      "version": "1.92.1",
+      "installedAt": "2026-03-23T17:49:43Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.92.0",
+        "changes": [
+          "Add PPFD sensor to Home Assistant MQTT discovery bridge"
+        ]
+      },
+      {
+        "version": "1.91.1",
+        "changes": [
+          "Load heater, humidifier, dehumidifier stores from socket API for power consumption detection"
+        ]
+      },
       {
         "version": "1.91.0",
         "changes": [
@@ -359,18 +371,6 @@
         "version": "1.76.9",
         "changes": [
           "Fix multiplayer guests seeing own data instead of host room"
-        ]
-      },
-      {
-        "version": "1.76.8",
-        "changes": [
-          "Fix room discovery by always querying local tracker and fixing bootstrap peers"
-        ]
-      },
-      {
-        "version": "1.76.7",
-        "changes": [
-          "Persist MQTT device cache to disk and fix passive mode for forwarded data"
         ]
       }
     ],
