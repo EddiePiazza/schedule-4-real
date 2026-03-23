@@ -291,22 +291,45 @@ async function healthCheck() {
 
 // ─── Snapshot / Timelapse Capture ───
 
+/**
+ * Capture a single frame from a camera via go2rtc.
+ * go2rtc connects to the RTSP stream on-demand when a frame is requested,
+ * captures a keyframe, returns JPEG, and disconnects when idle.
+ * This works independently of the web app — only needs go2rtc running (PM2).
+ */
 async function captureSnapshot(cameraId, outputPath) {
-  try {
-    const dir = path.dirname(outputPath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const dir = path.dirname(outputPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    const res = await fetch(`${GO2RTC_API}/frame.jpeg?src=${encodeURIComponent(cameraId)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  // Retry with increasing delays — RTSP cameras can take time to connect and send a keyframe
+  const MAX_ATTEMPTS = 5;
+  const DELAYS = [0, 3000, 5000, 8000, 10000]; // wait before each retry
 
-    const buffer = Buffer.from(await res.arrayBuffer());
-    fs.writeFileSync(outputPath, buffer);
-    console.log(`[Camera] Snapshot saved: ${outputPath} (${buffer.length} bytes)`);
-    return true;
-  } catch (err) {
-    console.error(`[Camera] Snapshot failed for ${cameraId}: ${err.message}`);
-    return false;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      await new Promise(r => setTimeout(r, DELAYS[attempt]));
+    }
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000); // 30s per attempt
+      const res = await fetch(`${GO2RTC_API}/frame.jpeg?src=${encodeURIComponent(cameraId)}`, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const buffer = Buffer.from(await res.arrayBuffer());
+      if (buffer.length < 1000) throw new Error('Frame too small');
+      fs.writeFileSync(outputPath, buffer);
+      console.log(`[Camera] Snapshot saved: ${outputPath} (${buffer.length} bytes)`);
+      return true;
+    } catch (err) {
+      if (attempt < MAX_ATTEMPTS - 1) {
+        console.log(`[Camera] Capture attempt ${attempt + 1}/${MAX_ATTEMPTS} failed for ${cameraId}, retrying...`);
+      } else {
+        console.error(`[Camera] Snapshot failed for ${cameraId} after ${MAX_ATTEMPTS} attempts: ${err.message}`);
+      }
+    }
   }
+  return false;
 }
 
 // ─── Photo Overlay (ImageMagick) ───
@@ -675,7 +698,7 @@ async function checkScheduledCaptures() {
       const timeStr = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
       const outputPath = path.join(DATA_DIR, cam.id, 'timelapse', dateStr, `${timeStr}.jpg`);
 
-      // Try direct HTTP capture first, fall back to go2rtc frame capture
+      // Try direct HTTP capture first, then ffmpeg RTSP, then go2rtc frame
       let success = await captureFromCamera(cam.host, cam.port, outputPath);
       if (!success) {
         success = await captureSnapshot(cam.id, outputPath);

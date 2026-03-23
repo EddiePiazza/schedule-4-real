@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T15:29:23.451Z",
+  "lastCheck": "2026-03-23T15:59:23.427Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.16.6",
-      "installedAt": "2026-03-23T13:49:06Z"
+      "version": "1.16.7",
+      "installedAt": "2026-03-23T16:06:12Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.16",
+        "changes": [
+          "Hide empty timelapse days with 0 photos and no video"
+        ]
+      },
       {
         "version": "1.90.15",
         "changes": [
@@ -365,12 +371,6 @@
         "version": "1.76.5",
         "changes": [
           "Fix backup restore timeout with background job and progress polling"
-        ]
-      },
-      {
-        "version": "1.76.4",
-        "changes": [
-          "Fix backup restore hanging on large tables by using persistent ILP connection"
         ]
       }
     ],

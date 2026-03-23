@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T15:32:34Z",
+  "generatedAt": "2026-03-23T16:06:12Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1873,11 +1873,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.6",
-      "archive": "s4r-supervisor-1.16.6.tar.gz",
-      "sha256": "73df887fe8ad2b60f45ee440f29c4b932375e3ac11b907583ece6e1296d3f205",
-      "size": 54369,
+      "version": "1.16.7",
+      "archive": "s4r-supervisor-1.16.7.tar.gz",
+      "sha256": "e6fea97cf7bad02cde0d3381cf3f13f78fbb0ba2ab9bc3109fd4a59949aefc36",
+      "size": 54754,
       "changelog": [
+        {
+          "version": "1.16.7",
+          "changes": [
+            "Retry camera snapshot capture with 30s timeout and 5 attempts for slow RTSP connections"
+          ]
+        },
         {
           "version": "1.16.6",
           "changes": [
