@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T14:51:57Z",
+  "generatedAt": "2026-03-23T15:10:40Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.14",
-      "archive": "s4r-web-1.90.14.tar.gz",
-      "sha256": "d557796b13d8aad0c686928ae456aef40865cfd5e31a3937996182259058751f",
-      "size": 11243745,
+      "version": "1.90.15",
+      "archive": "s4r-web-1.90.15.tar.gz",
+      "sha256": "5ef133d59c4434214fc74cb501d92e84043f09ac77fa9352282daf42b0c96d2e",
+      "size": 11242645,
       "changelog": [
+        {
+          "version": "1.90.15",
+          "changes": [
+            "Fix camera stream buffering delay through nginx with X-Accel-Buffering header"
+          ]
+        },
         {
           "version": "1.90.14",
           "changes": [
