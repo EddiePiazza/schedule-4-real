@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-23T13:49:06Z",
+  "generatedAt": "2026-03-23T14:03:52Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.90.10",
-      "archive": "s4r-web-1.90.10.tar.gz",
-      "sha256": "c62fdda11dae7ec9b1416a2eccc19bed2e778646bad299fd085760df9e29838c",
-      "size": 11240692,
+      "version": "1.90.11",
+      "archive": "s4r-web-1.90.11.tar.gz",
+      "sha256": "c5e997193901f0870f3067c539c0e801a5936ae7326b69545b76d15d67b47558",
+      "size": 11240445,
       "changelog": [
+        {
+          "version": "1.90.11",
+          "changes": [
+            "Fix camera test and URL generation for domains without port"
+          ]
+        },
         {
           "version": "1.90.10",
           "changes": [

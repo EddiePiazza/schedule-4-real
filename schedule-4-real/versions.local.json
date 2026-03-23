@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T13:46:03.031Z",
+  "lastCheck": "2026-03-23T13:59:23.432Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 8,
   "components": {
     "web": {
-      "version": "1.90.10",
-      "installedAt": "2026-03-23T13:49:06Z"
+      "version": "1.90.11",
+      "installedAt": "2026-03-23T14:03:52Z"
     },
     "ingest": {
       "version": "1.8.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.90.10",
+        "changes": [
+          "Hide camera credentials when not authenticated, fallback to go2rtc for photo capture, make port optional"
+        ]
+      },
       {
         "version": "1.90.9",
         "changes": [
@@ -366,14 +372,6 @@
         "changes": [
           "Fix backup restore timeout on large databases"
         ]
-      },
-      {
-        "version": "1.75.0",
-        "changes": [
-          "Add confirmation dialogs to undo checkpoint, camera photo delete, and schedule delete",
-          "Redesign plant detail panel with compact header and full-content scroll",
-          "Remove unused Quick Log floating button"
-        ]
       }
     ],
     "ingest": [
@@ -471,6 +469,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.16.6",
+        "changes": [
+          "Fallback to go2rtc frame capture when camera has no HTTP snapshot endpoint"
+        ]
+      },
       {
         "version": "1.16.5",
         "changes": [
