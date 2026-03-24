@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-23T17:47:43.640Z",
+  "lastCheck": "2026-03-24T16:07:43.705Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.92.1",
-      "installedAt": "2026-03-23T17:49:43Z"
+      "version": "1.92.2",
+      "installedAt": "2026-03-24T16:10:05Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.92.1",
+        "changes": [
+          "Move module wattage fields inside power consumption block, enable HA long-term statistics for sensors"
+        ]
+      },
       {
         "version": "1.92.0",
         "changes": [
@@ -365,12 +371,6 @@
         "version": "1.76.10",
         "changes": [
           "Fix relay URL fallback for public room join"
-        ]
-      },
-      {
-        "version": "1.76.9",
-        "changes": [
-          "Fix multiplayer guests seeing own data instead of host room"
         ]
       }
     ],
