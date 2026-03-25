@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-25T12:47:34Z",
+  "generatedAt": "2026-03-25T18:30:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.92.5",
-      "archive": "s4r-web-1.92.5.tar.gz",
-      "sha256": "62734c0d1356d6bacf072d82c7f3b7b4adf094fbb6af9bcea6dbde1052cbda78",
-      "size": 11242061,
+      "version": "1.92.6",
+      "archive": "s4r-web-1.92.6.tar.gz",
+      "sha256": "ffce942e8abcc85b8d933639d22fd75661ab748ba4f0a0d3636653baeb97355d",
+      "size": 11242147,
       "changelog": [
+        {
+          "version": "1.92.6",
+          "changes": [
+            "Fix HA published entities list, add Fan entity, natural wind attribute, correct per-device outlet assignment"
+          ]
+        },
         {
           "version": "1.92.5",
           "changes": [

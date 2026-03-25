@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-25T12:37:53.622Z",
+  "lastCheck": "2026-03-25T18:28:01.296Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.92.5",
-      "installedAt": "2026-03-25T12:32:20Z"
+      "version": "1.92.6",
+      "installedAt": "2026-03-25T18:30:36Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.92.5",
+        "changes": [
+          "Fix display zone element overrides not persisting across sessions"
+        ]
+      },
       {
         "version": "1.92.4",
         "changes": [
@@ -364,14 +370,6 @@
         "changes": [
           "Show host sensor data in remote room display zones via relay proxy"
         ]
-      },
-      {
-        "version": "1.77.0",
-        "changes": [
-          "Fix system ducts leaking into user savegame file",
-          "Fix user-placed objects not saving in room savegame",
-          "Add server-side relay proxy for multiplayer guest room data"
-        ]
       }
     ],
     "ingest": [
@@ -475,6 +473,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.17.0",
+        "changes": [
+          "Add 20-min grace period on day/night transition with 5-min trend monitoring to prevent abrupt climate changes"
+        ]
+      },
       {
         "version": "1.16.8",
         "changes": [
