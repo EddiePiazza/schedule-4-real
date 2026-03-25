@@ -88,6 +88,26 @@ const HEATER_GRACE_MS = 2 * 60 * 1000;     // 2 min: after heater off, suppress 
 const HUMIDIFIER_GRACE_MS = 4 * 60 * 1000; // 4 min: after humidifier off, suppress extraction — residual moisture needs time to settle
 const DEHUM_ESCALATION_MS = 2 * 60 * 1000; // 2 min: dehumidifier must run this long before blower escalation
 
+// ── Cycle Transition Grace Period ──
+// When day↔night changes, the environment needs time to adjust naturally.
+// Lights off → temp drops on its own. Lights on → temp rises on its own.
+// We suppress aggressive climate actions during this period, monitoring every
+// TREND_CHECK_INTERVAL to detect if the trend is favorable (moving toward target),
+// stagnant (no change), or adverse (moving away from target).
+const CYCLE_TRANSITION_GRACE_MS = 20 * 60 * 1000; // 20 min max grace period
+const TREND_CHECK_INTERVAL_MS = 5 * 60 * 1000;    // Check trend every 5 min
+const TREND_MIN_CHANGE = 0.5;                       // °C or % minimum change per 5 min to be "favorable"
+
+let lastKnownPeriod = null;           // 'day' or 'night' — to detect transitions
+let cycleTransitionTime = 0;          // When the last transition happened (ms)
+let cycleTransitionTempAtStart = 0;   // Temp when transition occurred
+let cycleTransitionHumiAtStart = 0;   // Humi when transition occurred
+let cycleTransitionLastCheck = 0;     // Last trend check timestamp
+let cycleTransitionLastTemp = 0;      // Temp at last trend check
+let cycleTransitionLastHumi = 0;      // Humi at last trend check
+let cycleTransitionGraceActive = false;
+let cycleTransitionDirection = '';    // 'cooling' (day→night) or 'warming' (night→day)
+
 // Blower Curve Control State
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
 let blowerCurveEscalationState = {}; // { curveId: { lastValue, lastCheck, escalationBoost } }
@@ -971,9 +991,74 @@ function evaluateVpdIntelligent() {
 
   // Ideal temperature range (day/night)
   const isDaytime = getCurrentPeriod() === 'day';
+  const currentPeriod = isDaytime ? 'day' : 'night';
   const idealTemp = isDaytime
     ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
     : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
+
+  // ── Cycle Transition Grace Period ──
+  // Detect day↔night transition and suppress aggressive climate actions
+  // while the environment adjusts naturally (lights off → temp drops, lights on → temp rises)
+  if (lastKnownPeriod !== null && lastKnownPeriod !== currentPeriod) {
+    // Transition just detected!
+    cycleTransitionTime = now;
+    cycleTransitionTempAtStart = temp;
+    cycleTransitionHumiAtStart = humi;
+    cycleTransitionLastCheck = now;
+    cycleTransitionLastTemp = temp;
+    cycleTransitionLastHumi = humi;
+    cycleTransitionGraceActive = true;
+    cycleTransitionDirection = (currentPeriod === 'night') ? 'cooling' : 'warming';
+    console.log(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod}: grace period started (${cycleTransitionDirection}, ${temp.toFixed(1)}°C → ${idealTemp.min}-${idealTemp.max}°C)`);
+  }
+  lastKnownPeriod = currentPeriod;
+
+  // Evaluate grace period if active
+  if (cycleTransitionGraceActive) {
+    const elapsed = now - cycleTransitionTime;
+    const sinceLastCheck = now - cycleTransitionLastCheck;
+
+    if (elapsed >= CYCLE_TRANSITION_GRACE_MS) {
+      // Grace period expired — resume normal control
+      cycleTransitionGraceActive = false;
+      console.log(`[VPD] Cycle transition grace period ended (${(elapsed / 60000).toFixed(0)}min elapsed)`);
+    } else if (sinceLastCheck >= TREND_CHECK_INTERVAL_MS) {
+      // 5-minute trend check
+      const tempDelta = temp - cycleTransitionLastTemp;
+      const humiDelta = humi - cycleTransitionLastHumi;
+      cycleTransitionLastCheck = now;
+      cycleTransitionLastTemp = temp;
+      cycleTransitionLastHumi = humi;
+
+      const wantCooling = cycleTransitionDirection === 'cooling';
+      const tempMovingRight = wantCooling ? (tempDelta < -TREND_MIN_CHANGE * 0.3) : (tempDelta > TREND_MIN_CHANGE * 0.3);
+      const tempMovingWrong = wantCooling ? (tempDelta > TREND_MIN_CHANGE * 0.5) : (tempDelta < -TREND_MIN_CHANGE * 0.5);
+      const tempStagnant = !tempMovingRight && !tempMovingWrong;
+      const tempAlreadyInRange = temp >= idealTemp.min && temp <= idealTemp.max;
+
+      if (tempAlreadyInRange) {
+        // Already reached target — end grace early
+        cycleTransitionGraceActive = false;
+        console.log(`[VPD] Cycle transition: temp ${temp.toFixed(1)}°C in range [${idealTemp.min}-${idealTemp.max}], grace ended early`);
+      } else if (tempMovingWrong) {
+        // Adverse trend — end grace and let automation act
+        cycleTransitionGraceActive = false;
+        console.log(`[VPD] Cycle transition: ADVERSE trend (temp Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C in 5min, want ${wantCooling ? 'cooling' : 'warming'}), grace ended — resuming control`);
+      } else if (tempStagnant) {
+        // No change in 5 min — environment saturated, end grace
+        cycleTransitionGraceActive = false;
+        console.log(`[VPD] Cycle transition: STAGNANT (temp Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C in 5min), grace ended — resuming control`);
+      } else {
+        // Favorable trend — continue grace
+        console.log(`[VPD] Cycle transition: favorable trend (temp ${temp.toFixed(1)}°C, Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C, ${((CYCLE_TRANSITION_GRACE_MS - elapsed) / 60000).toFixed(0)}min remaining)`);
+      }
+    }
+
+    // While grace is active, suppress climate actions (return empty actions)
+    if (cycleTransitionGraceActive) {
+      return [];
+    }
+  }
 
   // Calculate ideal humidity from VPD target at CURRENT temperature
   // Leaf VPD = SVP(T_leaf) - SVP(T_air) × (RH/100)

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-25T12:32:20Z",
+  "generatedAt": "2026-03-25T12:47:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1933,11 +1933,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.16.8",
-      "archive": "s4r-supervisor-1.16.8.tar.gz",
-      "sha256": "e1c053703c30d072106af3ac0cbd5dce19afe6cca0ad72621ea9dbaf18509c87",
-      "size": 54804,
+      "version": "1.17.0",
+      "archive": "s4r-supervisor-1.17.0.tar.gz",
+      "sha256": "03ad008dc166e7f64a53cdede62a8b8bafac62a96d9c20b1c67f4f8e95f2bbfd",
+      "size": 56249,
       "changelog": [
+        {
+          "version": "1.17.0",
+          "changes": [
+            "Add 20-min grace period on day/night transition with 5-min trend monitoring to prevent abrupt climate changes"
+          ]
+        },
         {
           "version": "1.16.8",
           "changes": [
