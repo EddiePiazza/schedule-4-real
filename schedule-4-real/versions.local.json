@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-25T12:17:43.736Z",
+  "lastCheck": "2026-03-25T12:27:43.708Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.92.4",
-      "installedAt": "2026-03-25T12:19:09Z"
+      "version": "1.92.5",
+      "installedAt": "2026-03-25T12:32:20Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.92.4",
+        "changes": [
+          "Add PPFD to published entities list in HA bridge status"
+        ]
+      },
       {
         "version": "1.92.3",
         "changes": [
@@ -365,12 +371,6 @@
           "Fix system ducts leaking into user savegame file",
           "Fix user-placed objects not saving in room savegame",
           "Add server-side relay proxy for multiplayer guest room data"
-        ]
-      },
-      {
-        "version": "1.76.12",
-        "changes": [
-          "Fix relay URL discovery with /relay prefix fallback for shared domains"
         ]
       }
     ],
