@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-25T00:00:22Z",
+  "generatedAt": "2026-03-25T12:19:09Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.92.3",
-      "archive": "s4r-web-1.92.3.tar.gz",
-      "sha256": "0f2ae2d7206e1c85826b0a5f05b2eaaccca6929919e804c3c839f251ce5a91c6",
-      "size": 11240891,
+      "version": "1.92.4",
+      "archive": "s4r-web-1.92.4.tar.gz",
+      "sha256": "1718f061f7e7454bd41ca7a3aa2c429d3b805a5154eccc19d9e249c1a5fd5a30",
+      "size": 11240966,
       "changelog": [
+        {
+          "version": "1.92.4",
+          "changes": [
+            "Add PPFD to published entities list in HA bridge status"
+          ]
+        },
         {
           "version": "1.92.3",
           "changes": [
