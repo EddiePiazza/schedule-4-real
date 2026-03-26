@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-25T18:30:36Z",
+  "generatedAt": "2026-03-26T21:21:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.92.6",
-      "archive": "s4r-web-1.92.6.tar.gz",
-      "sha256": "ffce942e8abcc85b8d933639d22fd75661ab748ba4f0a0d3636653baeb97355d",
-      "size": 11242147,
+      "version": "1.93.0",
+      "archive": "s4r-web-1.93.0.tar.gz",
+      "sha256": "0daa77b328cc6078dac9374e391586f9dd3861d3bb4fcee4a08b25ffa71d335c",
+      "size": 11246731,
       "changelog": [
+        {
+          "version": "1.93.0",
+          "changes": [
+            "Redesign timelapse gallery: video modal with loop, photo delete, regenerate all, merge shorts, chart overlay, confirm dialogs"
+          ]
+        },
         {
           "version": "1.92.6",
           "changes": [

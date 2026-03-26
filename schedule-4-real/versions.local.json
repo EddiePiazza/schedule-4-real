@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-25T18:28:01.296Z",
+  "lastCheck": "2026-03-26T21:18:01.368Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.92.6",
-      "installedAt": "2026-03-25T18:30:36Z"
+      "version": "1.93.0",
+      "installedAt": "2026-03-26T21:21:05Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.92.6",
+        "changes": [
+          "Fix HA published entities list, add Fan entity, natural wind attribute, correct per-device outlet assignment"
+        ]
+      },
       {
         "version": "1.92.5",
         "changes": [
@@ -363,12 +369,6 @@
         "version": "1.78.1",
         "changes": [
           "Load sensor history charts in remote room via relay API proxy"
-        ]
-      },
-      {
-        "version": "1.78.0",
-        "changes": [
-          "Show host sensor data in remote room display zones via relay proxy"
         ]
       }
     ],
