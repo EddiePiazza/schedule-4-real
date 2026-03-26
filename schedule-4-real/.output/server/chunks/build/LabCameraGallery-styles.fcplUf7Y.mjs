@@ -1,0 +1,1 @@
+const r=[".scrollbar-thin[data-v-0e3f44b2]::-webkit-scrollbar{height:4px;width:4px}.scrollbar-thin[data-v-0e3f44b2]::-webkit-scrollbar-track{background:transparent}.scrollbar-thin[data-v-0e3f44b2]::-webkit-scrollbar-thumb{background:#4b556366;border-radius:2px}"];export{r as default};

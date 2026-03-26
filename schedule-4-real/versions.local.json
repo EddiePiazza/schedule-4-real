@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-26T21:18:01.368Z",
+  "lastCheck": "2026-03-26T23:48:01.332Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.93.0",
-      "installedAt": "2026-03-26T21:21:05Z"
+      "version": "1.93.1",
+      "installedAt": "2026-03-26T23:53:10Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.93.0",
+        "changes": [
+          "Redesign timelapse gallery: video modal with loop, photo delete, regenerate all, merge shorts, chart overlay, confirm dialogs"
+        ]
+      },
       {
         "version": "1.92.6",
         "changes": [
@@ -363,12 +369,6 @@
         "changes": [
           "Fix Power widget clipping Blower entry in 3D display zones",
           "Show custom socket names and host sensor data in public room display zones"
-        ]
-      },
-      {
-        "version": "1.78.1",
-        "changes": [
-          "Load sensor history charts in remote room via relay API proxy"
         ]
       }
     ],
