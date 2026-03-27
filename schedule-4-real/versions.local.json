@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-27T02:18:01.349Z",
+  "lastCheck": "2026-03-27T12:01:23.710Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.93.2",
-      "installedAt": "2026-03-27T02:21:07Z"
+      "version": "1.94.0",
+      "installedAt": "2026-03-27T12:01:46Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.93.2",
+        "changes": [
+          "Fix soil sensor chart decimal inconsistency across sensors"
+        ]
+      },
       {
         "version": "1.93.1",
         "changes": [
@@ -363,12 +369,6 @@
           "Redesign VPD Control device roles with fixed-role assignment like Blower Curve",
           "Enrich VPD Control canvas card with live leaf VPD, device badges and VPD table button"
         ]
-      },
-      {
-        "version": "1.79.1",
-        "changes": [
-          "Fix missing imports for remote room store population"
-        ]
       }
     ],
     "ingest": [
@@ -472,6 +472,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.17.1",
+        "changes": [
+          "Fix go2rtc crash loop caused by pkill killing newly spawned process"
+        ]
+      },
       {
         "version": "1.17.0",
         "changes": [

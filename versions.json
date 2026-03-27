@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-27T02:21:07Z",
+  "generatedAt": "2026-03-27T12:01:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.93.2",
-      "archive": "s4r-web-1.93.2.tar.gz",
-      "sha256": "8d4a0c5a9555eef6a1d3b2b2146c96d2d2ff29d43511fff15722588e21a31ea9",
-      "size": 11248090,
+      "version": "1.94.0",
+      "archive": "s4r-web-1.94.0.tar.gz",
+      "sha256": "e434890a3e981e133cb1c17ce00af8331d77b0d3650eebead28bed3896d83c45",
+      "size": 11249952,
       "changelog": [
+        {
+          "version": "1.94.0",
+          "changes": [
+            "Add climate module power consumption tracking, 2-column camera layout, show fan/heater/humidifier/dehumidifier in power summary"
+          ]
+        },
         {
           "version": "1.93.2",
           "changes": [
