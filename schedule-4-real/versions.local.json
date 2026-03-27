@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-26T23:48:01.332Z",
+  "lastCheck": "2026-03-27T02:18:01.349Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.93.1",
-      "installedAt": "2026-03-26T23:53:10Z"
+      "version": "1.93.2",
+      "installedAt": "2026-03-27T02:21:07Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.17.0",
-      "installedAt": "2026-03-25T12:47:34Z"
+      "version": "1.17.1",
+      "installedAt": "2026-03-27T02:21:07Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.93.1",
+        "changes": [
+          "Fix timelapse confirm dialog, remove Generate Missing button, add progress to Generate All and Merge"
+        ]
+      },
       {
         "version": "1.93.0",
         "changes": [
@@ -362,13 +368,6 @@
         "version": "1.79.1",
         "changes": [
           "Fix missing imports for remote room store population"
-        ]
-      },
-      {
-        "version": "1.79.0",
-        "changes": [
-          "Fix Power widget clipping Blower entry in 3D display zones",
-          "Show custom socket names and host sensor data in public room display zones"
         ]
       }
     ],

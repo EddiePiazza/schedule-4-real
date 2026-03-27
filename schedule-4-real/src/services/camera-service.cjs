@@ -177,12 +177,18 @@ async function startGo2rtc() {
     child = null;
   }
 
-  // Kill any orphaned go2rtc processes (e.g., from previous camera service restart)
+  // Kill orphaned go2rtc processes from previous camera service instances.
+  // Check if port 1984 is already in use — if so, kill that process specifically.
   try {
-    execFile('pkill', ['-9', '-f', 'go2rtc'], (err) => { /* ignore */ });
-    // Wait for port 1984 to be free
-    await new Promise(resolve => setTimeout(resolve, 1500));
-  } catch { /* ignore */ }
+    const { execSync } = require('child_process');
+    const lsofOut = execSync('lsof -ti :1984 2>/dev/null', { encoding: 'utf-8', timeout: 3000 }).trim();
+    if (lsofOut) {
+      for (const pid of lsofOut.split('\n').filter(Boolean)) {
+        try { process.kill(parseInt(pid), 'SIGKILL'); } catch { /* already dead */ }
+      }
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+  } catch { /* port not in use — good */ }
 
   if (!fs.existsSync(BIN_PATH)) {
     const ok = await downloadBinary();
@@ -257,18 +263,16 @@ async function warmUpCameras() {
 async function stopGo2rtc() {
   if (child) {
     console.log('[Camera] Stopping go2rtc...');
+    const pid = child.pid;
     try { child.kill('SIGTERM'); } catch { /* ignore */ }
-    // Force kill after 2s if still alive
-    const pid = child?.pid;
     child = null;
+    // Force kill after 2s if still alive
     if (pid) {
       setTimeout(() => {
         try { process.kill(pid, 'SIGKILL'); } catch { /* already dead */ }
       }, 2000);
     }
   }
-  // Also kill any orphaned go2rtc processes
-  try { execFile('pkill', ['-9', '-f', 'go2rtc'], () => {}); } catch { /* ignore */ }
 }
 
 async function reloadGo2rtc() {

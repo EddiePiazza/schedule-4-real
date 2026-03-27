@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-26T23:53:10Z",
+  "generatedAt": "2026-03-27T02:21:07Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.93.1",
-      "archive": "s4r-web-1.93.1.tar.gz",
-      "sha256": "750115ad132d84e338f8d8081a0cc6e23ebfefd26a645d8b44e59891f671371b",
-      "size": 11245690,
+      "version": "1.93.2",
+      "archive": "s4r-web-1.93.2.tar.gz",
+      "sha256": "8d4a0c5a9555eef6a1d3b2b2146c96d2d2ff29d43511fff15722588e21a31ea9",
+      "size": 11248090,
       "changelog": [
+        {
+          "version": "1.93.2",
+          "changes": [
+            "Fix soil sensor chart decimal inconsistency across sensors"
+          ]
+        },
         {
           "version": "1.93.1",
           "changes": [
@@ -1951,11 +1957,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.17.0",
-      "archive": "s4r-supervisor-1.17.0.tar.gz",
-      "sha256": "03ad008dc166e7f64a53cdede62a8b8bafac62a96d9c20b1c67f4f8e95f2bbfd",
-      "size": 56249,
+      "version": "1.17.1",
+      "archive": "s4r-supervisor-1.17.1.tar.gz",
+      "sha256": "193994faf32f5782d7ca55fc91ed5327e30808641c5232993d3d7379f0e6cc6d",
+      "size": 56294,
       "changelog": [
+        {
+          "version": "1.17.1",
+          "changes": [
+            "Fix go2rtc crash loop caused by pkill killing newly spawned process"
+          ]
+        },
         {
           "version": "1.17.0",
           "changes": [
