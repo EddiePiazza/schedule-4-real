@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-27T12:01:46Z",
+  "generatedAt": "2026-03-28T00:10:22Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.94.0",
-      "archive": "s4r-web-1.94.0.tar.gz",
-      "sha256": "e434890a3e981e133cb1c17ce00af8331d77b0d3650eebead28bed3896d83c45",
-      "size": 11249952,
+      "version": "1.95.0",
+      "archive": "s4r-web-1.95.0.tar.gz",
+      "sha256": "655004e8ec2fa178bfa1adb826c136c99801ca36f154d477baf326bd8dfa857c",
+      "size": 11253557,
       "changelog": [
+        {
+          "version": "1.95.0",
+          "changes": [
+            "Redesign camera card with tabs below video, inline schedule summary, and overflow menus",
+            "Fix chart overlay not applying when generating timelapse videos",
+            "Add sliding per-frame chart overlay on timelapse videos with configurable position and size",
+            "Fix timelapse gallery showing no photos when expanding days with many captures",
+            "Add unified photo viewer with keyboard navigation across all camera sections",
+            "Add real-time progress indicator for video generation and merge operations"
+          ]
+        },
         {
           "version": "1.94.0",
           "changes": [

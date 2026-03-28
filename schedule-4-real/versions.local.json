@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-27T12:01:23.710Z",
+  "lastCheck": "2026-03-28T00:01:23.692Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.94.0",
-      "installedAt": "2026-03-27T12:01:46Z"
+      "version": "1.95.0",
+      "installedAt": "2026-03-28T00:10:22Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.94.0",
+        "changes": [
+          "Add climate module power consumption tracking, 2-column camera layout, show fan/heater/humidifier/dehumidifier in power summary"
+        ]
+      },
       {
         "version": "1.93.2",
         "changes": [
@@ -357,17 +363,6 @@
           "Fix auth errors and tab UX issues in How to Install modal",
           "Fix invite tokens with empty roomKey failing to parse on join",
           "Fix tunnel-info and other endpoints using wrong CWD to find data files"
-        ]
-      },
-      {
-        "version": "1.80.0",
-        "changes": [
-          "Fix BlowerCurve card text sizes and make speed Y-axis adaptive to data range",
-          "Switch entire VPD system from air VPD to leaf VPD with corrected 5-zone model",
-          "Fix public room joining via relay session and improved URL fallbacks",
-          "Fix banned font sizes across all node config panels in RightPanel",
-          "Redesign VPD Control device roles with fixed-role assignment like Blower Curve",
-          "Enrich VPD Control canvas card with live leaf VPD, device badges and VPD table button"
         ]
       }
     ],
