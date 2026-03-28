@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-28T02:01:23.736Z",
+  "lastCheck": "2026-03-28T02:11:23.707Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.96.0",
-      "installedAt": "2026-03-28T02:09:17Z"
+      "version": "1.96.1",
+      "installedAt": "2026-03-28T02:16:13Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.96.0",
+        "changes": [
+          "Add auto-generate daily video and auto-merge on day change",
+          "Add live chart and text overlay preview on camera feed",
+          "Fix mobile scroll blocked on camera settings panel",
+          "Default chart overlay enabled at 25% top-right, default 30fps timelapse",
+          "Add Play Timelapse button with full merged video playback",
+          "Move text overlay to video post-production, keep original photos clean"
+        ]
+      },
       {
         "version": "1.95.0",
         "changes": [
@@ -359,12 +370,6 @@
           "Show observation wizard plant name in header for context",
           "Fix plant edit failing due to boolean type mismatch",
           "Fix QuestDB lag causing 404/missing data after create/update operations"
-        ]
-      },
-      {
-        "version": "1.82.0",
-        "changes": [
-          "Add multi-provider AI support: Groq, OpenAI, OpenRouter alongside Ollama"
         ]
       }
     ],

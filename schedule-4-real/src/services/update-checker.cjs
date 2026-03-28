@@ -1091,12 +1091,13 @@ async function applyUpdates(components = [], onProgress = null) {
           }
         }
       }
-      try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2Name}`, { stdio: 'pipe' }); } catch {
-        try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2NameLegacy}`, { stdio: 'pipe' }); } catch {}
-      }
-      // PM2 restart is async — execSync returns before the process actually dies.
-      // Do NOT emit 'done' here. The client detects the restart via WS disconnect
-      // and reloads when it reconnects and sees the new version.
+      // Delay restart by 1.5s so the HTTP response reaches the client before the server dies
+      setTimeout(() => {
+        try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2Name}`, { stdio: 'pipe' }); } catch {
+          try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2NameLegacy}`, { stdio: 'pipe' }); } catch {}
+        }
+      }, 1500);
+      // Return immediately — client receives 200, then server restarts after 1.5s
       return { success: allSuccess, results };
     }
 

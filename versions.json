@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-28T02:09:17Z",
+  "generatedAt": "2026-03-28T02:16:13Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.96.0",
-      "archive": "s4r-web-1.96.0.tar.gz",
-      "sha256": "5421489cfa1c33e2e20face89e1ec263b30f44c42347b918b2e49faffc24d13e",
-      "size": 11254609,
+      "version": "1.96.1",
+      "archive": "s4r-web-1.96.1.tar.gz",
+      "sha256": "64b382804cc5045deb8b56622a7df4bc6ac05f7bd11616422135f979c55cc04f",
+      "size": 11254643,
       "changelog": [
+        {
+          "version": "1.96.1",
+          "changes": [
+            "Fix 502 error during update by delaying server restart"
+          ]
+        },
         {
           "version": "1.96.0",
           "changes": [
