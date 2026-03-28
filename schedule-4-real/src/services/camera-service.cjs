@@ -470,7 +470,7 @@ const lastCaptureDateByCamera = new Map(); // cameraId → 'YYYY-MM-DD'
  * Generate timelapse video for a specific camera+day using ffmpeg.
  * Returns true if video was created, false otherwise.
  */
-function generateDailyVideo(cameraId, date, fps = 10) {
+function generateDailyVideo(cameraId, date, fps = 30) {
   const dayDir = path.join(DATA_DIR, cameraId, 'timelapse', date);
   if (!fs.existsSync(dayDir)) return Promise.resolve(false);
 
@@ -507,6 +507,44 @@ function generateDailyVideo(cameraId, date, fps = 10) {
       } else {
         const size = fs.existsSync(videoPath) ? fs.statSync(videoPath).size : 0;
         console.log(`[Camera] Auto-video created: ${videoPath} (${(size / 1024 / 1024).toFixed(1)} MB)`);
+        resolve(true);
+      }
+    });
+  });
+}
+
+/**
+ * Auto-merge all daily videos into a single full timelapse.
+ * Uses ffmpeg concat demuxer (no re-encoding, very fast).
+ */
+function autoMergeVideos(cameraId) {
+  if (!fs.existsSync(VIDEO_DIR)) return Promise.resolve(false);
+
+  const dailyVideos = fs.readdirSync(VIDEO_DIR)
+    .filter(f => f.startsWith(`${cameraId}_`) && f.endsWith('.mp4') && !f.includes('_full_'))
+    .sort();
+
+  if (dailyVideos.length < 2) return Promise.resolve(false);
+
+  const concatListPath = path.join(VIDEO_DIR, `${cameraId}_concat_list.txt`);
+  const concatContent = dailyVideos.map(f => `file '${path.join(VIDEO_DIR, f)}'`).join('\n');
+  fs.writeFileSync(concatListPath, concatContent);
+
+  const exportPath = path.join(VIDEO_DIR, `${cameraId}_full_timelapse.mp4`);
+
+  return new Promise((resolve) => {
+    execFile('ffmpeg', [
+      '-y', '-f', 'concat', '-safe', '0', '-i', concatListPath,
+      '-c', 'copy', '-movflags', '+faststart', exportPath,
+    ], { timeout: 300000 }, (err, _stdout, stderr) => {
+      try { fs.unlinkSync(concatListPath); } catch {}
+      if (err) {
+        console.error('[Camera] Auto-merge failed:', stderr?.slice(0, 200));
+        try { fs.unlinkSync(exportPath); } catch {}
+        resolve(false);
+      } else {
+        const size = fs.existsSync(exportPath) ? fs.statSync(exportPath).size : 0;
+        console.log(`[Camera] Auto-merge: ${exportPath} (${(size / 1024 / 1024).toFixed(1)} MB, ${dailyVideos.length} days)`);
         resolve(true);
       }
     });
@@ -709,19 +747,20 @@ async function checkScheduledCaptures() {
       }
       if (success) {
         lastCaptureBySchedule.set(schedule.id, now);
-        // Apply overlay if enabled
-        const overlay = await getOverlaySettings(cam.id);
-        if (overlay && overlay.enabled) {
-          await applyPhotoOverlay(outputPath, overlay, now);
-        }
+        // Text overlay is now applied during video generation (post-production), not during capture.
 
-        // Auto-generate video when day changes
+        // Auto-generate video + merge when day changes
         const prevDate = lastCaptureDateByCamera.get(cam.id);
         lastCaptureDateByCamera.set(cam.id, dateStr);
         if (prevDate && prevDate !== dateStr) {
-          // Day changed — generate video for the completed day (async, don't block)
-          generateDailyVideo(cam.id, prevDate).catch(err => {
-            console.error(`[Camera] Auto-video failed for ${cam.id} ${prevDate}:`, err.message);
+          // Day changed — generate video for the completed day, then merge all
+          generateDailyVideo(cam.id, prevDate).then(() => {
+            console.log(`[Camera] Auto-video done for ${cam.id} ${prevDate}, starting merge...`);
+            return autoMergeVideos(cam.id);
+          }).then(() => {
+            console.log(`[Camera] Auto-merge done for ${cam.id}`);
+          }).catch(err => {
+            console.error(`[Camera] Auto-video/merge failed for ${cam.id} ${prevDate}:`, err.message);
           });
         }
       }

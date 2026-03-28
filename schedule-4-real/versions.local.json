@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-28T00:01:23.692Z",
+  "lastCheck": "2026-03-28T02:01:23.736Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.95.0",
-      "installedAt": "2026-03-28T00:10:22Z"
+      "version": "1.96.0",
+      "installedAt": "2026-03-28T02:09:17Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.95.0",
+        "changes": [
+          "Redesign camera card with tabs below video, inline schedule summary, and overflow menus",
+          "Fix chart overlay not applying when generating timelapse videos",
+          "Add sliding per-frame chart overlay on timelapse videos with configurable position and size",
+          "Fix timelapse gallery showing no photos when expanding days with many captures",
+          "Add unified photo viewer with keyboard navigation across all camera sections",
+          "Add real-time progress indicator for video generation and merge operations"
+        ]
+      },
       {
         "version": "1.94.0",
         "changes": [
@@ -354,15 +365,6 @@
         "version": "1.82.0",
         "changes": [
           "Add multi-provider AI support: Groq, OpenAI, OpenRouter alongside Ollama"
-        ]
-      },
-      {
-        "version": "1.81.0",
-        "changes": [
-          "Add Wi-Fi Hotspot setup in Connect Devices tab with interactive UI controls",
-          "Fix auth errors and tab UX issues in How to Install modal",
-          "Fix invite tokens with empty roomKey failing to parse on join",
-          "Fix tunnel-info and other endpoints using wrong CWD to find data files"
         ]
       }
     ],
