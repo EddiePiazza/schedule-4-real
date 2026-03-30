@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-30T00:28:30.791Z",
+  "lastCheck": "2026-03-30T01:06:24.951Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.17.2",
-      "installedAt": "2026-03-30T00:34:09Z"
+      "version": "1.18.0",
+      "installedAt": "2026-03-30T01:07:09Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -470,6 +470,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.17.2",
+        "changes": [
+          "Fix supervisor not reconnecting to MQTT after startup failure, preventing automation deadlock"
+        ]
+      },
       {
         "version": "1.17.1",
         "changes": [

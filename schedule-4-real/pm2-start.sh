@@ -263,7 +263,9 @@ info "Iniciando Supervisor Agent..."
 pm2 start src/services/supervisor-agent.cjs \
     --name s4r-supervisor \
     --cwd "$SCRIPT_DIR" \
-    --max-memory-restart 256M \
+    --max-memory-restart 384M \
+    --exp-backoff-restart-delay 1000 \
+    --kill-timeout 5000 \
     --log ./logs/supervisor.log \
     --error ./logs/supervisor-errors.log
 

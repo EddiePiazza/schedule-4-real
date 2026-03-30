@@ -1088,6 +1088,10 @@ function evaluateVpdIntelligent() {
     : idealHumiTarget - 1; // Normal: 1% below target
   const humiHighThreshold = idealHumiMax + 4; // 4% above ideal max (absorbs post-humidifier overshoot)
 
+  // Emergency humidity flag — critically above max, overrides safety margins
+  // In emergencies: skip humidifier grace period, skip tempSafeForBlower, skip dehumidifier wait
+  const humiEmergency = humi > idealHumiMax + 15 || humi > 85;
+
   // Activation conditions (first trigger — require exceeding hysteresis threshold)
   const tempHigh = temp > tempHighThreshold && !heaterRecentlyOff; // Suppress cooling during heater grace
   const tempLow = temp < tempLowThreshold;
@@ -1106,10 +1110,10 @@ function evaluateVpdIntelligent() {
   // Throttled log — only print when conditions change
   const graceFlags = `${heaterRecentlyOff ? 'Hgrace' : ''}${humidifierRecentlyOff ? 'Ugrace' : ''}`;
   const curState = `${tempHigh ? 'TH' : tempLow ? 'TL' : (coolingActive && temp > idealTemp.max) ? 'Tc' : 'T_'}|${humiLow ? 'HL' : humiHigh ? 'HH' : (humiExtractionActive && humi > idealHumiMax) ? 'Hc' : 'H_'}`;
-  const logKey = `${curState}|${graceFlags}|${currentVpd.toFixed(1)}|${temp.toFixed(0)}|${Math.round(humi/2)}`;
+  const logKey = `${curState}|${graceFlags}|${humiEmergency ? 'E' : ''}|${currentVpd.toFixed(1)}|${temp.toFixed(0)}|${Math.round(humi/2)}`;
   if (logKey !== lastVpdLogKey) {
     lastVpdLogKey = logKey;
-    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}`);
+    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${humiEmergency ? ' EMERGENCY' : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}`);
   }
 
   // Track condition changes for escalation reset
@@ -1312,7 +1316,7 @@ function evaluateVpdIntelligent() {
   const needsHumiAction = humi > idealHumiMax
     && (humiHigh || humiExtractionActive || isRoleActive('dehumidifier'))
     && !isRoleActive('humidifier')
-    && !humidifierRecentlyOff; // CRITICAL: suppress during humidifier grace — residual moisture is expected
+    && (!humidifierRecentlyOff || humiEmergency); // Skip grace in emergencies — humidity takes priority
 
   if (needsHumiAction) {
     deactivateSocketRole('humidifier', 'Humi too high');
@@ -1331,13 +1335,16 @@ function evaluateVpdIntelligent() {
     // - Dehumidifier has been running 2+ min without meaningful improvement
     const dehumState = vpdEscalationState.roles['dehumidifier'];
     const hasDehumRole = dehumRole && dehumRole.socket;
-    const dehumExhausted = hasDehumRole
+    const dehumExhausted = (hasDehumRole && !humiEmergency)
       ? (dehumState && now - dehumState.activatedAt > DEHUM_ESCALATION_MS && humi >= dehumState.metricAtActivation - 1)
-      : true; // No dehumidifier → skip straight to blower
+      : true; // No dehumidifier or emergency → skip straight to blower
 
     // Temperature safety: blower for humidity extraction would COOL the room.
     // Don't fire it if temp is already near or below idealTemp.min — that would trigger the heater.
-    const tempSafeForBlower = temp > idealTemp.min + 0.5;
+    // EXCEPTIONS that override temp safety:
+    //   - humiEmergency: critically high humidity, extraction takes priority
+    //   - humiExtractionActive: extraction already running — finish the job, heater compensates (Rule 5)
+    const tempSafeForBlower = temp > idealTemp.min + 0.5 || humiEmergency || humiExtractionActive;
 
     if (dehumExhausted && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
       if (extIsBlower) {
@@ -1405,6 +1412,18 @@ function evaluateVpdIntelligent() {
     for (const key of Object.keys(vpdEscalationState.roles)) {
       if (key !== 'circulator') delete vpdEscalationState.roles[key];
     }
+  }
+
+  // ══���═══════════════════════════���════════════════════════
+  // HARD SAFETY: Temperature must NEVER exceed ideal range limits
+  // These checks run LAST and override all rules above as a safety net.
+  // Catches edge cases like thermal inertia overshoot or rule interaction re-activation.
+  // ════════���══════════════════════════════════════════════
+  if (temp >= idealTemp.max && isRoleActive('heater')) {
+    deactivateSocketRole('heater', `SAFETY: temp ${temp.toFixed(1)}°C >= max ${idealTemp.max}°C`);
+  }
+  if (temp <= idealTemp.min && isRoleActive('cooler')) {
+    deactivateSocketRole('cooler', `SAFETY: temp ${temp.toFixed(1)}°C <= min ${idealTemp.min}°C`);
   }
 
   // Apply blower overrides
@@ -1782,8 +1801,6 @@ function connectMqtt() {
 
   mqttClient.on('message', handleMessage);
 
-  let mqttConnected = false;
-
   mqttClient.on('error', (err) => {
     console.error('[Supervisor] MQTT error:', err.message);
     // If we never connected successfully and mqtt.js stops retrying,
@@ -2093,7 +2110,49 @@ async function start() {
   // Also check immediately on startup (in case we started at midnight)
   checkAutoBackupSchedule();
 
-  console.log('[Supervisor] Supervisor agent started');
+  // ═══════════════════════════════════════════════════════
+  // WATCHDOG: Self-monitoring — if no sensor data is processed
+  // for 5 minutes, the supervisor is effectively dead (hung MQTT,
+  // frozen event loop, etc.). Force-exit so PM2 restarts us.
+  // ═══════════════════════════════════════════════════════
+  let lastSensorProcessedTime = Date.now();
+
+  // Patch processSensorData to track liveness
+  const _originalProcessSensorData = processSensorData;
+  processSensorData = async function (...args) {
+    lastSensorProcessedTime = Date.now();
+    return _originalProcessSensorData.apply(this, args);
+  };
+
+  const WATCHDOG_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes without sensor data = dead
+  setInterval(() => {
+    const silenceMs = Date.now() - lastSensorProcessedTime;
+    if (silenceMs > WATCHDOG_TIMEOUT_MS) {
+      console.error(`[Supervisor] WATCHDOG: No sensor data processed in ${Math.round(silenceMs / 1000)}s — forcing restart`);
+      process.exit(1); // PM2 will restart us
+    }
+  }, 60000);
+
+  // ═══════════════════════════════════════════════════════
+  // HEARTBEAT: Publish health status to MQTT every 30s
+  // External monitors (web UI, other services) can subscribe
+  // to detect if the supervisor is alive and evaluating.
+  // ═══════════════════════════════════════════════════════
+  setInterval(() => {
+    if (mqttClient && mqttClient.connected) {
+      mqttClient.publish('s4r/supervisor/health', JSON.stringify({
+        status: 'alive',
+        uptime: Math.round(process.uptime()),
+        lastSensorAge: Math.round((Date.now() - lastSensorProcessedTime) / 1000),
+        mem: Math.round(process.memoryUsage().rss / 1024 / 1024),
+        devices: deviceRegistry.size,
+        flows: flows.length,
+        ts: Date.now()
+      }), { qos: 0, retain: true });
+    }
+  }, 30000);
+
+  console.log('[Supervisor] Supervisor agent started (watchdog + heartbeat active)');
 }
 
 /**
@@ -2101,6 +2160,12 @@ async function start() {
  */
 function shutdown() {
   console.log('[Supervisor] Shutting down...');
+  if (mqttClient && mqttClient.connected) {
+    // Publish offline status before dying
+    mqttClient.publish('s4r/supervisor/health', JSON.stringify({
+      status: 'offline', ts: Date.now()
+    }), { qos: 0, retain: true });
+  }
   if (mqttClient) {
     mqttClient.end(true);
   }

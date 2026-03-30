@@ -787,9 +787,48 @@ echo ""
 # 11. Configure auto-start on boot
 # ═══════════════════════════════════════════
 info "Configuring auto-start on boot..."
-pm2 startup 2>/dev/null | grep -v "^\[" | bash 2>/dev/null || true
+
+# Remove old PM2 startup service if it exists (unreliable pm2 resurrect)
+pm2 unstartup systemd 2>/dev/null || true
+
+# Create dedicated systemd service that calls pm2-start.sh directly
+# This is more reliable than pm2 resurrect (which depends on dump.pm2 being valid)
+NODE_BIN=$(which node)
+cat > /etc/systemd/system/s4r-app.service << SVCEOF
+[Unit]
+Description=Schedule 4 Real - Plant Automation
+Documentation=https://schedule4real.com
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=forking
+User=root
+Environment=PATH=$(dirname "$NODE_BIN"):/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PM2_HOME=/root/.pm2
+WorkingDirectory=${INSTALL_DIR}
+PIDFile=/root/.pm2/pm2.pid
+Restart=on-failure
+RestartSec=5
+
+# pm2-start.sh handles everything: QuestDB, Mosquitto, all services, pm2 save
+ExecStart=/bin/bash ${INSTALL_DIR}/pm2-start.sh
+ExecStop=/bin/bash ${INSTALL_DIR}/kill.sh all
+ExecReload=/usr/lib/node_modules/pm2/bin/pm2 reload all
+
+# Safety limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+systemctl daemon-reload
+systemctl enable s4r-app.service
+# Don't start it now — pm2-start.sh already ran above
 pm2 save
-success "Auto-start configured"
+success "Auto-start configured (s4r-app.service enabled)"
 
 # Report installation (non-blocking, best-effort)
 curl -fsSL -X POST https://schedule4real.com/api/stats/install \
