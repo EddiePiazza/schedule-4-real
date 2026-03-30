@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-28T02:11:23.707Z",
+  "lastCheck": "2026-03-30T00:28:30.791Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.17.1",
-      "installedAt": "2026-03-27T02:21:07Z"
+      "version": "1.17.2",
+      "installedAt": "2026-03-30T00:34:09Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.96.1",
+        "changes": [
+          "Fix 502 error during update by delaying server restart"
+        ]
+      },
       {
         "version": "1.96.0",
         "changes": [
@@ -360,16 +366,6 @@
         "changes": [
           "Add SSRF protection to relay proxy endpoints (remote-file, remote-api, remote-room-bundle)",
           "Require authentication to read tunnel room key from API"
-        ]
-      },
-      {
-        "version": "1.83.0",
-        "changes": [
-          "Fix camera service not auto-starting when cameras are configured",
-          "Add camera setup directly from Laboratory without going to System",
-          "Show observation wizard plant name in header for context",
-          "Fix plant edit failing due to boolean type mismatch",
-          "Fix QuestDB lag causing 404/missing data after create/update operations"
         ]
       }
     ],

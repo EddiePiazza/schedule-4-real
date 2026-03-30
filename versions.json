@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-28T02:16:13Z",
+  "generatedAt": "2026-03-30T00:34:09Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1991,11 +1991,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.17.1",
-      "archive": "s4r-supervisor-1.17.1.tar.gz",
-      "sha256": "193994faf32f5782d7ca55fc91ed5327e30808641c5232993d3d7379f0e6cc6d",
-      "size": 56294,
+      "version": "1.17.2",
+      "archive": "s4r-supervisor-1.17.2.tar.gz",
+      "sha256": "16d9bc2568501f44ba298052336973d95473088f251022d94b15b59bea24d8cd",
+      "size": 56841,
       "changelog": [
+        {
+          "version": "1.17.2",
+          "changes": [
+            "Fix supervisor not reconnecting to MQTT after startup failure, preventing automation deadlock"
+          ]
+        },
         {
           "version": "1.17.1",
           "changes": [

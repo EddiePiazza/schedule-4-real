@@ -1769,7 +1769,10 @@ function connectMqtt() {
     connectTimeout: 10000
   });
 
+  let mqttConnected = false;
+
   mqttClient.on('connect', () => {
+    mqttConnected = true;
     console.log('[Supervisor] MQTT connected');
 
     // Subscribe to sensor data topics
@@ -1779,8 +1782,22 @@ function connectMqtt() {
 
   mqttClient.on('message', handleMessage);
 
+  let mqttConnected = false;
+
   mqttClient.on('error', (err) => {
     console.error('[Supervisor] MQTT error:', err.message);
+    // If we never connected successfully and mqtt.js stops retrying,
+    // force a manual reconnect after delay
+    if (!mqttConnected) {
+      setTimeout(() => {
+        if (!mqttConnected && mqttClient) {
+          console.log('[Supervisor] MQTT initial connection failed — forcing reconnect in 10s...');
+          try { mqttClient.end(true); } catch {}
+          mqttClient = null;
+          setTimeout(connectMqtt, 10000);
+        }
+      }, 5000);
+    }
   });
 
   mqttClient.on('close', () => {
