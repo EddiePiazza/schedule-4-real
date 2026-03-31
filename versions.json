@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-31T18:42:34Z",
+  "generatedAt": "2026-03-31T19:36:42Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.97.0",
-      "archive": "s4r-web-1.97.0.tar.gz",
-      "sha256": "9e9c0ab36fd8144dd0745aed62871dc52ff274f722d81476b3a0c460769ac3ca",
-      "size": 11258829,
+      "version": "1.98.0",
+      "archive": "s4r-web-1.98.0.tar.gz",
+      "sha256": "c3044bdab430cb958565c92437908530bc3fd9c2f576c7919d2ca88514c81a09",
+      "size": 11259424,
       "changelog": [
+        {
+          "version": "1.98.0",
+          "changes": [
+            "Dynamic socket selectors in triggers supporting all devices (PS5, PS10), custom names, and climate modules"
+          ]
+        },
         {
           "version": "1.97.0",
           "changes": [

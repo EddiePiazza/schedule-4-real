@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-31T18:41:15.419Z",
+  "lastCheck": "2026-03-31T19:33:20.272Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.97.0",
-      "installedAt": "2026-03-31T18:42:34Z"
+      "version": "1.98.0",
+      "installedAt": "2026-03-31T19:36:42Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.97.0",
+        "changes": [
+          "Add trigger disclaimer modal, immersive mode for triggers page, wider right panel, \u00b0F conversion in all trigger components, hide number input spinners globally"
+        ]
+      },
       {
         "version": "1.96.1",
         "changes": [
@@ -360,13 +366,6 @@
         "changes": [
           "Add external MQTT bridge to forward HA discovery to existing broker"
         ]
-      },
-      {
-        "version": "1.83.1",
-        "changes": [
-          "Add SSRF protection to relay proxy endpoints (remote-file, remote-api, remote-room-bundle)",
-          "Require authentication to read tunnel room key from API"
-        ]
       }
     ],
     "ingest": [
@@ -470,6 +469,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.18.1",
+        "changes": [
+          "Fix supervisor not reconnecting to MQTT after startup failure"
+        ]
+      },
       {
         "version": "1.18.0",
         "changes": [
