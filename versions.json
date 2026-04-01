@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-01T19:01:15Z",
+  "generatedAt": "2026-04-01T19:58:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.99.0",
-      "archive": "s4r-web-1.99.0.tar.gz",
-      "sha256": "7e825fb372267af2e6df1ea7a579fb1472d1b769959f63b7aa824b340bde11ac",
-      "size": 11261474,
+      "version": "1.99.1",
+      "archive": "s4r-web-1.99.1.tar.gz",
+      "sha256": "b1ed028c0a4ebe3088b13a6f966b77370ced25364ddea3bf39828c06a1e70053",
+      "size": 11260564,
       "changelog": [
+        {
+          "version": "1.99.1",
+          "changes": [
+            "Fix socket save/toggle for PS10 and multi-device: extract original socket ID from prefixed keys and route to correct device MAC"
+          ]
+        },
         {
           "version": "1.99.0",
           "changes": [
