@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-01T19:51:16.220Z",
+  "lastCheck": "2026-04-01T20:01:16.171Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.99.1",
-      "installedAt": "2026-04-01T19:58:39Z"
+      "version": "1.99.2",
+      "installedAt": "2026-04-01T20:10:25Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.99.1",
+        "changes": [
+          "Fix socket save/toggle for PS10 and multi-device: extract original socket ID from prefixed keys and route to correct device MAC"
+        ]
+      },
       {
         "version": "1.99.0",
         "changes": [
@@ -348,14 +354,6 @@
         "changes": [
           "Only show additional blowers/fans when actively configured",
           "Hide DeviceSelector when CB centralizes all devices"
-        ]
-      },
-      {
-        "version": "1.88.0",
-        "changes": [
-          "Add multiple blowers and fans from power strips",
-          "Fix socket duplicates, NaN labels, sticky chart, and PPFD DB compatibility",
-          "Add socket visibility toggles with time in Socket Activity chart"
         ]
       }
     ],

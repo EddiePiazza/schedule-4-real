@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-01T19:58:39Z",
+  "generatedAt": "2026-04-01T20:10:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.99.1",
-      "archive": "s4r-web-1.99.1.tar.gz",
-      "sha256": "b1ed028c0a4ebe3088b13a6f966b77370ced25364ddea3bf39828c06a1e70053",
-      "size": 11260564,
+      "version": "1.99.2",
+      "archive": "s4r-web-1.99.2.tar.gz",
+      "sha256": "e3dce9baf04646bff0333bcb1a87db31d9f1fa80688cb72436722a551bd4ee6e",
+      "size": 11260441,
       "changelog": [
+        {
+          "version": "1.99.2",
+          "changes": [
+            "Fix socket name save rejecting O6-O10 and prefixed socket IDs"
+          ]
+        },
         {
           "version": "1.99.1",
           "changes": [
