@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-03-31T19:36:42Z",
+  "generatedAt": "2026-04-01T17:48:44Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.98.0",
-      "archive": "s4r-web-1.98.0.tar.gz",
-      "sha256": "c3044bdab430cb958565c92437908530bc3fd9c2f576c7919d2ca88514c81a09",
-      "size": 11259424,
+      "version": "1.98.1",
+      "archive": "s4r-web-1.98.1.tar.gz",
+      "sha256": "16b6751ade9811981f02e0a9d107a73c932de6462217dd4e8e6e7672dc8dd3c8",
+      "size": 11259502,
       "changelog": [
+        {
+          "version": "1.98.1",
+          "changes": [
+            "Detect fan/blower/heater capabilities from actual device status, not just device type (fixes PS10 master mode)"
+          ]
+        },
         {
           "version": "1.98.0",
           "changes": [

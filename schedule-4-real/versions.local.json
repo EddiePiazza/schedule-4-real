@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-03-31T19:33:20.272Z",
+  "lastCheck": "2026-04-01T17:41:16.128Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.98.0",
-      "installedAt": "2026-03-31T19:36:42Z"
+      "version": "1.98.1",
+      "installedAt": "2026-04-01T17:48:44Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.98.0",
+        "changes": [
+          "Dynamic socket selectors in triggers supporting all devices (PS5, PS10), custom names, and climate modules"
+        ]
+      },
       {
         "version": "1.97.0",
         "changes": [
@@ -359,12 +365,6 @@
           "Add PS10 Power Strip 10 device type with 10 outlets",
           "Fix save buttons always enabled in settings, now disabled when no changes",
           "Fix settings page not reflecting real-time socket state changes"
-        ]
-      },
-      {
-        "version": "1.84.0",
-        "changes": [
-          "Add external MQTT bridge to forward HA discovery to existing broker"
         ]
       }
     ],
