@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-01T17:41:16.128Z",
+  "lastCheck": "2026-04-01T17:51:16.119Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.98.1",
-      "installedAt": "2026-04-01T17:48:44Z"
+      "version": "1.98.2",
+      "installedAt": "2026-04-01T17:58:20Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.98.1",
+        "changes": [
+          "Detect fan/blower/heater capabilities from actual device status, not just device type (fixes PS10 master mode)"
+        ]
+      },
       {
         "version": "1.98.0",
         "changes": [
@@ -354,17 +360,6 @@
           "Fix CB outlets not showing - parse embedded ps5/ps10 outlet data",
           "Fix Light 2 hidden by default when wattage not configured",
           "Add PPFD light sensor card to dashboard"
-        ]
-      },
-      {
-        "version": "1.85.0",
-        "changes": [
-          "Fix camera stream not retrying when go2rtc is still starting",
-          "Fix go2rtc status showing incorrectly when cameras are disabled",
-          "Add multi-device support with per-MAC command routing and DeviceSelector",
-          "Add PS10 Power Strip 10 device type with 10 outlets",
-          "Fix save buttons always enabled in settings, now disabled when no changes",
-          "Fix settings page not reflecting real-time socket state changes"
         ]
       }
     ],
