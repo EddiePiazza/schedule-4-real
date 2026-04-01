@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-01T17:51:16.119Z",
+  "lastCheck": "2026-04-01T18:51:16.189Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.98.2",
-      "installedAt": "2026-04-01T17:58:20Z"
+      "version": "1.99.0",
+      "installedAt": "2026-04-01T19:01:15Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.98.2",
+        "changes": [
+          "Add dedicated climate modules (heater, humidifier, dehumidifier) to Blower Curve device options"
+        ]
+      },
       {
         "version": "1.98.1",
         "changes": [
@@ -352,14 +358,6 @@
           "Fix CB outlet labels showing SNaN and duplicate sockets",
           "Add PPFD light sensor chart",
           "Hide empty soil sensor charts when no data available"
-        ]
-      },
-      {
-        "version": "1.86.0",
-        "changes": [
-          "Fix CB outlets not showing - parse embedded ps5/ps10 outlet data",
-          "Fix Light 2 hidden by default when wattage not configured",
-          "Add PPFD light sensor card to dashboard"
         ]
       }
     ],
