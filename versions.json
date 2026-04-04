@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-04T00:16:02Z",
+  "generatedAt": "2026-04-04T23:09:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2033,11 +2033,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.19.0",
-      "archive": "s4r-supervisor-1.19.0.tar.gz",
-      "sha256": "f56d3f49bf545c47615f8f7a2d1dae5dbe043da18f7e2af7b617011d4c3edef4",
-      "size": 61029,
+      "version": "1.20.0",
+      "archive": "s4r-supervisor-1.20.0.tar.gz",
+      "sha256": "a25ab1035bc31ed0f852a5dd30e4d1c972abf98f5bdb8e32c7bd13d8fcf5b528",
+      "size": 62340,
       "changelog": [
+        {
+          "version": "1.20.0",
+          "changes": [
+            "Intelligent blower speed optimizer, cooling priority over humidity, smart heater suppression"
+          ]
+        },
         {
           "version": "1.19.0",
           "changes": [

@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-04T00:13:08.541Z",
+  "lastCheck": "2026-04-04T23:01:11.211Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.19.0",
-      "installedAt": "2026-04-04T00:16:02Z"
+      "version": "1.20.0",
+      "installedAt": "2026-04-04T23:09:08Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -457,6 +457,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.19.0",
+        "changes": [
+          "Redesign VPD climate algorithm with smart escalation, plateau detection and cooling priority"
+        ]
+      },
       {
         "version": "1.18.1",
         "changes": [

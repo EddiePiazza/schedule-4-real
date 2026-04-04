@@ -64,12 +64,17 @@ const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high powe
 const TEMP_HIGH_HYSTERESIS = 0.5; // °C above idealTemp.max before cooling activates (blower ON at max+0.5)
 const TEMP_LOW_HYSTERESIS = 0.5;  // °C below idealTemp.min before heating activates (heater ON at min-0.5)
 
-// Smart escalation — progressive speed increases with plateau detection
-const ESCALATION_CHECK_MS = 2 * 60 * 1000;  // Check every 2 min: did the last step help?
-const ESCALATION_STEP = 5;                    // +5% per escalation step
-const ESCALATION_PLATEAU_STRIKES = 3;         // 3 consecutive failed steps → environment saturated, stop
-const ESCALATION_IMPROVE_TEMP = 0.2;          // °C improvement needed in 2 min to count as "working"
-const ESCALATION_IMPROVE_HUMI = 0.5;          // % improvement needed in 2 min (higher: humidity sensors fluctuate ±0.5%)
+// Smart blower speed optimizer — 3-phase state machine:
+//   ESCALATING:    speed going up, looking for effective speed
+//   DEESCALATING:  speed going down, finding minimum effective speed
+//   HOLDING:       maintaining optimal speed, monitoring for changes
+const ESCALATION_CHECK_MS = 2 * 60 * 1000;   // Evaluate every 2 min
+const ESCALATION_STEP = 5;                     // ±5% per adjustment step
+const ESCALATION_IMPROVE_TEMP = 0.2;           // °C drop needed to count as "improving"
+const ESCALATION_IMPROVE_HUMI = 0.5;           // % drop needed to count as "improving"
+const ESCALATION_WORSEN_TEMP = 0.5;            // °C rise = "worsening" (speed too low)
+const ESCALATION_WORSEN_HUMI = 1.0;            // % rise = "worsening" (wider: sensor noise ±0.5%)
+const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
@@ -80,8 +85,7 @@ let dayNightSchedule = { dayStart: '06:00', dayEnd: '00:00' };
 // VPD Intelligent Control State
 let vpdNodeConfig = null; // Parsed from flow vpd_control node
 let vpdEscalationState = {
-  roles: {}, // { roleName: { activatedAt, metricAtActivation, escalationBoost, lastEscalationTime, lastMetricBeforeStep, consecutiveFailedSteps, plateauReached } }
-  currentDirection: 'in_range', // 'too_high' | 'too_low' | 'in_range'
+  roles: {}, // { roleName: { activatedAt, metricAtActivation, speedBoost, lastCheckTime, lastMetric, phase, noImproveCount } }
 };
 let activeGrowPhase = null; // Current grow phase from DB (9-stage key)
 let vpdBlowerMinSpeed = 0; // VPD-driven blower speed floor (when too_low: boost extraction)
@@ -108,6 +112,7 @@ let lastCoolingStopTime = 0;       // When blower/extractor finished cooling
 let coolingGraceLastTemp = 0;      // Temp at last trend check
 let coolingGraceLastCheck = 0;     // Timestamp of last trend check
 let coolingGraceStableStart = 0;   // When temp first became stable (for 2-min timer)
+let coolingBelowMaxSince = 0;     // When temp first dropped below idealTemp.max during active cooling
 
 // ── Cycle Transition Grace Period ──
 // When day↔night changes, the environment needs time to adjust naturally.
@@ -237,6 +242,7 @@ async function query(text, params = []) {
  */
 async function loadDayNightSchedule() {
   try {
+    const prev = { ...dayNightSchedule };
     const rows = await query(`
       SELECT day_start, day_end
       FROM day_night_schedule
@@ -249,9 +255,12 @@ async function loadDayNightSchedule() {
         dayEnd: rows[0].day_end
       };
     }
-    console.log('[Supervisor] Day/Night schedule:', dayNightSchedule);
+    // If schedule changed, force period re-evaluation (blower curves depend on period)
+    if (prev.dayStart !== dayNightSchedule.dayStart || prev.dayEnd !== dayNightSchedule.dayEnd) {
+      console.log('[Supervisor] Day/Night schedule changed:', dayNightSchedule);
+      lastBlowerSpeed = null; // Force blower re-evaluation with new period
+    }
   } catch (err) {
-    // Table might not exist yet, use defaults
     if (!err.message.includes('does not exist')) {
       console.error('[Supervisor] Failed to load day/night schedule:', err.message);
     }
@@ -262,6 +271,7 @@ async function loadDayNightSchedule() {
  * Load VPD config from the flow's vpd_control node
  */
 function loadVpdFromFlow() {
+  const prevConfig = vpdNodeConfig;
   vpdNodeConfig = null;
   for (const flow of flows) {
     for (const node of flow.flow.nodes) {
@@ -272,9 +282,49 @@ function loadVpdFromFlow() {
           roles: vpdNodeConfig.roles?.length || 0,
           timeout: vpdNodeConfig.escalationTimeoutSeconds
         });
+
+        // Detect config changes → reset escalation state so rules re-evaluate cleanly
+        // This ensures that when the user changes temp ranges, stage, roles, etc.,
+        // the system immediately adjusts instead of holding stale state.
+        if (prevConfig) {
+          const changed =
+            JSON.stringify(prevConfig.idealDayTemp) !== JSON.stringify(vpdNodeConfig.idealDayTemp) ||
+            JSON.stringify(prevConfig.idealNightTemp) !== JSON.stringify(vpdNodeConfig.idealNightTemp) ||
+            prevConfig.selectedStage !== vpdNodeConfig.selectedStage ||
+            prevConfig.mode !== vpdNodeConfig.mode ||
+            JSON.stringify(prevConfig.manualTarget) !== JSON.stringify(vpdNodeConfig.manualTarget) ||
+            JSON.stringify(prevConfig.roles?.map(r => r.role + r.socket)) !== JSON.stringify(vpdNodeConfig.roles?.map(r => r.role + r.socket));
+          if (changed) {
+            console.log('[Supervisor] VPD config changed — resetting escalation state');
+            // Clear all VPD roles except circulator
+            for (const key of Object.keys(vpdEscalationState.roles)) {
+              if (key !== 'circulator') delete vpdEscalationState.roles[key];
+            }
+            // Reset blower overrides so next evaluation starts fresh
+            vpdBlowerMinSpeed = 0;
+            vpdBlowerMaxSpeed = 100;
+            lastVpdLogKey = ''; // Force log on next eval
+            // Reset ALL grace periods and timers — config changed, old state is irrelevant
+            lastCoolingStopTime = 0;
+            coolingBelowMaxSince = 0;
+            coolingGraceStableStart = 0;
+            cycleTransitionGraceActive = false;
+          }
+        }
         return;
       }
     }
+  }
+
+  // VPD node removed — clean up all state
+  if (prevConfig && !vpdNodeConfig) {
+    console.log('[Supervisor] VPD Control node removed — clearing state');
+    for (const key of Object.keys(vpdEscalationState.roles)) {
+      delete vpdEscalationState.roles[key];
+    }
+    vpdBlowerMinSpeed = 0;
+    vpdBlowerMaxSpeed = 100;
+    lastCoolingStopTime = 0;
   }
 }
 
@@ -300,6 +350,7 @@ function getCurrentPeriod() {
  * Merges period-specific curves (day/night) with general curves
  */
 function loadBlowerCurveFromFlow() {
+  const prevConfig = blowerCurveConfig;
   blowerCurveConfig = null;
   for (const flow of flows) {
     if (!flow.enabled) continue;
@@ -315,6 +366,15 @@ function loadBlowerCurveFromFlow() {
 
         blowerCurveConfig._activeCurves = periodCurves;
 
+        // Reset curve escalation if config changed
+        if (prevConfig && JSON.stringify(prevConfig.dayCurves) !== JSON.stringify(blowerCurveConfig.dayCurves) ||
+            prevConfig && JSON.stringify(prevConfig.nightCurves) !== JSON.stringify(blowerCurveConfig.nightCurves) ||
+            prevConfig && prevConfig.standbySpeed !== blowerCurveConfig.standbySpeed) {
+          console.log('[Supervisor] Blower Curve config changed — resetting curve escalation');
+          blowerCurveEscalationState = {};
+          lastBlowerSpeed = null; // Force speed re-evaluation
+        }
+
         console.log('[Supervisor] Blower Curve node found:', {
           standbySpeed: blowerCurveConfig.standbySpeed,
           period,
@@ -323,6 +383,12 @@ function loadBlowerCurveFromFlow() {
         return;
       }
     }
+  }
+
+  // Blower curve removed — reset
+  if (prevConfig && !blowerCurveConfig) {
+    blowerCurveEscalationState = {};
+    lastBlowerSpeed = null;
   }
 }
 
@@ -1092,13 +1158,15 @@ function evaluateVpdIntelligent() {
   const idealHumiTarget = Math.max(idealHumiMin, Math.min(idealHumiMax, (svpLeaf - vpdTarget) / svpAir * 100));
 
   // Grace periods — after device off, let residual effects settle naturally
-  const heaterRecentlyOff = (now - lastHeaterOffTime) < HEATER_GRACE_MS;
+  // Heater grace: ONLY while temp is still below idealTemp.max.
+  // If temp crosses max during grace, abort immediately — cooling is needed, not grace.
+  const heaterRecentlyOff = (now - lastHeaterOffTime) < HEATER_GRACE_MS && temp < idealTemp.max;
   const humidifierRecentlyOff = (now - lastHumidifierOffTime) < HUMIDIFIER_GRACE_MS;
 
   // ── ACTIVATION thresholds (with hysteresis dead band) ──
   // Devices activate when exceeding target + hysteresis margin.
   // Prevents oscillation with 2min heater grace: heater off → grace suppresses cooling → temp settles.
-  const tempHighThreshold = idealTemp.max + TEMP_HIGH_HYSTERESIS; // e.g., 25+0.5=25.5°C
+  const tempHighThreshold = idealTemp.max; // Cooling starts immediately when temp exceeds max (no hysteresis — continuation logic prevents oscillation)
   const tempLowThreshold = idealTemp.min - TEMP_LOW_HYSTERESIS;  // e.g., 24-0.5=23.5°C
 
   // Humidity thresholds
@@ -1128,7 +1196,6 @@ function evaluateVpdIntelligent() {
 
   // ── DEACTIVATION thresholds (at target, instant, no hysteresis) ──
   const tempInRange = temp >= idealTemp.min && temp <= idealTemp.max;
-  const tempReachedMax = temp >= idealTemp.max; // Heater heats to TOP of range, then OFF
   const humiOk = humi >= idealHumiTarget && humi <= idealHumiMax;
 
   // Throttled log — only print when conditions change
@@ -1157,70 +1224,94 @@ function evaluateVpdIntelligent() {
   const extAssignment = getRoleAssignment('extractor');
   const extIsBlower = extAssignment && extAssignment.socket === 'blower';
 
-  // Smart escalation: every ESCALATION_CHECK_MS, check if last step helped.
-  // If yes → maintain speed. If no → escalate +ESCALATION_STEP%.
-  // After ESCALATION_PLATEAU_STRIKES consecutive failures → plateau, stop escalating.
-  // Plateau auto-resets if metric improves significantly from plateau baseline.
-  // @param {number} improveThreshold - min improvement to count as "working" (use ESCALATION_IMPROVE_TEMP or _HUMI)
-  // Returns { shouldEscalate: bool, plateauReached: bool, boost: number }
-  function evaluateEscalation(roleName, metricNow, wantLower, improveThreshold) {
+  // ── 3-Phase Blower Speed Optimizer ──
+  // ESCALATING:    trying higher speed. If 2 consecutive steps don't help → revert, DEESCALATE.
+  // DEESCALATING:  lowering speed. If metric worsens → bump up one step, HOLD.
+  // HOLDING:       optimal speed found. If metric worsens → ESCALATE. If improves → DEESCALATE.
+  //
+  // This finds the MINIMUM effective speed: escalate to find a speed that works,
+  // then de-escalate to find the lowest speed that still holds the metric.
+  // @param {number} improveThreshold - metric must drop by this to count as "improving"
+  // @param {number} worsenThreshold  - metric must rise by this to count as "worsening" (0.5°C / 1.0%)
+  // Returns { boost: number, phase: string }
+  function evaluateEscalation(roleName, metricNow, wantLower, improveThreshold, worsenThreshold) {
     const state = vpdEscalationState.roles[roleName];
-    if (!state) return { shouldEscalate: false, plateauReached: false, boost: 0 };
+    if (!state) return { boost: 0, phase: 'none' };
 
-    // Plateau auto-reset: if conditions changed significantly since plateau was marked,
-    // the environment has shifted (e.g., user opened window) — allow fresh escalation
-    if (state.plateauReached) {
-      const plateauBaseline = state.lastMetricBeforeStep ?? state.metricAtActivation;
-      const significantChange = Math.abs(metricNow - plateauBaseline) > 2.0;
-      if (significantChange) {
-        console.log(`[VPD] ${roleName}: plateau RESET — metric shifted ${plateauBaseline.toFixed(1)} → ${metricNow.toFixed(1)} (Δ${Math.abs(metricNow - plateauBaseline).toFixed(1)})`);
-        state.plateauReached = false;
-        state.consecutiveFailedSteps = 0;
-        state.escalationBoost = 0;
-        state.lastEscalationTime = now;
-        state.lastMetricBeforeStep = metricNow;
-        state.metricAtActivation = metricNow;
-      } else {
-        return { shouldEscalate: false, plateauReached: true, boost: state.escalationBoost || 0 };
-      }
+    // Initialize optimizer state if missing
+    if (!state.phase) state.phase = 'escalating';
+    if (state.speedBoost === undefined) state.speedBoost = 0;
+    if (state.noImproveCount === undefined) state.noImproveCount = 0;
+
+    const lastCheck = state.lastCheckTime || state.activatedAt;
+    if (now - lastCheck < ESCALATION_CHECK_MS) {
+      return { boost: state.speedBoost, phase: state.phase };
     }
 
-    const lastStepTime = state.lastEscalationTime || state.activatedAt;
-    if (now - lastStepTime < ESCALATION_CHECK_MS) {
-      // Not time to check yet — keep current boost
-      return { shouldEscalate: false, plateauReached: false, boost: state.escalationBoost || 0 };
+    // Compare metric against last check
+    const baseline = state.lastMetric ?? state.metricAtActivation;
+    const delta = wantLower ? (metricNow - baseline) : (baseline - metricNow);
+    // delta > 0 means WORSE (metric rose when we want it lower, or dropped when we want it higher)
+    // delta < 0 means BETTER
+    const improved = delta < -improveThreshold;
+    const worsened = delta > worsenThreshold;
+
+    state.lastCheckTime = now;
+    state.lastMetric = metricNow;
+
+    switch (state.phase) {
+      case 'escalating':
+        if (improved) {
+          // This speed works → hold here, try de-escalating later
+          state.phase = 'holding';
+          state.noImproveCount = 0;
+          console.log(`[VPD] ${roleName}: speed effective at boost ${state.speedBoost}% — HOLDING (metric ${metricNow.toFixed(1)})`);
+        } else {
+          state.noImproveCount++;
+          if (state.noImproveCount >= 2) {
+            // 2 consecutive no-improve → higher speed is useless
+            // Revert last step and start de-escalating to find minimum
+            state.speedBoost -= ESCALATION_STEP;
+            state.phase = 'deescalating';
+            state.noImproveCount = 0;
+            console.log(`[VPD] ${roleName}: escalation ineffective — reverting to boost ${state.speedBoost}%, DEESCALATING`);
+          } else {
+            // First no-improve: try one more step up
+            state.speedBoost += ESCALATION_STEP;
+            console.log(`[VPD] ${roleName}: ESCALATING to boost ${state.speedBoost}% (metric ${metricNow.toFixed(1)}, attempt ${state.noImproveCount}/2)`);
+          }
+        }
+        break;
+
+      case 'deescalating':
+        if (worsened) {
+          // Speed too low → bump back up and hold
+          state.speedBoost += ESCALATION_STEP;
+          state.phase = 'holding';
+          console.log(`[VPD] ${roleName}: too low at boost ${state.speedBoost - ESCALATION_STEP}% (metric worsened) — back to ${state.speedBoost}%, HOLDING`);
+        } else {
+          // Not worse → keep reducing to find minimum (clamp at -100)
+          state.speedBoost = Math.max(-100, state.speedBoost - ESCALATION_STEP);
+          console.log(`[VPD] ${roleName}: DEESCALATING to boost ${state.speedBoost}% (metric ${metricNow.toFixed(1)}, stable)`);
+        }
+        break;
+
+      case 'holding':
+        if (worsened) {
+          // Conditions changed, need more power
+          state.phase = 'escalating';
+          state.noImproveCount = 0;
+          console.log(`[VPD] ${roleName}: metric worsening at boost ${state.speedBoost}% — ESCALATING (metric ${metricNow.toFixed(1)})`);
+        } else if (improved) {
+          // Maybe can reduce further
+          state.phase = 'deescalating';
+          console.log(`[VPD] ${roleName}: metric still improving at boost ${state.speedBoost}% — DEESCALATING (metric ${metricNow.toFixed(1)})`);
+        }
+        // Stable → stay at current speed
+        break;
     }
 
-    // Time to evaluate: did the metric improve since the last escalation step?
-    const baseline = state.lastMetricBeforeStep ?? state.metricAtActivation;
-    const improved = wantLower
-      ? (metricNow < baseline - improveThreshold)
-      : (metricNow > baseline + improveThreshold);
-
-    if (improved) {
-      // Current speed is effective — reset failure counter, maintain
-      state.consecutiveFailedSteps = 0;
-      state.lastEscalationTime = now;
-      state.lastMetricBeforeStep = metricNow;
-      return { shouldEscalate: false, plateauReached: false, boost: state.escalationBoost || 0 };
-    }
-
-    // Not improving — count failure
-    state.consecutiveFailedSteps = (state.consecutiveFailedSteps || 0) + 1;
-
-    if (state.consecutiveFailedSteps >= ESCALATION_PLATEAU_STRIKES) {
-      // Environment saturated — this device can't solve the problem
-      state.plateauReached = true;
-      console.log(`[VPD] ${roleName}: PLATEAU after ${state.consecutiveFailedSteps} failed steps at boost ${state.escalationBoost || 0}% — metric stuck at ${metricNow.toFixed(1)} (baseline ${baseline.toFixed(1)})`);
-      return { shouldEscalate: false, plateauReached: true, boost: state.escalationBoost || 0 };
-    }
-
-    // Escalate: increase speed
-    state.escalationBoost = Math.min(100, (state.escalationBoost || 0) + ESCALATION_STEP);
-    state.lastEscalationTime = now;
-    state.lastMetricBeforeStep = metricNow;
-    console.log(`[VPD] ${roleName}: escalating +${ESCALATION_STEP}% → total boost ${state.escalationBoost}% (metric ${metricNow.toFixed(1)}, failed ${state.consecutiveFailedSteps}/${ESCALATION_PLATEAU_STRIKES})`);
-    return { shouldEscalate: true, plateauReached: false, boost: state.escalationBoost };
+    return { boost: state.speedBoost, phase: state.phase };
   }
 
   // Activate a socket-based role (ON)
@@ -1272,13 +1363,26 @@ function evaluateVpdIntelligent() {
 
   // ═══════════════════════════════════════════════════════
   // RULE 1: Temperature too high → Blower ON (override ceiling)
-  // Activation: temp > idealMax + 0.5°C hysteresis (e.g., 25.5°C)
-  // Continuation: once active, keep running while temp > idealMin (cools to BOTTOM of range)
-  // Deactivation: temp <= idealMin (full range used)
-  // Escalation: +5% every 2min if not improving, plateau after 3 failures
-  // Post-cooling grace prevents heater oscillation (see cooling grace logic below)
+  // Activation: temp > idealMax + hysteresis (e.g., 27.5°C when max=27)
+  // Goal: cool toward idealTemp.min (uses full range)
+  // Continues while temp > idealTemp.min (target is bottom of range)
+  // Safety timeout: if below idealTemp.max for 5+ min without reaching min → stop
+  //   (blower did its best, environment saturated, no point running indefinitely)
+  // Speed: 3-phase optimizer (escalate → de-escalate → hold at minimum effective speed)
   // ═══════════════════════════════════════════════════════
-  const needsCooling = temp > idealTemp.min && (tempHigh || coolingActive) && (!heaterRecentlyOff || tempEmergency);
+
+  // Track time below idealTemp.max during cooling — safety timeout
+  if (coolingActive && temp <= idealTemp.max) {
+    if (!coolingBelowMaxSince) coolingBelowMaxSince = now;
+  } else {
+    coolingBelowMaxSince = 0;
+  }
+  const belowMaxSaturated = coolingBelowMaxSince > 0 && (now - coolingBelowMaxSince) >= COOLING_BELOW_MAX_TIMEOUT_MS;
+
+  const needsCooling = temp > idealTemp.min
+    && (tempHigh || coolingActive)
+    && (!heaterRecentlyOff || tempEmergency)
+    && !belowMaxSaturated;
 
   if (needsCooling) {
     // Cooling needed — lift ceiling
@@ -1288,58 +1392,51 @@ function evaluateVpdIntelligent() {
     if (!extIsBlower) {
       activateSocketRole('extractor', `Temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C`);
       if (!vpdEscalationState.roles['extractor']) {
-        vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp, plateauReached: false };
+        vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp };
       }
     } else {
-      // Blower extractor: calculate speed from calibration capacity data
-      // tempExcess relative to where we're going (idealTemp.min), not idealTemp.max
+      // Blower extractor: calculate initial speed from calibration or formula
       const tempExcess = temp - idealTemp.min;
       const period = isDaytime ? 'day' : 'night';
       const calSpeed = calcSpeedFromCalibration(tempExcess, 0, period);
-      // Fallback: crude formula if no calibration
       const baseFloor = calSpeed > 0
         ? calSpeed
         : Math.min(80, Math.round(25 + tempExcess * 15));
-      newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
 
       if (!coolingActive) {
-        // First activation — create escalation state with smart tracking
+        // First activation — create optimizer state
         vpdEscalationState.roles['extractor_temp'] = {
           activatedAt: now, metricAtActivation: temp,
-          escalationBoost: 0, lastEscalationTime: now, lastMetricBeforeStep: temp,
-          consecutiveFailedSteps: 0, plateauReached: false
+          speedBoost: 0, lastCheckTime: now, lastMetric: temp,
+          phase: 'escalating', noImproveCount: 0
         };
-        console.log(`[VPD] Blower floor ${newBlowerFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C (cooling to ${idealTemp.min}°C)`);
+        console.log(`[VPD] Blower floor ${baseFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C (cooling to ${idealTemp.min}°C)`);
       } else {
-        // Smart escalation: check every 2min, +5% if not improving, stop at plateau
-        const esc = evaluateEscalation('extractor_temp', temp, true, ESCALATION_IMPROVE_TEMP);
-        // esc.boost is already accumulated in state
+        // 3-phase speed optimizer
+        evaluateEscalation('extractor_temp', temp, true, ESCALATION_IMPROVE_TEMP, ESCALATION_WORSEN_TEMP);
       }
-      // Apply cumulative escalation boost on top of calibration speed
-      newBlowerFloor += (vpdEscalationState.roles['extractor_temp']?.escalationBoost || 0);
+      // Apply optimizer boost (can be negative during de-escalation)
+      const boost = vpdEscalationState.roles['extractor_temp']?.speedBoost || 0;
+      newBlowerFloor = Math.max(0, baseFloor + boost);
       newBlowerFloor = Math.min(100, newBlowerFloor);
-    }
-
-    // Escalate to cooler if extractor plateaued (blower can't solve it alone)
-    const extTempState = vpdEscalationState.roles['extractor_temp'];
-    const extSocketState = vpdEscalationState.roles['extractor'];
-    if (extTempState?.plateauReached || extSocketState?.plateauReached) {
-      activateSocketRole('cooler', `Extractor plateau at ${extTempState?.escalationBoost || 0}% boost, temp ${temp.toFixed(1)}°C still > ${idealTemp.min}°C`);
     }
 
     // Temp too high → no heater needed
     deactivateSocketRole('heater', 'Temp too high');
 
-  } else if (temp <= idealTemp.min) {
-    // Temp reached bottom of ideal range — stop ALL cooling, start post-cooling grace
+  } else if (temp <= idealTemp.min || belowMaxSaturated) {
+    // Either reached idealTemp.min OR below max for 5+ min (best effort)
     if (coolingActive) {
-      console.log(`[VPD] Cooling done: temp ${temp.toFixed(1)}°C reached target ${idealTemp.min}°C — starting post-cooling grace`);
-      // Start post-cooling grace: intelligent heater suppression with trend analysis
+      const reason = belowMaxSaturated
+        ? `below ${idealTemp.max}°C for 5 min, best effort ${temp.toFixed(1)}°C`
+        : `reached target ${idealTemp.min}°C`;
+      console.log(`[VPD] Cooling done: ${reason} — starting post-cooling grace`);
       lastCoolingStopTime = now;
       coolingGraceLastTemp = temp;
       coolingGraceLastCheck = now;
       coolingGraceStableStart = 0;
     }
+    coolingBelowMaxSince = 0;
     delete vpdEscalationState.roles['extractor_temp'];
     deactivateSocketRole('cooler', 'Temp OK');
     if (!extIsBlower) deactivateSocketRole('extractor', 'Temp OK');
@@ -1369,10 +1466,9 @@ function evaluateVpdIntelligent() {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
     deactivateSocketRole('dehumidifier', 'Humi too low');
-  } else if (humi < idealHumiMin && needsCooling) {
-    // Humidity below ideal but not critically low — still activate humidifier
-    // to compensate moisture loss from cooling extraction
-    activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${idealHumiMin.toFixed(0)}% — compensating blower extraction`);
+  } else if (humi < idealHumiMin) {
+    // Humidity below ideal minimum — activate humidifier regardless of cooling state
+    activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${idealHumiMin.toFixed(0)}%`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
@@ -1448,22 +1544,23 @@ function evaluateVpdIntelligent() {
   // ═══════════════════════════════════════════════════════
   // RULE 3: Temperature too low → Heater ON
   // Activation: temp < idealMin - hysteresis (e.g., 23.5°C)
-  // Deactivation: temp >= idealMax (heater heats to TOP of range, then OFF)
-  // Post-cooling grace suppresses heater after blower was recently cooling.
+  // Deactivation: temp >= idealMin (heater heats TO the bottom of range, NOT through it)
+  //   This prevents thermal inertia from pushing temp far above range.
+  //   Overshoot: heater off at 24°C → inertia to ~24.5°C = safe, still in range.
+  // If temp is IN range (>= min): heater must NEVER be on.
   // ═══════════════════════════════════════════════════════
+  const tempReachedMin = temp >= idealTemp.min; // Heater target: bottom of range
+
   if (tempLow && heaterSuppressedByCoolingGrace) {
-    // Heater would activate but cooling grace is suppressing it — log for visibility
     if (curState !== prevState) {
       console.log(`[VPD] Heater suppressed by cooling grace (${(coolingGraceElapsed / 60000).toFixed(0)}min/${(COOLING_GRACE_MAX_MS / 60000)}min) — temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C but monitoring trend`);
     }
   } else if (tempLow && !heaterSuppressedByCoolingGrace) {
     activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C`);
-    // Blower already capped by default ceiling (temp < idealMin → ceiling=0)
     deactivateSocketRole('cooler', 'Temp too low');
-  } else if (tempReachedMax) {
-    // Heater heated room to top of ideal range — turn off
-    // (not at idealMin — that causes short cycles and rapid oscillation)
-    deactivateSocketRole('heater', `Temp ${temp.toFixed(1)}°C reached ideal max ${idealTemp.max}°C`);
+  } else if (tempReachedMin && isRoleActive('heater')) {
+    // Heater heated room to bottom of range — turn off BEFORE entering range
+    deactivateSocketRole('heater', `Temp ${temp.toFixed(1)}°C reached ideal min ${idealTemp.min}°C — stopping to prevent overshoot`);
   }
 
   // ═══════════════════════════════════════════════════════
@@ -1489,9 +1586,7 @@ function evaluateVpdIntelligent() {
       activateSocketRole('dehumidifier', `Humi ${humi.toFixed(0)}% > ${idealHumiMax.toFixed(0)}% — dehumidifier first`);
       if (!vpdEscalationState.roles['dehumidifier']) {
         vpdEscalationState.roles['dehumidifier'] = {
-          activatedAt: now, metricAtActivation: humi,
-          escalationBoost: 0, lastEscalationTime: now, lastMetricBeforeStep: humi,
-          consecutiveFailedSteps: 0, plateauReached: false
+          activatedAt: now, metricAtActivation: humi
         };
       }
     }
@@ -1505,9 +1600,10 @@ function evaluateVpdIntelligent() {
     // ── SMART SUBSTITUTION: blower crashing temp → switch to dehumidifier-only ──
     // If blower is extracting humidity but temp has dropped to near idealTemp.min,
     // the blower is causing more harm than good. Stop it, let dehumidifier handle it.
+    // Blower crashing temp: stop extraction regardless of whether dehumidifier exists.
+    // Without dehumidifier, we sacrifice humidity control to protect temperature.
     const blowerCrashingTemp = humiExtractionActive
       && temp < idealTemp.min + 0.5
-      && hasDehumRole
       && !humiEmergency;
 
     if (blowerCrashingTemp) {
@@ -1551,17 +1647,17 @@ function evaluateVpdIntelligent() {
         if (!humiExtractionActive) {
           vpdEscalationState.roles['extractor_humi'] = {
             activatedAt: now, metricAtActivation: humi,
-            escalationBoost: 0, lastEscalationTime: now, lastMetricBeforeStep: humi,
-            consecutiveFailedSteps: 0, plateauReached: false
+            speedBoost: 0, lastCheckTime: now, lastMetric: humi,
+            phase: 'escalating', noImproveCount: 0
           };
           newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
-          console.log(`[VPD] Blower floor ${newBlowerFloor}% — last resort humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
+          console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
         } else {
-          // Smart escalation: check every 2min, +5% if not improving, plateau detection
-          evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI);
+          // 3-phase speed optimizer for humidity extraction
+          evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
         }
-        newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
-        newBlowerFloor += (vpdEscalationState.roles['extractor_humi']?.escalationBoost || 0);
+        const boost = vpdEscalationState.roles['extractor_humi']?.speedBoost || 0;
+        newBlowerFloor = Math.max(0, Math.max(newBlowerFloor, baseFloor) + boost);
         newBlowerFloor = Math.min(100, newBlowerFloor);
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
@@ -1627,13 +1723,15 @@ function evaluateVpdIntelligent() {
     }
   }
 
-  // ══���═══════════════════════════���════════════════════════
-  // HARD SAFETY: Temperature must NEVER exceed ideal range limits
-  // These checks run LAST and override all rules above as a safety net.
-  // Catches edge cases like thermal inertia overshoot or rule interaction re-activation.
-  // ════════���══════════════════════════════════════════════
-  if (temp >= idealTemp.max && isRoleActive('heater')) {
-    deactivateSocketRole('heater', `SAFETY: temp ${temp.toFixed(1)}°C >= max ${idealTemp.max}°C`);
+  // ═══════════════════════════════════════════════════════
+  // HARD SAFETY: Prevent devices from making things WORSE.
+  // - Heater off if temp > idealMin + 0.5 (well into range, no longer needed)
+  //   Allows Rule 5 compensation to work in [idealMin, idealMin+0.5] zone.
+  // - Cooler off if temp <= idealMin
+  // These run LAST and override ALL rules + flow triggers.
+  // ═══════════════════════════════════════════════════════
+  if (temp > idealTemp.min + 0.5 && isRoleActive('heater')) {
+    deactivateSocketRole('heater', `SAFETY: temp ${temp.toFixed(1)}°C > ${(idealTemp.min + 0.5).toFixed(1)}°C — heater not needed`);
   }
   if (temp <= idealTemp.min && isRoleActive('cooler')) {
     deactivateSocketRole('cooler', `SAFETY: temp ${temp.toFixed(1)}°C <= min ${idealTemp.min}°C`);
