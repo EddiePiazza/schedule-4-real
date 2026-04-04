@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-01T20:10:25Z",
+  "generatedAt": "2026-04-04T00:16:02Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2033,11 +2033,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.18.1",
-      "archive": "s4r-supervisor-1.18.1.tar.gz",
-      "sha256": "b2169b05162592552ca88756d32d257274c275617ef2e1bf450e7f6818c6f130",
-      "size": 57851,
+      "version": "1.19.0",
+      "archive": "s4r-supervisor-1.19.0.tar.gz",
+      "sha256": "f56d3f49bf545c47615f8f7a2d1dae5dbe043da18f7e2af7b617011d4c3edef4",
+      "size": 61029,
       "changelog": [
+        {
+          "version": "1.19.0",
+          "changes": [
+            "Redesign VPD climate algorithm with smart escalation, plateau detection and cooling priority"
+          ]
+        },
         {
           "version": "1.18.1",
           "changes": [

@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-01T20:01:16.171Z",
+  "lastCheck": "2026-04-04T00:13:08.541Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.18.1",
-      "installedAt": "2026-03-31T18:42:34Z"
+      "version": "1.19.0",
+      "installedAt": "2026-04-04T00:16:02Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.99.2",
+        "changes": [
+          "Fix socket name save rejecting O6-O10 and prefixed socket IDs"
+        ]
+      },
       {
         "version": "1.99.1",
         "changes": [
@@ -347,13 +353,6 @@
         "changes": [
           "Fix CO2 and PPFD sensor cards missing status indicator and glow",
           "Fix slow dashboard loading in passive/forwarded mode by skipping device commands"
-        ]
-      },
-      {
-        "version": "1.88.1",
-        "changes": [
-          "Only show additional blowers/fans when actively configured",
-          "Hide DeviceSelector when CB centralizes all devices"
         ]
       }
     ],
