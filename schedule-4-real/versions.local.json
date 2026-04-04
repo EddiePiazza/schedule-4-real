@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-04T23:01:11.211Z",
+  "lastCheck": "2026-04-04T23:46:36.487Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
     "web": {
-      "version": "1.99.2",
-      "installedAt": "2026-04-01T20:10:25Z"
+      "version": "1.100.0",
+      "installedAt": "2026-04-04T23:54:46Z"
     },
     "ingest": {
       "version": "1.9.0",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.20.0",
-      "installedAt": "2026-04-04T23:09:08Z"
+      "version": "1.20.1",
+      "installedAt": "2026-04-04T23:54:46Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -458,6 +458,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.20.0",
+        "changes": [
+          "Intelligent blower speed optimizer, cooling priority over humidity, smart heater suppression"
+        ]
+      },
+      {
         "version": "1.19.0",
         "changes": [
           "Redesign VPD climate algorithm with smart escalation, plateau detection and cooling priority"
@@ -759,12 +765,6 @@
         "changes": [
           "Store manifest changelogs locally for Version Info display",
           "VPD automation reads plant stage from Laboratory plants"
-        ]
-      },
-      {
-        "version": "1.3.0",
-        "changes": [
-          "Support versioned changelog format in update checker"
         ]
       }
     ],

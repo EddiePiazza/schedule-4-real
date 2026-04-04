@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-04T23:09:08Z",
+  "generatedAt": "2026-04-04T23:54:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.99.2",
-      "archive": "s4r-web-1.99.2.tar.gz",
-      "sha256": "e3dce9baf04646bff0333bcb1a87db31d9f1fa80688cb72436722a551bd4ee6e",
-      "size": 11260441,
+      "version": "1.100.0",
+      "archive": "s4r-web-1.100.0.tar.gz",
+      "sha256": "062660c67e091f330b74efc2ee12f2e4ade8d13d088df57b689fe25ee1d7defe",
+      "size": 11263914,
       "changelog": [
+        {
+          "version": "1.100.0",
+          "changes": [
+            "Add climate modules to trigger builder actions and state checks"
+          ]
+        },
         {
           "version": "1.99.2",
           "changes": [
@@ -2033,11 +2039,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.20.0",
-      "archive": "s4r-supervisor-1.20.0.tar.gz",
-      "sha256": "a25ab1035bc31ed0f852a5dd30e4d1c972abf98f5bdb8e32c7bd13d8fcf5b528",
-      "size": 62340,
+      "version": "1.20.1",
+      "archive": "s4r-supervisor-1.20.1.tar.gz",
+      "sha256": "75c4fc63aadda080340ea356c89987967dffb579da0b06ca8c4fe08a85451be1",
+      "size": 62665,
       "changelog": [
+        {
+          "version": "1.20.1",
+          "changes": [
+            "Fix module state tracking and command routing for trigger actions"
+          ]
+        },
         {
           "version": "1.20.0",
           "changes": [

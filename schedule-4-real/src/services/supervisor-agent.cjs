@@ -914,9 +914,9 @@ function evaluateFlow(flow) {
 }
 
 /**
- * Send MQTT command to control socket on a specific device
+ * Send MQTT command to control a socket or module on a specific device
  * @param {string} deviceMac - Target device MAC (or null for default PS5)
- * @param {string} socket - Socket ID (O1-O5)
+ * @param {string} socket - Socket ID (O1-O10) or module name (blower, fan, heater, humidifier, dehumidifier)
  * @param {string} action - 'on' or 'off'
  */
 async function sendSocketCommand(deviceMac, socket, action) {
@@ -933,15 +933,26 @@ async function sendSocketCommand(deviceMac, socket, action) {
   }
 
   const topic = `ggs/${device.type}/${device.mac}/cmd`;
+
+  // Modules (blower, fan, heater, humidifier, dehumidifier) use a different keyPath than outlets
+  const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(socket);
   const command = {
     method: 'setConfigField',
-    params: {
-      keyPath: ['outlet', socket],
-      [socket]: {
-        modeType: 0,  // Manual mode
-        mOnOff: action === 'on' ? 1 : 0
-      }
-    },
+    params: isModule
+      ? {
+          keyPath: [socket],
+          [socket]: {
+            modeType: 0,
+            mOnOff: action === 'on' ? 1 : 0
+          }
+        }
+      : {
+          keyPath: ['outlet', socket],
+          [socket]: {
+            modeType: 0,
+            mOnOff: action === 'on' ? 1 : 0
+          }
+        },
     pid: device.mac,
     msgId: `${Date.now()}`,
     uid: device.uid,
@@ -2056,6 +2067,22 @@ function handleMessage(topic, payload) {
       // Update socket states from outlet data (PS5 devices)
       if (data.outlet) {
         processOutletState(data.outlet, deviceMac);
+      }
+
+      // Update module states (blower, fan, heater, humidifier, dehumidifier)
+      // These are ON/OFF controllable modules, stored alongside outlet states
+      // so trigger conditions and actions can reference them by module name.
+      const moduleKeys = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'];
+      for (const mk of moduleKeys) {
+        if (data[mk] && typeof data[mk] === 'object') {
+          const isOn = data[mk].on !== undefined ? (data[mk].on ? 1 : 0) : (data[mk].mOnOff ?? 0);
+          if (deviceMac) {
+            if (!socketStatesByDevice.has(deviceMac)) socketStatesByDevice.set(deviceMac, {});
+            // Store as deviceMac-prefixed key for multi-device (e.g., "983dae65155c:blower")
+            socketStatesByDevice.get(deviceMac)[mk] = isOn;
+          }
+          lastSocketStates[mk] = isOn;
+        }
       }
 
       // Process sensor data (LC devices)
