@@ -388,6 +388,13 @@ async function storeEnvironmentData(deviceMac, data) {
   }
 }
 
+// Frozen data detection: track last values per soil sensor to detect disconnected probes.
+// When a soil sensor is physically disconnected, the device firmware keeps reporting
+// stale values from memory (identical temp/moisture every time, EC often 0/null).
+// We skip storing/emitting if values haven't changed — this stops lastSeen from updating
+// and the UI hides the sensor after 60 min of no real changes.
+const lastSoilValues = new Map(); // sensorId -> { temp, humi, ec }
+
 /**
  * Parse and store soil sensor data
  */
@@ -399,27 +406,34 @@ async function storeSoilData(deviceMac, sensors) {
   for (const sensor of sensors) {
     if (sensor.id === 'avg') continue; // Skip average, store individual sensors
 
+    const temp = sensor.tempSoil ?? null;
+    const humi = sensor.humiSoil ?? null;
+    const ec = sensor.ECSoil ?? null;
+
+    // Frozen data detection: if all values are identical to last reading, skip.
+    // Real sensors always have micro-fluctuations (±0.1°C, ±0.1%).
+    // Frozen data = disconnected probe with stale firmware memory.
+    const key = `${deviceMac}:${sensor.id}`;
+    const prev = lastSoilValues.get(key);
+    if (prev && prev.temp === temp && prev.humi === humi && prev.ec === ec) {
+      continue; // Frozen — don't store, don't emit, lastSeen won't update
+    }
+    lastSoilValues.set(key, { temp, humi, ec });
+
     try {
       await query(`
         INSERT INTO sensors_soil (timestamp, device_mac, sensor_id, temp_soil, humi_soil, ec_soil)
         VALUES ($1, $2, $3, $4, $5, $6)
-      `, [
-        timestamp,
-        deviceMac,
-        sensor.id,
-        sensor.tempSoil || null,
-        sensor.humiSoil || null,
-        sensor.ECSoil || null
-      ]);
+      `, [timestamp, deviceMac, sensor.id, temp, humi, ec]);
 
       emitSensorData({
         type: 'soil',
         deviceMac,
         sensorId: sensor.id,
         timestamp,
-        tempSoil: sensor.tempSoil,
-        humiSoil: sensor.humiSoil,
-        ecSoil: sensor.ECSoil
+        tempSoil: temp,
+        humiSoil: humi,
+        ecSoil: ec
       });
 
     } catch (err) {

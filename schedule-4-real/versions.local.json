@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-04T23:46:36.487Z",
+  "lastCheck": "2026-04-05T00:05:01.410Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 9,
   "components": {
@@ -9,8 +9,8 @@
       "installedAt": "2026-04-04T23:54:46Z"
     },
     "ingest": {
-      "version": "1.9.0",
-      "installedAt": "2026-03-23T17:21:17Z"
+      "version": "1.9.1",
+      "installedAt": "2026-04-05T00:05:31Z"
     },
     "retention": {
       "version": "1.0.5",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.100.0",
+        "changes": [
+          "Add climate modules to trigger builder actions and state checks"
+        ]
+      },
       {
         "version": "1.99.2",
         "changes": [
@@ -347,13 +353,6 @@
         "changes": [
           "Fix soil sensors not loading on dashboard initial load"
         ]
-      },
-      {
-        "version": "1.88.2",
-        "changes": [
-          "Fix CO2 and PPFD sensor cards missing status indicator and glow",
-          "Fix slow dashboard loading in passive/forwarded mode by skipping device commands"
-        ]
       }
     ],
     "ingest": [
@@ -457,6 +456,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.20.1",
+        "changes": [
+          "Fix module state tracking and command routing for trigger actions"
+        ]
+      },
       {
         "version": "1.20.0",
         "changes": [
@@ -755,13 +760,6 @@
       },
       {
         "version": "1.5.0",
-        "changes": [
-          "Store manifest changelogs locally for Version Info display",
-          "VPD automation reads plant stage from Laboratory plants"
-        ]
-      },
-      {
-        "version": "1.4.0",
         "changes": [
           "Store manifest changelogs locally for Version Info display",
           "VPD automation reads plant stage from Laboratory plants"

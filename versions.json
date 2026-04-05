@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-04T23:54:46Z",
+  "generatedAt": "2026-04-05T00:05:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -1927,11 +1927,17 @@
       ]
     },
     "ingest": {
-      "version": "1.9.0",
-      "archive": "s4r-ingest-1.9.0.tar.gz",
-      "sha256": "26ae5a8dbdabe694c8def5347333cb23a108deaf92fe186ad283e693156e13e0",
-      "size": 7033,
+      "version": "1.9.1",
+      "archive": "s4r-ingest-1.9.1.tar.gz",
+      "sha256": "123415d7e07bd0d78ed191ce55723fa0d8f7cd969107bf55250be5f668447418",
+      "size": 7472,
       "changelog": [
+        {
+          "version": "1.9.1",
+          "changes": [
+            "Hide disconnected soil sensors by detecting frozen stale data"
+          ]
+        },
         {
           "version": "1.9.0",
           "changes": [
