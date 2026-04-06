@@ -39,10 +39,12 @@
 - [Device Control](#device-control)
 - [Automation Engine](#automation-engine)
 - [Plant Genetics Laboratory](#plant-genetics-laboratory)
-  - [Grow Journal](#grow-journal) · [Observations](#observation-system) · [Encyclopedia](#grow-encyclopedia) · [Plant Diagnostics](#plant-problem-diagnostic) · [Strains](#strain-library) · [Breeding](#breeding-projects) · [Pheno Hunt](#pheno-hunt--keeper-selection) · [Cameras](#cameras--timelapse) · [Reports](#reports)
+  - [Grow Journal](#grow-journal) · [Observations](#observation-system) · [Encyclopedia](#grow-encyclopedia) · [Plant Diagnostics](#plant-problem-diagnostic) · [Strains](#strain-library) · [Breeding](#breeding-projects) · [Pheno Hunt](#pheno-hunt--keeper-selection) · [Cameras](#cameras--timelapse) · [Inputs & Recipes](#inputs--recipes) · [Reports](#reports)
 - [Schedule 4 Real Game](#schedule-4-real-game)
 - [Anonymous & Encrypted Multiplayer](#anonymous--encrypted-multiplayer)
-- [Inside a Room](#inside-a-room) · [Infinite Rooms](#infinite-rooms--doors) · [Locked Doors](#locked-doors--private-zones) · [Sandbox](#sandbox-mode) · [Grow Control in 3D](#real-time-grow-control-in-3d) · [Voice Chat](#voice-chat) · [TV & Streaming](#tv--streaming)
+  - [Inside a Room](#inside-a-room) · [Infinite Rooms](#infinite-rooms--doors) · [Locked Doors](#locked-doors--private-zones) · [Sandbox](#sandbox-mode) · [Grow Control in 3D](#real-time-grow-control-in-3d) · [Voice Chat](#voice-chat) · [TV & Streaming](#tv--streaming)
+- [AI Assistant](#ai-assistant)
+- [Alarms & Alerts](#alarms--alerts)
 - [Complete Feature List](#complete-feature-list)
 - [Installation Guide](#installation-guide)
 - [Architecture](#architecture)
@@ -95,11 +97,16 @@ The game isn't just for growers. It's for anyone who wants to **learn about cult
 
 Currently compatible with the full **Spider Farmer GGS** ecosystem:
 
-- **Spider Farmer Power Strip 5** (PS5) — 5 outlets, exhaust fan, circulation fan, environment sensors, soil probes
-- **Spider Farmer Light Controller** (LC) — dual channel grow lights with PPFD auto-control
-- **Spider Farmer Control Box** (CB) — combined outlet and light control
+| Module | Code | Capabilities |
+|:-------|:-----|:-------------|
+| **Control Box** (CB) | 1001 | Sensors, blower, fan, heater, humidifier, dehumidifier, soil probes, CO2, PPFD |
+| **Power Strip 5** (PS5) | 1002 | 5 outlets, 2 lights, sensors, optional blower/fan |
+| **Power Strip 10** (PS10) | 1007 | 10 outlets, 2 lights, sensors, optional blower/fan/heater |
+| **Light Controller** (LC) | 1005 | 2 light channels, brightness, spectrum, TimeSlot/PPFD modes |
 
-> Future compatibility with other brands like **AC Infinity** and **Grolab by Open Grow** is being evaluated. The architecture is protocol-agnostic — new device integrations can be added without changing the core platform.
+All modules work simultaneously — the app auto-detects devices and their capabilities from the actual hardware connected. Run a CB + PS5 + PS10 + LC all at once.
+
+> Future compatibility with other brands is being evaluated. The architecture is protocol-agnostic — new device integrations can be added without changing the core platform.
 
 ---
 
@@ -113,15 +120,18 @@ Real-time monitoring and control — everything at a glance.
 
 The dashboard gives you a live view of your entire grow environment. All sensor data updates in real time via WebSocket — no manual refresh needed.
 
-- **Environment sensors** — Temperature, humidity, VPD (air + leaf), CO2, updated every few seconds
+- **Environment sensors** — Temperature, humidity, VPD (air + leaf), CO2, PPFD — updated every few seconds
 - **Soil sensors** — Up to 6 wireless probes showing soil temperature, moisture (%), and electrical conductivity (EC)
 - **Day/Night statistics** — Separate min, average, and max for each sensor during light-on and light-off periods
-- **Socket control** — 5 outlet sockets with instant on/off toggle and mode indicator badges
+- **Socket control** — Up to 10 outlet sockets per device with instant on/off toggle, custom naming, and mode indicator badges
 - **Light status** — Brightness bar, current mode (Manual / TimeSlot / PPFD), countdown to next transition
-- **Blower & fan** — Speed percentage, wattage, animated rotation indicator
-- **Power summary** — Total consumption in watts, cost breakdown per socket, active device count
+- **Blower & fan** — Speed percentage, wattage, animated rotation indicator, fan gear bar graph
+- **Climate modules** — Heater, humidifier, dehumidifier status with auto mode badges
+- **Power summary** — Total consumption in watts, cost breakdown per socket and climate module, electricity cost tracking
 - **Event log** — Timeline of socket state changes with timestamp and trigger source (manual or automation)
-- **Charts** — Temperature, humidity, VPD, CO2, wattage, blower/fan — from 1 hour to 90 days, with day/night shading and synced crosshair across all charts
+- **Multi-device** — Sockets grouped by device (PS5, PS10), device selector when no main CB is present
+- **Temperature units** — Switch between Celsius and Fahrenheit globally, persists across all views
+- **Charts** — Temperature, humidity, VPD, CO2, PPFD, soil sensors, blower/fan — from 1 hour to 90 days, with day/night shading, synced crosshair across all charts, and socket activity overlay
 
 ---
 
@@ -133,7 +143,7 @@ Full control over every Spider Farmer GGS module — configure modes, schedules,
   <img src="https://schedule4real.com/dist/screenshots/settings.jpg" alt="Settings — Device configuration and environment targets" width="100%" />
 </p>
 
-### Outlets (O1–O5)
+### Outlets (up to 10 per device)
 
 Each outlet supports 7 control modes:
 
@@ -157,11 +167,14 @@ Each outlet supports 7 control modes:
 
 Sunrise/sunset simulation, dark temperature control, and per-light wattage configuration included.
 
-### Blower, Fan & Environment
+### Blower, Fan & Climate Modules
 
-- Exhaust blower with speed curve editor (temperature-responsive speed ramp)
-- Circulation fan with oscillation modes and natural wind pattern
-- **VPD auto-control** — assign devices as extractors, humidifiers, or heaters with intelligent escalation
+- Exhaust blower with speed curve editor (temperature-responsive speed ramp) — 5 modes: Manual, Environment, Time Slot, Cycle, Trigger
+- Circulation fan with oscillation modes and natural wind simulation — 5 modes: Manual, Environment, Time Slot, Cycle, Trigger
+- **Climate modules** — Heater, humidifier, dehumidifier control with per-device wattage configuration
+- **VPD auto-control** — Intelligent algorithm with smart escalation (+5%/2min), plateau detection after 3 failures, device substitution (blower crashing temp → auto-switch to dehumidifier), emergency overrides, post-cooling heater suppression with trend analysis, day/night transition grace periods
+- **9 built-in VPD stages** — Germination through drying/curing, or manual target entry. Reads current plant stage from Laboratory
+- **Blower calibration curves** — Calibrate your blower's actual temp/humidity reduction per speed level
 - Environment targets for day/night temperature, humidity, VPD range, and CO2
 
 ---
@@ -186,7 +199,7 @@ Drag nodes onto the canvas, wire them together, and let the system handle the re
 | **Blower Curve** | Visual curve editor mapping temperature to fan speed |
 | **Note** | Annotate your flows with comments |
 
-Every execution is logged with timestamp, action taken, and sensor values at the time. Filter logs by 1H, 4H, 24H, or 7D. Global enable/disable lets you pause all automations with one click.
+Every execution is logged with timestamp, action taken, and sensor values at the time. Filter logs by 1H, 4H, 24H, or 7D. Global enable/disable lets you pause all automations with one click. Immersive full-screen mode hides the sidebar for maximum canvas space. Dynamic device selectors support all sockets and climate modules across all connected devices (PS5, PS10, CB).
 
 ---
 
@@ -200,11 +213,11 @@ A complete grow journal, strain library, breeding planner, and phenotype analysi
 
 ### Grow Journal
 
-Track every plant from seed to harvest across **15 lifecycle stages**: Germination, Seedling, Early/Mid/Late Veg, Pre-Flower, Early/Mid/Late Flower, Flush, Harvest, Drying, Curing, and Archived. Each plant gets a day counter, photo gallery, and full observation timeline.
+Track every plant from seed to harvest across **15 lifecycle stages**: Germination, Seedling, Early/Mid/Late Veg, Pre-Flower, Early/Mid/Late Flower, Flush, Harvest, Drying, Curing, and Archived. Each plant gets a day counter, photo gallery, and full observation timeline. Quick-add menu lets you create rooms, plants, strains, or hunts from any tab. Onboarding wizard guides first-time users. Interactive tutorials with overlay guides.
 
 ### Observation System
 
-Log plant health, height, notes, and photos through a step-by-step wizard. The system automatically captures environment data (temperature, humidity, VPD) at the moment of each observation. Stage-based reminders tell you when it's time to check your plants. When you flag pest, disease, or deficiency issues, the wizard opens a **dedicated diagnostic step** that guides you through identifying the problem — select affected areas, match visible symptoms, and get ranked probable causes with remedies.
+Log plant health, height, notes, and photos through a step-by-step wizard with 9 observation types: general, watering, nutrients, problem, training, transplant, photo, stress event, and feeding. The system automatically captures environment data (temperature, humidity, VPD) at the moment of each observation. Track training methods applied per plant (LST, HST, topping, FIM, ScrOG, SOG). Stage-based reminders tell you when it's time to check your plants. When you flag pest, disease, or deficiency issues, the wizard opens a **dedicated diagnostic step** that guides you through identifying the problem — select affected areas, match visible symptoms, and get ranked probable causes with remedies. Health and vigor scoring (0-100) per observation.
 
 ### Grow Encyclopedia
 
@@ -226,15 +239,23 @@ Catalog your genetics with breeder info, indica/sativa ratios, flowering times, 
 
 ### Breeding Projects
 
-Plan and track crosses with defined goals — line creation, stabilization, backcross, pheno hunting, or seed production. Manage your pollen bank (collection dates, viability, strain) and visualize genetic lineage with tree diagrams.
+Plan and track crosses with defined goals — line creation, stabilization, backcross, pheno hunting, or seed production. Manage your pollen bank (collection dates, viability, strain), evaluate males, and visualize genetic lineage with tree diagrams.
 
 ### Pheno Hunt & Keeper Selection
 
-Score plants across 6 weighted categories (yield, potency, flavor, vigor, disease resistance, stability) using radar charts. Compare phenotypes side-by-side with photos. The **Keeper Engine** helps you identify the best mother plants based on your scoring profile (Standard, Commercial, Breeder, or Connoisseur).
+Score plants across 6 weighted categories (yield, potency, flavor, vigor, disease resistance, stability) using radar charts. Compare phenotypes side-by-side with photos. The **Keeper Engine** helps you identify the best mother plants based on your scoring profile (Standard, Commercial, Breeder, or Connoisseur). **Stacked hunts** enable multi-generation tracking with population counts and pressure event logging. Terpene assessment profiles per phenotype.
 
 ### Cameras & Timelapse
 
-Connect IP cameras for live feeds, scheduled captures, and automatic timelapse compilation. Browse photo galleries organized by camera and date.
+Connect IP cameras via RTSP for live streaming (WebRTC, MSE, HLS fallback via go2rtc). Schedule photo captures with configurable intervals, time windows, and day-of-week selection (up to 3 schedules per camera). Automatic daily timelapse video generation and multi-day merge, up to 60fps. **Chart overlay** burns a sliding per-frame sensor data graph (temperature, humidity, VPD) into timelapse videos. **Text overlay** adds custom text to post-production. Browse photo galleries organized by camera and date, with fullscreen viewer and keyboard navigation. Guest mode allows camera viewing without exposing credentials. **Lab timelapse projects** track long-form plant growth across specific stages, date ranges, cameras, rooms, and plants.
+
+### Inputs & Recipes
+
+Track nutrients, additives, and feeding schedules. Recipe library for reusable nutrient mixes. Soil biology tracker for monitoring substrate health.
+
+### Gamification
+
+XP system with badges and progress tracking to encourage consistent journaling and observation habits.
 
 ### Reports
 
@@ -314,7 +335,7 @@ Upload any 3D model (GLB format) as a room. Calibrate the floor and scale, choos
   <img src="https://schedule4real.com/dist/screenshots/room-main.jpg" alt="Room — First-person 3D environment" width="100%" />
 </p>
 
-Navigate with WASD, sprint with Shift, jump with Space. On mobile, use the dual-stick virtual joystick (with left-handed mode). Full physics: gravity, collision detection, dynamic ground tracking, auto step-up on small obstacles. Head bob while walking, smooth camera movement, ambient dust particles in light beams, and a radial quick-action menu on Q.
+Navigate with WASD, sprint with Shift, jump with Space. On mobile, use the dual-stick virtual joystick (with left-handed mode). Full gamepad support. Full physics: gravity, collision detection, dynamic ground tracking, auto step-up on small obstacles. Head bob while walking, smooth camera movement, ambient dust particles in light beams, and a radial quick-action menu on Q. **Interactive watering** — equip a watering can with particle physics, pour water on pots with per-pot soil moisture tracking and visual color feedback. Refill at water sources. Full **undo/redo** history for all edits. Mesh optimization with LOD for large rooms.
 
 ---
 
@@ -384,103 +405,138 @@ Place TVs in your rooms and tune into live IPTV channels. Browse by category (Sp
 
 ---
 
+## AI Assistant
+
+Connect a local **Ollama** instance or cloud AI provider for intelligent grow optimization. Multi-turn AI chat with full grow context and persistent conversation history. **Autonomous mode** lets the AI control blower, fan, and socket decisions. AI-powered plant health diagnostics for nutrient deficiency, pest, and disease identification. Configurable model selection, system prompt customization, and connection testing.
+
+---
+
+## Alarms & Alerts
+
+Configurable threshold monitoring for your entire grow environment:
+
+- **Climate alerts** — Temperature, humidity, CO2 min/max thresholds with deadband
+- **Substrate alerts** — Soil temperature, moisture, EC thresholds
+- **Device alerts** — Offline detection and hardware status
+- **Lab notifications** — Event-driven alerts with urgency levels (urgent, important, info) and mark-as-read
+
+---
+
+## Feature Comparison
+
+Built-in side-by-side comparison of Schedule 4 Real vs the official Spider Farmer App across 12 categories and 99+ features. Status indicators show what's available, in development, planned, or limited in each platform.
+
+---
+
 ## Complete Feature List
 
 ### Dashboard & Monitoring
 
-| Feature | |
-|:--------|:-:|
-| Real-time temperature, humidity, VPD, leaf VPD, CO2 | |
-| Up to 6 wireless soil sensors (temp, moisture, EC) | |
-| Day/Night statistics (min, avg, max per period) | |
-| 5 outlet sockets with instant toggle and mode badges | |
-| Dual light control (brightness, mode, countdown) | |
-| Blower speed, wattage, CO2 close indicator | |
-| Power consumption tracking with cost breakdown | |
-| Socket event log with trigger source | |
-| Charts: 1h to 90 days, synced crosshair, day/night shading | |
-| Custom device naming | |
+- Real-time temperature, humidity, VPD, leaf VPD, CO2, PPFD
+- Up to 6 wireless soil sensors (temp, moisture, EC)
+- Day/Night statistics (min, avg, max per period)
+- Up to 10 outlet sockets per device with instant toggle and mode badges
+- Multi-device support (CB + PS5 + PS10 + LC simultaneously)
+- Dual light control (brightness, mode, countdown)
+- Blower speed, fan gear bar graph, wattage, CO2 close indicator
+- Climate module status (heater, humidifier, dehumidifier) with auto badges
+- Power consumption tracking with cost breakdown per socket and climate module
+- Socket event log with trigger source
+- Charts: 1h to 90 days, synced crosshair, day/night shading, socket overlay
+- Custom device and socket naming
+- °C / °F temperature unit toggle (global, persists across all views)
 
 ### Automation
 
-| Feature | |
-|:--------|:-:|
-| Visual node-based flow editor | |
-| Sensor conditions with hysteresis and day/night thresholds | |
-| Time schedules (range + interval modes + weekday picker) | |
-| AND/OR logic gates | |
-| VPD auto-control with device role assignment | |
-| Fan curve editor (sensor-to-speed mapping) | |
-| Execution log with full audit trail | |
-| Global enable/disable | |
+- Visual node-based flow editor
+- Sensor conditions with hysteresis and day/night thresholds
+- Time schedules (range + interval modes + weekday picker)
+- AND/OR logic gates
+- VPD auto-control with 9 built-in stages and device role assignment
+- Smart escalation with plateau detection and device substitution
+- Blower calibration curve editor (sensor-to-speed mapping)
+- Dynamic device selectors for all sockets and climate modules
+- Execution log with full audit trail
+- Immersive full-screen canvas mode
+- Global enable/disable
 
 ### Laboratory
 
-| Feature | |
-|:--------|:-:|
-| 15-stage plant lifecycle tracking | |
-| Observation wizard with auto environment capture | |
-| Dedicated diagnostic step (affected area → symptoms → results) | |
-| Grow encyclopedia with 1,000+ searchable terms | |
-| Photo gallery with lightbox | |
-| Strain library (breeder, genetics, flowering time, inventory) | |
-| Breeding projects with pollen bank and genetic trees | |
-| Pheno hunt scoring with radar charts and Keeper Engine | |
-| Camera feeds, timelapse, scheduled captures | |
-| Reports, analytics, CSV export | |
-| Grow rooms with 2D floor plan and device binding | |
-| Notification system with reminders and alerts | |
+- 15-stage plant lifecycle tracking
+- Observation wizard with 9 types and auto environment capture
+- Dedicated diagnostic step (affected area → symptoms → results)
+- AI-powered plant health diagnostics (nutrient, pest, disease)
+- Training methods tracking (LST, HST, topping, FIM, ScrOG, SOG)
+- Grow encyclopedia with 1,000+ searchable terms
+- Photo gallery with lightbox and side-by-side comparison
+- Strain library with terpene profiling and performance charts
+- Breeding projects with pollen bank, male evaluation, and genetic trees
+- Pheno hunt scoring with radar charts, Keeper Engine, stacked hunts
+- Camera feeds with RTSP/WebRTC streaming, timelapse with chart overlay
+- Lab timelapse projects linking cameras, rooms, plants, and stages
+- Inputs tracking, recipe library, soil biology tracker
+- Reports, analytics, trend charts, CSV export
+- Grow rooms with 2D floor plan, device overlay, and environment gauges
+- Notification system with urgency levels and reminders
+- Gamification with XP badges and progress tracking
+- Onboarding wizard and interactive tutorials
 
 ### 3D Game
 
-| Feature | |
-|:--------|:-:|
-| First-person navigation (WASD, sprint, jump) | |
-| Custom GLB room upload with floor calibration | |
-| Object placement (move, rotate, scale, duplicate, lock) | |
-| Environment presets and ambient lighting control | |
-| Interactive TVs with IPTV/HLS streaming | |
-| Keypads with security codes and door locks | |
-| Display zones (images, video, text, sensor charts, phone casting) | |
-| Device bindings (control real outlets/lights from 3D) | |
-| Behavior system (proximity triggers, action chains) | |
-| Procedural grow tent builder (frame, mylar, cloth door, vent ports) | |
-| Flexible ducting system (Verlet physics, connects tents to fans/filters) | |
-| Mobile joystick controls (dual-stick, left-handed mode) | |
-| Room mesh editor (toggle visibility, adjust polygon count) | |
-| Surface polygon tracing tool for interactive zones | |
-| Audio SFX engine with haptic feedback | |
-| Particle effects (dust motes in light beams) | |
-| Post-processing (bloom, FXAA, color correction) | |
+- First-person navigation (WASD, sprint, jump)
+- Custom GLB room upload with floor calibration
+- Object placement (move, rotate, scale, duplicate, lock) with undo/redo
+- Environment presets and ambient lighting control
+- Interactive TVs with IPTV/HLS streaming
+- Keypads with security codes and door locks
+- Display zones (images, video, text, sensor charts, phone casting)
+- Device bindings (control real outlets/lights from 3D)
+- Behavior system (proximity triggers, action chains)
+- Procedural grow tent builder (frame, mylar, cloth door, vent ports)
+- Flexible ducting system (Verlet physics, connects tents to fans/filters)
+- Mobile joystick controls (dual-stick, left-handed mode) + gamepad
+- Room mesh editor (toggle visibility, adjust polygon count)
+- Surface polygon tracing tool for interactive zones
+- Interactive watering system with particle physics and soil moisture
+- Mesh optimization with LOD for performance
+- Audio SFX engine with haptic feedback
+- Particle effects (dust motes in light beams)
+- Post-processing (bloom, FXAA, color correction)
 
 ### Multiplayer
 
-| Feature | |
-|:--------|:-:|
-| Anonymous join — no accounts, no registration | |
-| End-to-end encrypted (XChaCha20-Poly1305) | |
-| Onion-routed circuits (2-hop, relay-based) | |
-| Real-time player sync (20Hz, interpolated) | |
-| Voice chat (WebRTC peer-to-peer) | |
-| Public room browser via anonymous tracker | |
-| Invite tokens and 4-character room codes | |
-| Password-protected rooms | |
-| Federated relay network with gossip discovery | |
-| Open source communication protocol | |
+- Anonymous join — no accounts, no registration
+- End-to-end encrypted (XChaCha20-Poly1305)
+- Onion-routed circuits (2-hop, relay-based)
+- Real-time player sync (20Hz, interpolated)
+- Voice chat (WebRTC peer-to-peer)
+- Public room browser via anonymous tracker
+- Invite tokens and 4-character room codes
+- Password-protected rooms
+- Federated relay network with gossip discovery
+- Open source communication protocol
 
 ### System & Infrastructure
 
-| Feature | |
-|:--------|:-:|
-| Service monitor with restart controls | |
-| Database backup and restore | |
-| Component-level auto-updates with changelog | |
-| Live MQTT message viewer (raw device traffic) | |
-| Optional relay node (contribute to the network) | |
-| 90-day data retention with auto-cleanup | |
-| Fully local — works without internet | |
-| Home Assistant integration via MQTT auto-discovery | |
-| No telemetry, no analytics, no tracking | |
+- Service monitor with start/stop/restart controls from UI
+- Database backup, restore, download, and upload from another machine
+- Component-level auto-updates with SHA-256 verification and rollback
+- Cumulative changelog showing all changes between versions
+- Live MQTT message viewer (raw device traffic)
+- Climate alarm system (temp, humidity, CO2, soil thresholds)
+- AI assistant with local Ollama or cloud provider integration
+- Feature comparison page (S4R vs Spider Farmer App)
+- Wi-Fi hotspot setup from UI (Raspberry Pi, etc.)
+- Dynamic DNS — built-in No-IP DUC and Cloudflare DNS management
+- Automated Nginx + Let's Encrypt SSL setup from UI
+- Reverse proxy config generator (Nginx, Caddy, Apache, LiteSpeed, Traefik)
+- MQTT source filtering — whitelist UIDs, block external data
+- Remote data forwarding to another server (clone/passive mode)
+- Optional relay node (contribute to the decentralized network)
+- 90-day data retention with auto-cleanup
+- Fully local — works without internet
+- Home Assistant integration via MQTT auto-discovery
+- No telemetry, no analytics, no tracking
 
 ---
 
@@ -497,14 +553,33 @@ The script installs and configures:
 - **Mosquitto** (MQTT broker, ports 1883/1884/9001)
 - **QuestDB** (time-series database via Docker)
 - **spiderproxy** (TLS MITM proxy for Spider Farmer traffic)
+- **ffmpeg + ImageMagick** (timelapse video generation and overlays)
 - **PM2** (process manager for all services)
 - **Web interface** on port 3000
+- Detects architecture (x86-64 or ARM64) and selects the correct binaries
 
-### Step 2 — Network Setup (Required)
+### Step 2 — Connect Your Modules (Required)
 
-Your Spider Farmer modules talk to their cloud server on port 8883 (MQTT over TLS). You need to redirect that traffic to your Schedule 4 Real server so the proxy can intercept it.
+Your Spider Farmer modules talk to their cloud server on port 8883 (MQTT over TLS). You need to redirect that traffic to your Schedule 4 Real server so the proxy can intercept it. Choose one of these methods:
 
-**On your router**, create a NAT port redirect:
+#### Method A: Wi-Fi Hotspot (Easiest)
+
+Your server creates a dedicated Wi-Fi network for the controllers. **No router configuration needed.**
+
+Requires: server with both Ethernet and Wi-Fi (Raspberry Pi, laptop, or PC with USB Wi-Fi adapter).
+
+1. In the app, go to **Settings > How to Install > Connect Devices**
+2. Select **Wi-Fi Hotspot**, enter a network name and password, click **Create Hotspot**
+3. On the GGS controller, **hold the mode button for 5 seconds** to enter pairing mode
+4. Use the Spider Farmer phone app to connect the controller to the hotspot network
+
+Or via command line: `cd ~/schedule-4-real && sudo bash setup-hotspot.sh`
+
+#### Method B: Router NAT (Advanced)
+
+Redirect outgoing port 8883 traffic from your LAN to your server. Requires a router that supports outgoing NAT redirect (pfSense, OPNsense, MikroTik, OpenWrt, or Linux with iptables).
+
+> **Note:** Most consumer routers (TP-Link, Netgear, Asus) do NOT support outgoing NAT redirect. Use the Wi-Fi Hotspot method instead.
 
 | Setting | Value |
 |:--------|:------|
@@ -522,33 +597,40 @@ Your Spider Farmer modules talk to their cloud server on port 8883 (MQTT over TL
 - Destination: any, port 8883
 - Redirect target: SERVER_IP:8883
 
+**MikroTik:**
+```bash
+/ip firewall nat add chain=dstnat protocol=tcp dst-port=8883 action=dst-nat to-addresses=SERVER_IP to-ports=8883
+```
+
 **Linux (iptables):**
 ```bash
 iptables -t nat -A PREROUTING -p tcp --dport 8883 -j DNAT --to-destination SERVER_IP:8883
+iptables -t nat -A POSTROUTING -j MASQUERADE
 ```
-
-**Generic routers:**
-- Open router admin panel (usually 192.168.1.1)
-- Find NAT / Port Forwarding section
-- Add rule: external port 8883 TCP to internal SERVER_IP:8883
 
 </details>
 
-> **Tip:** Assign a static IP (DHCP reservation) to both your server and your Spider Farmer modules for a stable setup.
+> **Tip:** Assign a static IP (DHCP reservation) to your server for a stable setup.
+
+After either method, restart your Spider Farmer modules (unplug and plug back in). Within a minute, sensor data will appear in the Dashboard.
 
 ### Step 3 — Open the App
 
 - **Local network:** `http://YOUR_SERVER_IP:3000`
 - **With a domain (optional):** Set up a reverse proxy (Nginx, Caddy, LiteSpeed) with SSL
 
-### Optional — HTTPS
+### Optional — Domain & HTTPS
 
 Some features require a secure context (HTTPS):
 - Voice chat (WebRTC)
 - Asset caching (Service Workers)
 - Remote access over the internet
 
-Free SSL with [Caddy](https://caddyserver.com):
+**Get a free domain** from [noip.com](https://www.noip.com/sign-up) — or install the No-IP DUC client directly from the app UI. Cloudflare DNS management is also built in.
+
+The app generates ready-to-use reverse proxy configs for **Nginx, Caddy, Apache, LiteSpeed, and Traefik** — enter your domain in **Settings > How to Install > Your Domain**. If using Nginx, the app can install it and set up Let's Encrypt SSL automatically.
+
+**Caddy** is the easiest option — handles SSL and WebSockets automatically:
 ```bash
 caddy reverse-proxy --from yourdomain.com --to localhost:3000
 ```
@@ -566,7 +648,7 @@ Your installation can also act as a **public relay node** to help other users co
 ## Architecture
 
 ```
-Spider Farmer Modules (PS5, LC, CB)
+Spider Farmer Modules (PS5, PS10, CB, LC)
     | MQTT + TLS (port 8883)
     v
 spiderproxy (TLS MITM)
@@ -580,9 +662,11 @@ Mosquitto MQTT Broker (1883 / 1884 / 9001)
     |---> Nuxt Server ------> WebSocket ---> Browser (real-time)
     |                    \---> REST API ---> Browser (control)
     |
-    |---> supervisor -------> Trigger engine ---> Automated actions
+    |---> supervisor -------> VPD automation, triggers, cameras, updates
     |
-    |---> camera-service ---> Snapshots, timelapse
+    |---> tunnel-agent -----> Relay network (onion routing)
+    |
+    |---> Home Assistant ---> MQTT discovery bridge
 ```
 
 ### Tech Stack
@@ -590,14 +674,16 @@ Mosquitto MQTT Broker (1883 / 1884 / 9001)
 | Layer | Technology |
 |:------|:-----------|
 | Frontend | Nuxt 4 + Vue 3 + TypeScript + TailwindCSS |
-| 3D Engine | THREE.js |
-| Backend | Nuxt Nitro (210+ API endpoints + WebSocket) |
-| Database | QuestDB (time-series, append-only) |
+| 3D Engine | THREE.js via TresJS |
+| Backend | Nuxt Nitro (280+ API endpoints + WebSocket + SSE) |
+| Database | QuestDB (time-series, append-only, Docker) |
 | MQTT | Mosquitto |
-| Proxy | spiderproxy (PyInstaller binary) |
+| Proxy | spiderproxy (PyInstaller binary, x86-64 + ARM64) |
+| Streaming | go2rtc (WebRTC, MSE, HLS) |
+| Video | ffmpeg + ImageMagick (timelapse, overlays) |
 | Crypto | libsodium-wrappers (WASM) |
-| Video | HLS.js |
-| Voice | WebRTC |
+| Voice | WebRTC (peer-to-peer) |
+| Process | PM2 |
 | Build | Vite + esbuild + Docker buildx (ARM64) |
 
 ---
@@ -606,11 +692,12 @@ Mosquitto MQTT Broker (1883 / 1884 / 9001)
 
 Schedule 4 Real works with the complete **Spider Farmer GGS** product line through reverse-engineered MQTT protocol integration:
 
-| Module | Model | What You Can Control |
-|:-------|:------|:---------------------|
-| **Spider Farmer Power Strip 5** | SF-PS5 | 5 outlets (7 modes each), exhaust fan, circulation fan, environment sensors, up to 6 soil probes |
-| **Spider Farmer Light Controller** | SF-LC | Light 1 + Light 2 (Manual, TimeSlot, Cycle, PPFD Auto), sunrise/sunset simulation |
-| **Spider Farmer Control Box** | SF-CB | Combined outlet + light control with fan management |
+| Module | What You Can Control |
+|:-------|:---------------------|
+| **Control Box** (CB) | Environment sensors, blower, fan, heater, humidifier, dehumidifier, up to 6 soil probes, CO2, PPFD |
+| **Power Strip 5** (PS5) | 5 outlets (7 modes each), 2 lights, sensors, optional blower/fan |
+| **Power Strip 10** (PS10) | 10 outlets (7 modes each), 2 lights, sensors, optional blower/fan/heater |
+| **Light Controller** (LC) | Light 1 + Light 2 (Manual, TimeSlot, PPFD Auto), sunrise/sunset simulation |
 
 > The official Spider Farmer app continues to work alongside Schedule 4 Real. The cloud bridge is maintained by default — you get local control AND cloud access simultaneously.
 
@@ -620,14 +707,15 @@ Bridge your Spider Farmer devices to [Home Assistant](https://www.home-assistant
 
 | Entity Type | Examples |
 |:------------|:---------|
-| **Sensors** | Temperature, humidity, VPD, leaf VPD, CO2, soil moisture, soil EC |
-| **Switches** | 5 outlet sockets with on/off control |
+| **Sensors** | Temperature, humidity, VPD, leaf VPD, CO2, PPFD, soil moisture, soil EC — with long-term statistics |
+| **Switches** | Up to 10 outlet sockets per device with on/off control |
 | **Dimmers** | Light 1 + Light 2 brightness as number entities |
-| **Fans** | Blower and circulation fan speed control |
+| **Fans** | Blower and circulation fan speed, natural wind mode |
+| **Climate** | Heater, humidifier, dehumidifier on/off states |
 
 All communication stays local — Home Assistant talks to Schedule 4 Real's MQTT broker on your LAN. No cloud service, no API keys, no internet required.
 
-**Keywords:** Spider Farmer GGS, Spider Farmer Power Strip 5, Spider Farmer Light Controller, Spider Farmer Control Box, Spider Farmer local control, Spider Farmer automation, Spider Farmer alternative app, Spider Farmer MQTT, Spider Farmer grow controller, Spider Farmer smart controller, GGS grow controller, Spider Farmer home automation, Spider Farmer Home Assistant, SF-PS5, SF-LC, SF-CB, grow room controller, grow room automation, indoor grow controller, PPFD controller, VPD controller, Home Assistant grow room, MQTT grow controller, source available grow controller, self-hosted grow controller
+**Keywords:** Spider Farmer GGS, Spider Farmer Power Strip 5, Spider Farmer Power Strip 10, Spider Farmer Light Controller, Spider Farmer Control Box, Spider Farmer local control, Spider Farmer automation, Spider Farmer alternative app, Spider Farmer MQTT, Spider Farmer grow controller, Spider Farmer smart controller, GGS grow controller, Spider Farmer home automation, Spider Farmer Home Assistant, SF-PS5, SF-PS10, SF-LC, SF-CB, grow room controller, grow room automation, indoor grow controller, PPFD controller, VPD controller, Home Assistant grow room, MQTT grow controller, source available grow controller, self-hosted grow controller
 
 ---
 
@@ -640,7 +728,7 @@ Schedule 4 Real runs entirely on your hardware. No cloud services, no subscripti
 - **Works offline** — full functionality without internet access
 - **Zero telemetry** — nothing phones home, no analytics, no crash reports
 - **Auto-updates** — component-level updates with SHA-256 verification and automatic rollback on failure
-- **Backup & restore** — one-click database backups, downloadable, restorable to any point
+- **Backup & restore** — one-click database backups, downloadable, uploadable from another machine, restorable to any point
 
 ---
 
