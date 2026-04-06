@@ -1316,6 +1316,11 @@ const migrations = [
   {
     name: 'sensors_environment: add ppfd column',
     sql: `ALTER TABLE sensors_environment ADD COLUMN ppfd DOUBLE`
+  },
+  // Per-camera timelapse FPS setting
+  {
+    name: 'cameras: add timelapse_fps column',
+    sql: `ALTER TABLE cameras ADD COLUMN timelapse_fps INT`
   }
 ];
 

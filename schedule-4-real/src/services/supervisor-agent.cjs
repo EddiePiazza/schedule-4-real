@@ -1093,10 +1093,12 @@ function evaluateVpdIntelligent() {
     : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
 
   // ── Cycle Transition Grace Period ──
-  // Detect day↔night transition and suppress aggressive climate actions
-  // while the environment adjusts naturally (lights off → temp drops, lights on → temp rises)
+  // When day↔night changes, STOP ALL active devices and let the environment adjust naturally.
+  // Lights off → temp drops on its own. Lights on → temp rises on its own.
+  // The old code only suppressed NEW actions but didn't stop RUNNING devices.
+  // Now: on transition, we actively turn OFF everything, reset blower, and wait.
   if (lastKnownPeriod !== null && lastKnownPeriod !== currentPeriod) {
-    // Transition just detected!
+    // Transition just detected — STOP ALL devices immediately
     cycleTransitionTime = now;
     cycleTransitionTempAtStart = temp;
     cycleTransitionHumiAtStart = humi;
@@ -1105,23 +1107,54 @@ function evaluateVpdIntelligent() {
     cycleTransitionLastHumi = humi;
     cycleTransitionGraceActive = true;
     cycleTransitionDirection = (currentPeriod === 'night') ? 'cooling' : 'warming';
-    console.log(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod}: grace period started (${cycleTransitionDirection}, ${temp.toFixed(1)}°C → ${idealTemp.min}-${idealTemp.max}°C)`);
+    console.log(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod}: STOPPING all devices, grace period started (${cycleTransitionDirection}, ${temp.toFixed(1)}°C → ${idealTemp.min}-${idealTemp.max}°C)`);
+
+    // Kill all active roles — devices must stop to let environment settle
+    for (const key of Object.keys(vpdEscalationState.roles)) {
+      delete vpdEscalationState.roles[key];
+    }
+    // Reset blower to OFF
+    vpdBlowerMinSpeed = 0;
+    vpdBlowerMaxSpeed = 0; // Ceiling 0 = blower OFF
+    // Set thermal inertia timestamps so grace periods work correctly after transition
+    lastHeaterOffTime = now;
+    lastHumidifierOffTime = now;
+    // Reset all grace/timeout state from previous period
+    lastCoolingStopTime = 0;
+    coolingBelowMaxSince = 0;
+    coolingGraceStableStart = 0;
+    lastVpdLogKey = '';
+
+    // Build OFF actions for all assigned roles
+    const transitionOffActions = [];
+    for (const role of (vpdNodeConfig.roles || [])) {
+      if (role.socket && role.socket !== 'blower') {
+        const aiModeKey = role.deviceMac ? `${role.deviceMac}:${role.socket}` : role.socket;
+        if (socketAiModes[aiModeKey] || socketAiModes[role.socket]) {
+          transitionOffActions.push({ deviceMac: role.deviceMac, socket: role.socket, action: 'off', reason: 'VPD: cycle transition — letting environment settle' });
+          console.log(`[VPD] Cycle transition: → ${role.role} OFF (${role.socket})`);
+        }
+      }
+    }
+    lastKnownPeriod = currentPeriod;
+    return transitionOffActions; // Send OFF commands, then suppress until grace ends
   }
   lastKnownPeriod = currentPeriod;
 
   // Evaluate grace period if active
   if (cycleTransitionGraceActive) {
+    // Keep blower OFF during grace
+    vpdBlowerMinSpeed = 0;
+    vpdBlowerMaxSpeed = 0;
+
     const elapsed = now - cycleTransitionTime;
     const sinceLastCheck = now - cycleTransitionLastCheck;
 
     if (elapsed >= CYCLE_TRANSITION_GRACE_MS) {
-      // Grace period expired — resume normal control
       cycleTransitionGraceActive = false;
-      console.log(`[VPD] Cycle transition grace period ended (${(elapsed / 60000).toFixed(0)}min elapsed)`);
+      console.log(`[VPD] Cycle transition grace ended (${(elapsed / 60000).toFixed(0)}min elapsed) — resuming control with ${currentPeriod} parameters`);
     } else if (sinceLastCheck >= TREND_CHECK_INTERVAL_MS) {
-      // 5-minute trend check
       const tempDelta = temp - cycleTransitionLastTemp;
-      const humiDelta = humi - cycleTransitionLastHumi;
       cycleTransitionLastCheck = now;
       cycleTransitionLastTemp = temp;
       cycleTransitionLastHumi = humi;
@@ -1133,27 +1166,24 @@ function evaluateVpdIntelligent() {
       const tempAlreadyInRange = temp >= idealTemp.min && temp <= idealTemp.max;
 
       if (tempAlreadyInRange) {
-        // Already reached target — end grace early
         cycleTransitionGraceActive = false;
         console.log(`[VPD] Cycle transition: temp ${temp.toFixed(1)}°C in range [${idealTemp.min}-${idealTemp.max}], grace ended early`);
       } else if (tempMovingWrong) {
-        // Adverse trend — end grace and let automation act
         cycleTransitionGraceActive = false;
         console.log(`[VPD] Cycle transition: ADVERSE trend (temp Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C in 5min, want ${wantCooling ? 'cooling' : 'warming'}), grace ended — resuming control`);
       } else if (tempStagnant) {
-        // No change in 5 min — environment saturated, end grace
         cycleTransitionGraceActive = false;
         console.log(`[VPD] Cycle transition: STAGNANT (temp Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C in 5min), grace ended — resuming control`);
       } else {
-        // Favorable trend — continue grace
         console.log(`[VPD] Cycle transition: favorable trend (temp ${temp.toFixed(1)}°C, Δ${tempDelta > 0 ? '+' : ''}${tempDelta.toFixed(1)}°C, ${((CYCLE_TRANSITION_GRACE_MS - elapsed) / 60000).toFixed(0)}min remaining)`);
       }
     }
 
-    // While grace is active, suppress climate actions (return empty actions)
     if (cycleTransitionGraceActive) {
-      return [];
+      return []; // Suppress all actions while grace is active
     }
+    // Grace just ended — blower ceiling restored, normal evaluation continues below
+    vpdBlowerMaxSpeed = 100;
   }
 
   // Calculate ideal humidity from VPD target at CURRENT temperature
