@@ -56,6 +56,7 @@ let socketAiModes = {};  // socket -> boolean (combines device+socket for multi-
 let lastSensorValues = {};  // Legacy: merged sensor values from all devices
 let lastActionTimes = {}; // Track last action time per device:socket for hysteresis cooldown
 let lastSocketStates = {}; // Legacy: socket states from default PS5
+let lastModuleConfigs = {}; // Full config cache per module (blower, fan, etc.) — preserves speed/level on ON/OFF
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
 const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
 
@@ -884,7 +885,7 @@ function evaluateFlow(flow) {
         const anyInputTrue = incomingConnections.some(c => nodeResults.get(c.source) === true);
 
         if (anyInputTrue) {
-          const { deviceMac: actionDeviceMac, socket, action } = node.data.config;
+          const { deviceMac: actionDeviceMac, socket, action, moduleSpeedMode, moduleSpeed } = node.data.config;
 
           // Use device-specific AI mode key or legacy socket key
           const aiModeKey = actionDeviceMac ? `${actionDeviceMac}:${socket}` : socket;
@@ -920,7 +921,7 @@ function evaluateFlow(flow) {
             }
           }
 
-          actions.push({ deviceMac: actionDeviceMac, socket, action, reason: reasons.join(', ') || 'Condition met' });
+          actions.push({ deviceMac: actionDeviceMac, socket, action, moduleSpeedMode, moduleSpeed, reason: reasons.join(', ') || 'Condition met' });
         }
         break;
     }
@@ -945,8 +946,9 @@ function evaluateFlow(flow) {
  * @param {string} deviceMac - Target device MAC (or null for default PS5)
  * @param {string} socket - Socket ID (O1-O10) or module name (blower, fan, heater, humidifier, dehumidifier)
  * @param {string} action - 'on' or 'off'
+ * @param {object} opts - Module options: { moduleSpeedMode: 'auto'|'fixed', moduleSpeed: number }
  */
-async function sendSocketCommand(deviceMac, socket, action) {
+async function sendSocketCommand(deviceMac, socket, action, opts = {}) {
   if (!mqttClient || !mqttClient.connected) {
     console.error('[Supervisor] MQTT not connected');
     return false;
@@ -961,24 +963,62 @@ async function sendSocketCommand(deviceMac, socket, action) {
 
   const topic = `ggs/${device.type}/${device.mac}/cmd`;
 
-  // Modules (blower, fan, heater, humidifier, dehumidifier) use a different keyPath than outlets
-  const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(socket);
+  // Modules use keyPath ['device', moduleName] per Spider Farmer protocol.
+  // Each module type needs safe defaults to avoid corrupting the device config
+  // (setConfigField REPLACES the entire section).
+  // Outlets use keyPath ['outlet', socketId].
+  const onOff = action === 'on' ? 1 : 0;
+
+  // Module speed logic:
+  //   'auto' mode: set ON at minimum (25%), Blower Curve takes over within seconds
+  //   'fixed' mode: set ON at user-specified speed
+  //   no mode (VPD/legacy): preserve last known speed from cached state
+  const cached = lastModuleConfigs[socket] || {};
+  const moduleDefaults = {
+    blower:        { mLevel: 50, minSpeed: 0, maxSpeed: 0, closeCO2: 0 },
+    fan:           { mLevel: 5, minSpeed: 0, maxSpeed: 0, shakeLevel: 0, natural: 0 },
+    heater:        { mLevel: 0 },
+    humidifier:    { mLevel: 0 },
+    dehumidifier:  { mLevel: 0 },
+  };
+
+  const isModule = socket in moduleDefaults;
+  let moduleConfig = null;
+  if (isModule) {
+    const defaults = moduleDefaults[socket];
+    moduleConfig = { modeType: 0, mOnOff: onOff };
+
+    // Preserve all non-speed fields from cached state
+    for (const key of Object.keys(defaults)) {
+      if (key !== 'mLevel') {
+        moduleConfig[key] = cached[key] ?? defaults[key];
+      }
+    }
+
+    // Determine speed/level
+    if (!onOff) {
+      moduleConfig.mLevel = 0;
+    } else if (opts.moduleSpeedMode === 'fixed' && opts.moduleSpeed > 0) {
+      // Fixed: user-specified speed
+      moduleConfig.mLevel = opts.moduleSpeed;
+    } else if (opts.moduleSpeedMode === 'auto') {
+      // Auto: minimum speed — Blower Curve takes over within seconds
+      moduleConfig.mLevel = socket === 'fan' ? 1 : 25;
+    } else {
+      // No mode (VPD/legacy): preserve last known speed
+      moduleConfig.mLevel = cached.mLevel || cached.level || defaults.mLevel;
+    }
+  }
   const command = {
     method: 'setConfigField',
     params: isModule
       ? {
-          keyPath: [socket],
-          [socket]: {
-            modeType: 0,
-            mOnOff: action === 'on' ? 1 : 0
-          }
+          keyPath: ['device', socket],
+          [socket]: moduleConfig
         }
       : {
           keyPath: ['outlet', socket],
-          [socket]: {
-            modeType: 0,
-            mOnOff: action === 'on' ? 1 : 0
-          }
+          [socket]: { modeType: 0, mOnOff: onOff }
         },
     pid: device.mac,
     msgId: `${Date.now()}`,
@@ -1034,7 +1074,7 @@ async function executeActions(actions) {
   const now = Date.now();
 
   for (const action of actions) {
-    const { deviceMac, socket, action: targetAction, reason } = action;
+    const { deviceMac, socket, action: targetAction, reason, moduleSpeedMode, moduleSpeed } = action;
 
     // Use device-specific key for cooldown tracking
     const actionKey = deviceMac ? `${deviceMac}:${socket}` : socket;
@@ -1057,7 +1097,7 @@ async function executeActions(actions) {
     }
 
     // Execute command (deviceMac can be null for backward compatibility)
-    const success = await sendSocketCommand(deviceMac, socket, targetAction);
+    const success = await sendSocketCommand(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed });
 
     if (success) {
       lastActionTimes[actionKey] = now;
@@ -2132,13 +2172,15 @@ function handleMessage(topic, payload) {
       const moduleKeys = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'];
       for (const mk of moduleKeys) {
         if (data[mk] && typeof data[mk] === 'object') {
-          const isOn = data[mk].on !== undefined ? (data[mk].on ? 1 : 0) : (data[mk].mOnOff ?? 0);
+          const mod = data[mk];
+          const isOn = mod.on !== undefined ? (mod.on ? 1 : 0) : (mod.mOnOff ?? 0);
           if (deviceMac) {
             if (!socketStatesByDevice.has(deviceMac)) socketStatesByDevice.set(deviceMac, {});
-            // Store as deviceMac-prefixed key for multi-device (e.g., "983dae65155c:blower")
             socketStatesByDevice.get(deviceMac)[mk] = isOn;
           }
           lastSocketStates[mk] = isOn;
+          // Cache full config so triggers can preserve speed/level when toggling ON/OFF
+          lastModuleConfigs[mk] = { ...mod };
         }
       }
 

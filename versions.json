@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T11:43:52Z",
+  "generatedAt": "2026-04-06T12:37:49Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.101.1",
-      "archive": "s4r-web-1.101.1.tar.gz",
-      "sha256": "9420914e43bcd14768f09a6c47432443df69a867c140090c7b95d802e24ff0e3",
-      "size": 11263401,
+      "version": "1.102.0",
+      "archive": "s4r-web-1.102.0.tar.gz",
+      "sha256": "08ac3b97fc5eb90adc509115edf7a9af60a8d1b21b74ffbf4abc9a55eb0e8570",
+      "size": 11263690,
       "changelog": [
+        {
+          "version": "1.102.0",
+          "changes": [
+            "Add speed control to trigger actions with Auto (Curve) and Fixed modes for blower and fan"
+          ]
+        },
         {
           "version": "1.101.1",
           "changes": [
@@ -2058,11 +2064,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.20.2",
-      "archive": "s4r-supervisor-1.20.2.tar.gz",
-      "sha256": "0a5aee2ea7057643844663ad5d89143e3ecd8c4952dc66b1df362ca4e03b8fd9",
-      "size": 63194,
+      "version": "1.21.0",
+      "archive": "s4r-supervisor-1.21.0.tar.gz",
+      "sha256": "37b0f78792459480370f4b9cacd5463212338d25b20b5902d17ad732dc10f0d3",
+      "size": 63774,
       "changelog": [
+        {
+          "version": "1.21.0",
+          "changes": [
+            "Smart module command routing with speed preservation and curve-controlled auto mode"
+          ]
+        },
         {
           "version": "1.20.2",
           "changes": [
