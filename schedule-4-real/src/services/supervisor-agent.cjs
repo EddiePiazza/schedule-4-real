@@ -880,9 +880,20 @@ function evaluateFlow(flow) {
         break;
 
       case 'action':
-        // Check if any incoming connection has true result
+        // Check if any incoming connection provides a true signal.
+        // Logic nodes have THEN (sourceHandle='then') and ELSE (sourceHandle='else'/'else-top') outputs.
+        // THEN fires when logic result is true, ELSE fires when logic result is false.
         const incomingConnections = connections.filter(c => c.target === node.id);
-        const anyInputTrue = incomingConnections.some(c => nodeResults.get(c.source) === true);
+        const anyInputTrue = incomingConnections.some(c => {
+          const sourceResult = nodeResults.get(c.source);
+          const handle = c.sourceHandle;
+          if (handle === 'else' || handle === 'else-top') {
+            // ELSE handle: fires when source result is FALSE
+            return sourceResult === false;
+          }
+          // THEN handle or no handle (default): fires when source result is TRUE
+          return sourceResult === true;
+        });
 
         if (anyInputTrue) {
           const { deviceMac: actionDeviceMac, socket, action, moduleSpeedMode, moduleSpeed } = node.data.config;
@@ -936,6 +947,40 @@ function evaluateFlow(flow) {
         queue.push(targetNode);
       }
     }
+  }
+
+  // Build active edges: trace which connections carry a "true" signal
+  // For THEN handles: active when source result is true
+  // For ELSE handles: active when source result is false
+  const activeNodeIds = [];
+  const activeEdgeIds = [];
+  for (const [nodeId, result] of nodeResults) {
+    if (result === true) activeNodeIds.push(nodeId);
+  }
+  for (const conn of connections) {
+    const sourceResult = nodeResults.get(conn.source);
+    const handle = conn.sourceHandle;
+    const isElse = handle === 'else' || handle === 'else-top';
+    const active = isElse ? sourceResult === false : sourceResult === true;
+    if (active) {
+      activeEdgeIds.push(conn.id);
+      // Also mark the target action node as active if this edge fires it
+      const targetNode = nodes.find(n => n.id === conn.target);
+      if (targetNode?.type === 'action' && !activeNodeIds.includes(conn.target)) {
+        activeNodeIds.push(conn.target);
+      }
+    }
+  }
+
+  // Emit evaluation state for real-time UI visualization
+  if (mqttClient && mqttClient.connected) {
+    try {
+      mqttClient.publish('ggs/system/trigger-eval', JSON.stringify({
+        activeNodes: activeNodeIds,
+        activeEdges: activeEdgeIds,
+        timestamp: Date.now()
+      }), { qos: 0, retain: true });
+    } catch { /* ignore */ }
   }
 
   return actions;

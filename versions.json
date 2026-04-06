@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T12:37:49Z",
+  "generatedAt": "2026-04-06T14:06:23Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.102.0",
-      "archive": "s4r-web-1.102.0.tar.gz",
-      "sha256": "08ac3b97fc5eb90adc509115edf7a9af60a8d1b21b74ffbf4abc9a55eb0e8570",
-      "size": 11263690,
+      "version": "1.103.0",
+      "archive": "s4r-web-1.103.0.tar.gz",
+      "sha256": "f548be41167d6cea937e37dcdcd68cd9916ac78aa2a55854e98b625efb22d811",
+      "size": 11264301,
       "changelog": [
+        {
+          "version": "1.103.0",
+          "changes": [
+            "Real-time trigger flow visualization with active node glow and animated edge paths"
+          ]
+        },
         {
           "version": "1.102.0",
           "changes": [
@@ -2064,11 +2070,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.21.0",
-      "archive": "s4r-supervisor-1.21.0.tar.gz",
-      "sha256": "37b0f78792459480370f4b9cacd5463212338d25b20b5902d17ad732dc10f0d3",
-      "size": 63774,
+      "version": "1.22.0",
+      "archive": "s4r-supervisor-1.22.0.tar.gz",
+      "sha256": "ae0bf3e12fa6f865eb7206e12324feb2a15cd668256872329993042f1fcc660b",
+      "size": 64321,
       "changelog": [
+        {
+          "version": "1.22.0",
+          "changes": [
+            "Add THEN/ELSE logic gate support and real-time trigger evaluation broadcast"
+          ]
+        },
         {
           "version": "1.21.0",
           "changes": [
