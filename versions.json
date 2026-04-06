@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T17:49:38Z",
+  "generatedAt": "2026-04-06T18:33:02Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.104.1",
-      "archive": "s4r-web-1.104.1.tar.gz",
-      "sha256": "3ac20472e41920e1fe508effc466c8323edb62f1e8d8c33823c369985eafeb47",
-      "size": 11265682,
+      "version": "1.105.0",
+      "archive": "s4r-web-1.105.0.tar.gz",
+      "sha256": "eb3b98f0ce871fcc8e6a3f8e9f4a38b677e9e4bbd563b4ac29601198201b859a",
+      "size": 11265275,
       "changelog": [
+        {
+          "version": "1.105.0",
+          "changes": [
+            "Auto-suggest reverse ELSE action when connecting to THEN handle"
+          ]
+        },
         {
           "version": "1.104.1",
           "changes": [
@@ -2082,11 +2088,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.23.1",
-      "archive": "s4r-supervisor-1.23.1.tar.gz",
-      "sha256": "692ff9133b0c22af58ca593cf801372de953c2581d82fce6affd0bdce86f453b",
-      "size": 66497,
+      "version": "1.24.0",
+      "archive": "s4r-supervisor-1.24.0.tar.gz",
+      "sha256": "579c307813c3f91042bd1f30140fceca64146e4f84a9ca8d39188b17abe301a2",
+      "size": 66655,
       "changelog": [
+        {
+          "version": "1.24.0",
+          "changes": [
+            "Instant trigger execution on save, remove AI mode requirement for user triggers"
+          ]
+        },
         {
           "version": "1.23.1",
           "changes": [

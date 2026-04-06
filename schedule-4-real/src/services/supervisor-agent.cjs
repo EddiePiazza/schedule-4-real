@@ -969,19 +969,12 @@ function evaluateFlow(flow) {
           return sourceResult === true;
         });
 
+        const { deviceMac: actionDeviceMac, socket, action: configuredAction, moduleSpeedMode, moduleSpeed } = node.data.config;
+
         if (anyInputTrue) {
-          const { deviceMac: actionDeviceMac, socket, action, moduleSpeedMode, moduleSpeed } = node.data.config;
+          // Condition met → execute the configured action (ON or OFF)
 
-          // Use device-specific AI mode key or legacy socket key
-          const aiModeKey = actionDeviceMac ? `${actionDeviceMac}:${socket}` : socket;
-
-          // Check if socket is in AI mode (fallback to legacy key for backward compat)
-          if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) {
-            console.log(`[Supervisor] Socket ${aiModeKey} not in AI mode, skipping`);
-            break;
-          }
-
-          // Check mandatory conditions (keyed by device:socket for multi-device)
+          // Check mandatory conditions
           const mandatoryKey = actionDeviceMac ? `${actionDeviceMac}:${socket}` : socket;
           const mandatories = mandatoryConditions.get(mandatoryKey) || mandatoryConditions.get(socket);
           if (mandatories && mandatories.length > 0) {
@@ -999,15 +992,17 @@ function evaluateFlow(flow) {
             const sourceNode = nodes.find(n => n.id === conn.source);
             if (sourceNode?.type === 'condition') {
               const cfg = sourceNode.data.config;
-              // Use device-specific sensor values if condition has deviceMac
               const sensorVals = getSensorValues(cfg.deviceMac);
               const val = sensorVals[cfg.sensor];
               reasons.push(`${cfg.sensor} ${cfg.operator} ${cfg.value} (actual: ${val})`);
             }
           }
 
-          actions.push({ deviceMac: actionDeviceMac, socket, action, moduleSpeedMode, moduleSpeed, reason: reasons.join(', ') || 'Condition met' });
+          actions.push({ deviceMac: actionDeviceMac, socket, action: configuredAction, moduleSpeedMode, moduleSpeed, reason: reasons.join(', ') || 'Condition met' });
         }
+        // When condition is FALSE: no action generated. The user must explicitly
+        // connect an ELSE action if they want the reverse behavior.
+        // The UI auto-creates an ELSE node with the opposite action to help.
         break;
     }
 
@@ -2309,6 +2304,17 @@ function processOutletState(outletData, deviceMac) {
  */
 function handleMessage(topic, payload) {
   try {
+    // Flow update notification — reload and evaluate immediately
+    if (topic === 'ggs/system/flow-updated') {
+      console.log('[Supervisor] Flow updated notification — reloading and evaluating NOW');
+      refreshData().then(() => {
+        if (flows.length > 0 && Object.keys(lastSensorValues).length > 0) {
+          processSensorData({});
+        }
+      }).catch(() => {});
+      return;
+    }
+
     const message = JSON.parse(payload.toString());
     const parts = topic.split('/');
     // Topic format: ggs/{deviceType}/{mac}/{messageType}
@@ -2392,6 +2398,8 @@ function connectMqtt() {
     // Subscribe to sensor data topics
     mqttClient.subscribe('ggs/+/+/status', { qos: 0 });
     mqttClient.subscribe('ggs/+/+/sensors', { qos: 0 });
+    // Subscribe to system notifications (flow updates, etc.)
+    mqttClient.subscribe('ggs/system/flow-updated', { qos: 0 });
   });
 
   mqttClient.on('message', handleMessage);
