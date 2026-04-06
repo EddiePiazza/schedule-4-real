@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T16:47:05Z",
+  "generatedAt": "2026-04-06T17:49:38Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2082,11 +2082,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.23.0",
-      "archive": "s4r-supervisor-1.23.0.tar.gz",
-      "sha256": "1ba815a3655a9f77232539ba1aedc3f92a995ae01f3e9a489b678030aa55a3ba",
-      "size": 66245,
+      "version": "1.23.1",
+      "archive": "s4r-supervisor-1.23.1.tar.gz",
+      "sha256": "692ff9133b0c22af58ca593cf801372de953c2581d82fce6affd0bdce86f453b",
+      "size": 66497,
       "changelog": [
+        {
+          "version": "1.23.1",
+          "changes": [
+            "Fix triggers not executing: user triggers now always override VPD, auto-create safety table"
+          ]
+        },
         {
           "version": "1.23.0",
           "changes": [

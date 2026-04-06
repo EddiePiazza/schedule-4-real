@@ -67,6 +67,8 @@ const SAFETY_DEFAULTS = { heater: 60, humidifier: 30, dehumidifier: 60, blower: 
 
 async function loadSafetyTimeouts() {
   try {
+    // Ensure table exists (production may not have run schema migration yet)
+    await query(`CREATE TABLE IF NOT EXISTS safety_timeouts (timestamp TIMESTAMP, device_key SYMBOL, max_on_minutes INT, enabled INT, updated_by SYMBOL) TIMESTAMP(timestamp) PARTITION BY MONTH`).catch(() => {});
     const rows = await query(`
       SELECT device_key, max_on_minutes, enabled
       FROM safety_timeouts
@@ -1203,6 +1205,10 @@ async function executeActions(actions) {
 
     // Skip if already in desired state
     if (currentState === targetState) {
+      // Log occasionally so we know triggers ARE evaluating even when state matches
+      if (now % 60000 < 15000) { // Log once per minute
+        console.log(`[Supervisor] ${socket} already ${targetAction} (state=${currentState}), skipping | ${reason || ''}`);
+      }
       continue;
     }
     console.log(`[Supervisor] Executing: ${socket} → ${targetAction} (was ${currentState}) | ${reason || 'no reason'}`);
@@ -2217,9 +2223,10 @@ async function processSensorData(sensorData, deviceMac) {
     if (existing && (existing.mandatoryOff || existing.mandatoryOn || existing.reason?.includes('Mandatory'))) {
       continue;
     }
-    // Only override if this socket is a VPD-assigned role
-    // User triggers on non-VPD sockets keep their action
-    if (existing && !vpdRoleSockets.has(action.socket)) {
+    // Only override if this socket is a VPD-assigned role AND the user trigger is NOT active for it
+    // User triggers ALWAYS win over VPD for the same socket
+    if (existing) {
+      console.log(`[Supervisor] VPD wants ${action.socket}→${action.action} but user trigger wants ${existing.action} — user trigger wins`);
       continue;
     }
     actionMap.set(key, action);
