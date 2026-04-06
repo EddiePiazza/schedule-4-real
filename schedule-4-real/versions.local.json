@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-06T13:59:38.891Z",
+  "lastCheck": "2026-04-06T16:10:50.844Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.103.0",
-      "installedAt": "2026-04-06T14:06:23Z"
+      "version": "1.104.0",
+      "installedAt": "2026-04-06T16:19:23Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.22.0",
-      "installedAt": "2026-04-06T14:06:23Z"
+      "version": "1.23.0",
+      "installedAt": "2026-04-06T16:19:23Z"
     },
     "proxy": {
       "version": "1.2.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "10",
-      "installedAt": "2026-04-06T01:34:03Z"
+      "version": "11",
+      "installedAt": "2026-04-06T16:19:23Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.103.0",
+        "changes": [
+          "Real-time trigger flow visualization with active node glow and animated edge paths"
+        ]
+      },
       {
         "version": "1.102.0",
         "changes": [
@@ -347,13 +353,6 @@
         "changes": [
           "Fix SSR hydration mismatches with ClientOnly and v-show for data-dependent UI"
         ]
-      },
-      {
-        "version": "1.88.6",
-        "changes": [
-          "Fix sensor layout flicker by unifying dual layouts into single adaptive layout",
-          "Fix duplicate sockets appearing from standalone PS5/PS10 when CB is present"
-        ]
       }
     ],
     "ingest": [
@@ -463,6 +462,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.22.0",
+        "changes": [
+          "Add THEN/ELSE logic gate support and real-time trigger evaluation broadcast"
+        ]
+      },
       {
         "version": "1.21.0",
         "changes": [
@@ -762,12 +767,6 @@
         "version": "1.7.0",
         "changes": [
           "Add Control Box device detection for blower automation"
-        ]
-      },
-      {
-        "version": "1.6.1",
-        "changes": [
-          "Fix update system blocked on production installs due to false dev detection"
         ]
       }
     ],

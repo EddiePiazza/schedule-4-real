@@ -1245,6 +1245,20 @@ const tables = [
         plant_stage SYMBOL
       ) TIMESTAMP(timestamp) PARTITION BY MONTH;
     `
+  },
+
+  // Safety timeouts: max ON duration per device/socket (prevents stuck heaters, floods, etc.)
+  {
+    name: 'safety_timeouts',
+    sql: `
+      CREATE TABLE IF NOT EXISTS safety_timeouts (
+        timestamp TIMESTAMP,
+        device_key SYMBOL,
+        max_on_minutes INT,
+        enabled INT,
+        updated_by SYMBOL
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
   }
 ];
 

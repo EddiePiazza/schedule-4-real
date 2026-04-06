@@ -57,6 +57,68 @@ let lastSensorValues = {};  // Legacy: merged sensor values from all devices
 let lastActionTimes = {}; // Track last action time per device:socket for hysteresis cooldown
 let lastSocketStates = {}; // Legacy: socket states from default PS5
 let lastModuleConfigs = {}; // Full config cache per module (blower, fan, etc.) — preserves speed/level on ON/OFF
+
+// ── Safety Timeouts: prevent stuck devices ──
+// Tracks when each device was last turned ON. If ON duration exceeds the configured max,
+// the device is force-stopped regardless of trigger conditions.
+let safetyTimeouts = {}; // deviceKey -> { maxOnMinutes, enabled }
+const deviceOnSince = {}; // deviceKey -> timestamp (ms) when device turned ON, null if OFF
+const SAFETY_DEFAULTS = { heater: 60, humidifier: 30, dehumidifier: 60, blower: 120, fan: 0 };
+
+async function loadSafetyTimeouts() {
+  try {
+    const rows = await query(`
+      SELECT device_key, max_on_minutes, enabled
+      FROM safety_timeouts
+      LATEST ON timestamp PARTITION BY device_key
+    `);
+    safetyTimeouts = {};
+    for (const [key, minutes] of Object.entries(SAFETY_DEFAULTS)) {
+      safetyTimeouts[key] = { maxOnMinutes: minutes, enabled: minutes > 0 };
+    }
+    for (const row of (rows || [])) {
+      safetyTimeouts[row.device_key] = { maxOnMinutes: row.max_on_minutes, enabled: row.enabled === 1 };
+    }
+  } catch {
+    // Table might not exist yet — use defaults
+    safetyTimeouts = {};
+    for (const [key, minutes] of Object.entries(SAFETY_DEFAULTS)) {
+      safetyTimeouts[key] = { maxOnMinutes: minutes, enabled: minutes > 0 };
+    }
+  }
+}
+
+// Check and enforce safety timeouts — called after every action execution
+function enforceSafetyTimeouts() {
+  const now = Date.now();
+  const forceOffActions = [];
+
+  for (const [deviceKey, onSince] of Object.entries(deviceOnSince)) {
+    if (!onSince) continue; // Device is OFF
+    const config = safetyTimeouts[deviceKey];
+    if (!config || !config.enabled || config.maxOnMinutes <= 0) continue;
+
+    const onDurationMs = now - onSince;
+    const maxMs = config.maxOnMinutes * 60 * 1000;
+
+    if (onDurationMs >= maxMs) {
+      console.log(`[SAFETY] Timeout: ${deviceKey} has been ON for ${(onDurationMs / 60000).toFixed(0)} min (max ${config.maxOnMinutes} min) — FORCING OFF`);
+      deviceOnSince[deviceKey] = null; // Mark as OFF
+
+      // Determine if it's a module or socket
+      const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(deviceKey);
+      forceOffActions.push({
+        deviceMac: null,
+        socket: deviceKey,
+        action: 'off',
+        reason: `SAFETY TIMEOUT: ${deviceKey} exceeded max ${config.maxOnMinutes} min ON duration`,
+        mandatoryOff: true // Override everything
+      });
+    }
+  }
+
+  return forceOffActions;
+}
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
 const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
 
@@ -640,7 +702,17 @@ function evaluateCondition(config, wasActive = false) {
   const sensorValues = getSensorValues(deviceMac);
   const currentValue = sensorValues[sensor];
 
-  if (currentValue === undefined || currentValue === null) {
+  if (currentValue === undefined || currentValue === null || typeof currentValue !== 'number' || isNaN(currentValue) || !isFinite(currentValue)) {
+    if (currentValue !== undefined && currentValue !== null) {
+      console.error(`[SAFETY] Sensor "${sensor}" returned invalid value: ${currentValue} (${typeof currentValue}) — condition BLOCKED, check sensor hardware`);
+    }
+    return false;
+  }
+
+  // Sensor staleness check: if sensor data hasn't updated in 5+ min, warn and fail-safe
+  const sensorAge = sensorValues._lastUpdate ? (Date.now() - sensorValues._lastUpdate) : 0;
+  if (sensorAge > 5 * 60 * 1000 && sensorValues._lastUpdate) {
+    console.warn(`[SAFETY] Sensor data is ${(sensorAge / 60000).toFixed(0)} min stale — condition BLOCKED for "${sensor}"`);
     return false;
   }
 
@@ -1147,6 +1219,13 @@ async function executeActions(actions) {
     if (success) {
       lastActionTimes[actionKey] = now;
 
+      // Track ON/OFF time for safety timeouts
+      if (targetState === 1) {
+        if (!deviceOnSince[socket]) deviceOnSince[socket] = now;
+      } else {
+        deviceOnSince[socket] = null;
+      }
+
       // Update both per-device and legacy state
       if (deviceMac) {
         if (!socketStatesByDevice.has(deviceMac)) {
@@ -1154,7 +1233,6 @@ async function executeActions(actions) {
         }
         socketStatesByDevice.get(deviceMac)[socket] = targetState;
       }
-      // Also update legacy if this is the default PS5 (or no device specified)
       if (!deviceMac || deviceMac === defaultPrimaryMac) {
         lastSocketStates[socket] = targetState;
       }
@@ -2095,6 +2173,15 @@ async function processSensorData(sensorData, deviceMac) {
   if (sensorData.humiSoil !== undefined) lastSensorValues.humi_soil = sensorData.humiSoil;
   if (sensorData.ECSoil !== undefined) lastSensorValues.ec_soil = sensorData.ECSoil;
 
+  // Track when sensor data was last updated (for staleness detection)
+  const hasRealData = sensorData.temp !== undefined || sensorData.humi !== undefined || sensorData.tempSoil !== undefined;
+  if (hasRealData) {
+    lastSensorValues._lastUpdate = Date.now();
+    if (deviceMac && sensorValuesByDevice.has(deviceMac)) {
+      sensorValuesByDevice.get(deviceMac)._lastUpdate = Date.now();
+    }
+  }
+
   // Skip all trigger/blower evaluation while calibration is running
   if (isCalibrationLocked()) {
     return;
@@ -2118,13 +2205,21 @@ async function processSensorData(sensorData, deviceMac) {
     actionMap.set(key, action);
   }
 
-  // Evaluate VPD intelligent auto-calibration (overrides flow actions for climate sockets)
+  // Evaluate VPD intelligent auto-calibration
+  // VPD only overrides sockets that are assigned as VPD roles.
+  // User-created trigger actions on OTHER sockets are never touched by VPD.
   const vpdActions = evaluateVpdIntelligent();
+  const vpdRoleSockets = new Set((vpdNodeConfig?.roles || []).map(r => r.socket));
   for (const action of vpdActions) {
     const key = action.deviceMac ? `${action.deviceMac}:${action.socket}` : action.socket;
-    // VPD overrides normal flow actions, but mandatory flags take priority
+    // Mandatory user triggers always win
     const existing = actionMap.get(key);
     if (existing && (existing.mandatoryOff || existing.mandatoryOn || existing.reason?.includes('Mandatory'))) {
+      continue;
+    }
+    // Only override if this socket is a VPD-assigned role
+    // User triggers on non-VPD sockets keep their action
+    if (existing && !vpdRoleSockets.has(action.socket)) {
       continue;
     }
     actionMap.set(key, action);
@@ -2142,10 +2237,14 @@ async function processSensorData(sensorData, deviceMac) {
   }
 
   // Evaluate Blower Curve control (proportional speed based on sensor curves)
-  // VPD floor/ceiling override the curve when needed
+  // VPD floor/ceiling override the curve when needed.
+  // BUT: if a user trigger has an active blower action (not VPD), skip VPD ceiling/floor
+  // to let the user's trigger control the blower directly.
+  const userBlowerAction = actionMap.get('blower');
+  const blowerControlledByUserTrigger = userBlowerAction && !userBlowerAction.reason?.startsWith('VPD:');
   const curveSpeed = evaluateBlowerCurve();
 
-  if (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100) {
+  if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100)) {
     let effectiveSpeed = Math.max(curveSpeed ?? lastBlowerSpeed ?? 0, vpdBlowerMinSpeed);
     effectiveSpeed = Math.min(effectiveSpeed, vpdBlowerMaxSpeed);
     // When VPD is capping the blower (ceiling < 100), respect it fully — don't force a minimum
@@ -2157,6 +2256,13 @@ async function processSensorData(sensorData, deviceMac) {
       lastBlowerSpeed = effectiveSpeed;
       await sendBlowerCommand(effectiveSpeed, effectiveSpeed > 0);
     }
+  }
+
+  // Enforce safety timeouts — force OFF any device that has been ON too long
+  const safetyActions = enforceSafetyTimeouts();
+  for (const sa of safetyActions) {
+    const key = sa.deviceMac ? `${sa.deviceMac}:${sa.socket}` : sa.socket;
+    actionMap.set(key, sa); // Safety overrides everything (mandatoryOff = true)
   }
 
   // Execute deduplicated actions
@@ -2315,10 +2421,10 @@ async function refreshData() {
   await loadFlows();
   await loadSocketAiModes();
   await loadDayNightSchedule();
+  await loadSafetyTimeouts();
   loadCalibrationData();
   loadVpdFromFlow();
   loadBlowerCurveFromFlow();
-  // Load plant stage for phase-based VPD mode (supports both legacy 'grow_phase' and new 'plant_stage')
   if (vpdNodeConfig && (vpdNodeConfig.mode === 'grow_phase' || vpdNodeConfig.mode === 'plant_stage')) {
     await loadActiveGrowPhase();
   }
@@ -2544,6 +2650,47 @@ async function start() {
 
   // Connect to MQTT
   connectMqtt();
+
+  // ── Safe Startup Sequence ──
+  // After connecting MQTT, wait briefly then send ALL OFF to every registered device.
+  // This prevents devices from staying in an unknown ON state after supervisor restart.
+  // Especially important for heaters (fire risk) and humidifiers (flood risk).
+  setTimeout(async () => {
+    const allDevices = Array.from(deviceRegistry.values());
+    if (allDevices.length === 0) return;
+
+    console.log(`[SAFETY] Safe startup: sending ALL OFF to ${allDevices.length} devices...`);
+    const moduleKeys = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'];
+
+    for (const device of allDevices) {
+      if (!device.mac || device.type === 'lc') continue; // Skip sensor-only devices
+
+      // Turn off all outlets
+      for (let i = 1; i <= 10; i++) {
+        const socket = `O${i}`;
+        // Only send OFF if socket is in AI mode (don't interfere with manual control)
+        if (socketAiModes[socket]) {
+          await sendSocketCommand(device.mac, socket, 'off');
+        }
+      }
+
+      // Turn off all modules in AI mode
+      for (const mod of moduleKeys) {
+        if (socketAiModes[mod]) {
+          await sendSocketCommand(device.mac, mod, 'off');
+        }
+      }
+    }
+
+    // Reset blower
+    if (socketAiModes['blower']) {
+      vpdBlowerMinSpeed = 0;
+      vpdBlowerMaxSpeed = 0;
+      await sendBlowerCommand(0, false);
+    }
+
+    console.log('[SAFETY] Safe startup complete — all AI-controlled devices OFF');
+  }, 5000); // Wait 5 sec for MQTT connection to establish
 
   // Refresh data and device info every 30 seconds
   setInterval(async () => {

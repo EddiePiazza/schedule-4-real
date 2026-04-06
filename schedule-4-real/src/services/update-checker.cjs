@@ -787,6 +787,12 @@ async function applyUpdates(components = [], onProgress = null) {
 
     console.log(`[Updater] Applying ${toUpdate.length} update(s): ${toUpdate.join(', ')}`);
 
+    // Save pre-update versions so we can filter changelogs to only new entries
+    const fromVersions = {};
+    for (const component of toUpdate) {
+      fromVersions[component] = versions.components[component]?.version || '0.0.0';
+    }
+
     let updateIdx = 0;
     for (const component of toUpdate) {
       updateIdx++;
@@ -994,16 +1000,20 @@ async function applyUpdates(components = [], onProgress = null) {
     }
 
     // Collect changelogs from successfully updated components
+    // Only include changes from versions NEWER than what was installed before this update
     const historyChangelog = [];
     for (const r of results) {
       if (r.success) {
         const rawChangelog = manifest.components[r.component]?.changelog || [];
+        const fromVer = fromVersions[r.component] || '0.0.0';
         let messages = [];
         if (rawChangelog.length > 0 && typeof rawChangelog[0] === 'object') {
-          // New versioned format - flatten all changes
+          // New versioned format - only include entries with version > previously installed
           for (const entry of rawChangelog) {
-            for (const change of (entry.changes || [])) {
-              messages.push(change);
+            if (compareVersions(entry.version, fromVer) > 0) {
+              for (const change of (entry.changes || [])) {
+                messages.push(change);
+              }
             }
           }
         } else if (rawChangelog.length > 0 && typeof rawChangelog[0] === 'string') {
