@@ -565,6 +565,7 @@ async function loadFlows() {
  */
 async function loadSocketAiModes() {
   try {
+    // Load outlet AI modes (O1-O10)
     const rows = await query(`
       SELECT socket, ai_mode
       FROM socket_ai_mode
@@ -572,11 +573,37 @@ async function loadSocketAiModes() {
     `);
 
     socketAiModes = {};
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 10; i++) {
       socketAiModes[`O${i}`] = false;
     }
     for (const row of rows) {
       socketAiModes[row.socket] = row.ai_mode === 1;
+    }
+
+    // Load blower AI mode
+    try {
+      const blowerRows = await query(`
+        SELECT ai_mode FROM blower_ai_mode
+        LATEST ON timestamp PARTITION BY device
+      `);
+      socketAiModes['blower'] = blowerRows.length > 0 && blowerRows[0].ai_mode === 1;
+    } catch { socketAiModes['blower'] = false; }
+
+    // Load fan AI mode
+    try {
+      const fanRows = await query(`
+        SELECT ai_mode FROM fan_ai_mode
+        LATEST ON timestamp PARTITION BY device
+      `);
+      socketAiModes['fan'] = fanRows.length > 0 && fanRows[0].ai_mode === 1;
+    } catch { socketAiModes['fan'] = false; }
+
+    // Climate modules (heater, humidifier, dehumidifier) use socket_ai_mode table
+    // with the module name as the socket key (set by VPD control node)
+    // Already loaded above if they exist in socket_ai_mode.
+    // Initialize to false if not present so triggers can check them.
+    for (const mod of ['heater', 'humidifier', 'dehumidifier']) {
+      if (socketAiModes[mod] === undefined) socketAiModes[mod] = false;
     }
 
     console.log('[Supervisor] AI modes:', socketAiModes);
