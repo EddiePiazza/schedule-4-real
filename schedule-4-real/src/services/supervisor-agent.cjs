@@ -2503,12 +2503,35 @@ function getDevice(mac) {
 }
 
 /**
- * Find the correct device for a socket type.
- * Outlets (O1-O5) and blower live on PS5 (or CB). No guessing — find by device type.
+ * Find the correct device for a socket/module.
+ * For modules (blower, fan, heater, etc.): find the device that actually HAS that module
+ * by checking which device reports state for it.
+ * For outlets: find PS5/PS10/CB that has outlets.
  */
 function findDeviceForSocket(socketId) {
-  // If explicit MAC provided in role, that's used before calling this
-  // This handles the fallback: find PS5 first (has outlets + blower), then CB
+  const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(socketId);
+
+  if (isModule) {
+    // Find the device that actually has this module (reported via MQTT status)
+    for (const [mac, states] of socketStatesByDevice) {
+      if (states[socketId] !== undefined) {
+        const dev = deviceRegistry.get(mac);
+        if (dev) return dev;
+      }
+    }
+    // Fallback: check lastModuleConfigs for devices that reported this module
+    if (lastModuleConfigs[socketId]) {
+      // Module data exists — find any power strip device
+      for (const [mac, dev] of deviceRegistry) {
+        if (dev.type === 'ps5' || dev.type === 'ps10' || dev.type === 'cb') return dev;
+      }
+    }
+  }
+
+  // For outlets or fallback: find any power strip device
+  for (const [mac, dev] of deviceRegistry) {
+    if (dev.type === 'ps10') return dev; // PS10 has more outlets, prefer it
+  }
   for (const [mac, dev] of deviceRegistry) {
     if (dev.type === 'ps5') return dev;
   }

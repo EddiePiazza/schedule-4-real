@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T18:33:02Z",
+  "generatedAt": "2026-04-06T20:25:06Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2088,11 +2088,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.0",
-      "archive": "s4r-supervisor-1.24.0.tar.gz",
-      "sha256": "579c307813c3f91042bd1f30140fceca64146e4f84a9ca8d39188b17abe301a2",
-      "size": 66655,
+      "version": "1.24.1",
+      "archive": "s4r-supervisor-1.24.1.tar.gz",
+      "sha256": "f88162d4577d49cc54bad4a2fc2bf6d5862267bf7b1d2b4d447287e06964d987",
+      "size": 66799,
       "changelog": [
+        {
+          "version": "1.24.1",
+          "changes": [
+            "Fix device routing for multi-device setups: find correct device for each module"
+          ]
+        },
         {
           "version": "1.24.0",
           "changes": [
