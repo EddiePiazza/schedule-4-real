@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T14:49:22.501Z",
+  "lastCheck": "2026-04-07T19:29:22.563Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.5",
-      "installedAt": "2026-04-07T14:50:50Z"
+      "version": "1.105.6",
+      "installedAt": "2026-04-07T19:29:36Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.105.5",
+        "changes": [
+          "Fix light config not loading in passive/relay mode (darkTemp, sunrise/sunset)"
+        ]
+      },
       {
         "version": "1.105.4",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.4",
         "changes": [
           "Fix settings page crash caused by watch accessing uninitialized ref"
-        ]
-      },
-      {
-        "version": "1.90.3",
-        "changes": [
-          "Fix \u00b0C/\u00b0F toggle activating Save button and power consumption showing all device sockets"
         ]
       }
     ],
