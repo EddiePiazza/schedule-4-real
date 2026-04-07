@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T21:26:54Z",
+  "generatedAt": "2026-04-07T21:53:14Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.8",
-      "archive": "s4r-web-1.105.8.tar.gz",
-      "sha256": "e4582f6be92b98f2757724aa89d307946175cdc3929c51441c37c4a63058e0a2",
-      "size": 11266549,
+      "version": "1.106.0",
+      "archive": "s4r-web-1.106.0.tar.gz",
+      "sha256": "02284080fa6b368f091890536b7c26a4550a2d231e7d6775d55146465f1d41a6",
+      "size": 11266011,
       "changelog": [
+        {
+          "version": "1.106.0",
+          "changes": [
+            "Dynamic currency symbol (\u20ac/$) and temperature unit conversion across all settings, lights and triggers"
+          ]
+        },
         {
           "version": "1.105.8",
           "changes": [

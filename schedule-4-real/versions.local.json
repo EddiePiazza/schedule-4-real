@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T21:19:22.498Z",
+  "lastCheck": "2026-04-07T21:49:22.525Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.8",
-      "installedAt": "2026-04-07T21:26:54Z"
+      "version": "1.106.0",
+      "installedAt": "2026-04-07T21:53:14Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.105.8",
+        "changes": [
+          "Fix Light 2 config not loading on CB devices (darkTemp, sunrise/sunset)"
+        ]
+      },
       {
         "version": "1.105.7",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.7",
         "changes": [
           "Group sockets by device (PS5/PS10) in dashboard and settings, fetch full outlet configs with timePeriod"
-        ]
-      },
-      {
-        "version": "1.90.6",
-        "changes": [
-          "Fix settings page crash from variable declaration order"
         ]
       }
     ],
@@ -769,6 +769,12 @@
       }
     ],
     "proxy": [
+      {
+        "version": "1.2.2",
+        "changes": [
+          "Fix getConfigField relay for light, alarm and device settings"
+        ]
+      },
       {
         "version": "1.2.0",
         "changes": [
