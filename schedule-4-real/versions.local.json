@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T13:20:56.130Z",
+  "lastCheck": "2026-04-07T14:29:22.518Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.3",
-      "installedAt": "2026-04-07T13:27:39Z"
+      "version": "1.105.4",
+      "installedAt": "2026-04-07T14:38:51Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.105.3",
+        "changes": [
+          "Fix Alarm and Light settings not persisting after save"
+        ]
+      },
       {
         "version": "1.105.2",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.2",
         "changes": [
           "Fix Light 2 power consumption showing 0 kWh when is_on field is null"
-        ]
-      },
-      {
-        "version": "1.90.1",
-        "changes": [
-          "Fix \u00b0C/\u00b0F not persisting, save button greyed out, PPFD alarm MIN, power stats PS10, soil sensor blur save, and climate module auto mode display"
         ]
       }
     ],

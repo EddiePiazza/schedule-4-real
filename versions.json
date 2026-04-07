@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T13:27:39Z",
+  "generatedAt": "2026-04-07T14:38:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.3",
-      "archive": "s4r-web-1.105.3.tar.gz",
-      "sha256": "b1c5df6ce576563105917322afe02b3bb77da0bc3e37a9207efef8184009ee82",
-      "size": 11265290,
+      "version": "1.105.4",
+      "archive": "s4r-web-1.105.4.tar.gz",
+      "sha256": "d40328976398a4b330e51a02ea0fbb12bef5fa4ecc87e56f2767e66a39be7f7e",
+      "size": 11267052,
       "changelog": [
+        {
+          "version": "1.105.4",
+          "changes": [
+            "Fix light settings not updating in real-time from device LCD changes"
+          ]
+        },
         {
           "version": "1.105.3",
           "changes": [
