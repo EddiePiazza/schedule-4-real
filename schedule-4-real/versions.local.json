@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T12:51:00.190Z",
+  "lastCheck": "2026-04-07T13:20:56.130Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.2",
-      "installedAt": "2026-04-07T12:52:01Z"
+      "version": "1.105.3",
+      "installedAt": "2026-04-07T13:27:39Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.105.2",
+        "changes": [
+          "Fix Light Settings save button not detecting changes due to WebSocket overwriting edits"
+        ]
+      },
       {
         "version": "1.105.1",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.1",
         "changes": [
           "Fix \u00b0C/\u00b0F not persisting, save button greyed out, PPFD alarm MIN, power stats PS10, soil sensor blur save, and climate module auto mode display"
-        ]
-      },
-      {
-        "version": "1.90.0",
-        "changes": [
-          "Add temperature unit selector (\u00b0C/\u00b0F) with conversion across dashboard, settings, charts, and soil sensors"
         ]
       }
     ],
