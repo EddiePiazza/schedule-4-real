@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T21:14:19Z",
+  "generatedAt": "2026-04-07T21:24:02Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2502,11 +2502,17 @@
       ]
     },
     "proxy": {
-      "version": "1.2.1",
-      "archive": "s4r-proxy-1.2.1.tar.gz",
-      "sha256": "275f9692e461768a30cedb325a6a018b91fdf59574cbe1f9f55b81410b6ca181",
-      "size": 16575017,
+      "version": "1.2.2",
+      "archive": "s4r-proxy-1.2.2.tar.gz",
+      "sha256": "b1729cebbd073c1255905b9b543ed5227b7dc7f37da37f14c184c891b36e4e0f",
+      "size": 16577796,
       "changelog": [
+        {
+          "version": "1.2.2",
+          "changes": [
+            "Fix getConfigField relay for light, alarm and device settings"
+          ]
+        },
         {
           "version": "1.2.0",
           "changes": [
