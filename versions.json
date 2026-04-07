@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T11:36:24Z",
+  "generatedAt": "2026-04-07T12:52:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.1",
-      "archive": "s4r-web-1.105.1.tar.gz",
-      "sha256": "619d07df12a4a713f726aa9683c72c8c41cc370750667a501290aa55cd617460",
-      "size": 11267457,
+      "version": "1.105.2",
+      "archive": "s4r-web-1.105.2.tar.gz",
+      "sha256": "213b6904ef676d314e051ce022560755e66ef33748cfc45ba96856ccabc0d931",
+      "size": 11265267,
       "changelog": [
+        {
+          "version": "1.105.2",
+          "changes": [
+            "Fix Light Settings save button not detecting changes due to WebSocket overwriting edits"
+          ]
+        },
         {
           "version": "1.105.1",
           "changes": [

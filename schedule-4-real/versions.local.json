@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T11:31:26.732Z",
+  "lastCheck": "2026-04-07T12:51:00.190Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.1",
-      "installedAt": "2026-04-07T11:36:24Z"
+      "version": "1.105.2",
+      "installedAt": "2026-04-07T12:52:01Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.105.1",
+        "changes": [
+          "Fix Alarm Settings save button not detecting changes"
+        ]
+      },
       {
         "version": "1.105.0",
         "changes": [
@@ -344,14 +350,6 @@
         "version": "1.90.0",
         "changes": [
           "Add temperature unit selector (\u00b0C/\u00b0F) with conversion across dashboard, settings, charts, and soil sensors"
-        ]
-      },
-      {
-        "version": "1.89.0",
-        "changes": [
-          "Fix AI assistant using Air VPD instead of Leaf VPD for recommendations",
-          "Add calibration capacity charts showing blower reduction per speed level",
-          "Redesign VPD Control with 9 built-in stages, 3 modes, and blower as extractor option"
         ]
       }
     ],
