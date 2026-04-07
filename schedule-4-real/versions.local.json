@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T21:49:22.525Z",
+  "lastCheck": "2026-04-07T22:41:17.281Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.106.0",
-      "installedAt": "2026-04-07T21:53:14Z"
+      "version": "1.107.0",
+      "installedAt": "2026-04-07T22:51:01Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.106.0",
+        "changes": [
+          "Dynamic currency symbol (\u20ac/$) and temperature unit conversion across all settings, lights and triggers"
+        ]
+      },
       {
         "version": "1.105.8",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.8",
         "changes": [
           "Add device group separators in socket settings, fetch outlet configs from CB for timePeriod data"
-        ]
-      },
-      {
-        "version": "1.90.7",
-        "changes": [
-          "Group sockets by device (PS5/PS10) in dashboard and settings, fetch full outlet configs with timePeriod"
         ]
       }
     ],

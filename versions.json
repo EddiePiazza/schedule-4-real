@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T21:53:14Z",
+  "generatedAt": "2026-04-07T22:51:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.106.0",
-      "archive": "s4r-web-1.106.0.tar.gz",
-      "sha256": "02284080fa6b368f091890536b7c26a4550a2d231e7d6775d55146465f1d41a6",
-      "size": 11266011,
+      "version": "1.107.0",
+      "archive": "s4r-web-1.107.0.tar.gz",
+      "sha256": "bb14a2c0a1f2d870dcbd27d763b178bce24c6d7d147e9b2c66aa8ef54f0ce9b8",
+      "size": 11267716,
       "changelog": [
+        {
+          "version": "1.107.0",
+          "changes": [
+            "Show module mode labels on dashboard, allow ON/OFF toggle in Trigger mode across all devices"
+          ]
+        },
         {
           "version": "1.106.0",
           "changes": [
