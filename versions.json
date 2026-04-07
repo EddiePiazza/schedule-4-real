@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T21:24:02Z",
+  "generatedAt": "2026-04-07T21:26:54Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.7",
-      "archive": "s4r-web-1.105.7.tar.gz",
-      "sha256": "18f845e6d92234169602e9015e439e6a5794be5d69731e85a9dfcc521c772b6c",
-      "size": 11266668,
+      "version": "1.105.8",
+      "archive": "s4r-web-1.105.8.tar.gz",
+      "sha256": "e4582f6be92b98f2757724aa89d307946175cdc3929c51441c37c4a63058e0a2",
+      "size": 11266549,
       "changelog": [
+        {
+          "version": "1.105.8",
+          "changes": [
+            "Fix Light 2 config not loading on CB devices (darkTemp, sunrise/sunset)"
+          ]
+        },
         {
           "version": "1.105.7",
           "changes": [
