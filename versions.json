@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T23:00:05Z",
+  "generatedAt": "2026-04-07T23:22:43Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.107.1",
-      "archive": "s4r-web-1.107.1.tar.gz",
-      "sha256": "d3819ba66f665440ce12f57a935e6995f052ae9dceb417d49913688f2ac7173b",
-      "size": 11267105,
+      "version": "1.108.0",
+      "archive": "s4r-web-1.108.0.tar.gz",
+      "sha256": "ef0f2be552f3c94354e133f6437f829b29c78f12f6dcd7eac5a70b7dc9726030",
+      "size": 11267769,
       "changelog": [
+        {
+          "version": "1.108.0",
+          "changes": [
+            "Show target range with deadband on temperature and humidity dashboard cards"
+          ]
+        },
         {
           "version": "1.107.1",
           "changes": [

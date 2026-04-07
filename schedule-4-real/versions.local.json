@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T22:51:17.709Z",
+  "lastCheck": "2026-04-07T23:21:17.375Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.107.1",
-      "installedAt": "2026-04-07T23:00:05Z"
+      "version": "1.108.0",
+      "installedAt": "2026-04-07T23:22:43Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.107.1",
+        "changes": [
+          "Unify mode labels across all dashboard modules (short consistent names)"
+        ]
+      },
       {
         "version": "1.107.0",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.10",
         "changes": [
           "Hide camera credentials when not authenticated, fallback to go2rtc for photo capture, make port optional"
-        ]
-      },
-      {
-        "version": "1.90.9",
-        "changes": [
-          "Hide camera IP/port and controls when not authenticated, make port optional for domain-based cameras"
         ]
       }
     ],
