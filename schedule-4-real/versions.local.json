@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T22:41:17.281Z",
+  "lastCheck": "2026-04-07T22:51:17.709Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.107.0",
-      "installedAt": "2026-04-07T22:51:01Z"
+      "version": "1.107.1",
+      "installedAt": "2026-04-07T23:00:05Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.107.0",
+        "changes": [
+          "Show module mode labels on dashboard, allow ON/OFF toggle in Trigger mode across all devices"
+        ]
+      },
       {
         "version": "1.106.0",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.9",
         "changes": [
           "Hide camera IP/port and controls when not authenticated, make port optional for domain-based cameras"
-        ]
-      },
-      {
-        "version": "1.90.8",
-        "changes": [
-          "Add device group separators in socket settings, fetch outlet configs from CB for timePeriod data"
         ]
       }
     ],
