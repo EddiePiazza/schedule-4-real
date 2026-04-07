@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T23:21:17.375Z",
+  "lastCheck": "2026-04-07T23:51:17.372Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.108.0",
-      "installedAt": "2026-04-07T23:22:43Z"
+      "version": "1.109.0",
+      "installedAt": "2026-04-07T23:52:20Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.108.0",
+        "changes": [
+          "Show target range with deadband on temperature and humidity dashboard cards"
+        ]
+      },
       {
         "version": "1.107.1",
         "changes": [
@@ -344,12 +350,6 @@
         "version": "1.90.11",
         "changes": [
           "Fix camera test and URL generation for domains without port"
-        ]
-      },
-      {
-        "version": "1.90.10",
-        "changes": [
-          "Hide camera credentials when not authenticated, fallback to go2rtc for photo capture, make port optional"
         ]
       }
     ],

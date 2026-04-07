@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T23:22:43Z",
+  "generatedAt": "2026-04-07T23:52:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.108.0",
-      "archive": "s4r-web-1.108.0.tar.gz",
-      "sha256": "ef0f2be552f3c94354e133f6437f829b29c78f12f6dcd7eac5a70b7dc9726030",
-      "size": 11267769,
+      "version": "1.109.0",
+      "archive": "s4r-web-1.109.0.tar.gz",
+      "sha256": "7c9c6a2a67756d228ed9fc87189f9a04a8ca4003b2b89ffce0d8448adc03c218",
+      "size": 11271192,
       "changelog": [
+        {
+          "version": "1.109.0",
+          "changes": [
+            "Multi-device dashboard with room selector, device naming, per-device sensor filtering and device selector in settings"
+          ]
+        },
         {
           "version": "1.108.0",
           "changes": [
