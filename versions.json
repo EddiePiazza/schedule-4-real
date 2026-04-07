@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-06T20:25:06Z",
+  "generatedAt": "2026-04-07T11:36:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.0",
-      "archive": "s4r-web-1.105.0.tar.gz",
-      "sha256": "eb3b98f0ce871fcc8e6a3f8e9f4a38b677e9e4bbd563b4ac29601198201b859a",
-      "size": 11265275,
+      "version": "1.105.1",
+      "archive": "s4r-web-1.105.1.tar.gz",
+      "sha256": "619d07df12a4a713f726aa9683c72c8c41cc370750667a501290aa55cd617460",
+      "size": 11267457,
       "changelog": [
+        {
+          "version": "1.105.1",
+          "changes": [
+            "Fix Alarm Settings save button not detecting changes"
+          ]
+        },
         {
           "version": "1.105.0",
           "changes": [

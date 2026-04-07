@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-06T20:23:27.587Z",
+  "lastCheck": "2026-04-07T11:31:26.732Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.105.0",
-      "installedAt": "2026-04-06T18:33:02Z"
+      "version": "1.105.1",
+      "installedAt": "2026-04-07T11:36:24Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -463,6 +463,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.1",
+        "changes": [
+          "Fix device routing for multi-device setups: find correct device for each module"
+        ]
+      },
+      {
         "version": "1.24.0",
         "changes": [
           "Instant trigger execution on save, remove AI mode requirement for user triggers"
@@ -761,12 +767,6 @@
         "version": "1.8.3",
         "changes": [
           "Remove download timeout that was aborting large archive downloads"
-        ]
-      },
-      {
-        "version": "1.8.2",
-        "changes": [
-          "Fix update lock not released when no updates available"
         ]
       }
     ],
