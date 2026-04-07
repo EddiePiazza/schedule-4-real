@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T19:29:36Z",
+  "generatedAt": "2026-04-07T21:14:19Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.6",
-      "archive": "s4r-web-1.105.6.tar.gz",
-      "sha256": "39aa2a110d2198c92b2c974ae540fbde2cb7d0f67a4770a01fb2f97f2dddebd9",
-      "size": 11267100,
+      "version": "1.105.7",
+      "archive": "s4r-web-1.105.7.tar.gz",
+      "sha256": "18f845e6d92234169602e9015e439e6a5794be5d69731e85a9dfcc521c772b6c",
+      "size": 11266668,
       "changelog": [
+        {
+          "version": "1.105.7",
+          "changes": [
+            "Fix light config fetch for CB devices and cache getConfigField responses"
+          ]
+        },
         {
           "version": "1.105.6",
           "changes": [
