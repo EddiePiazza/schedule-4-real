@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T14:38:51Z",
+  "generatedAt": "2026-04-07T14:50:50Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.105.4",
-      "archive": "s4r-web-1.105.4.tar.gz",
-      "sha256": "d40328976398a4b330e51a02ea0fbb12bef5fa4ecc87e56f2767e66a39be7f7e",
-      "size": 11267052,
+      "version": "1.105.5",
+      "archive": "s4r-web-1.105.5.tar.gz",
+      "sha256": "a9d18bc1b07df3ce23fa96d07f40fc7a1fce3c2b0cfa8626388e06c5a3933366",
+      "size": 11266597,
       "changelog": [
+        {
+          "version": "1.105.5",
+          "changes": [
+            "Fix light config not loading in passive/relay mode (darkTemp, sunrise/sunset)"
+          ]
+        },
         {
           "version": "1.105.4",
           "changes": [
