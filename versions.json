@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T00:00:45Z",
+  "generatedAt": "2026-04-08T00:38:49Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.109.1",
-      "archive": "s4r-web-1.109.1.tar.gz",
-      "sha256": "5a9516a9787577695ce37cce0e6f9d6bfd03da3d3a6ed4de0fe932f76bbb8ab8",
-      "size": 11270333,
+      "version": "1.110.0",
+      "archive": "s4r-web-1.110.0.tar.gz",
+      "sha256": "de25b41a8cd76d0b258fa92f6960549351a17bcbbd33c8cc9fac533e769efec6",
+      "size": 11270503,
       "changelog": [
+        {
+          "version": "1.110.0",
+          "changes": [
+            "Fix dashboard module layout: correct icons, switches aligned right, trigger mode detection, VPD table button",
+            "Add VPD reference table to dashboard with Leaf/Air toggle and live position indicator"
+          ]
+        },
         {
           "version": "1.109.1",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-07T23:51:17.372Z",
+  "lastCheck": "2026-04-08T00:31:17.362Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.109.1",
-      "installedAt": "2026-04-08T00:00:45Z"
+      "version": "1.110.0",
+      "installedAt": "2026-04-08T00:38:49Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,19 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.109.1",
+        "changes": [
+          "Remove redundant mode badge from socket cards (already shown in label)",
+          "Remove redundant mode badges from socket cards, shorten mode labels"
+        ]
+      },
+      {
+        "version": "1.109.0",
+        "changes": [
+          "Multi-device dashboard with room selector, device naming, per-device sensor filtering and device selector in settings"
+        ]
+      },
       {
         "version": "1.108.0",
         "changes": [
@@ -338,18 +351,6 @@
         "version": "1.90.13",
         "changes": [
           "Fix camera port: show 554 by default, allow clearing for portless domains"
-        ]
-      },
-      {
-        "version": "1.90.12",
-        "changes": [
-          "Fix camera port defaulting to 554 when field is empty"
-        ]
-      },
-      {
-        "version": "1.90.11",
-        "changes": [
-          "Fix camera test and URL generation for domains without port"
         ]
       }
     ],
