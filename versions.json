@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-07T23:52:20Z",
+  "generatedAt": "2026-04-08T00:00:45Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.109.0",
-      "archive": "s4r-web-1.109.0.tar.gz",
-      "sha256": "7c9c6a2a67756d228ed9fc87189f9a04a8ca4003b2b89ffce0d8448adc03c218",
-      "size": 11271192,
+      "version": "1.109.1",
+      "archive": "s4r-web-1.109.1.tar.gz",
+      "sha256": "5a9516a9787577695ce37cce0e6f9d6bfd03da3d3a6ed4de0fe932f76bbb8ab8",
+      "size": 11270333,
       "changelog": [
+        {
+          "version": "1.109.1",
+          "changes": [
+            "Remove redundant mode badge from socket cards (already shown in label)",
+            "Remove redundant mode badges from socket cards, shorten mode labels"
+          ]
+        },
         {
           "version": "1.109.0",
           "changes": [
