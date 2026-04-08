@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T02:13:35Z",
+  "generatedAt": "2026-04-08T02:24:48Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.111.3",
-      "archive": "s4r-web-1.111.3.tar.gz",
-      "sha256": "19d36e8174454eb2387469669958a470cbd617b4da6174a985e624d740deadef",
-      "size": 11271925,
+      "version": "1.111.4",
+      "archive": "s4r-web-1.111.4.tar.gz",
+      "sha256": "362f395665863496325aa1e5a8b7dd7a3e88ce3a05375f9fd516f27b3aa3fe4e",
+      "size": 11272533,
       "changelog": [
+        {
+          "version": "1.111.4",
+          "changes": [
+            "Fix sensor data not changing when switching between devices"
+          ]
+        },
         {
           "version": "1.111.3",
           "changes": [

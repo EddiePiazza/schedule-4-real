@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T02:11:17.343Z",
+  "lastCheck": "2026-04-08T02:21:17.366Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.111.3",
-      "installedAt": "2026-04-08T02:13:35Z"
+      "version": "1.111.4",
+      "installedAt": "2026-04-08T02:24:48Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.111.3",
+        "changes": [
+          "Fix climate module data mixing between devices in multi-device setups",
+          "Replace emoji icons with Heroicons in room selector"
+        ]
+      },
       {
         "version": "1.111.2",
         "changes": [
@@ -348,12 +355,6 @@
         "version": "1.91.0",
         "changes": [
           "Add wattage fields for blower, fan, heater, humidifier, dehumidifier in power consumption settings"
-        ]
-      },
-      {
-        "version": "1.90.17",
-        "changes": [
-          "Fix PPFD showing 0 instead of hiding, socket names with device prefix, custom names on dashboard"
         ]
       }
     ],
