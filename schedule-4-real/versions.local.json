@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T01:31:17.362Z",
+  "lastCheck": "2026-04-08T01:41:17.346Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.111.1",
-      "installedAt": "2026-04-08T01:36:12Z"
+      "version": "1.111.2",
+      "installedAt": "2026-04-08T01:48:08Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.111.1",
+        "changes": [
+          "Fix multi-device data isolation: filter all sensors, charts and stats by active device MAC",
+          "Fix multi-device: filter sensors/lights/sockets by active device, skip 1h post-transition for period stats"
+        ]
+      },
       {
         "version": "1.111.0",
         "changes": [
@@ -347,12 +354,6 @@
         "version": "1.90.16",
         "changes": [
           "Hide empty timelapse days with 0 photos and no video"
-        ]
-      },
-      {
-        "version": "1.90.15",
-        "changes": [
-          "Fix camera stream buffering delay through nginx with X-Accel-Buffering header"
         ]
       }
     ],

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T01:36:12Z",
+  "generatedAt": "2026-04-08T01:48:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.111.1",
-      "archive": "s4r-web-1.111.1.tar.gz",
-      "sha256": "8500a56550776cd9a8c2f672e8aa549668a35b482076adea3ebebcc4b24cf061",
-      "size": 11270334,
+      "version": "1.111.2",
+      "archive": "s4r-web-1.111.2.tar.gz",
+      "sha256": "6fe406e572cc84b399d7dc507ada8713047ad16f6e2925086e3c6f41636cb58c",
+      "size": 11269868,
       "changelog": [
+        {
+          "version": "1.111.2",
+          "changes": [
+            "Fix multi-device MAC case mismatch in DB queries and clear stale data on device switch"
+          ]
+        },
         {
           "version": "1.111.1",
           "changes": [
