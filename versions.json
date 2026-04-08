@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T13:02:05Z",
+  "generatedAt": "2026-04-08T13:25:55Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.112.0",
-      "archive": "s4r-web-1.112.0.tar.gz",
-      "sha256": "e6da4cf33d0eb782d07d3792078633466ec520c6cfbc71c53f0ad5454c71483d",
-      "size": 11272888,
+      "version": "1.112.1",
+      "archive": "s4r-web-1.112.1.tar.gz",
+      "sha256": "8f75665aa8cd1791e6141dd5d8ea2cc777813ab24cd925ee16a8db58293d2200",
+      "size": 11271623,
       "changelog": [
+        {
+          "version": "1.112.1",
+          "changes": [
+            "Fix multi-sensor layout to use real SensorCard components with day/night stats and soil"
+          ]
+        },
         {
           "version": "1.112.0",
           "changes": [

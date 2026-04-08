@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T13:01:17.386Z",
+  "lastCheck": "2026-04-08T13:21:17.390Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.112.0",
-      "installedAt": "2026-04-08T13:02:05Z"
+      "version": "1.112.1",
+      "installedAt": "2026-04-08T13:25:55Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.112.0",
+        "changes": [
+          "Redesign multi-device dashboard with unified sensor blocks and always-visible sockets"
+        ]
+      },
       {
         "version": "1.111.4",
         "changes": [
@@ -349,12 +355,6 @@
         "version": "1.92.0",
         "changes": [
           "Add PPFD sensor to Home Assistant MQTT discovery bridge"
-        ]
-      },
-      {
-        "version": "1.91.1",
-        "changes": [
-          "Load heater, humidifier, dehumidifier stores from socket API for power consumption detection"
         ]
       }
     ],
