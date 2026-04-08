@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T15:06:48Z",
+  "generatedAt": "2026-04-08T15:12:55Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.112.5",
-      "archive": "s4r-web-1.112.5.tar.gz",
-      "sha256": "3d28ef1b183084969c4ed3445a6df0e9a1b7287ebadfd03381b1f4a80e274ec6",
-      "size": 11272565,
+      "version": "1.112.6",
+      "archive": "s4r-web-1.112.6.tar.gz",
+      "sha256": "c75b2e3c69f17e8da3deadf1884629889551ded996232a58a45585171d920adb",
+      "size": 11272791,
       "changelog": [
+        {
+          "version": "1.112.6",
+          "changes": [
+            "Use CSS grid for multi-sensor cards with equal height rows and auto column distribution"
+          ]
+        },
         {
           "version": "1.112.5",
           "changes": [

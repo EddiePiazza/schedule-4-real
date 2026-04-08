@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T15:01:17.364Z",
+  "lastCheck": "2026-04-08T15:11:17.361Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.112.5",
-      "installedAt": "2026-04-08T15:06:48Z"
+      "version": "1.112.6",
+      "installedAt": "2026-04-08T15:12:55Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.112.5",
+        "changes": [
+          "Fix night stats in multi-sensor view and rebalance card columns"
+        ]
+      },
+      {
+        "version": "1.112.4",
+        "changes": [
+          "Balance sensor cards evenly across columns in multi-device layout"
+        ]
+      },
       {
         "version": "1.112.3",
         "changes": [
@@ -343,18 +355,6 @@
         "version": "1.92.5",
         "changes": [
           "Fix display zone element overrides not persisting across sessions"
-        ]
-      },
-      {
-        "version": "1.92.4",
-        "changes": [
-          "Add PPFD to published entities list in HA bridge status"
-        ]
-      },
-      {
-        "version": "1.92.3",
-        "changes": [
-          "Fix laboratory page not loading when accessed directly via URL with tab parameter"
         ]
       }
     ],
