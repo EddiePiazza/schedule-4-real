@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T14:46:17Z",
+  "generatedAt": "2026-04-08T15:06:48Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.112.3",
-      "archive": "s4r-web-1.112.3.tar.gz",
-      "sha256": "43a23740e44d097a2c0d1c649b1a6f80a53cd36fb2d84c496209f5f0d271d227",
-      "size": 11273567,
+      "version": "1.112.5",
+      "archive": "s4r-web-1.112.5.tar.gz",
+      "sha256": "3d28ef1b183084969c4ed3445a6df0e9a1b7287ebadfd03381b1f4a80e274ec6",
+      "size": 11272565,
       "changelog": [
+        {
+          "version": "1.112.5",
+          "changes": [
+            "Fix night stats in multi-sensor view and rebalance card columns"
+          ]
+        },
+        {
+          "version": "1.112.4",
+          "changes": [
+            "Balance sensor cards evenly across columns in multi-device layout"
+          ]
+        },
         {
           "version": "1.112.3",
           "changes": [

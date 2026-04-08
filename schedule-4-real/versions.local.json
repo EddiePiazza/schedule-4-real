@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T14:41:17.431Z",
+  "lastCheck": "2026-04-08T15:01:17.364Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.112.3",
-      "installedAt": "2026-04-08T14:46:17Z"
+      "version": "1.112.5",
+      "installedAt": "2026-04-08T15:06:48Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.112.3",
+        "changes": [
+          "Fix night stats missing (periodBounds not reading light2 schedule) and improve multi-sensor flex layout"
+        ]
+      },
       {
         "version": "1.112.2",
         "changes": [
@@ -349,12 +355,6 @@
         "version": "1.92.3",
         "changes": [
           "Fix laboratory page not loading when accessed directly via URL with tab parameter"
-        ]
-      },
-      {
-        "version": "1.92.2",
-        "changes": [
-          "Fix PPFD HA device class error, outlet toggle flickering, and support 10 outlets in HA discovery"
         ]
       }
     ],
