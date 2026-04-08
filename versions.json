@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T01:48:08Z",
+  "generatedAt": "2026-04-08T02:13:35Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.111.2",
-      "archive": "s4r-web-1.111.2.tar.gz",
-      "sha256": "6fe406e572cc84b399d7dc507ada8713047ad16f6e2925086e3c6f41636cb58c",
-      "size": 11269868,
+      "version": "1.111.3",
+      "archive": "s4r-web-1.111.3.tar.gz",
+      "sha256": "19d36e8174454eb2387469669958a470cbd617b4da6174a985e624d740deadef",
+      "size": 11271925,
       "changelog": [
+        {
+          "version": "1.111.3",
+          "changes": [
+            "Fix climate module data mixing between devices in multi-device setups",
+            "Replace emoji icons with Heroicons in room selector"
+          ]
+        },
         {
           "version": "1.111.2",
           "changes": [

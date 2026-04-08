@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T01:41:17.346Z",
+  "lastCheck": "2026-04-08T02:11:17.343Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.111.2",
-      "installedAt": "2026-04-08T01:48:08Z"
+      "version": "1.111.3",
+      "installedAt": "2026-04-08T02:13:35Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.111.2",
+        "changes": [
+          "Fix multi-device MAC case mismatch in DB queries and clear stale data on device switch"
+        ]
+      },
       {
         "version": "1.111.1",
         "changes": [
@@ -348,12 +354,6 @@
         "version": "1.90.17",
         "changes": [
           "Fix PPFD showing 0 instead of hiding, socket names with device prefix, custom names on dashboard"
-        ]
-      },
-      {
-        "version": "1.90.16",
-        "changes": [
-          "Hide empty timelapse days with 0 photos and no video"
         ]
       }
     ],
