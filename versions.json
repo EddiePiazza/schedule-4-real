@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T02:24:48Z",
+  "generatedAt": "2026-04-08T13:02:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.111.4",
-      "archive": "s4r-web-1.111.4.tar.gz",
-      "sha256": "362f395665863496325aa1e5a8b7dd7a3e88ce3a05375f9fd516f27b3aa3fe4e",
-      "size": 11272533,
+      "version": "1.112.0",
+      "archive": "s4r-web-1.112.0.tar.gz",
+      "sha256": "e6da4cf33d0eb782d07d3792078633466ec520c6cfbc71c53f0ad5454c71483d",
+      "size": 11272888,
       "changelog": [
+        {
+          "version": "1.112.0",
+          "changes": [
+            "Redesign multi-device dashboard with unified sensor blocks and always-visible sockets"
+          ]
+        },
         {
           "version": "1.111.4",
           "changes": [
