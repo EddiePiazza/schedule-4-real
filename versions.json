@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T00:38:49Z",
+  "generatedAt": "2026-04-08T01:01:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.110.0",
-      "archive": "s4r-web-1.110.0.tar.gz",
-      "sha256": "de25b41a8cd76d0b258fa92f6960549351a17bcbbd33c8cc9fac533e769efec6",
-      "size": 11270503,
+      "version": "1.111.0",
+      "archive": "s4r-web-1.111.0.tar.gz",
+      "sha256": "a204dbaf4415b97ba4d173dae0985e5f0c34fcb7446849882172edf2c1a0f75a",
+      "size": 11270396,
       "changelog": [
+        {
+          "version": "1.111.0",
+          "changes": [
+            "Persist temperature unit preference on server, sync across all devices and browsers",
+            "Fix VPD table leaf offset display to use selected temperature unit"
+          ]
+        },
         {
           "version": "1.110.0",
           "changes": [

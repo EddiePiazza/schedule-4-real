@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T00:31:17.362Z",
+  "lastCheck": "2026-04-08T00:51:17.331Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.110.0",
-      "installedAt": "2026-04-08T00:38:49Z"
+      "version": "1.111.0",
+      "installedAt": "2026-04-08T01:01:08Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.110.0",
+        "changes": [
+          "Fix dashboard module layout: correct icons, switches aligned right, trigger mode detection, VPD table button",
+          "Add VPD reference table to dashboard with Leaf/Air toggle and live position indicator"
+        ]
+      },
       {
         "version": "1.109.1",
         "changes": [
@@ -345,12 +352,6 @@
         "version": "1.90.14",
         "changes": [
           "Fix camera streaming via WebSocket MSE for external networks and reverse proxies"
-        ]
-      },
-      {
-        "version": "1.90.13",
-        "changes": [
-          "Fix camera port: show 554 by default, allow clearing for portless domains"
         ]
       }
     ],
