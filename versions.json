@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T13:39:56Z",
+  "generatedAt": "2026-04-08T14:46:17Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.112.2",
-      "archive": "s4r-web-1.112.2.tar.gz",
-      "sha256": "8b5848d5a539f8df375152b9318b7bb481d94fd1e2de66bc42cd2c9a1637ee88",
-      "size": 11274403,
+      "version": "1.112.3",
+      "archive": "s4r-web-1.112.3.tar.gz",
+      "sha256": "43a23740e44d097a2c0d1c649b1a6f80a53cd36fb2d84c496209f5f0d271d227",
+      "size": 11273567,
       "changelog": [
+        {
+          "version": "1.112.3",
+          "changes": [
+            "Fix night stats missing (periodBounds not reading light2 schedule) and improve multi-sensor flex layout"
+          ]
+        },
         {
           "version": "1.112.2",
           "changes": [
