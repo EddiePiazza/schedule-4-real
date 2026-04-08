@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T15:11:17.361Z",
+  "lastCheck": "2026-04-08T15:51:17.389Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.112.6",
-      "installedAt": "2026-04-08T15:12:55Z"
+      "version": "1.113.0",
+      "installedAt": "2026-04-08T15:56:25Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.112.6",
+        "changes": [
+          "Use CSS grid for multi-sensor cards with equal height rows and auto column distribution"
+        ]
+      },
       {
         "version": "1.112.5",
         "changes": [
@@ -349,12 +355,6 @@
         "version": "1.92.6",
         "changes": [
           "Fix HA published entities list, add Fan entity, natural wind attribute, correct per-device outlet assignment"
-        ]
-      },
-      {
-        "version": "1.92.5",
-        "changes": [
-          "Fix display zone element overrides not persisting across sessions"
         ]
       }
     ],

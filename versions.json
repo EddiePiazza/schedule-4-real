@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T15:12:55Z",
+  "generatedAt": "2026-04-08T15:56:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.112.6",
-      "archive": "s4r-web-1.112.6.tar.gz",
-      "sha256": "c75b2e3c69f17e8da3deadf1884629889551ded996232a58a45585171d920adb",
-      "size": 11272791,
+      "version": "1.113.0",
+      "archive": "s4r-web-1.113.0.tar.gz",
+      "sha256": "9b1acdebcefe6262b0ec797cb6271fcd7326bbb66ca83651fa1ec3c432fe9d51",
+      "size": 11275992,
       "changelog": [
+        {
+          "version": "1.113.0",
+          "changes": [
+            "Add dashboard customization: reorder control boxes, rename, hide cards, and fix leaf VPD stats"
+          ]
+        },
         {
           "version": "1.112.6",
           "changes": [
