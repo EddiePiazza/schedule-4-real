@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T15:51:17.389Z",
+  "lastCheck": "2026-04-08T16:51:17.412Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.113.0",
-      "installedAt": "2026-04-08T15:56:25Z"
+      "version": "1.113.1",
+      "installedAt": "2026-04-08T16:53:28Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.113.0",
+        "changes": [
+          "Add dashboard customization: reorder control boxes, rename, hide cards, and fix leaf VPD stats"
+        ]
+      },
       {
         "version": "1.112.6",
         "changes": [
@@ -349,12 +355,6 @@
         "version": "1.93.0",
         "changes": [
           "Redesign timelapse gallery: video modal with loop, photo delete, regenerate all, merge shorts, chart overlay, confirm dialogs"
-        ]
-      },
-      {
-        "version": "1.92.6",
-        "changes": [
-          "Fix HA published entities list, add Fan entity, natural wind attribute, correct per-device outlet assignment"
         ]
       }
     ],

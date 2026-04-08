@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T15:56:25Z",
+  "generatedAt": "2026-04-08T16:53:28Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.113.0",
-      "archive": "s4r-web-1.113.0.tar.gz",
-      "sha256": "9b1acdebcefe6262b0ec797cb6271fcd7326bbb66ca83651fa1ec3c432fe9d51",
-      "size": 11275992,
+      "version": "1.113.1",
+      "archive": "s4r-web-1.113.1.tar.gz",
+      "sha256": "862329127bacbd7479698ef057f06bbcd81f060caded20604ee046eb080be6cb",
+      "size": 11274795,
       "changelog": [
+        {
+          "version": "1.113.1",
+          "changes": [
+            "Fix soil sensor grid layout for balanced rows and remove duplicate soil summary cards"
+          ]
+        },
         {
           "version": "1.113.0",
           "changes": [
