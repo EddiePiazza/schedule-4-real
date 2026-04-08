@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T00:51:17.331Z",
+  "lastCheck": "2026-04-08T01:31:17.362Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.111.0",
-      "installedAt": "2026-04-08T01:01:08Z"
+      "version": "1.111.1",
+      "installedAt": "2026-04-08T01:36:12Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.111.0",
+        "changes": [
+          "Persist temperature unit preference on server, sync across all devices and browsers",
+          "Fix VPD table leaf offset display to use selected temperature unit"
+        ]
+      },
       {
         "version": "1.110.0",
         "changes": [
@@ -346,12 +353,6 @@
         "version": "1.90.15",
         "changes": [
           "Fix camera stream buffering delay through nginx with X-Accel-Buffering header"
-        ]
-      },
-      {
-        "version": "1.90.14",
-        "changes": [
-          "Fix camera streaming via WebSocket MSE for external networks and reverse proxies"
         ]
       }
     ],

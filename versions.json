@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T01:01:08Z",
+  "generatedAt": "2026-04-08T01:36:12Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.111.0",
-      "archive": "s4r-web-1.111.0.tar.gz",
-      "sha256": "a204dbaf4415b97ba4d173dae0985e5f0c34fcb7446849882172edf2c1a0f75a",
-      "size": 11270396,
+      "version": "1.111.1",
+      "archive": "s4r-web-1.111.1.tar.gz",
+      "sha256": "8500a56550776cd9a8c2f672e8aa549668a35b482076adea3ebebcc4b24cf061",
+      "size": 11270334,
       "changelog": [
+        {
+          "version": "1.111.1",
+          "changes": [
+            "Fix multi-device data isolation: filter all sensors, charts and stats by active device MAC",
+            "Fix multi-device: filter sensors/lights/sockets by active device, skip 1h post-transition for period stats"
+          ]
+        },
         {
           "version": "1.111.0",
           "changes": [
