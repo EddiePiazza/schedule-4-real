@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-08T16:53:28Z",
+  "generatedAt": "2026-04-09T12:02:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.113.1",
-      "archive": "s4r-web-1.113.1.tar.gz",
-      "sha256": "862329127bacbd7479698ef057f06bbcd81f060caded20604ee046eb080be6cb",
-      "size": 11274795,
+      "version": "1.113.2",
+      "archive": "s4r-web-1.113.2.tar.gz",
+      "sha256": "3d0b599f3f7dcfd104001452ff667818a6a708fccfd0064b96d1dc6bba4a441d",
+      "size": 11275001,
       "changelog": [
+        {
+          "version": "1.113.2",
+          "changes": [
+            "Use container queries for soil sensor grid to respect parent width"
+          ]
+        },
         {
           "version": "1.113.1",
           "changes": [

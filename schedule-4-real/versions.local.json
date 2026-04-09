@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-08T16:51:17.412Z",
+  "lastCheck": "2026-04-09T12:01:17.745Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.113.1",
-      "installedAt": "2026-04-08T16:53:28Z"
+      "version": "1.113.2",
+      "installedAt": "2026-04-09T12:02:39Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.113.1",
+        "changes": [
+          "Fix soil sensor grid layout for balanced rows and remove duplicate soil summary cards"
+        ]
+      },
       {
         "version": "1.113.0",
         "changes": [
@@ -349,12 +355,6 @@
         "version": "1.93.1",
         "changes": [
           "Fix timelapse confirm dialog, remove Generate Missing button, add progress to Generate All and Merge"
-        ]
-      },
-      {
-        "version": "1.93.0",
-        "changes": [
-          "Redesign timelapse gallery: video modal with loop, photo delete, regenerate all, merge shorts, chart overlay, confirm dialogs"
         ]
       }
     ],

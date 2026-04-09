@@ -1,1 +1,0 @@
-const a=[".soil-sensor-grid[data-v-eaad2b35]{grid-template-columns:1fr}@media(min-width:640px){.soil-sensor-grid[data-v-eaad2b35]{grid-template-columns:repeat(2,1fr)}}@media(min-width:768px){.soil-sensor-grid[data-v-eaad2b35]{grid-template-columns:repeat(var(--soil-cols,3),1fr)}}"];export{a as default};
