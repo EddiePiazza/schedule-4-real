@@ -1,14 +1,27 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-09T12:02:39Z",
+  "generatedAt": "2026-04-15T11:33:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.113.2",
-      "archive": "s4r-web-1.113.2.tar.gz",
-      "sha256": "3d0b599f3f7dcfd104001452ff667818a6a708fccfd0064b96d1dc6bba4a441d",
-      "size": 11275001,
+      "version": "1.114.0",
+      "archive": "s4r-web-1.114.0.tar.gz",
+      "sha256": "d1c80eb39cc8eaa5dc510c9d7b80e16cf17d868686bb735228939e8beec58145",
+      "size": 11280302,
       "changelog": [
+        {
+          "version": "1.114.0",
+          "changes": [
+            "Update blower and fan charts in real time like temperature and humidity",
+            "Default chart range to 24h and remember last selection across sessions",
+            "Save and calculate power cost for blower, fan, heater, humidifier, dehumidifier",
+            "Add cameras block to dashboard with live thumbnails and fullscreen viewer",
+            "Show blower and fan on/off transitions in dashboard Event Log",
+            "HA bridge: per-device entities with custom names, soil sensor discovery, stale phantom cleanup, 10 outlet support",
+            "Always show camera selector in Lab Room wizard, with empty state message",
+            "Fix PS10 shown as Light Controller in Lab Rooms and add PS10 outlets to selector"
+          ]
+        },
         {
           "version": "1.113.2",
           "changes": [
