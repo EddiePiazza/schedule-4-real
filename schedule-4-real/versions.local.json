@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-15T11:31:20.489Z",
+  "lastCheck": "2026-04-16T11:11:20.957Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
     "web": {
-      "version": "1.114.0",
-      "installedAt": "2026-04-15T11:33:47Z"
+      "version": "1.115.0",
+      "installedAt": "2026-04-16T11:14:43Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.1",
-      "installedAt": "2026-04-06T20:25:06Z"
+      "version": "1.24.2",
+      "installedAt": "2026-04-16T11:14:43Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,19 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.114.0",
+        "changes": [
+          "Update blower and fan charts in real time like temperature and humidity",
+          "Default chart range to 24h and remember last selection across sessions",
+          "Save and calculate power cost for blower, fan, heater, humidifier, dehumidifier",
+          "Add cameras block to dashboard with live thumbnails and fullscreen viewer",
+          "Show blower and fan on/off transitions in dashboard Event Log",
+          "HA bridge: per-device entities with custom names, soil sensor discovery, stale phantom cleanup, 10 outlet support",
+          "Always show camera selector in Lab Room wizard, with empty state message",
+          "Fix PS10 shown as Light Controller in Lab Rooms and add PS10 outlets to selector"
+        ]
+      },
       {
         "version": "1.113.2",
         "changes": [
@@ -349,12 +362,6 @@
         "version": "1.94.0",
         "changes": [
           "Add climate module power consumption tracking, 2-column camera layout, show fan/heater/humidifier/dehumidifier in power summary"
-        ]
-      },
-      {
-        "version": "1.93.2",
-        "changes": [
-          "Fix soil sensor chart decimal inconsistency across sensors"
         ]
       }
     ],

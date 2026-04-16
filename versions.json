@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-15T11:33:47Z",
+  "generatedAt": "2026-04-16T11:14:43Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.114.0",
-      "archive": "s4r-web-1.114.0.tar.gz",
-      "sha256": "d1c80eb39cc8eaa5dc510c9d7b80e16cf17d868686bb735228939e8beec58145",
-      "size": 11280302,
+      "version": "1.115.0",
+      "archive": "s4r-web-1.115.0.tar.gz",
+      "sha256": "be347d7978bdbed79c6f08407afefd6b3d678af9826be30b45092a4e90b81127",
+      "size": 11280403,
       "changelog": [
+        {
+          "version": "1.115.0",
+          "changes": [
+            "Add supervisor watchdog: web server monitors heartbeat and auto-restarts supervisor if dead for 5 minutes"
+          ]
+        },
         {
           "version": "1.114.0",
           "changes": [
@@ -2286,11 +2292,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.1",
-      "archive": "s4r-supervisor-1.24.1.tar.gz",
-      "sha256": "f88162d4577d49cc54bad4a2fc2bf6d5862267bf7b1d2b4d447287e06964d987",
-      "size": 66799,
+      "version": "1.24.2",
+      "archive": "s4r-supervisor-1.24.2.tar.gz",
+      "sha256": "a3acefc3c8d4f6cc1d9d8e467ab1b024d96a04761e107b7f0de540df0ff552a4",
+      "size": 68666,
       "changelog": [
+        {
+          "version": "1.24.2",
+          "changes": [
+            "Add safety systems: safe shutdown turns OFF all devices, verified retry for critical commands, outlet runtime watchdog, startup recovery from DB"
+          ]
+        },
         {
           "version": "1.24.1",
           "changes": [

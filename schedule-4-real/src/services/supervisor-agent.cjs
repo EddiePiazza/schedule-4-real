@@ -119,6 +119,20 @@ function enforceSafetyTimeouts() {
     }
   }
 
+  // Second check: detect AI-controlled outlets that are ON but NOT tracked in deviceOnSince.
+  // This catches cases where the supervisor restarted and lost tracking state.
+  // If an outlet is ON and AI-controlled but has no deviceOnSince entry, start tracking it NOW.
+  // The next run (60s later) will have an accurate duration.
+  const aiModules = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'];
+  for (const key of Object.keys(lastSocketStates)) {
+    if (lastSocketStates[key] !== 1) continue; // Only care about ON devices
+    if (!socketAiModes[key]) continue; // Only AI-controlled
+    if (deviceOnSince[key]) continue; // Already tracked
+    // This outlet is ON but we don't know since when — start tracking now
+    deviceOnSince[key] = Date.now();
+    console.log(`[SAFETY] Tracking untracked ON device: ${key} (started tracking now)`);
+  }
+
   return forceOffActions;
 }
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
@@ -1154,6 +1168,58 @@ async function sendSocketCommand(deviceMac, socket, action, opts = {}) {
 }
 
 /**
+ * Send a socket command with verification: after sending, wait for the device
+ * to confirm the state change via MQTT status. If not confirmed within timeout,
+ * retry up to MAX_RETRIES times. Critical for safety-critical OFF commands
+ * (cycle transitions, emergencies) where a missed OFF can leave devices ON indefinitely.
+ */
+const VERIFY_TIMEOUT_MS = 15000; // 15s per attempt
+const VERIFY_MAX_RETRIES = 3;
+
+async function sendSocketCommandVerified(deviceMac, socket, action, opts = {}) {
+  const targetState = action === 'on' ? 1 : 0;
+
+  for (let attempt = 1; attempt <= VERIFY_MAX_RETRIES; attempt++) {
+    const sent = await sendSocketCommand(deviceMac, socket, action, opts);
+    if (!sent) {
+      console.error(`[SAFETY] Command send failed for ${socket}→${action} (attempt ${attempt}/${VERIFY_MAX_RETRIES})`);
+      continue;
+    }
+
+    // Wait for device to confirm state change
+    const confirmed = await waitForStateConfirmation(socket, targetState, VERIFY_TIMEOUT_MS);
+    if (confirmed) {
+      if (attempt > 1) console.log(`[SAFETY] ${socket}→${action} confirmed after ${attempt} attempts`);
+      return true;
+    }
+
+    console.warn(`[SAFETY] ${socket}→${action} NOT confirmed by device within ${VERIFY_TIMEOUT_MS / 1000}s (attempt ${attempt}/${VERIFY_MAX_RETRIES})`);
+  }
+
+  console.error(`[SAFETY] CRITICAL: ${socket}→${action} FAILED after ${VERIFY_MAX_RETRIES} retries — device may be stuck in wrong state!`);
+  return false;
+}
+
+function waitForStateConfirmation(socket, targetState, timeoutMs) {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    const check = setInterval(() => {
+      // Check if device confirmed the state change (updated by MQTT status handler)
+      const currentState = lastSocketStates[socket];
+      if (currentState === targetState) {
+        clearInterval(check);
+        resolve(true);
+        return;
+      }
+      if (Date.now() - start > timeoutMs) {
+        clearInterval(check);
+        resolve(false);
+      }
+    }, 2000); // Check every 2s
+  });
+}
+
+/**
  * Log execution to database
  * @param {string} triggerReason - Why the action was triggered
  * @param {string} deviceMac - Target device MAC (for multi-device)
@@ -1215,7 +1281,11 @@ async function executeActions(actions) {
     }
 
     // Execute command (deviceMac can be null for backward compatibility)
-    const success = await sendSocketCommand(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed });
+    // Use verified (retry) version for safety-critical OFF commands: cycle transitions and emergencies
+    const isCriticalOff = targetAction === 'off' && reason && (reason.includes('cycle transition') || reason.includes('EMERGENCY') || reason.includes('SAFETY'));
+    const success = isCriticalOff
+      ? await sendSocketCommandVerified(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed })
+      : await sendSocketCommand(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed });
 
     if (success) {
       lastActionTimes[actionKey] = now;
@@ -2728,6 +2798,39 @@ async function start() {
     }
 
     console.log('[SAFETY] Safe startup complete — all AI-controlled devices OFF');
+
+    // ── Recover deviceOnSince from database ──
+    // If the supervisor crashed while a device was ON, we need to know HOW LONG
+    // it's been ON so the safety timeout can fire. Query the last ON event per socket.
+    try {
+      const onEvents = await query(`
+        SELECT socket, timestamp
+        FROM socket_events
+        WHERE is_on = 1
+        ORDER BY timestamp DESC
+        LIMIT 50
+      `);
+      const latestOnPerSocket = {};
+      for (const row of (onEvents || [])) {
+        if (!latestOnPerSocket[row.socket]) {
+          latestOnPerSocket[row.socket] = row.timestamp;
+        }
+      }
+      // For each socket that is currently reported as ON by the device,
+      // set deviceOnSince to the timestamp of the last ON event in DB.
+      // This way the safety timeout picks up where we left off.
+      for (const [socket, ts] of Object.entries(latestOnPerSocket)) {
+        const currentState = lastSocketStates[socket];
+        if (currentState === 1 && socketAiModes[socket]) {
+          const onSinceMs = new Date(typeof ts === 'string' && !ts.endsWith('Z') ? ts.replace(' ', 'T') + 'Z' : ts).getTime();
+          deviceOnSince[socket] = onSinceMs;
+          const ageMin = Math.round((Date.now() - onSinceMs) / 60000);
+          console.log(`[SAFETY] Recovered: ${socket} has been ON since ${ageMin} min ago`);
+        }
+      }
+    } catch (err) {
+      console.error('[SAFETY] Failed to recover deviceOnSince:', err.message);
+    }
   }, 5000); // Wait 5 sec for MQTT connection to establish
 
   // Refresh data and device info every 30 seconds
@@ -2778,6 +2881,22 @@ async function start() {
   checkAutoBackupSchedule();
 
   // ═══════════════════════════════════════════════════════
+  // DEVICE WATCHDOG: Detect outlets stuck ON beyond safety limits.
+  // Runs every 60s. Reads actual device state (lastSocketStates)
+  // and enforces safety timeouts even if deviceOnSince was lost.
+  // This is the LAST line of defense against stuck devices.
+  // ═══════════════════════════════════════════════════════
+  setInterval(() => {
+    if (isShuttingDown) return;
+    const forceOff = enforceSafetyTimeouts();
+    if (forceOff && forceOff.length > 0) {
+      executeActions(forceOff).catch(err => {
+        console.error('[SAFETY] Failed to execute safety timeout actions:', err.message);
+      });
+    }
+  }, 60000);
+
+  // ═══════════════════════════════════════════════════════
   // WATCHDOG: Self-monitoring — if no sensor data is processed
   // for 5 minutes, the supervisor is effectively dead (hung MQTT,
   // frozen event loop, etc.). Force-exit so PM2 restarts us.
@@ -2823,21 +2942,50 @@ async function start() {
 }
 
 /**
- * Graceful shutdown
+ * Graceful shutdown — SAFETY: turn OFF all AI-controlled devices before dying.
+ * Prevents devices from being stuck ON indefinitely when the supervisor restarts.
+ * Critical for heaters (fire risk), humidifiers (flood/mold risk), and blowers.
  */
-function shutdown() {
-  console.log('[Supervisor] Shutting down...');
+let isShuttingDown = false;
+async function shutdown() {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log('[SAFETY] Graceful shutdown: turning OFF all AI-controlled devices...');
+
   if (mqttClient && mqttClient.connected) {
-    // Publish offline status before dying
+    const moduleKeys = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'];
+    const allDevices = Array.from(deviceRegistry.values());
+
+    for (const device of allDevices) {
+      if (!device.mac || device.type === 'lc') continue;
+      // Turn off AI-controlled outlets
+      for (let i = 1; i <= 10; i++) {
+        const socket = `O${i}`;
+        if (socketAiModes[socket] && lastSocketStates[socket] === 1) {
+          try { await sendSocketCommand(device.mac, socket, 'off'); } catch {}
+        }
+      }
+      // Turn off AI-controlled modules
+      for (const mod of moduleKeys) {
+        if (socketAiModes[mod] && lastSocketStates[mod] === 1) {
+          try { await sendSocketCommand(device.mac, mod, 'off'); } catch {}
+        }
+      }
+    }
+    // Blower to 0
+    if (socketAiModes['blower']) {
+      try { await sendBlowerCommand(0, false); } catch {}
+    }
+
+    console.log('[SAFETY] Shutdown complete — all AI devices OFF');
     mqttClient.publish('s4r/supervisor/health', JSON.stringify({
       status: 'offline', ts: Date.now()
     }), { qos: 0, retain: true });
-  }
-  if (mqttClient) {
     mqttClient.end(true);
   }
   pool.end();
-  process.exit(0);
+  // Give MQTT a moment to flush
+  setTimeout(() => process.exit(0), 500);
 }
 
 process.on('SIGINT', shutdown);
