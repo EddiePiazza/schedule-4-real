@@ -1260,6 +1260,17 @@ async function executeActions(actions) {
     const actionKey = deviceMac ? `${deviceMac}:${socket}` : socket;
     const lastTime = lastActionTimes[actionKey] || 0;
 
+    // SAFETY: Only execute if the socket is in AI/trigger mode.
+    // Prevents triggers from overriding devices in Environment/TimeSlot modes
+    // that the user set manually. VPD and SAFETY actions bypass this check.
+    const isVpdOrSafety = reason && (reason.startsWith('VPD:') || reason.includes('SAFETY') || reason.includes('cycle transition'));
+    const aiModeKey = deviceMac ? `${deviceMac}:${socket}` : socket;
+    if (!isVpdOrSafety && !action.mandatoryOff && !action.mandatoryOn) {
+      if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) {
+        continue; // Socket not in AI mode — don't touch it
+      }
+    }
+
     // Get current state from device-specific storage or legacy
     const currentState = getSocketState(deviceMac, socket);
     const targetState = targetAction === 'on' ? 1 : 0;
@@ -1550,13 +1561,20 @@ function evaluateVpdIntelligent() {
       return { boost: state.speedBoost, phase: state.phase };
     }
 
-    // Compare metric against last check
+    // Compare metric against last check (for step-level improvement detection)
     const baseline = state.lastMetric ?? state.metricAtActivation;
     const delta = wantLower ? (metricNow - baseline) : (baseline - metricNow);
     // delta > 0 means WORSE (metric rose when we want it lower, or dropped when we want it higher)
     // delta < 0 means BETTER
     const improved = delta < -improveThreshold;
     const worsened = delta > worsenThreshold;
+
+    // ALSO compare against de-escalation start point: catches gradual cumulative worsening
+    // that individual small steps miss (e.g. temp rises 0.2°C per step, never hits 0.5°C threshold,
+    // but total rise is 1°C). Only used in deescalating phase.
+    const deescStartMetric = state.metricAtDeescStart ?? baseline;
+    const cumulativeDelta = wantLower ? (metricNow - deescStartMetric) : (deescStartMetric - metricNow);
+    const cumulativelyWorsened = cumulativeDelta > worsenThreshold;
 
     state.lastCheckTime = now;
     state.lastMetric = metricNow;
@@ -1576,6 +1594,7 @@ function evaluateVpdIntelligent() {
             state.speedBoost -= ESCALATION_STEP;
             state.phase = 'deescalating';
             state.noImproveCount = 0;
+            state.metricAtDeescStart = metricNow; // Capture starting point for cumulative drift detection
             console.log(`[VPD] ${roleName}: escalation ineffective — reverting to boost ${state.speedBoost}%, DEESCALATING`);
           } else {
             // First no-improve: try one more step up
@@ -1586,11 +1605,13 @@ function evaluateVpdIntelligent() {
         break;
 
       case 'deescalating':
-        if (worsened) {
+        if (worsened || cumulativelyWorsened) {
           // Speed too low → bump back up and hold
           state.speedBoost += ESCALATION_STEP;
           state.phase = 'holding';
-          console.log(`[VPD] ${roleName}: too low at boost ${state.speedBoost - ESCALATION_STEP}% (metric worsened) — back to ${state.speedBoost}%, HOLDING`);
+          delete state.metricAtDeescStart;
+          const reason = cumulativelyWorsened && !worsened ? 'cumulative drift' : 'step worsened';
+          console.log(`[VPD] ${roleName}: too low at boost ${state.speedBoost - ESCALATION_STEP}% (${reason}, metric ${metricNow.toFixed(1)}) — back to ${state.speedBoost}%, HOLDING`);
         } else {
           // Not worse → keep reducing to find minimum (clamp at -100)
           state.speedBoost = Math.max(-100, state.speedBoost - ESCALATION_STEP);
@@ -1607,6 +1628,7 @@ function evaluateVpdIntelligent() {
         } else if (improved) {
           // Maybe can reduce further
           state.phase = 'deescalating';
+          state.metricAtDeescStart = metricNow; // Capture starting point for cumulative drift detection
           console.log(`[VPD] ${roleName}: metric still improving at boost ${state.speedBoost}% — DEESCALATING (metric ${metricNow.toFixed(1)})`);
         }
         // Stable → stay at current speed
@@ -2137,6 +2159,9 @@ function evaluateBlowerCurve() {
 
         if (elapsedSeconds >= (curve.escalation.intervalSeconds || 30)) {
           const improvement = state.lastValue - sensorValue;
+          // Also check cumulative: compare against the value at the start of de-escalation
+          // to catch gradual drift that individual steps miss
+          const cumulativeImprovement = (state.valueAtBoostPeak ?? state.lastValue) - sensorValue;
 
           if (improvement < (curve.escalation.expectedImprovement || 0.5)) {
             // Not improving enough, escalate
@@ -2144,7 +2169,12 @@ function evaluateBlowerCurve() {
               state.escalationBoost + (curve.escalation.speedIncrement || 10),
               100 - speed  // Don't exceed 100%
             );
+            state.valueAtBoostPeak = sensorValue; // Track peak for cumulative detection
             console.log(`[BlowerCurve] ${curve.sensor}: No improvement (${improvement.toFixed(2)}), escalating +${curve.escalation.speedIncrement}% to ${speed + state.escalationBoost}%`);
+          } else if (state.escalationBoost > 0 && cumulativeImprovement < 0) {
+            // Cumulative worsening: sensor value is HIGHER than when we started de-escalating.
+            // Stop reducing — the reduced speed is making things worse overall.
+            console.log(`[BlowerCurve] ${curve.sensor}: Cumulative worsening detected (now ${sensorValue.toFixed(1)} vs peak ${(state.valueAtBoostPeak ?? state.lastValue).toFixed(1)}), HOLDING boost at ${state.escalationBoost}%`);
           } else {
             // Improving, reduce escalation
             state.escalationBoost = Math.max(0, state.escalationBoost - (curve.escalation.speedIncrement || 10));
