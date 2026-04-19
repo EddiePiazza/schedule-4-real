@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T19:21:40.958Z",
+  "lastCheck": "2026-04-19T19:52:08.179Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 12,
   "components": {
     "web": {
-      "version": "1.117.0",
-      "installedAt": "2026-04-19T19:21:51Z"
+      "version": "1.118.0",
+      "installedAt": "2026-04-19T19:59:22Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,19 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.117.0",
+        "changes": [
+          "Add ARIA roles to breeding and strains toolbar controls",
+          "Add printable breeder card for keeper plants and top scorers",
+          "Confirm before deleting a saved hunt template",
+          "Log node count and stem diameter in the observation wizard",
+          "Show only the sensors assigned to the active room on its dashboard",
+          "Show skeleton placeholder while lab data loads",
+          "Show node count, stem diameter and localised height in observation timeline",
+          "Replace unsaved-changes browser confirm with in-app dialog"
+        ]
+      },
       {
         "version": "1.116.0",
         "changes": [
@@ -364,12 +377,6 @@
         "changes": [
           "Dynamic socket selectors in triggers supporting all devices (PS5, PS10), custom names, and climate modules"
         ]
-      },
-      {
-        "version": "1.97.0",
-        "changes": [
-          "Add trigger disclaimer modal, immersive mode for triggers page, wider right panel, \u00b0F conversion in all trigger components, hide number input spinners globally"
-        ]
       }
     ],
     "ingest": [
@@ -479,6 +486,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.24.7",
+        "changes": [
+          "Trigger system audit: persistent hysteresis across cycles, humi-extraction crash cooldown, empty/NOT logic gate, multi-edge contradiction detection, flow cycle detection, verified retries for all safety-critical commands, anticipatory trend-based cooling"
+        ]
+      },
       {
         "version": "1.24.6",
         "changes": [
@@ -778,12 +791,6 @@
         "version": "1.9.5",
         "changes": [
           "Fix appdata sync not completing before web restart after update"
-        ]
-      },
-      {
-        "version": "1.9.4",
-        "changes": [
-          "Fix supervisor self-update hanging by saving state before restart and adding 2-minute timeout"
         ]
       }
     ],

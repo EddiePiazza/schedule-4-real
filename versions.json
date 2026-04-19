@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T19:21:51Z",
+  "generatedAt": "2026-04-19T19:59:22Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.117.0",
-      "archive": "s4r-web-1.117.0.tar.gz",
-      "sha256": "2044821e564dcc33df5313bc9673dfce09ed3b75a9bcb6d91695b5a0f338ac3a",
-      "size": 11364856,
+      "version": "1.118.0",
+      "archive": "s4r-web-1.118.0.tar.gz",
+      "sha256": "b6bc731ea40621cb6e87bdbf8fbfe2d5126d8cf35f83a78831c3bcdd044e174c",
+      "size": 11387111,
       "changelog": [
+        {
+          "version": "1.118.0",
+          "changes": [
+            "AI Assistant upgrade: 30 categorised preset prompts, 11 new context tools (flow audit, power summary, lab summary, system health, anomalies, safety status, period comparison, AI memory), live snapshot in prompt, smarter autonomous loop with memory",
+            "Fix scoring thresholds and add overdue, pollen-decay, harvest-window insights",
+            "Stack difficulty and sex pickers on narrow mobile screens",
+            "Track runoff EC, pH and volume in watering observations",
+            "Log trichome maturity percentages with harvest-window hint",
+            "Show trichome distribution and runoff readings on the timeline"
+          ]
+        },
         {
           "version": "1.117.0",
           "changes": [
