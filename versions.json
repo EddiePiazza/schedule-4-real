@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T15:47:35Z",
+  "generatedAt": "2026-04-19T15:51:27Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2304,11 +2304,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.5",
-      "archive": "s4r-supervisor-1.24.5.tar.gz",
-      "sha256": "f03860d9b4525ad35b4a5a195d934b433bdb76f67e5380f052dfbf383127e254",
-      "size": 71187,
+      "version": "1.24.6",
+      "archive": "s4r-supervisor-1.24.6.tar.gz",
+      "sha256": "a7c182528cf8a554d5424c4034a605060ecd9b445a3b12071b05866261b12ab5",
+      "size": 71332,
       "changelog": [
+        {
+          "version": "1.24.6",
+          "changes": [
+            "Critical: reset lastBlowerSpeed after Safe Startup so VPD re-issues blower ON command. Without this, the blower stayed OFF forever after a restart."
+          ]
+        },
         {
           "version": "1.24.5",
           "changes": [

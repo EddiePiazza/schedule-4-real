@@ -2924,11 +2924,15 @@ async function start() {
       }
     }
 
-    // Reset blower
+    // Reset blower. CRITICAL: also reset lastBlowerSpeed so the next VPD evaluation
+    // detects the change from "off" to "wanted speed" and re-sends the command.
+    // Without this, the VPD thinks the blower is still at whatever speed it last set
+    // and never re-issues the command after the Safe Startup forced it OFF.
     if (socketAiModes['blower']) {
       vpdBlowerMinSpeed = 0;
       vpdBlowerMaxSpeed = 0;
       await sendBlowerCommand(0, false);
+      lastBlowerSpeed = 0;
     }
 
     console.log('[SAFETY] Safe startup complete — all AI-controlled devices OFF');

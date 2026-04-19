@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T15:45:32.964Z",
+  "lastCheck": "2026-04-19T15:48:19.621Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.5",
-      "installedAt": "2026-04-19T15:47:35Z"
+      "version": "1.24.6",
+      "installedAt": "2026-04-19T15:51:27Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -463,6 +463,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.5",
+        "changes": [
+          "VPD safety (temp/humi emergency) now overrides user mandatoryOff and blower user-trigger control. Remove spurious OFF actions when logic gates resolve false \u2014 flags are priority signals, not ELSE synthesis."
+        ]
+      },
+      {
         "version": "1.24.4",
         "changes": [
           "VPD audit: day/night leaf offset, extract humi when heater compensates, leaf-VPD emergency trigger, mandatoryOff/On semantics, module triggers restored"
@@ -761,12 +767,6 @@
         "version": "1.9.3",
         "changes": [
           "Reduce update check interval from 2 hours to 10 minutes"
-        ]
-      },
-      {
-        "version": "1.9.2",
-        "changes": [
-          "Fix update-checker not deployed with supervisor updates and appdata sync after web updates"
         ]
       }
     ],
