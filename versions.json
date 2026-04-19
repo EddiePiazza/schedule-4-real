@@ -1,14 +1,27 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T16:01:27Z",
+  "generatedAt": "2026-04-19T19:21:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.116.0",
-      "archive": "s4r-web-1.116.0.tar.gz",
-      "sha256": "0b96ef18aef1bc7cb4d26ec198a7606dac1288174c66efa3c39cd6cd1d1f6516",
-      "size": 11352763,
+      "version": "1.117.0",
+      "archive": "s4r-web-1.117.0.tar.gz",
+      "sha256": "2044821e564dcc33df5313bc9673dfce09ed3b75a9bcb6d91695b5a0f338ac3a",
+      "size": 11364856,
       "changelog": [
+        {
+          "version": "1.117.0",
+          "changes": [
+            "Add ARIA roles to breeding and strains toolbar controls",
+            "Add printable breeder card for keeper plants and top scorers",
+            "Confirm before deleting a saved hunt template",
+            "Log node count and stem diameter in the observation wizard",
+            "Show only the sensors assigned to the active room on its dashboard",
+            "Show skeleton placeholder while lab data loads",
+            "Show node count, stem diameter and localised height in observation timeline",
+            "Replace unsaved-changes browser confirm with in-app dialog"
+          ]
+        },
         {
           "version": "1.116.0",
           "changes": [
@@ -2327,11 +2340,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.6",
-      "archive": "s4r-supervisor-1.24.6.tar.gz",
-      "sha256": "a7c182528cf8a554d5424c4034a605060ecd9b445a3b12071b05866261b12ab5",
-      "size": 71332,
+      "version": "1.24.7",
+      "archive": "s4r-supervisor-1.24.7.tar.gz",
+      "sha256": "edf0c5fdb59c5de0042192aad6921d6f88263db763d08fc603f0655d77cb77c7",
+      "size": 74573,
       "changelog": [
+        {
+          "version": "1.24.7",
+          "changes": [
+            "Trigger system audit: persistent hysteresis across cycles, humi-extraction crash cooldown, empty/NOT logic gate, multi-edge contradiction detection, flow cycle detection, verified retries for all safety-critical commands, anticipatory trend-based cooling"
+          ]
+        },
         {
           "version": "1.24.6",
           "changes": [

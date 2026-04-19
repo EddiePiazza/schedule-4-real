@@ -1,0 +1,1 @@
+const e=[".skeleton[data-v-85df0197]{animation:shimmer-85df0197 1.4s linear infinite;background:linear-gradient(90deg,#37415159,#4b55638c 50%,#37415159);background-size:200% 100%}@keyframes shimmer-85df0197{0%{background-position:100% 0}to{background-position:-100% 0}}@media(prefers-reduced-motion:reduce){.skeleton[data-v-85df0197]{animation:none}}"];export{e as default};

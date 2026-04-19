@@ -236,6 +236,28 @@ let blowerCurveEscalationState = {}; // { curveId: { lastValue, lastCheck, escal
 // even across cycle boundaries. Without this, hysteresis is effectively disabled.
 const persistedConditionState = new Map(); // nodeId -> boolean (was active last cycle)
 
+// Rolling sensor-trend buffer: the last N (timestamp, temp, humi) samples.
+// Used to anticipate emergencies — if temp is rising fast toward the ideal max, we can
+// activate cooling a bit earlier to avoid triggering the strict emergency path.
+const TREND_BUFFER_SIZE = 10;
+const tempTrendBuffer = []; // [{ t, temp, humi }]
+function pushTrendSample(temp, humi) {
+  const now = Date.now();
+  tempTrendBuffer.push({ t: now, temp, humi });
+  while (tempTrendBuffer.length > TREND_BUFFER_SIZE) tempTrendBuffer.shift();
+}
+function computeTrend(field = 'temp', windowMs = 5 * 60 * 1000) {
+  // Returns {delta, perMin} for the given field over up to `windowMs` of history.
+  const now = Date.now();
+  const windowSamples = tempTrendBuffer.filter(s => now - s.t <= windowMs);
+  if (windowSamples.length < 2) return { delta: 0, perMin: 0, samples: windowSamples.length };
+  const first = windowSamples[0];
+  const last = windowSamples[windowSamples.length - 1];
+  const delta = (last[field] ?? 0) - (first[field] ?? 0);
+  const minutes = Math.max(1 / 60, (last.t - first.t) / 60000);
+  return { delta, perMin: delta / minutes, samples: windowSamples.length };
+}
+
 // Timestamp of the last "blower crashed temp while extracting humidity" event.
 // Used to suppress humidity extraction for a cooldown period after the crash so the
 // environment can settle. Without this, the blower can oscillate: extract → crash →
@@ -659,6 +681,8 @@ async function loadFlows() {
       for (const k of persistedConditionState.keys()) {
         if (!activeNodeIds.has(k)) persistedConditionState.delete(k);
       }
+      // Validate the graph: detect cycles (DFS + colouring) and dead actions.
+      validateFlowGraph(flows[0].flow);
       console.log(`[Supervisor] Global automation loaded: ${flows[0].flow.nodes.length} nodes`);
     } else {
       flows = [];
@@ -896,20 +920,82 @@ function evaluateStateCheck(config) {
 }
 
 /**
- * Evaluate a logic gate node (AND/OR)
+ * Validate the flow graph: detect cycles and unreachable nodes.
+ * Logs warnings but does not mutate the flow — the BFS evaluator handles cycles
+ * defensively via visited-set, but users should know if their flow is malformed.
  */
-function evaluateLogicGate(config, inputResults) {
-  const { operator } = config;
+function validateFlowGraph(flow) {
+  const nodes = flow?.nodes || [];
+  const connections = flow?.connections || [];
+  if (nodes.length === 0) return;
 
-  if (!inputResults || inputResults.length === 0) return false;
-
-  if (operator === 'and') {
-    return inputResults.every(r => r === true);
-  } else if (operator === 'or') {
-    return inputResults.some(r => r === true);
+  const adj = new Map();
+  for (const c of connections) {
+    if (!adj.has(c.source)) adj.set(c.source, []);
+    adj.get(c.source).push(c.target);
   }
 
-  return false;
+  // DFS with white/grey/black colouring for cycle detection
+  const color = new Map(); // 0=white, 1=grey (on stack), 2=black
+  const inCycle = new Set();
+  function dfs(u, path) {
+    const s = color.get(u) || 0;
+    if (s === 1) {
+      const idx = path.indexOf(u);
+      const cycle = idx >= 0 ? path.slice(idx).concat(u) : [u];
+      for (const n of cycle) inCycle.add(n);
+      return;
+    }
+    if (s === 2) return;
+    color.set(u, 1);
+    path.push(u);
+    for (const v of (adj.get(u) || [])) dfs(v, path);
+    path.pop();
+    color.set(u, 2);
+  }
+  for (const n of nodes) if (!color.has(n.id)) dfs(n.id, []);
+
+  if (inCycle.size > 0) {
+    console.warn(`[Supervisor] Flow validation: ${inCycle.size} node(s) in cycle — [${[...inCycle].slice(0, 5).join(', ')}${inCycle.size > 5 ? '...' : ''}]. Cycles are not evaluated; fix wiring.`);
+  }
+
+  // Dead action detection: action nodes that can never be reached from any entry point.
+  const hasIncoming = new Set(connections.map(c => c.target));
+  const entries = nodes.filter(n => !hasIncoming.has(n.id)).map(n => n.id);
+  const reachable = new Set();
+  const stack = [...entries];
+  while (stack.length) {
+    const u = stack.pop();
+    if (reachable.has(u)) continue;
+    reachable.add(u);
+    for (const v of (adj.get(u) || [])) if (!reachable.has(v)) stack.push(v);
+  }
+  const orphanActions = nodes.filter(n => n.type === 'action' && !reachable.has(n.id));
+  if (orphanActions.length > 0) {
+    console.warn(`[Supervisor] Flow validation: ${orphanActions.length} orphan action node(s) — [${orphanActions.map(n => `${n.data?.config?.socket}→${n.data?.config?.action}`).join(', ')}]. These actions will never fire.`);
+  }
+}
+
+/**
+ * Evaluate a logic gate node (AND/OR/NOT).
+ *
+ * An unconnected logic gate returns false — safer default for a grow system
+ * (no action happens) than the mathematical identity, which would cause AND
+ * with nothing attached to fire things unexpectedly on an empty flow.
+ *
+ * The operator falls back to AND when unknown so a corrupted flow still produces
+ * deterministic output instead of silently returning false everywhere.
+ */
+function evaluateLogicGate(config, inputResults) {
+  if (!inputResults || inputResults.length === 0) return false;
+  const operator = (config?.operator || 'and').toLowerCase();
+
+  if (operator === 'and') return inputResults.every(r => r === true);
+  if (operator === 'or')  return inputResults.some(r => r === true);
+  if (operator === 'not') return !inputResults.some(r => r === true);
+
+  console.warn(`[Supervisor] Unknown logic operator "${operator}" — falling back to AND`);
+  return inputResults.every(r => r === true);
 }
 
 /**
@@ -1002,18 +1088,28 @@ function evaluateFlow(flow) {
         const incomingConnections = connections.filter(c => c.target === node.id);
         if (incomingConnections.length === 0) break;
 
+        // Aggregate ALL incoming edges (not just first match) so we can detect
+        // contradictory wiring (e.g. THEN-fire + ELSE-fire arriving at the same action).
+        // Multi-edge fan-in semantics is "OR" (any active edge fires the action).
         let anyInputTrue = false;
+        let thenFired = false;
+        let elseFired = false;
         for (const c of incomingConnections) {
           const sourceResult = nodeResults.get(c.source);
           if (sourceResult === undefined) continue;
           const handle = c.sourceHandle;
-          if (handle === 'else' || handle === 'else-top') {
-            if (sourceResult === false) { anyInputTrue = true; break; }
-          } else if (sourceResult === true) {
-            anyInputTrue = true; break;
+          const isElseHandle = handle === 'else' || handle === 'else-top';
+          if (isElseHandle && sourceResult === false) {
+            anyInputTrue = true; elseFired = true;
+          } else if (!isElseHandle && sourceResult === true) {
+            anyInputTrue = true; thenFired = true;
           }
         }
         if (!anyInputTrue) break;
+
+        if (thenFired && elseFired) {
+          console.warn(`[Supervisor] Flow ${flow.name}: action ${node.id} has BOTH a THEN and ELSE edge firing simultaneously — check wiring.`);
+        }
 
         const {
           deviceMac: actionDeviceMac,
@@ -1349,10 +1445,23 @@ async function executeActions(actions) {
       continue;
     }
 
-    // Execute command (deviceMac can be null for backward compatibility)
-    // Use verified (retry) version for safety-critical OFF commands: cycle transitions and emergencies
-    const isCriticalOff = targetAction === 'off' && reason && (reason.includes('cycle transition') || reason.includes('EMERGENCY') || reason.includes('SAFETY'));
-    const success = isCriticalOff
+    // Execute command. Use the verified (retry-until-confirmed) path for any action
+    // that the system considers safety-critical, so a silently-dropped MQTT message
+    // cannot leave a dangerous device in the wrong state:
+    //  - OFF commands with VPD/cycle-transition/EMERGENCY/SAFETY reason (system safety)
+    //  - any action with mandatoryOff (user-declared brake)
+    //  - any action carrying mandatoryOn on an ON command (user-declared priority)
+    //  - safety timeout forced OFFs (action.mandatoryOff is already set upstream)
+    const reasonSafety = reason && (
+      reason.includes('cycle transition')
+      || reason.includes('EMERGENCY')
+      || reason.includes('SAFETY')
+      || reason.startsWith('VPD:')
+    );
+    const isSafetyCritical = (targetAction === 'off' && reasonSafety)
+      || action.mandatoryOff === true
+      || (action.mandatoryOn === true && targetAction === 'on');
+    const success = isSafetyCritical
       ? await sendSocketCommandVerified(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed })
       : await sendSocketCommand(deviceMac, socket, targetAction, { moduleSpeedMode, moduleSpeed });
 
@@ -1405,6 +1514,9 @@ function evaluateVpdIntelligent() {
   const temp = sensorValues.temp;
   const humi = sensorValues.humi;
   if (temp == null || humi == null) return [];
+
+  // Feed the trend buffer so anticipatory logic below has recent history.
+  pushTrendSample(temp, humi);
 
   const currentVpd = calculateLeafVpd(temp, humi);
   if (currentVpd == null || currentVpd <= 0) return [];
@@ -1573,9 +1685,21 @@ function evaluateVpdIntelligent() {
   // the tempLow nor the humiHigh flags trip. Force action when leaf VPD is too low.
   const leafVpdCritical = currentVpd > 0 && currentVpd < (targetMin - 0.15);
 
+  // ── Anticipatory cooling ──
+  // Detect fast-rising temperatures so we can start cooling BEFORE reaching the limit.
+  // Rationale: mechanical response is not instant; if temp is climbing at ≥ 0.3°C/min
+  // and we're within 0.5°C of idealMax, start cooling now. This avoids the emergency
+  // path and reduces big on/off oscillations.
+  const tempTrend = computeTrend('temp', 5 * 60 * 1000); // Δ per minute over last 5 min
+  const tempRisingFast = tempTrend.samples >= 3
+    && tempTrend.perMin >= 0.3
+    && temp >= idealTemp.max - 0.5;
+
   // Activation conditions (first trigger — require exceeding hysteresis threshold)
   // tempEmergency bypasses heater grace — safety takes priority over preventing oscillation
-  const tempHigh = temp > tempHighThreshold && (!heaterRecentlyOff || tempEmergency); // Suppress cooling during heater grace (unless emergency)
+  // tempRisingFast pre-activates cooling before crossing the hard threshold.
+  const tempHigh = (temp > tempHighThreshold || tempRisingFast)
+    && (!heaterRecentlyOff || tempEmergency); // Suppress cooling during heater grace (unless emergency)
   const tempLow = temp < tempLowThreshold;
   const humiLow = humi < humiLowThreshold;
   // Leaf VPD critical → escalate humidity as if it were high (even inside the +4% hysteresis).
@@ -1595,7 +1719,8 @@ function evaluateVpdIntelligent() {
   const logKey = `${curState}|${graceFlags}|${humiEmergency ? 'hE' : ''}${tempEmergency ? 'tE' : ''}|${currentVpd.toFixed(1)}|${temp.toFixed(0)}|${Math.round(humi/2)}`;
   if (logKey !== lastVpdLogKey) {
     lastVpdLogKey = logKey;
-    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${tempEmergency ? ' TEMP_EMERG' : ''}${humiEmergency ? ' HUMI_EMERG' : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}`);
+    const anticFlag = tempRisingFast ? ` TREND+${tempTrend.perMin.toFixed(2)}/min` : '';
+    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${tempEmergency ? ' TEMP_EMERG' : ''}${humiEmergency ? ' HUMI_EMERG' : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}${anticFlag}`);
   }
 
   // Track condition changes for escalation reset
@@ -2404,11 +2529,30 @@ async function processSensorData(sensorData, deviceMac) {
     }
   }
 
-  // Deduplicate flow actions (key is device:socket for multi-device)
+  // Merge flow actions with explicit conflict detection.
+  // If two user flows produce OPPOSITE actions (ON vs OFF) on the same socket, mandatoryOff
+  // wins; otherwise mandatoryOn wins; otherwise OFF wins (safer default for contradictions).
+  // Pure duplicates (same action) are collapsed silently. Contradictions are logged.
   const actionMap = new Map();
   for (const action of allActions) {
     const key = action.deviceMac ? `${action.deviceMac}:${action.socket}` : action.socket;
-    actionMap.set(key, action);
+    const existing = actionMap.get(key);
+    if (!existing) { actionMap.set(key, action); continue; }
+    if (existing.action === action.action) { continue; /* duplicate, keep first */ }
+    // Contradiction — choose winner by priority
+    const chooseMandatoryOff = existing.mandatoryOff && !action.mandatoryOff ? existing
+      : (!existing.mandatoryOff && action.mandatoryOff ? action : null);
+    const chooseMandatoryOn = existing.mandatoryOn && !action.mandatoryOn ? existing
+      : (!existing.mandatoryOn && action.mandatoryOn ? action : null);
+    let winner;
+    let tieBreak;
+    if (chooseMandatoryOff) { winner = chooseMandatoryOff; tieBreak = 'mandatoryOff'; }
+    else if (chooseMandatoryOn) { winner = chooseMandatoryOn; tieBreak = 'mandatoryOn'; }
+    else if (existing.action === 'off') { winner = existing; tieBreak = 'OFF safer default'; }
+    else if (action.action === 'off')   { winner = action;   tieBreak = 'OFF safer default'; }
+    else                                 { winner = existing; tieBreak = 'first-wins'; }
+    console.warn(`[Supervisor] Contradictory flow actions for ${key}: "${existing.action}" (${existing.reason}) vs "${action.action}" (${action.reason}) — winner: "${winner.action}" [${tieBreak}]`);
+    actionMap.set(key, winner);
   }
 
   // Evaluate VPD intelligent auto-calibration
