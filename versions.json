@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-17T19:51:00Z",
+  "generatedAt": "2026-04-19T10:35:15Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.115.1",
-      "archive": "s4r-web-1.115.1.tar.gz",
-      "sha256": "1781d478c4a7c78f806f3b443f9fa9b4bc4ce7d3d9164ccd2345d94e467307a8",
-      "size": 11280559,
+      "version": "1.115.2",
+      "archive": "s4r-web-1.115.2.tar.gz",
+      "sha256": "e079f6dc1a3f0904e6a797ce6b3900ebb3966ead1e5b7912a58f1bd58535448f",
+      "size": 11280827,
       "changelog": [
+        {
+          "version": "1.115.2",
+          "changes": [
+            "Leaf VPD uses 1.0\u00b0C offset at night (lights off) instead of the 2.8\u00b0C day value"
+          ]
+        },
         {
           "version": "1.115.1",
           "changes": [
@@ -2298,11 +2304,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.3",
-      "archive": "s4r-supervisor-1.24.3.tar.gz",
-      "sha256": "6616755cf0bd8c188a9d9dfe2e1a676e793d06e98350640e25716a118f427d4c",
-      "size": 69288,
+      "version": "1.24.4",
+      "archive": "s4r-supervisor-1.24.4.tar.gz",
+      "sha256": "19bf77b1c16a3afd1d39f7d29ceafef62d1a6179053e0e41db37abe59faaaafd",
+      "size": 70874,
       "changelog": [
+        {
+          "version": "1.24.4",
+          "changes": [
+            "VPD audit: day/night leaf offset, extract humi when heater compensates, leaf-VPD emergency trigger, mandatoryOff/On semantics, module triggers restored"
+          ]
+        },
         {
           "version": "1.24.3",
           "changes": [

@@ -136,7 +136,20 @@ function enforceSafetyTimeouts() {
   return forceOffActions;
 }
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
-const LEAF_TEMP_OFFSET = 2.8; // Leaf temp ~2.8°C below air temp (LED high power, DimLux standard)
+// Leaf temperature offset below air temperature, depends on lighting:
+//   DAY:   2.8°C (LED high power — hot leaves via radiation, DimLux standard)
+//   NIGHT: 1.0°C (lights off — leaves barely cooler than air, mostly transpiration)
+// Night VPD rises fast if we keep using the day offset → system triggers false extraction.
+const LEAF_TEMP_OFFSET_DAY = 2.8;
+const LEAF_TEMP_OFFSET_NIGHT = 1.0;
+const LEAF_TEMP_OFFSET = LEAF_TEMP_OFFSET_DAY; // Kept for backward-compat callers; see getLeafOffset()
+function getLeafOffset() {
+  try {
+    return getCurrentPeriod() === 'day' ? LEAF_TEMP_OFFSET_DAY : LEAF_TEMP_OFFSET_NIGHT;
+  } catch {
+    return LEAF_TEMP_OFFSET_DAY;
+  }
+}
 
 // Activation hysteresis — dead band to prevent oscillation
 // Devices activate when EXCEEDING target + hysteresis, deactivate at target (no hysteresis)
@@ -902,7 +915,6 @@ function evaluateFlow(flow) {
 
   // Track evaluation results
   const nodeResults = new Map();
-  const mandatoryConditions = new Map(); // socket -> [condition results]
 
   // BFS evaluation
   const queue = [...entryNodes];
@@ -920,22 +932,6 @@ function evaluateFlow(flow) {
         const wasActive = nodeResults.get(`${node.id}:active`) || false;
         result = evaluateCondition(node.data.config, wasActive);
         nodeResults.set(`${node.id}:active`, result); // Track for next evaluation
-
-        // Track mandatory status
-        if (node.data.config.mandatory) {
-          // Find connected action nodes
-          const connected = adjacencyList.get(node.id) || [];
-          for (const targetId of connected) {
-            const targetNode = nodes.find(n => n.id === targetId);
-            if (targetNode?.type === 'action') {
-              const socket = targetNode.data.config.socket;
-              if (!mandatoryConditions.has(socket)) {
-                mandatoryConditions.set(socket, []);
-              }
-              mandatoryConditions.get(socket).push(result);
-            }
-          }
-        }
         break;
 
       case 'schedule':
@@ -972,51 +968,105 @@ function evaluateFlow(flow) {
         // Logic nodes have THEN (sourceHandle='then') and ELSE (sourceHandle='else'/'else-top') outputs.
         // THEN fires when logic result is true, ELSE fires when logic result is false.
         const incomingConnections = connections.filter(c => c.target === node.id);
-        const anyInputTrue = incomingConnections.some(c => {
+        if (incomingConnections.length === 0) break; // Disconnected action — ignore
+
+        // Determine whether the upstream gate resolved to true / false.
+        // At least one "active" incoming edge (respecting the sourceHandle then/else semantics)
+        // means the action should fire. We also track whether the upstream chain produced a
+        // clear FALSE so we can apply mandatoryOff semantics.
+        let anyInputTrue = false;
+        let anyInputResolvedFalse = false;
+        for (const c of incomingConnections) {
           const sourceResult = nodeResults.get(c.source);
           const handle = c.sourceHandle;
+          if (sourceResult === undefined) continue;
           if (handle === 'else' || handle === 'else-top') {
-            // ELSE handle: fires when source result is FALSE
-            return sourceResult === false;
+            if (sourceResult === false) anyInputTrue = true;
+            else if (sourceResult === true) anyInputResolvedFalse = true;
+          } else {
+            // THEN handle or no handle (default): fires when source result is TRUE
+            if (sourceResult === true) anyInputTrue = true;
+            else if (sourceResult === false) anyInputResolvedFalse = true;
           }
-          // THEN handle or no handle (default): fires when source result is TRUE
-          return sourceResult === true;
-        });
+        }
 
-        const { deviceMac: actionDeviceMac, socket, action: configuredAction, moduleSpeedMode, moduleSpeed } = node.data.config;
+        const {
+          deviceMac: actionDeviceMac,
+          socket,
+          action: configuredAction,
+          moduleSpeedMode,
+          moduleSpeed,
+          mandatoryOn: actionMandatoryOn,
+          mandatoryOff: actionMandatoryOff
+        } = node.data.config;
+
+        // Inherit mandatoryOn/mandatoryOff from the nearest upstream logic/condition node
+        // (users often configure it at the logic level rather than on every action).
+        let inheritedMandatoryOn = false;
+        let inheritedMandatoryOff = false;
+        for (const c of incomingConnections) {
+          const sourceNode = nodes.find(n => n.id === c.source);
+          if (!sourceNode) continue;
+          const scfg = sourceNode.data?.config || {};
+          if (scfg.mandatoryOn) inheritedMandatoryOn = true;
+          if (scfg.mandatoryOff) inheritedMandatoryOff = true;
+        }
+        const mandatoryOn = !!(actionMandatoryOn || inheritedMandatoryOn);
+        const mandatoryOff = !!(actionMandatoryOff || inheritedMandatoryOff);
+
+        // Build reason from connected conditions
+        const reasons = [];
+        for (const conn of incomingConnections) {
+          const sourceNode = nodes.find(n => n.id === conn.source);
+          if (sourceNode?.type === 'condition') {
+            const cfg = sourceNode.data.config;
+            const sensorVals = getSensorValues(cfg.deviceMac);
+            const val = sensorVals[cfg.sensor];
+            const slot = Array.isArray(cfg.timeSlots) ? cfg.timeSlots[0] : null;
+            const op = slot?.operator ?? cfg.operator ?? '?';
+            const tgt = slot?.value ?? cfg.value ?? '?';
+            reasons.push(`${cfg.sensor} ${op} ${tgt} (actual: ${val})`);
+          }
+        }
+        const reasonText = reasons.join(', ') || 'Condition met';
 
         if (anyInputTrue) {
           // Condition met → execute the configured action (ON or OFF)
-
-          // Check mandatory conditions
-          const mandatoryKey = actionDeviceMac ? `${actionDeviceMac}:${socket}` : socket;
-          const mandatories = mandatoryConditions.get(mandatoryKey) || mandatoryConditions.get(socket);
-          if (mandatories && mandatories.length > 0) {
-            const allMandatoriesMet = mandatories.every(m => m === true);
-            if (!allMandatoriesMet) {
-              console.log(`[Supervisor] Mandatory conditions not met for ${mandatoryKey}, forcing OFF`);
-              actions.push({ deviceMac: actionDeviceMac, socket, action: 'off', reason: 'Mandatory condition not met' });
-              break;
-            }
+          actions.push({
+            deviceMac: actionDeviceMac,
+            socket,
+            action: configuredAction,
+            moduleSpeedMode,
+            moduleSpeed,
+            mandatoryOn,
+            mandatoryOff,
+            reason: reasonText
+          });
+        } else if (anyInputResolvedFalse) {
+          // Condition failed → apply mandatory semantics if configured.
+          //   mandatoryOff on an ON action  → force OFF when condition is false.
+          //   mandatoryOn  on an OFF action → force ON  when condition is false.
+          // Without these flags, no action is generated (user must wire an ELSE edge).
+          if (mandatoryOff && configuredAction === 'on') {
+            actions.push({
+              deviceMac: actionDeviceMac,
+              socket,
+              action: 'off',
+              mandatoryOff: true,
+              reason: `Mandatory OFF (condition not met: ${reasonText})`
+            });
+          } else if (mandatoryOn && configuredAction === 'off') {
+            actions.push({
+              deviceMac: actionDeviceMac,
+              socket,
+              action: 'on',
+              mandatoryOn: true,
+              moduleSpeedMode,
+              moduleSpeed,
+              reason: `Mandatory ON (condition not met: ${reasonText})`
+            });
           }
-
-          // Build reason from connected conditions
-          const reasons = [];
-          for (const conn of incomingConnections) {
-            const sourceNode = nodes.find(n => n.id === conn.source);
-            if (sourceNode?.type === 'condition') {
-              const cfg = sourceNode.data.config;
-              const sensorVals = getSensorValues(cfg.deviceMac);
-              const val = sensorVals[cfg.sensor];
-              reasons.push(`${cfg.sensor} ${cfg.operator} ${cfg.value} (actual: ${val})`);
-            }
-          }
-
-          actions.push({ deviceMac: actionDeviceMac, socket, action: configuredAction, moduleSpeedMode, moduleSpeed, reason: reasons.join(', ') || 'Condition met' });
         }
-        // When condition is FALSE: no action generated. The user must explicitly
-        // connect an ELSE action if they want the reverse behavior.
-        // The UI auto-creates an ELSE node with the opposite action to help.
         break;
     }
 
@@ -1260,15 +1310,22 @@ async function executeActions(actions) {
     const actionKey = deviceMac ? `${deviceMac}:${socket}` : socket;
     const lastTime = lastActionTimes[actionKey] || 0;
 
-    // SAFETY: Only execute if the socket is in AI/trigger mode.
-    // Prevents triggers from overriding devices in Environment/TimeSlot modes
-    // that the user set manually. VPD and SAFETY actions bypass this check.
+    // SAFETY check: only execute if we're authorized to control this socket.
+    //  - VPD / SAFETY / cycle-transition actions: always execute (validated upstream).
+    //  - Climate modules (blower, fan, heater, humidifier, dehumidifier): always execute
+    //    when the user explicitly targeted them in a trigger action. There's no user-set
+    //    firmware mode to protect for modules — the user wouldn't have added them to a
+    //    trigger unless they wanted the trigger to control them.
+    //  - Outlets (O1-O10): require the socket to be in AI/trigger mode. Prevents a
+    //    forgotten/old trigger from overriding an outlet the user put in Environment or
+    //    TimeSlot mode manually.
+    //  - mandatoryOff/mandatoryOn actions: always execute (explicit user intent).
     const isVpdOrSafety = reason && (reason.startsWith('VPD:') || reason.includes('SAFETY') || reason.includes('cycle transition'));
+    const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(socket);
     const aiModeKey = deviceMac ? `${deviceMac}:${socket}` : socket;
-    if (!isVpdOrSafety && !action.mandatoryOff && !action.mandatoryOn) {
-      if (!socketAiModes[aiModeKey] && !socketAiModes[socket]) {
-        continue; // Socket not in AI mode — don't touch it
-      }
+    const authorizedOutlet = socketAiModes[aiModeKey] || socketAiModes[socket];
+    if (!isVpdOrSafety && !isModule && !action.mandatoryOff && !action.mandatoryOn && !authorizedOutlet) {
+      continue; // Outlet not in AI mode — don't touch the user's manual config
     }
 
     // Get current state from device-specific storage or legacy
@@ -1422,6 +1479,18 @@ function evaluateVpdIntelligent() {
     const elapsed = now - cycleTransitionTime;
     const sinceLastCheck = now - cycleTransitionLastCheck;
 
+    // ── Emergency override: if temp or humi drift into danger during grace,
+    // bail out of grace immediately and resume normal control. Grace is a
+    // convenience for smooth transitions, not a safety lock.
+    const earlyTempEmerg = temp > (vpdNodeConfig.idealDayTemp?.max || 26) + 1.5
+      || temp > (vpdNodeConfig.idealNightTemp?.max || 23) + 1.5;
+    const earlyHumiEmerg = humi > 85;
+    if (earlyTempEmerg || earlyHumiEmerg) {
+      cycleTransitionGraceActive = false;
+      console.log(`[VPD] Cycle transition: EMERGENCY override (temp=${temp.toFixed(1)}°C, humi=${humi.toFixed(0)}%) — grace aborted, resuming control`);
+      vpdBlowerMaxSpeed = 100;
+    }
+
     if (elapsed >= CYCLE_TRANSITION_GRACE_MS) {
       cycleTransitionGraceActive = false;
       console.log(`[VPD] Cycle transition grace ended (${(elapsed / 60000).toFixed(0)}min elapsed) — resuming control with ${currentPeriod} parameters`);
@@ -1461,7 +1530,7 @@ function evaluateVpdIntelligent() {
   // Calculate ideal humidity from VPD target at CURRENT temperature
   // Leaf VPD = SVP(T_leaf) - SVP(T_air) × (RH/100)
   // → RH = (SVP(T_leaf) - VPD) / SVP(T_air) × 100
-  const leafTemp = temp - LEAF_TEMP_OFFSET;
+  const leafTemp = temp - getLeafOffset();
   const svpLeaf = svp(leafTemp);
   const svpAir = svp(temp);
   const idealHumiMax = Math.min(90, (svpLeaf - targetMin) / svpAir * 100); // low VPD → high humi limit
@@ -1496,12 +1565,20 @@ function evaluateVpdIntelligent() {
   // Without this, heater thermal inertia could push temp 2-3°C above max with no cooling response
   const tempEmergency = temp > idealTemp.max + 1.5;
 
+  // ── LEAF VPD GUARD ──
+  // Even if humi is within the humiHigh tolerance (idealHumiMax + 4%), the leaf VPD
+  // may already be critically below target. Classic case: temp slightly below idealMin
+  // + humi slightly above idealMax → leaf VPD in red zone (mold risk), but neither
+  // the tempLow nor the humiHigh flags trip. Force action when leaf VPD is too low.
+  const leafVpdCritical = currentVpd > 0 && currentVpd < (targetMin - 0.15);
+
   // Activation conditions (first trigger — require exceeding hysteresis threshold)
   // tempEmergency bypasses heater grace — safety takes priority over preventing oscillation
   const tempHigh = temp > tempHighThreshold && (!heaterRecentlyOff || tempEmergency); // Suppress cooling during heater grace (unless emergency)
   const tempLow = temp < tempLowThreshold;
   const humiLow = humi < humiLowThreshold;
-  const humiHigh = humi > humiHighThreshold;
+  // Leaf VPD critical → escalate humidity as if it were high (even inside the +4% hysteresis).
+  const humiHigh = humi > humiHighThreshold || (leafVpdCritical && humi > idealHumiMax);
 
   // Continuation flags — already-active devices keep running until reaching target (no hysteresis on deactivation)
   const coolingActive = !!vpdEscalationState.roles['extractor_temp'];
@@ -1882,6 +1959,12 @@ function evaluateVpdIntelligent() {
   } else if (tempLow && !heaterSuppressedByCoolingGrace) {
     activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C`);
     deactivateSocketRole('cooler', 'Temp too low');
+  } else if (leafVpdCritical && temp < idealTemp.min && !heaterSuppressedByCoolingGrace) {
+    // Leaf VPD critical AND temp below idealMin (but not yet below heat threshold with hysteresis).
+    // Raising temp raises leaf VPD. This closes the dead band where temp was just below ideal
+    // and humi just above ideal, leaving leaf VPD critical but neither threshold tripped.
+    activateSocketRole('heater', `Leaf VPD ${currentVpd.toFixed(2)} critical (<${(targetMin - 0.15).toFixed(2)}) — raise temp ${temp.toFixed(1)}°C toward ${idealTemp.min}°C`);
+    deactivateSocketRole('cooler', 'Temp too low');
   } else if (tempReachedMin && isRoleActive('heater')) {
     // Heater heated room to bottom of range — turn off BEFORE entering range
     deactivateSocketRole('heater', `Temp ${temp.toFixed(1)}°C reached ideal min ${idealTemp.min}°C — stopping to prevent overshoot`);
@@ -1957,8 +2040,17 @@ function evaluateVpdIntelligent() {
 
     // Temperature safety: blower for humidity extraction would COOL the room.
     // Don't fire it if temp is already near/below idealTemp.min — that would trigger the heater.
-    // Exception: humiEmergency overrides safety (critically high humidity).
-    const tempSafeForBlower = temp > idealTemp.min + 0.5 || humiEmergency;
+    // Exceptions:
+    //  - humiEmergency (critically high humi) overrides safety.
+    //  - leafVpdCritical (mold risk) overrides safety — must act.
+    //  - heater role assigned: Rule 5 will activate heater to compensate, so we can
+    //    safely run the extractor even when temp is marginal. Without this exception,
+    //    the system freezes with high humi + marginal temp (leaf VPD crashes).
+    const hasHeaterRole = !!getRoleAssignment('heater');
+    const tempSafeForBlower = temp > idealTemp.min + 0.5
+      || humiEmergency
+      || leafVpdCritical
+      || (hasHeaterRole && temp > idealTemp.min - 1.5); // heater compensates — safe unless temp is far below min
 
     if (dehumExhausted && !blowerCrashingTemp && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
       if (extIsBlower) {
@@ -2653,14 +2745,15 @@ function getSensorValues(deviceMac) {
 }
 
 /**
- * Calculate Leaf VPD from air temp and humidity
+ * Calculate Leaf VPD from air temp and humidity.
  * Formula: SVP(T_leaf) - SVP(T_air) × (RH/100)
- * where T_leaf = T_air - LEAF_TEMP_OFFSET
+ * where T_leaf = T_air - offset. Offset is day/night aware so nighttime
+ * (lights off) doesn't get penalised by the high-LED day offset.
  */
 function calculateLeafVpd(airTemp, humi) {
   if (airTemp == null || humi == null) return null;
   const svp = (t) => 0.6108 * Math.exp((17.27 * t) / (t + 237.3));
-  const leafTemp = airTemp - LEAF_TEMP_OFFSET;
+  const leafTemp = airTemp - getLeafOffset();
   return svp(leafTemp) - svp(airTemp) * (humi / 100);
 }
 
