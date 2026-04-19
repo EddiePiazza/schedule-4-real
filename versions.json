@@ -1,14 +1,37 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T15:51:27Z",
+  "generatedAt": "2026-04-19T16:01:27Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.115.2",
-      "archive": "s4r-web-1.115.2.tar.gz",
-      "sha256": "e079f6dc1a3f0904e6a797ce6b3900ebb3966ead1e5b7912a58f1bd58535448f",
-      "size": 11280827,
+      "version": "1.116.0",
+      "archive": "s4r-web-1.116.0.tar.gz",
+      "sha256": "0b96ef18aef1bc7cb4d26ec198a7606dac1288174c66efa3c39cd6cd1d1f6516",
+      "size": 11352763,
       "changelog": [
+        {
+          "version": "1.116.0",
+          "changes": [
+            "Validate lab API payloads with clear error messages",
+            "Preserve deleted harvests and pollen during strain cascade",
+            "Surface clone rooting milestones from real observations",
+            "Show inbreeding coefficient on offspring in genetic tree",
+            "Add CSV and JSON export of lab records from settings",
+            "Add 2-week and 4-week cure checkpoints to hunt timeline",
+            "Add dry and cure timeline with weight log and burp schedule",
+            "Display plant height in preferred unit in pheno comparison",
+            "Lazy-load heavy lab wizards and tab panels",
+            "Trap focus and restore it when closing lab modals",
+            "Estimate pollen viability decay and prompt re-testing",
+            "Add recycle bin to restore deleted strains, plants and harvests",
+            "Replace browser alerts and confirms with in-app dialogs",
+            "Assign sensors, lights and climate modules per grow room",
+            "Confirm backward stage transitions before saving",
+            "Add structured 15-terpene intensity profile to scoring wizard",
+            "Record transplant date when training event logs up-potting",
+            "Skip tutorial steps when the target element is missing"
+          ]
+        },
         {
           "version": "1.115.2",
           "changes": [
@@ -2764,11 +2787,18 @@
       ]
     },
     "schema": {
-      "version": "11",
-      "archive": "s4r-schema-11.tar.gz",
-      "sha256": "f4cd654ad288dd5e67ed708538a5eb7bffd00154aa4f13f13212657ccfe745d8",
-      "size": 7611,
+      "version": "12",
+      "archive": "s4r-schema-12.tar.gz",
+      "sha256": "093722fe1c7b35c70f65387f39da9163e5c5803ab8384dde3b1fe8789cf588d6",
+      "size": 7720,
       "changelog": [
+        {
+          "version": "12",
+          "changes": [
+            "Add cure_log column to harvests for drying timeline",
+            "Add is_deleted column to harvests and pollen tables"
+          ]
+        },
         {
           "version": "11",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T15:48:19.621Z",
+  "lastCheck": "2026-04-19T15:52:10.909Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 11,
+  "schemaVersion": 12,
   "components": {
     "web": {
-      "version": "1.115.2",
-      "installedAt": "2026-04-19T10:35:15Z"
+      "version": "1.116.0",
+      "installedAt": "2026-04-19T16:01:27Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "11",
-      "installedAt": "2026-04-06T16:19:23Z"
+      "version": "12",
+      "installedAt": "2026-04-19T16:01:27Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -463,6 +463,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.6",
+        "changes": [
+          "Critical: reset lastBlowerSpeed after Safe Startup so VPD re-issues blower ON command. Without this, the blower stayed OFF forever after a restart."
+        ]
+      },
+      {
         "version": "1.24.5",
         "changes": [
           "VPD safety (temp/humi emergency) now overrides user mandatoryOff and blower user-trigger control. Remove spurious OFF actions when logic gates resolve false \u2014 flags are priority signals, not ELSE synthesis."
@@ -761,12 +767,6 @@
         "version": "1.9.4",
         "changes": [
           "Fix supervisor self-update hanging by saving state before restart and adding 2-minute timeout"
-        ]
-      },
-      {
-        "version": "1.9.3",
-        "changes": [
-          "Reduce update check interval from 2 hours to 10 minutes"
         ]
       }
     ],

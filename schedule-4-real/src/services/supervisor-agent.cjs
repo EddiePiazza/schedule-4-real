@@ -229,6 +229,19 @@ let cycleTransitionDirection = '';    // 'cooling' (day→night) or 'warming' (n
 // Blower Curve Control State
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
 let blowerCurveEscalationState = {}; // { curveId: { lastValue, lastCheck, escalationBoost } }
+
+// Persisted per-node condition state (survives across evaluation cycles).
+// Used so that condition nodes can implement hysteresis: once active with hysteresis,
+// the condition stays active until the sensor crosses the (target ± hysteresis) boundary,
+// even across cycle boundaries. Without this, hysteresis is effectively disabled.
+const persistedConditionState = new Map(); // nodeId -> boolean (was active last cycle)
+
+// Timestamp of the last "blower crashed temp while extracting humidity" event.
+// Used to suppress humidity extraction for a cooldown period after the crash so the
+// environment can settle. Without this, the blower can oscillate: extract → crash →
+// stop → humi rises → extract → crash again → infinite loop.
+let lastHumiExtractionCrashTime = 0;
+const HUMI_EXTRACTION_CRASH_COOLDOWN_MS = 5 * 60 * 1000; // 5 min — let heater + dehumidifier work first
 let lastBlowerSpeed = null; // Last commanded speed to avoid redundant commands
 
 // Calibration lock — when running, supervisor skips all trigger/blower evaluation
@@ -641,9 +654,15 @@ async function loadFlows() {
         enabled: row.enabled === 1,
         flow: JSON.parse(row.flow_json || '{"nodes":[],"connections":[]}')
       }];
+      // Prune persisted condition state for nodes that no longer exist in the flow
+      const activeNodeIds = new Set(flows[0].flow.nodes.map(n => n.id));
+      for (const k of persistedConditionState.keys()) {
+        if (!activeNodeIds.has(k)) persistedConditionState.delete(k);
+      }
       console.log(`[Supervisor] Global automation loaded: ${flows[0].flow.nodes.length} nodes`);
     } else {
       flows = [];
+      persistedConditionState.clear();
       console.log('[Supervisor] Global automation disabled or not found');
     }
   } catch (err) {
@@ -929,9 +948,13 @@ function evaluateFlow(flow) {
 
     switch (node.type) {
       case 'condition':
-        const wasActive = nodeResults.get(`${node.id}:active`) || false;
+        // Hysteresis needs the condition's active state from the PREVIOUS evaluation cycle,
+        // not from earlier in the same cycle. We store it in the module-level
+        // `persistedConditionState` map so it survives across evaluations.
+        const wasActive = !!persistedConditionState.get(node.id);
         result = evaluateCondition(node.data.config, wasActive);
-        nodeResults.set(`${node.id}:active`, result); // Track for next evaluation
+        persistedConditionState.set(node.id, result);
+        nodeResults.set(`${node.id}:active`, result);
         break;
 
       case 'schedule':
@@ -1993,6 +2016,9 @@ function evaluateVpdIntelligent() {
 
     if (blowerCrashingTemp) {
       console.log(`[VPD] SUBSTITUTION: blower crashing temp (${temp.toFixed(1)}°C < ${(idealTemp.min + 0.5).toFixed(1)}°C) — switching to dehumidifier-only for humidity`);
+      // Record crash timestamp so we don't immediately reactivate on the next cycle
+      // (without this, the blower enters an extract→crash→stop→extract oscillation).
+      lastHumiExtractionCrashTime = now;
       // Start cooling grace: blower was extracting and dropped temp, same logic applies
       if (!lastCoolingStopTime) {
         lastCoolingStopTime = now;
@@ -2030,7 +2056,16 @@ function evaluateVpdIntelligent() {
       || leafVpdCritical
       || (hasHeaterRole && temp > idealTemp.min - 1.5); // heater compensates — safe unless temp is far below min
 
-    if (dehumExhausted && !blowerCrashingTemp && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
+    // Anti-oscillation: after a "blower crashing temp" event, suppress reactivation for a
+    // cooldown window so the heater / dehumidifier can work. humiEmergency still overrides.
+    const crashCooldownActive = lastHumiExtractionCrashTime > 0
+      && (now - lastHumiExtractionCrashTime) < HUMI_EXTRACTION_CRASH_COOLDOWN_MS
+      && !humiEmergency;
+    if (crashCooldownActive && curState !== prevState) {
+      console.log(`[VPD] Humi extraction cooldown active (${Math.round((HUMI_EXTRACTION_CRASH_COOLDOWN_MS - (now - lastHumiExtractionCrashTime)) / 60000)}min remaining) — skipping reactivation`);
+    }
+
+    if (!crashCooldownActive && dehumExhausted && !blowerCrashingTemp && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
       if (extIsBlower) {
         newBlowerCeiling = 100;
         const humiExcess = humi - idealHumiMax;
