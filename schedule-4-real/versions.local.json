@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T19:52:08.179Z",
+  "lastCheck": "2026-04-19T22:51:28.455Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.118.0",
-      "installedAt": "2026-04-19T19:59:22Z"
+      "version": "1.119.0",
+      "installedAt": "2026-04-19T22:59:46Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "12",
-      "installedAt": "2026-04-19T16:01:27Z"
+      "version": "13",
+      "installedAt": "2026-04-19T22:59:46Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.118.0",
+        "changes": [
+          "AI Assistant upgrade: 30 categorised preset prompts, 11 new context tools (flow audit, power summary, lab summary, system health, anomalies, safety status, period comparison, AI memory), live snapshot in prompt, smarter autonomous loop with memory",
+          "Fix scoring thresholds and add overdue, pollen-decay, harvest-window insights",
+          "Stack difficulty and sex pickers on narrow mobile screens",
+          "Track runoff EC, pH and volume in watering observations",
+          "Log trichome maturity percentages with harvest-window hint",
+          "Show trichome distribution and runoff readings on the timeline"
+        ]
+      },
       {
         "version": "1.117.0",
         "changes": [
@@ -370,12 +381,6 @@
         "version": "1.98.1",
         "changes": [
           "Detect fan/blower/heater capabilities from actual device status, not just device type (fixes PS10 master mode)"
-        ]
-      },
-      {
-        "version": "1.98.0",
-        "changes": [
-          "Dynamic socket selectors in triggers supporting all devices (PS5, PS10), custom names, and climate modules"
         ]
       }
     ],

@@ -1262,6 +1262,58 @@ const tables = [
         updated_by SYMBOL
       ) TIMESTAMP(timestamp) PARTITION BY MONTH;
     `
+  },
+
+  // AI long-term memory: structured facts the assistant remembers across sessions.
+  // Categories: 'user_pref', 'grow_context', 'lesson_learned', 'recurring_issue', 'custom'.
+  // Rows are append-only; a memory is "forgotten" by inserting the same key with is_deleted=1.
+  {
+    name: 'ai_memory',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ai_memory (
+        timestamp TIMESTAMP,
+        category SYMBOL,
+        key SYMBOL,
+        value STRING,
+        weight INT,
+        is_deleted INT
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // AI-scheduled reminders / follow-ups. When due_at <= now and status='pending',
+  // the autonomous loop processes it and surfaces a notification.
+  {
+    name: 'ai_reminders',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ai_reminders (
+        timestamp TIMESTAMP,
+        reminder_id SYMBOL,
+        due_at TIMESTAMP,
+        topic STRING,
+        context STRING,
+        status SYMBOL
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
+  },
+
+  // AI trigger-scheme proposals. When the assistant designs a multi-node automation
+  // (safety scheme, irrigation scheme, etc.) it stores the draft here instead of
+  // writing to automation_flows directly. The UI surfaces a modal with Save/Cancel;
+  // only "apply" merges the proposed nodes into the live flow.
+  {
+    name: 'ai_proposals',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ai_proposals (
+        timestamp TIMESTAMP,
+        proposal_id SYMBOL,
+        title STRING,
+        description STRING,
+        nodes_json STRING,
+        connections_json STRING,
+        status SYMBOL
+      ) TIMESTAMP(timestamp) PARTITION BY MONTH;
+    `
   }
 ];
 

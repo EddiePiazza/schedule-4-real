@@ -1,14 +1,27 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T19:59:22Z",
+  "generatedAt": "2026-04-19T22:59:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.118.0",
-      "archive": "s4r-web-1.118.0.tar.gz",
-      "sha256": "b6bc731ea40621cb6e87bdbf8fbfe2d5126d8cf35f83a78831c3bcdd044e174c",
-      "size": 11387111,
+      "version": "1.119.0",
+      "archive": "s4r-web-1.119.0.tar.gz",
+      "sha256": "bf6bab41903c393a655fdb11ea130d2d0c3d06aba856d4aac4bb533ff2de02c4",
+      "size": 11430008,
       "changelog": [
+        {
+          "version": "1.119.0",
+          "changes": [
+            "Add ARIA labels to photo viewer and camera card actions",
+            "Add AI language selector (16 languages) and respect temperature unit in prompts",
+            "Add AI presets: improve triggers, design fire safety, watering, VPD and custom schemes",
+            "Add AI-designed trigger schemes with editable Save/Cancel modal",
+            "Feeding schedule templates with stage-based presets",
+            "Show IPM treatment details on the observation timeline",
+            "Track pest, severity, product and re-entry in IPM observations",
+            "Show data-driven insights panel on the Overview tab"
+          ]
+        },
         {
           "version": "1.118.0",
           "changes": [
@@ -2817,11 +2830,17 @@
       ]
     },
     "schema": {
-      "version": "12",
-      "archive": "s4r-schema-12.tar.gz",
-      "sha256": "093722fe1c7b35c70f65387f39da9163e5c5803ab8384dde3b1fe8789cf588d6",
-      "size": 7720,
+      "version": "13",
+      "archive": "s4r-schema-13.tar.gz",
+      "sha256": "da0a2d3115761c1a5d8a2857e72ba15e804d685eb2d2695c8c832be991fd5f50",
+      "size": 8186,
       "changelog": [
+        {
+          "version": "13",
+          "changes": [
+            "Add ai_proposals table for draft trigger schemes awaiting user review"
+          ]
+        },
         {
           "version": "12",
           "changes": [
