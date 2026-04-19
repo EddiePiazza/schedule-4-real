@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T10:31:27.999Z",
+  "lastCheck": "2026-04-19T15:45:32.964Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 11,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.4",
-      "installedAt": "2026-04-19T10:35:15Z"
+      "version": "1.24.5",
+      "installedAt": "2026-04-19T15:47:35Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.115.2",
+        "changes": [
+          "Leaf VPD uses 1.0\u00b0C offset at night (lights off) instead of the 2.8\u00b0C day value"
+        ]
+      },
       {
         "version": "1.115.1",
         "changes": [
@@ -347,17 +353,6 @@
         "changes": [
           "Fix 502 error during update by delaying server restart"
         ]
-      },
-      {
-        "version": "1.96.0",
-        "changes": [
-          "Add auto-generate daily video and auto-merge on day change",
-          "Add live chart and text overlay preview on camera feed",
-          "Fix mobile scroll blocked on camera settings panel",
-          "Default chart overlay enabled at 25% top-right, default 30fps timelapse",
-          "Add Play Timelapse button with full merged video playback",
-          "Move text overlay to video post-production, keep original photos clean"
-        ]
       }
     ],
     "ingest": [
@@ -467,6 +462,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.24.4",
+        "changes": [
+          "VPD audit: day/night leaf offset, extract humi when heater compensates, leaf-VPD emergency trigger, mandatoryOff/On semantics, module triggers restored"
+        ]
+      },
       {
         "version": "1.24.3",
         "changes": [
@@ -766,12 +767,6 @@
         "version": "1.9.2",
         "changes": [
           "Fix update-checker not deployed with supervisor updates and appdata sync after web updates"
-        ]
-      },
-      {
-        "version": "1.9.1",
-        "changes": [
-          "Add APPDATA_SYNC_ENABLED toggle and run asset sync every 10 minutes"
         ]
       }
     ],

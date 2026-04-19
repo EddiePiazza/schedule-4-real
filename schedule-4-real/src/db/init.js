@@ -693,7 +693,9 @@ const tables = [
         smoke_smoothness INT,
         dry_conditions STRING,
         photos STRING,
-        notes STRING
+        notes STRING,
+        is_deleted INT,
+        cure_log STRING
       ) TIMESTAMP(timestamp) PARTITION BY MONTH;
     `
   },
@@ -819,7 +821,8 @@ const tables = [
         desiccant_type STRING,
         container_type STRING,
         status SYMBOL,
-        notes STRING
+        notes STRING,
+        is_deleted INT
       ) TIMESTAMP(timestamp) PARTITION BY MONTH;
     `
   },
@@ -1335,6 +1338,20 @@ const migrations = [
   {
     name: 'cameras: add timelapse_fps column',
     sql: `ALTER TABLE cameras ADD COLUMN timelapse_fps INT`
+  },
+  // Unify soft-delete across lab tables
+  {
+    name: 'lab_harvest_data: add is_deleted column',
+    sql: `ALTER TABLE lab_harvest_data ADD COLUMN is_deleted INT`
+  },
+  {
+    name: 'lab_pollen_storage: add is_deleted column',
+    sql: `ALTER TABLE lab_pollen_storage ADD COLUMN is_deleted INT`
+  },
+  // Cure/drying timeline (daily weights + burp schedule, stored as JSON)
+  {
+    name: 'lab_harvest_data: add cure_log column',
+    sql: `ALTER TABLE lab_harvest_data ADD COLUMN cure_log STRING`
   }
 ];
 

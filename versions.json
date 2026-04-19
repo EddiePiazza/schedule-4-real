@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T10:35:15Z",
+  "generatedAt": "2026-04-19T15:47:35Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2304,11 +2304,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.4",
-      "archive": "s4r-supervisor-1.24.4.tar.gz",
-      "sha256": "19bf77b1c16a3afd1d39f7d29ceafef62d1a6179053e0e41db37abe59faaaafd",
-      "size": 70874,
+      "version": "1.24.5",
+      "archive": "s4r-supervisor-1.24.5.tar.gz",
+      "sha256": "f03860d9b4525ad35b4a5a195d934b433bdb76f67e5380f052dfbf383127e254",
+      "size": 71187,
       "changelog": [
+        {
+          "version": "1.24.5",
+          "changes": [
+            "VPD safety (temp/humi emergency) now overrides user mandatoryOff and blower user-trigger control. Remove spurious OFF actions when logic gates resolve false \u2014 flags are priority signals, not ELSE synthesis."
+          ]
+        },
         {
           "version": "1.24.4",
           "changes": [

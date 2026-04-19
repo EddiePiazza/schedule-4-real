@@ -964,31 +964,33 @@ function evaluateFlow(flow) {
         break;
 
       case 'action':
-        // Check if any incoming connection provides a true signal.
-        // Logic nodes have THEN (sourceHandle='then') and ELSE (sourceHandle='else'/'else-top') outputs.
-        // THEN fires when logic result is true, ELSE fires when logic result is false.
+        // An action fires when any incoming edge is "active":
+        //  - THEN handle (default): upstream source result === true
+        //  - ELSE handle:           upstream source result === false
+        //
+        // Mandatory flags on the action / inherited from upstream logic/condition nodes
+        // are PRIORITY SIGNALS, not "else semantics":
+        //  - mandatoryOn:  when the action fires ON, it wins over non-safety controllers
+        //  - mandatoryOff: when the action fires OFF, it's an absolute brake (wins over
+        //                  everything including mandatoryOn) — wire it to an ELSE edge
+        //                  (or a safety condition) to get "force OFF when X".
+        // We do NOT synthesise opposite actions from these flags — that's the user's job
+        // via ELSE edges. Doing so caused constant OFF spam when AND gates were false.
         const incomingConnections = connections.filter(c => c.target === node.id);
-        if (incomingConnections.length === 0) break; // Disconnected action — ignore
+        if (incomingConnections.length === 0) break;
 
-        // Determine whether the upstream gate resolved to true / false.
-        // At least one "active" incoming edge (respecting the sourceHandle then/else semantics)
-        // means the action should fire. We also track whether the upstream chain produced a
-        // clear FALSE so we can apply mandatoryOff semantics.
         let anyInputTrue = false;
-        let anyInputResolvedFalse = false;
         for (const c of incomingConnections) {
           const sourceResult = nodeResults.get(c.source);
-          const handle = c.sourceHandle;
           if (sourceResult === undefined) continue;
+          const handle = c.sourceHandle;
           if (handle === 'else' || handle === 'else-top') {
-            if (sourceResult === false) anyInputTrue = true;
-            else if (sourceResult === true) anyInputResolvedFalse = true;
-          } else {
-            // THEN handle or no handle (default): fires when source result is TRUE
-            if (sourceResult === true) anyInputTrue = true;
-            else if (sourceResult === false) anyInputResolvedFalse = true;
+            if (sourceResult === false) { anyInputTrue = true; break; }
+          } else if (sourceResult === true) {
+            anyInputTrue = true; break;
           }
         }
+        if (!anyInputTrue) break;
 
         const {
           deviceMac: actionDeviceMac,
@@ -1000,8 +1002,8 @@ function evaluateFlow(flow) {
           mandatoryOff: actionMandatoryOff
         } = node.data.config;
 
-        // Inherit mandatoryOn/mandatoryOff from the nearest upstream logic/condition node
-        // (users often configure it at the logic level rather than on every action).
+        // Inherit mandatoryOn/mandatoryOff from upstream logic/condition nodes so users
+        // can configure priority at the logic level.
         let inheritedMandatoryOn = false;
         let inheritedMandatoryOff = false;
         for (const c of incomingConnections) {
@@ -1011,8 +1013,11 @@ function evaluateFlow(flow) {
           if (scfg.mandatoryOn) inheritedMandatoryOn = true;
           if (scfg.mandatoryOff) inheritedMandatoryOff = true;
         }
-        const mandatoryOn = !!(actionMandatoryOn || inheritedMandatoryOn);
-        const mandatoryOff = !!(actionMandatoryOff || inheritedMandatoryOff);
+        // Apply flags relative to the effective action: mandatoryOn only has meaning
+        // when firing an ON; mandatoryOff only when firing an OFF.
+        const isFiringOn = configuredAction === 'on';
+        const mandatoryOn = isFiringOn && !!(actionMandatoryOn || inheritedMandatoryOn);
+        const mandatoryOff = !isFiringOn && !!(actionMandatoryOff || inheritedMandatoryOff);
 
         // Build reason from connected conditions
         const reasons = [];
@@ -1030,43 +1035,16 @@ function evaluateFlow(flow) {
         }
         const reasonText = reasons.join(', ') || 'Condition met';
 
-        if (anyInputTrue) {
-          // Condition met → execute the configured action (ON or OFF)
-          actions.push({
-            deviceMac: actionDeviceMac,
-            socket,
-            action: configuredAction,
-            moduleSpeedMode,
-            moduleSpeed,
-            mandatoryOn,
-            mandatoryOff,
-            reason: reasonText
-          });
-        } else if (anyInputResolvedFalse) {
-          // Condition failed → apply mandatory semantics if configured.
-          //   mandatoryOff on an ON action  → force OFF when condition is false.
-          //   mandatoryOn  on an OFF action → force ON  when condition is false.
-          // Without these flags, no action is generated (user must wire an ELSE edge).
-          if (mandatoryOff && configuredAction === 'on') {
-            actions.push({
-              deviceMac: actionDeviceMac,
-              socket,
-              action: 'off',
-              mandatoryOff: true,
-              reason: `Mandatory OFF (condition not met: ${reasonText})`
-            });
-          } else if (mandatoryOn && configuredAction === 'off') {
-            actions.push({
-              deviceMac: actionDeviceMac,
-              socket,
-              action: 'on',
-              mandatoryOn: true,
-              moduleSpeedMode,
-              moduleSpeed,
-              reason: `Mandatory ON (condition not met: ${reasonText})`
-            });
-          }
-        }
+        actions.push({
+          deviceMac: actionDeviceMac,
+          socket,
+          action: configuredAction,
+          moduleSpeedMode,
+          moduleSpeed,
+          mandatoryOn,
+          mandatoryOff,
+          reason: reasonText
+        });
         break;
     }
 
@@ -2401,17 +2379,38 @@ async function processSensorData(sensorData, deviceMac) {
   // Evaluate VPD intelligent auto-calibration
   // VPD only overrides sockets that are assigned as VPD roles.
   // User-created trigger actions on OTHER sockets are never touched by VPD.
+  // EXCEPTION: safety-critical VPD actions (TEMP_EMERG, HUMI_EMERG, leafVpdCritical) ALWAYS
+  // win over user triggers — an incorrectly configured user trigger (e.g. AND logic that
+  // never activates) must never be able to block a safety shutdown/activation.
   const vpdActions = evaluateVpdIntelligent();
   const vpdRoleSockets = new Set((vpdNodeConfig?.roles || []).map(r => r.socket));
+  const tempNow = lastSensorValues.temp;
+  const humiNow = lastSensorValues.humi;
+  const idealT = vpdNodeConfig && (getCurrentPeriod() === 'day'
+    ? (vpdNodeConfig.idealDayTemp || { max: 26 })
+    : (vpdNodeConfig.idealNightTemp || { max: 23 }));
+  const emergTempHigh = tempNow != null && idealT && tempNow > idealT.max + 1.5;
+  const emergHumiHigh = humiNow != null && humiNow > 85;
+
   for (const action of vpdActions) {
     const key = action.deviceMac ? `${action.deviceMac}:${action.socket}` : action.socket;
-    // Mandatory user triggers always win
     const existing = actionMap.get(key);
-    if (existing && (existing.mandatoryOff || existing.mandatoryOn || existing.reason?.includes('Mandatory'))) {
+    const isVpdSafety = action.reason && (
+      action.reason.includes('cycle transition')
+      || action.reason.includes('SAFETY')
+      || emergTempHigh
+      || emergHumiHigh
+    );
+
+    // Mandatory user triggers win for routine VPD actions, but NOT for safety.
+    if (existing && !isVpdSafety && (existing.mandatoryOff || existing.mandatoryOn || existing.reason?.includes('Mandatory'))) {
       continue;
     }
-    // Only override if this socket is a VPD-assigned role AND the user trigger is NOT active for it
-    // User triggers ALWAYS win over VPD for the same socket
+    if (existing && isVpdSafety) {
+      console.log(`[Supervisor] VPD SAFETY override: ${action.socket}→${action.action} (temp=${tempNow}, humi=${humiNow}) — user trigger ${existing.action} IGNORED`);
+      actionMap.set(key, action);
+      continue;
+    }
     if (existing) {
       console.log(`[Supervisor] VPD wants ${action.socket}→${action.action} but user trigger wants ${existing.action} — user trigger wins`);
       continue;
@@ -2432,10 +2431,18 @@ async function processSensorData(sensorData, deviceMac) {
 
   // Evaluate Blower Curve control (proportional speed based on sensor curves)
   // VPD floor/ceiling override the curve when needed.
-  // BUT: if a user trigger has an active blower action (not VPD), skip VPD ceiling/floor
-  // to let the user's trigger control the blower directly.
+  // BUT: if a user trigger has an active blower action (not VPD, not safety), skip VPD
+  // ceiling/floor to let the user's trigger control the blower directly.
+  // EXCEPTION: temp/humi emergencies (leaf VPD, over-temperature) always win — an
+  // incorrect user trigger must never be able to prevent a safety response.
   const userBlowerAction = actionMap.get('blower');
-  const blowerControlledByUserTrigger = userBlowerAction && !userBlowerAction.reason?.startsWith('VPD:');
+  const userBlowerIsVpdOrSafety = userBlowerAction && (
+    userBlowerAction.reason?.startsWith('VPD:')
+    || userBlowerAction.reason?.includes('SAFETY')
+    || userBlowerAction.reason?.includes('cycle transition')
+  );
+  const blowerControlledByUserTrigger = userBlowerAction && !userBlowerIsVpdOrSafety
+    && !emergTempHigh && !emergHumiHigh;
   const curveSpeed = evaluateBlowerCurve();
 
   if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100)) {
@@ -2445,8 +2452,12 @@ async function processSensorData(sensorData, deviceMac) {
     if (vpdBlowerMaxSpeed >= 100 && effectiveSpeed > 0) {
       effectiveSpeed = Math.max(effectiveSpeed, 25); // Minimum when actively running
     }
+    // In emergency, force the blower ON at 100% even if curve/floor say otherwise
+    if (emergTempHigh || emergHumiHigh) {
+      effectiveSpeed = 100;
+    }
     if (effectiveSpeed !== lastBlowerSpeed) {
-      console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)`);
+      console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)${(emergTempHigh || emergHumiHigh) ? ' EMERGENCY' : ''}`);
       lastBlowerSpeed = effectiveSpeed;
       await sendBlowerCommand(effectiveSpeed, effectiveSpeed > 0);
     }
