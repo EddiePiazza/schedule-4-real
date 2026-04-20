@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T15:07:04.035Z",
+  "lastCheck": "2026-04-20T15:27:03.991Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.3",
-      "installedAt": "2026-04-20T15:13:51Z"
+      "version": "1.119.4",
+      "installedAt": "2026-04-20T15:31:19Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.3",
+        "changes": [
+          "Sync environment targets with SF app grow plan stages"
+        ]
+      },
       {
         "version": "1.119.2",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.99.2",
         "changes": [
           "Fix socket name save rejecting O6-O10 and prefixed socket IDs"
-        ]
-      },
-      {
-        "version": "1.99.1",
-        "changes": [
-          "Fix socket save/toggle for PS10 and multi-device: extract original socket ID from prefixed keys and route to correct device MAC"
         ]
       }
     ],
