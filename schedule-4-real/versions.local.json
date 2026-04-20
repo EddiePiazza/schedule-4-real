@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T16:27:04.008Z",
+  "lastCheck": "2026-04-20T16:47:04.006Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.6",
-      "installedAt": "2026-04-20T16:29:01Z"
+      "version": "1.119.7",
+      "installedAt": "2026-04-20T16:51:53Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.6",
+        "changes": [
+          "Show WiFi signal and MAC indicator for PS10 in Settings sockets block"
+        ]
+      },
       {
         "version": "1.119.5",
         "changes": [
@@ -382,13 +388,6 @@
         "version": "1.101.1",
         "changes": [
           "Fix misleading camera stream error message when go2rtc is running"
-        ]
-      },
-      {
-        "version": "1.101.0",
-        "changes": [
-          "Add per-camera FPS selector with auto-calculation and regeneration confirmation",
-          "Fix timelapse overlay missing on some videos due to single frame failure"
         ]
       }
     ],

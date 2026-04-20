@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-20T16:29:01Z",
+  "generatedAt": "2026-04-20T16:51:53Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.6",
-      "archive": "s4r-web-1.119.6.tar.gz",
-      "sha256": "bca94f4b821758f8cc939802ec9ef78223f208b966a0e8a3d378d39418ac317c",
-      "size": 11430480,
+      "version": "1.119.7",
+      "archive": "s4r-web-1.119.7.tar.gz",
+      "sha256": "527decf0131ccbc43820ebf356360ded93f6241a4ede82641aefc981d411e220",
+      "size": 11431047,
       "changelog": [
+        {
+          "version": "1.119.7",
+          "changes": [
+            "Stop HA outlet toggling on multi-device setups (route state by source MAC)"
+          ]
+        },
         {
           "version": "1.119.6",
           "changes": [
