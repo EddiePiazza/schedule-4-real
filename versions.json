@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-20T15:52:12Z",
+  "generatedAt": "2026-04-20T16:29:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.5",
-      "archive": "s4r-web-1.119.5.tar.gz",
-      "sha256": "75f15177762c01d5fda3a88ef6ff35eb9cb1cad2944cef61c7373d814fe598ba",
-      "size": 11431108,
+      "version": "1.119.6",
+      "archive": "s4r-web-1.119.6.tar.gz",
+      "sha256": "bca94f4b821758f8cc939802ec9ef78223f208b966a0e8a3d378d39418ac317c",
+      "size": 11430480,
       "changelog": [
+        {
+          "version": "1.119.6",
+          "changes": [
+            "Show WiFi signal and MAC indicator for PS10 in Settings sockets block"
+          ]
+        },
         {
           "version": "1.119.5",
           "changes": [

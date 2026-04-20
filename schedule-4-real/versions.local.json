@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T15:47:04.027Z",
+  "lastCheck": "2026-04-20T16:27:04.008Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.5",
-      "installedAt": "2026-04-20T15:52:12Z"
+      "version": "1.119.6",
+      "installedAt": "2026-04-20T16:29:01Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.5",
+        "changes": [
+          "Auto-refresh Settings page when SF app changes env targets"
+        ]
+      },
       {
         "version": "1.119.4",
         "changes": [
@@ -383,12 +389,6 @@
         "changes": [
           "Add per-camera FPS selector with auto-calculation and regeneration confirmation",
           "Fix timelapse overlay missing on some videos due to single frame failure"
-        ]
-      },
-      {
-        "version": "1.100.0",
-        "changes": [
-          "Add climate modules to trigger builder actions and state checks"
         ]
       }
     ],
