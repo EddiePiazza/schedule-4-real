@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-20T00:46:20Z",
+  "generatedAt": "2026-04-20T14:15:48Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.1",
-      "archive": "s4r-web-1.119.1.tar.gz",
-      "sha256": "a16fc3b19accaf971ae6383505f58aa25aa0de65c34dcf19d754f78937d1ffb1",
-      "size": 11429740,
+      "version": "1.119.2",
+      "archive": "s4r-web-1.119.2.tar.gz",
+      "sha256": "a231f93fb0549761d787ca6be57964ecb4b63f7e20e9f70a4a7095930e6b01c7",
+      "size": 11429726,
       "changelog": [
+        {
+          "version": "1.119.2",
+          "changes": [
+            "Keep timelapse chart and text overlays when a sensor metric is missing"
+          ]
+        },
         {
           "version": "1.119.1",
           "changes": [

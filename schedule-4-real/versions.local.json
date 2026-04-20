@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T00:41:28.481Z",
+  "lastCheck": "2026-04-20T14:07:04.027Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.1",
-      "installedAt": "2026-04-20T00:46:20Z"
+      "version": "1.119.2",
+      "installedAt": "2026-04-20T14:15:48Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.1",
+        "changes": [
+          "Keep Live Messages toggle and device filter after page navigation",
+          "Stop the Unsaved changes toast from flashing on System page load"
+        ]
+      },
       {
         "version": "1.119.0",
         "changes": [
@@ -383,12 +390,6 @@
         "changes": [
           "Add Fan gear display on dashboard, hide camera controls for guests, fix fullscreen button z-index over overlay"
         ]
-      },
-      {
-        "version": "1.98.2",
-        "changes": [
-          "Add dedicated climate modules (heater, humidifier, dehumidifier) to Blower Curve device options"
-        ]
       }
     ],
     "ingest": [
@@ -498,6 +499,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.24.8",
+        "changes": [
+          "Auto-rollback web update when the new build fails to boot"
+        ]
+      },
       {
         "version": "1.24.7",
         "changes": [
@@ -797,12 +804,6 @@
         "version": "1.9.6",
         "changes": [
           "Auto-install ffmpeg and ImageMagick on update for camera features"
-        ]
-      },
-      {
-        "version": "1.9.5",
-        "changes": [
-          "Fix appdata sync not completing before web restart after update"
         ]
       }
     ],
