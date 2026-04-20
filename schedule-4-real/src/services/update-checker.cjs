@@ -1071,6 +1071,32 @@ async function applyUpdates(components = [], onProgress = null) {
     // If web was updated, restart it LAST (this kills the current process)
     if (results.some(r => r.component === 'web' && r.success)) {
       console.log('[Updater] All state saved. Restarting web server...');
+
+      // Sanity check: the built output file MUST exist before we restart, otherwise
+      // pm2 enters a restart loop with a broken install. This is the failure Andy hit
+      // when he had to reinstall from scratch — the web update dropped files but the
+      // server couldn't boot and nobody caught it automatically.
+      const webEntry = path.join(PROJECT_ROOT, '.output', 'server', 'index.mjs');
+      if (!fs.existsSync(webEntry)) {
+        console.error('[Updater] Web build output missing at ' + webEntry + ' — aborting restart and rolling back');
+        emitProgress('error', 'web', updateIdx, toUpdate.length, 'Build output missing after extract');
+        try {
+          console.log('[Updater] Rolling back web to preserve a working install...');
+          restoreComponent('web', timestamp);
+          // Rewind the stored version so the updater will try again on the next tick.
+          const rollbackVersions = readVersions();
+          if (rollbackVersions.components?.web) {
+            rollbackVersions.components.web.version = fromVersions.web || '0.0.0';
+            writeVersions(rollbackVersions);
+          }
+        } catch (rbErr) {
+          console.error('[Updater] Automatic rollback failed:', rbErr.message);
+        }
+        releaseUpdateLock();
+        clearProgress();
+        return { success: false, error: 'Web build output missing after extract — install rolled back', results };
+      }
+
       emitProgress('restarting', 'web', toUpdate.length, toUpdate.length);
       updateInProgress = false;
       releaseUpdateLock();
@@ -1101,11 +1127,45 @@ async function applyUpdates(components = [], onProgress = null) {
           }
         }
       }
-      // Delay restart by 1.5s so the HTTP response reaches the client before the server dies
+
+      // Delay restart by 1.5s so the HTTP response reaches the client before the server dies.
+      // Then, after the new process has had a chance to boot, verify health. If the new
+      // build fails to serve HTTP within 25s, automatically restore the previous version so
+      // the user isn't left with a dead install (Andy's "had to reinstall 6 times" issue).
       setTimeout(() => {
         try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2Name}`, { stdio: 'pipe' }); } catch {
           try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2NameLegacy}`, { stdio: 'pipe' }); } catch {}
         }
+
+        // Post-restart health check — run from the still-alive supervisor.
+        // Note: the `web` update keeps the supervisor process alive, so this runs.
+        setTimeout(async () => {
+          try {
+            const healthy = await healthCheck('web');
+            if (healthy) {
+              console.log('[Updater] Web health check passed after restart');
+              return;
+            }
+            console.error('[Updater] Web health check FAILED after restart — attempting automatic rollback');
+            try {
+              restoreComponent('web', timestamp);
+              const rollbackVersions = readVersions();
+              if (rollbackVersions.components?.web) {
+                rollbackVersions.components.web.version = fromVersions.web || '0.0.0';
+                writeVersions(rollbackVersions);
+              }
+              // Another restart so the rolled-back code takes effect
+              try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2Name}`, { stdio: 'pipe' }); } catch {
+                try { execSync(`pm2 restart ${COMPONENT_DEFS.web.pm2NameLegacy}`, { stdio: 'pipe' }); } catch {}
+              }
+              console.log('[Updater] Rolled back web to ' + (fromVersions.web || 'previous version'));
+            } catch (rbErr) {
+              console.error('[Updater] Rollback after failed health check failed:', rbErr.message);
+            }
+          } catch (hcErr) {
+            console.error('[Updater] Post-restart health check error:', hcErr.message);
+          }
+        }, 8000);
       }, 1500);
       // Return immediately — client receives 200, then server restarts after 1.5s
       return { success: allSuccess, results };

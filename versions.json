@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-19T22:59:46Z",
+  "generatedAt": "2026-04-20T00:46:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.0",
-      "archive": "s4r-web-1.119.0.tar.gz",
-      "sha256": "bf6bab41903c393a655fdb11ea130d2d0c3d06aba856d4aac4bb533ff2de02c4",
-      "size": 11430008,
+      "version": "1.119.1",
+      "archive": "s4r-web-1.119.1.tar.gz",
+      "sha256": "a16fc3b19accaf971ae6383505f58aa25aa0de65c34dcf19d754f78937d1ffb1",
+      "size": 11429740,
       "changelog": [
+        {
+          "version": "1.119.1",
+          "changes": [
+            "Keep Live Messages toggle and device filter after page navigation",
+            "Stop the Unsaved changes toast from flashing on System page load"
+          ]
+        },
         {
           "version": "1.119.0",
           "changes": [
@@ -2364,11 +2371,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.7",
-      "archive": "s4r-supervisor-1.24.7.tar.gz",
-      "sha256": "edf0c5fdb59c5de0042192aad6921d6f88263db763d08fc603f0655d77cb77c7",
-      "size": 74573,
+      "version": "1.24.8",
+      "archive": "s4r-supervisor-1.24.8.tar.gz",
+      "sha256": "31bcaaacbfd3470c5ebbb8d82eeda6dbb2b096e48b2eff4d31692b8e3694d6f4",
+      "size": 75392,
       "changelog": [
+        {
+          "version": "1.24.8",
+          "changes": [
+            "Auto-rollback web update when the new build fails to boot"
+          ]
+        },
         {
           "version": "1.24.7",
           "changes": [

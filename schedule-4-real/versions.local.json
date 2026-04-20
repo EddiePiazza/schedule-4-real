@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-19T22:51:28.455Z",
+  "lastCheck": "2026-04-20T00:41:28.481Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.0",
-      "installedAt": "2026-04-19T22:59:46Z"
+      "version": "1.119.1",
+      "installedAt": "2026-04-20T00:46:20Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.7",
-      "installedAt": "2026-04-19T19:21:51Z"
+      "version": "1.24.8",
+      "installedAt": "2026-04-20T00:46:20Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,19 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.0",
+        "changes": [
+          "Add ARIA labels to photo viewer and camera card actions",
+          "Add AI language selector (16 languages) and respect temperature unit in prompts",
+          "Add AI presets: improve triggers, design fire safety, watering, VPD and custom schemes",
+          "Add AI-designed trigger schemes with editable Save/Cancel modal",
+          "Feeding schedule templates with stage-based presets",
+          "Show IPM treatment details on the observation timeline",
+          "Track pest, severity, product and re-entry in IPM observations",
+          "Show data-driven insights panel on the Overview tab"
+        ]
+      },
       {
         "version": "1.118.0",
         "changes": [
@@ -375,12 +388,6 @@
         "version": "1.98.2",
         "changes": [
           "Add dedicated climate modules (heater, humidifier, dehumidifier) to Blower Curve device options"
-        ]
-      },
-      {
-        "version": "1.98.1",
-        "changes": [
-          "Detect fan/blower/heater capabilities from actual device status, not just device type (fixes PS10 master mode)"
         ]
       }
     ],
@@ -846,6 +853,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "13",
+        "changes": [
+          "Add ai_proposals table for draft trigger schemes awaiting user review"
+        ]
+      },
       {
         "version": "12",
         "changes": [
