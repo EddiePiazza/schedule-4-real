@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T14:07:04.027Z",
+  "lastCheck": "2026-04-20T15:07:04.035Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.2",
-      "installedAt": "2026-04-20T14:15:48Z"
+      "version": "1.119.3",
+      "installedAt": "2026-04-20T15:13:51Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.2",
+        "changes": [
+          "Keep timelapse chart and text overlays when a sensor metric is missing"
+        ]
+      },
       {
         "version": "1.119.1",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.99.1",
         "changes": [
           "Fix socket save/toggle for PS10 and multi-device: extract original socket ID from prefixed keys and route to correct device MAC"
-        ]
-      },
-      {
-        "version": "1.99.0",
-        "changes": [
-          "Add Fan gear display on dashboard, hide camera controls for guests, fix fullscreen button z-index over overlay"
         ]
       }
     ],

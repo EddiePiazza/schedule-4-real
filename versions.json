@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-20T14:15:48Z",
+  "generatedAt": "2026-04-20T15:13:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.2",
-      "archive": "s4r-web-1.119.2.tar.gz",
-      "sha256": "a231f93fb0549761d787ca6be57964ecb4b63f7e20e9f70a4a7095930e6b01c7",
-      "size": 11429726,
+      "version": "1.119.3",
+      "archive": "s4r-web-1.119.3.tar.gz",
+      "sha256": "8562b449ebc824887e7f712bc1f2ced9c46e12136fdabf29e3c78634870d7cef",
+      "size": 11430088,
       "changelog": [
+        {
+          "version": "1.119.3",
+          "changes": [
+            "Sync environment targets with SF app grow plan stages"
+          ]
+        },
         {
           "version": "1.119.2",
           "changes": [
