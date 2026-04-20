@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-04-20T15:31:19Z",
+  "generatedAt": "2026-04-20T15:52:12Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.4",
-      "archive": "s4r-web-1.119.4.tar.gz",
-      "sha256": "dc2bccd5d37fbc476e1da94425083761c1f2b74f34dd1d3175e6f0a5da6773c3",
-      "size": 11429966,
+      "version": "1.119.5",
+      "archive": "s4r-web-1.119.5.tar.gz",
+      "sha256": "75f15177762c01d5fda3a88ef6ff35eb9cb1cad2944cef61c7373d814fe598ba",
+      "size": 11431108,
       "changelog": [
+        {
+          "version": "1.119.5",
+          "changes": [
+            "Auto-refresh Settings page when SF app changes env targets"
+          ]
+        },
         {
           "version": "1.119.4",
           "changes": [

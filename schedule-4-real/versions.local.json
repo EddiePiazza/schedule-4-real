@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T15:27:03.991Z",
+  "lastCheck": "2026-04-20T15:47:04.027Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.4",
-      "installedAt": "2026-04-20T15:31:19Z"
+      "version": "1.119.5",
+      "installedAt": "2026-04-20T15:52:12Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.4",
+        "changes": [
+          "Sync env targets from SF app to s4r without reload"
+        ]
+      },
       {
         "version": "1.119.3",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.100.0",
         "changes": [
           "Add climate modules to trigger builder actions and state checks"
-        ]
-      },
-      {
-        "version": "1.99.2",
-        "changes": [
-          "Fix socket name save rejecting O6-O10 and prefixed socket IDs"
         ]
       }
     ],
