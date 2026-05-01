@@ -3171,6 +3171,22 @@ async function start() {
     });
   }, 10 * 60 * 1000);
 
+  // Self-heal errored PM2 services every 5 minutes — covers the
+  // "Mosquitto stuck in errored after reboot" scenario from cobra5118 / Joerg.
+  setInterval(() => {
+    if (typeof updateChecker.recoverErroredServices === 'function') {
+      updateChecker.recoverErroredServices().catch(err => {
+        console.error('[Supervisor] Service recovery error:', err.message);
+      });
+    }
+  }, 5 * 60 * 1000);
+  // Also run once on startup, after a short delay so PM2 has settled
+  setTimeout(() => {
+    if (typeof updateChecker.recoverErroredServices === 'function') {
+      updateChecker.recoverErroredServices().catch(() => {});
+    }
+  }, 15000);
+
   // Sync appdata assets every 10 minutes (lightweight: just compares cached index)
   setInterval(() => {
     updateChecker.syncAppData().catch(err => {

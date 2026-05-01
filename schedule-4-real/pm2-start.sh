@@ -146,7 +146,25 @@ fi
 # ═══════════════════════════════════════════
 info "Verificando Mosquitto..."
 
-# Generate mosquitto.conf from .env ports
+# Stop and disable any system-wide mosquitto.service that might be holding port
+# ${MQTT_PORT}. This is the #1 cause of the PM2 "s4r-mosquitto errored" after a
+# reboot: distros that install the mosquitto package leave mosquitto.service
+# enabled, it claims port 1883 on boot, then PM2's broker fails to bind and
+# loops into errored state.
+if command -v systemctl >/dev/null 2>&1; then
+    if systemctl is-active --quiet mosquitto.service 2>/dev/null; then
+        warning "System mosquitto.service is running — stopping it so PM2 can own port ${MQTT_PORT}"
+        systemctl stop mosquitto.service 2>/dev/null || true
+    fi
+    if systemctl is-enabled --quiet mosquitto.service 2>/dev/null; then
+        info "Disabling system mosquitto.service so it doesn't grab port ${MQTT_PORT} on next boot"
+        systemctl disable mosquitto.service 2>/dev/null || true
+    fi
+fi
+
+# Generate mosquitto.conf from .env ports.
+# Includes the websockets listener so the dashboard's /mqtt WS proxy works
+# (the LiteSpeed reverse-proxy forwards /mqtt → port ${MQTT_WS_PORT:-9001}).
 mkdir -p proxy/mosquitto_data
 cat > proxy/mosquitto.conf << MOSQ_EOF
 # Mosquitto Local Broker - Schedule 4 Real
@@ -154,6 +172,9 @@ cat > proxy/mosquitto.conf << MOSQ_EOF
 
 listener ${MQTT_PORT} 127.0.0.1
 listener ${MQTT_LAN_PORT} 0.0.0.0
+
+listener ${MQTT_WS_PORT:-9001} 0.0.0.0
+protocol websockets
 
 allow_anonymous true
 
@@ -166,10 +187,25 @@ persistence_location proxy/mosquitto_data/
 retain_available true
 MOSQ_EOF
 
+# If mosquitto is already listening (probably PM2 restarted it for us) we leave
+# it alone. Otherwise bring it up under PM2 so a crash auto-restarts.
 if lsof -Pi :${MQTT_PORT} -sTCP:LISTEN -t >/dev/null 2>&1; then
     success "Mosquitto ya está corriendo en puerto ${MQTT_PORT}"
 else
-    # Start mosquitto via PM2 so it auto-restarts on crash and boot
+    # Defensive: if a stale persistence file is corrupted, mosquitto crashes on
+    # startup and PM2 will mark it errored after 16 restarts. Detect that case
+    # by trying to start once in foreground (timeout 3s) and fall back to a
+    # clean persistence dir if it failed.
+    if ! timeout 3 mosquitto -c "$SCRIPT_DIR/proxy/mosquitto.conf" -v >/tmp/mosq-test.log 2>&1; then
+        # If the failure mentions the persistence file, rotate it
+        if grep -qiE "Unable to (re)?store|persistence|corrupt" /tmp/mosq-test.log; then
+            warning "Mosquitto persistence DB looks corrupt — rotating it"
+            mv proxy/mosquitto_data "proxy/mosquitto_data.broken-$(date +%s)" 2>/dev/null || true
+            mkdir -p proxy/mosquitto_data
+        fi
+    fi
+    # Clean any leftover errored entry first so PM2 doesn't reuse stale state
+    pm2 delete s4r-mosquitto 2>/dev/null || true
     pm2 start "mosquitto -c $SCRIPT_DIR/proxy/mosquitto.conf" \
         --name s4r-mosquitto \
         --cwd "$SCRIPT_DIR" \

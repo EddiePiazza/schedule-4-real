@@ -71,11 +71,16 @@ const COMPONENT_DEFS = {
     healthCheck: { type: 'port', port: parseInt(process.env.PROXY_PORT) || 8883, timeout: 10000 }
   },
   mosquitto: {
+    // The broker process is owned by PM2 (s4r-mosquitto) so a crash auto-restarts.
+    // The previous 'daemon' restart strategy ran `mosquitto -d` which detached the
+    // broker from PM2 — PM2 then thought its child died and looped into errored
+    // state, while the orphan daemon kept holding port 1883. Routing through PM2
+    // restarts keeps everything consistent.
     label: 'Mosquitto Config',
     paths: ['proxy/mosquitto.conf'],
-    restart: 'daemon',
-    daemonName: 'mosquitto',
-    startCmd: `mosquitto -c ${path.join(PROJECT_ROOT, 'proxy/mosquitto.conf')} -d`,
+    restart: 'pm2',
+    pm2Name: 's4r-mosquitto',
+    pm2NameLegacy: 'spiderapp-mosquitto',
     healthCheck: { type: 'port', port: parseInt(process.env.MQTT_PORT) || 1883, timeout: 10000 }
   },
   schema: {
@@ -1819,6 +1824,83 @@ rm -f "${migrateScript}"
   }
 }
 
+// --- Self-healing for errored PM2 services ---
+
+/**
+ * Detect PM2 services in `errored` state and try to recover them.
+ *
+ * Background: a Joerg report (2026-04-22) showed `s4r-mosquitto` stuck in
+ * errored on his RPi. The two recurring root causes are:
+ *   1. The distro's mosquitto.service was re-enabled after an apt upgrade or a
+ *      reboot — it claims port 1883 before PM2's broker can bind, so PM2's
+ *      child exits immediately and after 16 retries PM2 marks it errored.
+ *   2. A previous run of update-checker called `mosquitto -d` which detached
+ *      the broker from PM2. PM2 sees its child die and starts trying to
+ *      re-spawn an already-running daemon → bind failure → errored.
+ *
+ * Both conditions auto-heal once we (a) stop the system mosquitto.service,
+ * (b) kill any orphan mosquitto, and (c) reset the PM2 process. Doing it in
+ * a periodic check means the box recovers without user intervention even on
+ * legacy installations that didn't get the pm2-start.sh fix.
+ */
+async function recoverErroredServices() {
+  let jlist = [];
+  try {
+    const out = execSync('pm2 jlist', { stdio: ['ignore', 'pipe', 'ignore'], timeout: 5000 }).toString();
+    jlist = JSON.parse(out);
+  } catch {
+    return; // pm2 not available or hung — try again next cycle
+  }
+
+  const errored = jlist.filter(p => p.pm2_env && p.pm2_env.status === 'errored');
+  if (errored.length === 0) return;
+
+  for (const proc of errored) {
+    const name = proc.name;
+    console.log(`[Updater] PM2 service '${name}' is errored — attempting recovery`);
+
+    if (name === 's4r-mosquitto' || name === 'spiderapp-mosquitto') {
+      // Stop the distro's mosquitto.service if it's running, so it doesn't keep
+      // re-grabbing the port after we restart PM2.
+      try {
+        execSync('systemctl is-active --quiet mosquitto.service', { stdio: 'ignore' });
+        console.log('[Updater] System mosquitto.service is running — stopping it so PM2 can own the port');
+        try { execSync('systemctl stop mosquitto.service', { stdio: 'pipe', timeout: 5000 }); } catch {}
+        try { execSync('systemctl disable mosquitto.service', { stdio: 'pipe', timeout: 5000 }); } catch {}
+      } catch {
+        // Not active or systemctl unavailable
+      }
+      // Kill any orphan mosquitto holding the port (started detached by the old
+      // daemon-mode restart strategy)
+      try { execSync('pkill -f "mosquitto -c"', { stdio: 'pipe' }); } catch {}
+      await new Promise(r => setTimeout(r, 1500));
+      // Reset PM2's accumulated restart count, then restart fresh
+      try { execSync(`pm2 reset ${name}`, { stdio: 'pipe' }); } catch {}
+      try { execSync(`pm2 restart ${name}`, { stdio: 'pipe' }); } catch (err) {
+        console.error(`[Updater] Recovery restart failed for ${name}:`, err.message);
+      }
+    } else if (name === 's4r-proxy' || name === 'spiderapp-proxy') {
+      // Generic recovery: kill orphans then restart
+      try { execSync('pkill -f spiderproxy', { stdio: 'pipe' }); } catch {}
+      try { execSync('pkill -f mqtt_hybrid_proxy.py', { stdio: 'pipe' }); } catch {}
+      await new Promise(r => setTimeout(r, 1500));
+      try { execSync(`pm2 reset ${name}`, { stdio: 'pipe' }); } catch {}
+      try { execSync(`pm2 restart ${name}`, { stdio: 'pipe' }); } catch (err) {
+        console.error(`[Updater] Recovery restart failed for ${name}:`, err.message);
+      }
+    } else {
+      // Anything else: just reset + restart and hope the next try succeeds
+      try { execSync(`pm2 reset ${name}`, { stdio: 'pipe' }); } catch {}
+      try { execSync(`pm2 restart ${name}`, { stdio: 'pipe' }); } catch (err) {
+        console.error(`[Updater] Recovery restart failed for ${name}:`, err.message);
+      }
+    }
+  }
+
+  // Persist new state so the recovery survives reboots
+  try { execSync('pm2 save', { stdio: 'pipe', timeout: 5000 }); } catch {}
+}
+
 // --- Exports ---
 
 module.exports = {
@@ -1832,5 +1914,6 @@ module.exports = {
   isBackupRunning,
   getProgress,
   syncAppData,
+  recoverErroredServices,
   COMPONENT_DEFS
 };

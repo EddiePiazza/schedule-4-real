@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-01T17:44:24Z",
+  "generatedAt": "2026-05-01T17:49:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2414,11 +2414,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.8",
-      "archive": "s4r-supervisor-1.24.8.tar.gz",
-      "sha256": "31bcaaacbfd3470c5ebbb8d82eeda6dbb2b096e48b2eff4d31692b8e3694d6f4",
-      "size": 75392,
+      "version": "1.24.9",
+      "archive": "s4r-supervisor-1.24.9.tar.gz",
+      "sha256": "df48bf1abbd3b0d6c7d2d95ab914db35ce529a4e0c5506fa0a785b1555990647",
+      "size": 77604,
       "changelog": [
+        {
+          "version": "1.24.9",
+          "changes": [
+            "Auto-recover Message Broker when stuck in errored after reboot"
+          ]
+        },
         {
           "version": "1.24.8",
           "changes": [
