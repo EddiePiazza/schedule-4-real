@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-01T17:49:39Z",
+  "generatedAt": "2026-05-01T18:09:33Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.8",
-      "archive": "s4r-web-1.119.8.tar.gz",
-      "sha256": "29ae5d36057646458b1c4b1cc8a20968b6c46ce13b747b97e4a88cfa8a484f91",
-      "size": 11432140,
+      "version": "1.119.9",
+      "archive": "s4r-web-1.119.9.tar.gz",
+      "sha256": "c15712a2f8366103e513a81353d37dbc74cea1279e6934ef04eccf3347399b7f",
+      "size": 11433035,
       "changelog": [
+        {
+          "version": "1.119.9",
+          "changes": [
+            "Make Play from here actually chain consecutive days instead of looping one"
+          ]
+        },
         {
           "version": "1.119.8",
           "changes": [
@@ -2414,11 +2420,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.9",
-      "archive": "s4r-supervisor-1.24.9.tar.gz",
-      "sha256": "df48bf1abbd3b0d6c7d2d95ab914db35ce529a4e0c5506fa0a785b1555990647",
-      "size": 77604,
+      "version": "1.24.10",
+      "archive": "s4r-supervisor-1.24.10.tar.gz",
+      "sha256": "560196577e3d6bf2231ad7656c1ea6cf5020e908505f901072b4fe544659f546",
+      "size": 78352,
       "changelog": [
+        {
+          "version": "1.24.10",
+          "changes": [
+            "Burn chart and text overlays into auto-generated daily timelapse videos"
+          ]
+        },
         {
           "version": "1.24.9",
           "changes": [

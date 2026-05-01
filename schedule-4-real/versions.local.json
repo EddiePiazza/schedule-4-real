@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-01T17:31:04.046Z",
+  "lastCheck": "2026-05-01T17:59:52.534Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.8",
-      "installedAt": "2026-05-01T17:44:24Z"
+      "version": "1.119.9",
+      "installedAt": "2026-05-01T18:09:33Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.9",
-      "installedAt": "2026-05-01T17:49:39Z"
+      "version": "1.24.10",
+      "installedAt": "2026-05-01T18:09:33Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.8",
+        "changes": [
+          "Stop fan flicker, group soil per controller, persist temp unit, filter by room",
+          "Expand socket names on dashboard so they use the full card width"
+        ]
+      },
       {
         "version": "1.119.7",
         "changes": [
@@ -383,12 +390,6 @@
         "changes": [
           "Real-time trigger flow visualization with active node glow and animated edge paths"
         ]
-      },
-      {
-        "version": "1.102.0",
-        "changes": [
-          "Add speed control to trigger actions with Auto (Curve) and Fixed modes for blower and fan"
-        ]
       }
     ],
     "ingest": [
@@ -498,6 +499,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.24.9",
+        "changes": [
+          "Auto-recover Message Broker when stuck in errored after reboot"
+        ]
+      },
       {
         "version": "1.24.8",
         "changes": [
@@ -797,12 +804,6 @@
         "version": "1.9.7",
         "changes": [
           "Fix supervisor self-update hanging by saving state before restart and adding 2-minute timeout"
-        ]
-      },
-      {
-        "version": "1.9.6",
-        "changes": [
-          "Auto-install ffmpeg and ImageMagick on update for camera features"
         ]
       }
     ],

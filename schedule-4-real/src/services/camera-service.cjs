@@ -490,6 +490,59 @@ function generateDailyVideo(cameraId, date, fps = 30) {
 
   console.log(`[Camera] Auto-generating video: ${cameraId} ${date} (${photos.length} photos, ${fps}fps)`);
 
+  // Delegate to the same endpoint the "Regenerate Video" button calls in the lab
+  // UI. The manual path reads chart-overlay.json + camera_overlay_settings from
+  // the DB and burns the chart + text overlay into the frames; previously this
+  // code only ran ffmpeg with raw photos, so daily videos generated automatically
+  // were missing the overlays that manual regenerations had — exactly the user's
+  // report. Falling back to the raw-ffmpeg path only if the API call fails (e.g.
+  // web server is being restarted), so daily generation never silently breaks.
+  return new Promise((resolve) => {
+    const apiPort = parseInt(process.env.API_PORT) || 3000;
+    const body = JSON.stringify({ date, fps });
+    const headers = {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(body)
+    };
+    if (process.env.APP_PASSWORD) headers['x-auth-token'] = process.env.APP_PASSWORD;
+
+    const req = http.request({
+      host: '127.0.0.1', port: apiPort,
+      path: `/api/cameras/${encodeURIComponent(cameraId)}/timelapse-video`,
+      method: 'POST',
+      headers,
+      timeout: 600000
+    }, (res) => {
+      const chunks = [];
+      res.on('data', (c) => chunks.push(c));
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          const size = fs.existsSync(videoPath) ? fs.statSync(videoPath).size : 0;
+          console.log(`[Camera] Auto-video (with overlays) ready: ${path.basename(videoPath)} (${(size / 1024 / 1024).toFixed(1)} MB)`);
+          resolve(true);
+        } else {
+          const msg = Buffer.concat(chunks).toString().slice(0, 200);
+          console.warn(`[Camera] Auto-video API returned ${res.statusCode} for ${date}: ${msg} — falling back to plain ffmpeg`);
+          resolve(generateDailyVideoRaw(cameraId, date, fps, dayDir, videoPath));
+        }
+      });
+    });
+    req.on('error', (err) => {
+      console.warn(`[Camera] Auto-video API unreachable for ${date} (${err.message}) — falling back to plain ffmpeg`);
+      resolve(generateDailyVideoRaw(cameraId, date, fps, dayDir, videoPath));
+    });
+    req.on('timeout', () => {
+      req.destroy();
+      console.warn(`[Camera] Auto-video API timeout for ${date} — falling back to plain ffmpeg`);
+      resolve(generateDailyVideoRaw(cameraId, date, fps, dayDir, videoPath));
+    });
+    req.write(body);
+    req.end();
+  });
+}
+
+// Raw ffmpeg fallback used only if the overlay-aware endpoint isn't reachable.
+function generateDailyVideoRaw(cameraId, date, fps, dayDir, videoPath) {
   return new Promise((resolve) => {
     const args = [
       '-y', '-framerate', String(fps),
@@ -499,14 +552,13 @@ function generateDailyVideo(cameraId, date, fps = 30) {
       '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
       videoPath,
     ];
-
     execFile('ffmpeg', args, { timeout: 300000 }, (err, _stdout, stderr) => {
       if (err) {
-        console.error(`[Camera] Auto-video failed for ${date}:`, stderr?.slice(0, 200));
+        console.error(`[Camera] Auto-video raw failed for ${date}:`, stderr?.slice(0, 200));
         resolve(false);
       } else {
         const size = fs.existsSync(videoPath) ? fs.statSync(videoPath).size : 0;
-        console.log(`[Camera] Auto-video created: ${videoPath} (${(size / 1024 / 1024).toFixed(1)} MB)`);
+        console.log(`[Camera] Auto-video raw fallback created: ${videoPath} (${(size / 1024 / 1024).toFixed(1)} MB)`);
         resolve(true);
       }
     });
