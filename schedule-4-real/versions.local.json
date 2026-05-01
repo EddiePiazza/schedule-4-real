@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-04-20T16:47:04.006Z",
+  "lastCheck": "2026-05-01T17:31:04.046Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.119.7",
-      "installedAt": "2026-04-20T16:51:53Z"
+      "version": "1.119.8",
+      "installedAt": "2026-05-01T17:44:24Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.119.7",
+        "changes": [
+          "Stop HA outlet toggling on multi-device setups (route state by source MAC)"
+        ]
+      },
       {
         "version": "1.119.6",
         "changes": [
@@ -382,12 +388,6 @@
         "version": "1.102.0",
         "changes": [
           "Add speed control to trigger actions with Auto (Curve) and Fixed modes for blower and fan"
-        ]
-      },
-      {
-        "version": "1.101.1",
-        "changes": [
-          "Fix misleading camera stream error message when go2rtc is running"
         ]
       }
     ],
