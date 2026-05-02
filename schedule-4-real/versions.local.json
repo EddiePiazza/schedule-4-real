@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-02T19:51:05.714Z",
+  "lastCheck": "2026-05-02T20:11:05.617Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.120.0",
-      "installedAt": "2026-05-02T19:59:34Z"
+      "version": "1.121.0",
+      "installedAt": "2026-05-02T20:17:26Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.120.0",
+        "changes": [
+          "Flash dashboard alert when dehumidifier tank is full or humidifier is low"
+        ]
+      },
       {
         "version": "1.119.9",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.104.1",
         "changes": [
           "Fix FPS selector crash and improve auto-calculation for faster timelapses"
-        ]
-      },
-      {
-        "version": "1.104.0",
-        "changes": [
-          "Add emergency stop button and flow-disable device shutdown"
         ]
       }
     ],
