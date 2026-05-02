@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-01T18:09:33Z",
+  "generatedAt": "2026-05-02T19:59:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.119.9",
-      "archive": "s4r-web-1.119.9.tar.gz",
-      "sha256": "c15712a2f8366103e513a81353d37dbc74cea1279e6934ef04eccf3347399b7f",
-      "size": 11433035,
+      "version": "1.120.0",
+      "archive": "s4r-web-1.120.0.tar.gz",
+      "sha256": "1d2ecb9c8a94eb21a303f69c3d39376652b006fba6787fba128767985704e7f6",
+      "size": 11430440,
       "changelog": [
+        {
+          "version": "1.120.0",
+          "changes": [
+            "Flash dashboard alert when dehumidifier tank is full or humidifier is low"
+          ]
+        },
         {
           "version": "1.119.9",
           "changes": [
