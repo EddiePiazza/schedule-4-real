@@ -177,9 +177,13 @@ fi
 if ! command -v mosquitto &>/dev/null; then
     info "Installing Mosquitto..."
     $PKG_MANAGER install -y mosquitto
-    systemctl stop mosquitto 2>/dev/null || true
-    systemctl disable mosquitto 2>/dev/null || true
 fi
+# Always stop+disable the distro's mosquitto.service — even if mosquitto was
+# pre-installed by something else. Otherwise it grabs port 1883 on boot and
+# our PM2-managed broker can't bind, ending in errored state. This was the
+# root cause of "Message Broker ERRORED" reports from JoeGhost/Christian.
+systemctl stop mosquitto.service 2>/dev/null || true
+systemctl disable mosquitto.service 2>/dev/null || true
 success "Mosquitto available"
 
 # FFmpeg (timelapse video generation)

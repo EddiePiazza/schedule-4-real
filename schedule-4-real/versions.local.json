@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-02T20:11:05.617Z",
+  "lastCheck": "2026-05-04T12:31:05.767Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.10",
-      "installedAt": "2026-05-01T18:09:33Z"
+      "version": "1.24.11",
+      "installedAt": "2026-05-04T12:40:13Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.121.0",
+        "changes": [
+          "Show climate alarms in a top banner and publish them to Home Assistant"
+        ]
+      },
       {
         "version": "1.120.0",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.0",
         "changes": [
           "Auto-suggest reverse ELSE action when connecting to THEN handle"
-        ]
-      },
-      {
-        "version": "1.104.1",
-        "changes": [
-          "Fix FPS selector crash and improve auto-calculation for faster timelapses"
         ]
       }
     ],

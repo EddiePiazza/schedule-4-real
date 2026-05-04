@@ -206,17 +206,32 @@ else
     fi
     # Clean any leftover errored entry first so PM2 doesn't reuse stale state
     pm2 delete s4r-mosquitto 2>/dev/null || true
-    pm2 start "mosquitto -c $SCRIPT_DIR/proxy/mosquitto.conf" \
+    # Use --interpreter none so PM2 doesn't try to run mosquitto via node on
+    # certain PM2 versions; --max-restarts buffers transient port races on boot.
+    pm2 start mosquitto \
         --name s4r-mosquitto \
+        --interpreter none \
         --cwd "$SCRIPT_DIR" \
+        --max-restarts 50 \
+        --restart-delay 2000 \
         --log ./logs/mosquitto.log \
         --error ./logs/mosquitto-error.log \
+        -- -c "$SCRIPT_DIR/proxy/mosquitto.conf" \
         2>/dev/null
-    sleep 1
+    # Wait up to 5s for it to bind — slow Pi boots sometimes take that long
+    for i in 1 2 3 4 5; do
+        if lsof -Pi :${MQTT_PORT} -sTCP:LISTEN -t >/dev/null 2>&1; then break; fi
+        sleep 1
+    done
     if lsof -Pi :${MQTT_PORT} -sTCP:LISTEN -t >/dev/null 2>&1; then
         success "Mosquitto iniciado en puertos ${MQTT_PORT}/${MQTT_LAN_PORT}"
     else
-        error "No se pudo iniciar Mosquitto"
+        error "No se pudo iniciar Mosquitto — revisar logs/mosquitto-error.log"
+        # Tail the error log so the failure cause shows up directly in install output
+        if [ -f logs/mosquitto-error.log ]; then
+            warning "Últimas líneas del error log:"
+            tail -n 10 logs/mosquitto-error.log | sed 's/^/    /'
+        fi
     fi
 fi
 

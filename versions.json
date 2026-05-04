@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-02T20:17:26Z",
+  "generatedAt": "2026-05-04T12:40:13Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2432,11 +2432,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.10",
-      "archive": "s4r-supervisor-1.24.10.tar.gz",
-      "sha256": "560196577e3d6bf2231ad7656c1ea6cf5020e908505f901072b4fe544659f546",
-      "size": 78352,
+      "version": "1.24.11",
+      "archive": "s4r-supervisor-1.24.11.tar.gz",
+      "sha256": "9f1526afbc15dfaae07ccb0fe8c9609c54d6b087678168468852280bbfdf96cd",
+      "size": 81097,
       "changelog": [
+        {
+          "version": "1.24.11",
+          "changes": [
+            "Auto-fix Message Broker when ECONNREFUSED, missing PM2 entry, or corrupt persistence"
+          ]
+        },
         {
           "version": "1.24.10",
           "changes": [
