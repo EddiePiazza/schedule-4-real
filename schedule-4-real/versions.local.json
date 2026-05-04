@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-04T13:00:29.314Z",
+  "lastCheck": "2026-05-04T16:40:29.328Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.122.0",
-      "installedAt": "2026-05-04T13:04:47Z"
+      "version": "1.123.0",
+      "installedAt": "2026-05-04T16:44:55Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.122.0",
+        "changes": [
+          "Expose fan/blower speed and light brightness as numeric HA sensors for automations"
+        ]
+      },
       {
         "version": "1.121.0",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.1",
         "changes": [
           "Fix Alarm Settings save button not detecting changes"
-        ]
-      },
-      {
-        "version": "1.105.0",
-        "changes": [
-          "Auto-suggest reverse ELSE action when connecting to THEN handle"
         ]
       }
     ],

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-04T13:04:47Z",
+  "generatedAt": "2026-05-04T16:44:55Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.122.0",
-      "archive": "s4r-web-1.122.0.tar.gz",
-      "sha256": "0e1b3b79848368224eaadc7ca53cf9fa238a80316f8f220ae74aae75d1eadd53",
-      "size": 11433204,
+      "version": "1.123.0",
+      "archive": "s4r-web-1.123.0.tar.gz",
+      "sha256": "e23e5291e8da2859fd829596c5898967a94578deb5099a62f64cbdf2d2de4cc7",
+      "size": 11433334,
       "changelog": [
+        {
+          "version": "1.123.0",
+          "changes": [
+            "Add Empty/Full and OK/Low text status sensors for dehumidifier and humidifier in HA"
+          ]
+        },
         {
           "version": "1.122.0",
           "changes": [
