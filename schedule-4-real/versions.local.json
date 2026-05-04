@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-04T12:31:05.767Z",
+  "lastCheck": "2026-05-04T13:00:29.314Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.121.0",
-      "installedAt": "2026-05-02T20:17:26Z"
+      "version": "1.122.0",
+      "installedAt": "2026-05-04T13:04:47Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -500,6 +500,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.11",
+        "changes": [
+          "Auto-fix Message Broker when ECONNREFUSED, missing PM2 entry, or corrupt persistence"
+        ]
+      },
+      {
         "version": "1.24.10",
         "changes": [
           "Burn chart and text overlays into auto-generated daily timelapse videos"
@@ -798,12 +804,6 @@
         "version": "1.10.2",
         "changes": [
           "Auto-install sodium-native when deploying relay component"
-        ]
-      },
-      {
-        "version": "1.10.0",
-        "changes": [
-          "Add relay component to auto-updater with post-update migration for tunnel and relay services"
         ]
       }
     ],

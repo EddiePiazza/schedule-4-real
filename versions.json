@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-04T12:40:13Z",
+  "generatedAt": "2026-05-04T13:04:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.121.0",
-      "archive": "s4r-web-1.121.0.tar.gz",
-      "sha256": "8b433ea107be0429c955b8c73f0845c53a37a0fc9fa5a54732352b4a3387c95b",
-      "size": 11432951,
+      "version": "1.122.0",
+      "archive": "s4r-web-1.122.0.tar.gz",
+      "sha256": "0e1b3b79848368224eaadc7ca53cf9fa238a80316f8f220ae74aae75d1eadd53",
+      "size": 11433204,
       "changelog": [
+        {
+          "version": "1.122.0",
+          "changes": [
+            "Expose fan/blower speed and light brightness as numeric HA sensors for automations"
+          ]
+        },
         {
           "version": "1.121.0",
           "changes": [
