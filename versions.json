@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-04T16:44:55Z",
+  "generatedAt": "2026-05-05T18:32:37Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.123.0",
-      "archive": "s4r-web-1.123.0.tar.gz",
-      "sha256": "e23e5291e8da2859fd829596c5898967a94578deb5099a62f64cbdf2d2de4cc7",
-      "size": 11433334,
+      "version": "1.123.1",
+      "archive": "s4r-web-1.123.1.tar.gz",
+      "sha256": "1addaed11b6519e77cee71af0ee426c89229ac245f8a424b8fd2cbb8aeea8823",
+      "size": 11445360,
       "changelog": [
+        {
+          "version": "1.123.1",
+          "changes": [
+            "Auto-recover broker when Settings Restart button hits a missing PM2 entry"
+          ]
+        },
         {
           "version": "1.123.0",
           "changes": [
