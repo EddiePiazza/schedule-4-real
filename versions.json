@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-06T17:11:59Z",
+  "generatedAt": "2026-05-06T20:09:10Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.123.2",
-      "archive": "s4r-web-1.123.2.tar.gz",
-      "sha256": "7d69c052b98bb037089a5d2eaf3db1d459cb633313adb654792fff09ad5b46ba",
-      "size": 11445526,
+      "version": "1.123.3",
+      "archive": "s4r-web-1.123.3.tar.gz",
+      "sha256": "7d9d2598269eb71897d5f3d405a2f711e16fb5b5a478114076c526a6062412c8",
+      "size": 11444982,
       "changelog": [
+        {
+          "version": "1.123.3",
+          "changes": [
+            "Stop the lab page from resetting Fahrenheit selection back to Celsius on mount"
+          ]
+        },
         {
           "version": "1.123.2",
           "changes": [

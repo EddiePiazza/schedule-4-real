@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-06T17:10:03.274Z",
+  "lastCheck": "2026-05-06T20:00:03.249Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.123.2",
-      "installedAt": "2026-05-06T17:11:59Z"
+      "version": "1.123.3",
+      "installedAt": "2026-05-06T20:09:10Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.2",
+        "changes": [
+          "Stop resetting Fahrenheit selection back to Celsius on every page reload"
+        ]
+      },
       {
         "version": "1.123.1",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.4",
         "changes": [
           "Fix light settings not updating in real-time from device LCD changes"
-        ]
-      },
-      {
-        "version": "1.105.3",
-        "changes": [
-          "Fix Alarm and Light settings not persisting after save"
         ]
       }
     ],
