@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-06T10:09:49Z",
+  "generatedAt": "2026-05-06T17:11:59Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.123.1",
-      "archive": "s4r-web-1.123.1.tar.gz",
-      "sha256": "1addaed11b6519e77cee71af0ee426c89229ac245f8a424b8fd2cbb8aeea8823",
-      "size": 11445360,
+      "version": "1.123.2",
+      "archive": "s4r-web-1.123.2.tar.gz",
+      "sha256": "7d69c052b98bb037089a5d2eaf3db1d459cb633313adb654792fff09ad5b46ba",
+      "size": 11445526,
       "changelog": [
+        {
+          "version": "1.123.2",
+          "changes": [
+            "Stop resetting Fahrenheit selection back to Celsius on every page reload"
+          ]
+        },
         {
           "version": "1.123.1",
           "changes": [
