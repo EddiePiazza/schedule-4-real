@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-05T18:25:22.134Z",
+  "lastCheck": "2026-05-06T10:01:17.169Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.11",
-      "installedAt": "2026-05-04T12:40:13Z"
+      "version": "1.24.12",
+      "installedAt": "2026-05-06T10:09:49Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.1",
+        "changes": [
+          "Auto-recover broker when Settings Restart button hits a missing PM2 entry"
+        ]
+      },
       {
         "version": "1.123.0",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.3",
         "changes": [
           "Fix Alarm and Light settings not persisting after save"
-        ]
-      },
-      {
-        "version": "1.105.2",
-        "changes": [
-          "Fix Light Settings save button not detecting changes due to WebSocket overwriting edits"
         ]
       }
     ],

@@ -184,6 +184,22 @@ fi
 # root cause of "Message Broker ERRORED" reports from JoeGhost/Christian.
 systemctl stop mosquitto.service 2>/dev/null || true
 systemctl disable mosquitto.service 2>/dev/null || true
+
+# Disable the Ubuntu AppArmor profile that ships with the mosquitto package
+# — it confines mosquitto to /etc/mosquitto and /var/lib/mosquitto, so when
+# we point it at our project's config (e.g. /root/schedule-4-real/proxy/...)
+# it errors with "Unable to open config file" and PM2 ends up errored.
+# This was the root cause of JoeGhost's reinstall loop.
+if command -v aa-status &>/dev/null && aa-status 2>/dev/null | grep -q "^   mosquitto$"; then
+    info "Disabling AppArmor mosquitto profile so PM2 can read project config..."
+    if [ -f /etc/apparmor.d/mosquitto ]; then
+        ln -sf /etc/apparmor.d/mosquitto /etc/apparmor.d/disable/mosquitto 2>/dev/null
+        apparmor_parser -R /etc/apparmor.d/mosquitto 2>/dev/null || true
+    elif [ -f /etc/apparmor.d/usr.sbin.mosquitto ]; then
+        ln -sf /etc/apparmor.d/usr.sbin.mosquitto /etc/apparmor.d/disable/usr.sbin.mosquitto 2>/dev/null
+        apparmor_parser -R /etc/apparmor.d/usr.sbin.mosquitto 2>/dev/null || true
+    fi
+fi
 success "Mosquitto available"
 
 # FFmpeg (timelapse video generation)

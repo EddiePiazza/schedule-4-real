@@ -1928,6 +1928,36 @@ function killSystemMosquitto() {
   } catch { return false; }
 }
 
+/**
+ * Detect Ubuntu's AppArmor profile for mosquitto and unload it. The default
+ * profile confines mosquitto to /etc/mosquitto and /var/lib/mosquitto, so any
+ * `-c <our-project>/proxy/mosquitto.conf` invocation errors with "Unable to
+ * open config file" — even when run as root. This was the actual cause of
+ * JoeGhost's "ERRORED can only be fixed by reinstalling" loop. Returns true
+ * if a profile was disabled.
+ */
+function disableMosquittoApparmor() {
+  try {
+    const out = execSync('aa-status 2>/dev/null | grep -c "^   mosquitto$" || true', { stdio: ['ignore', 'pipe', 'ignore'], timeout: 3000 }).toString().trim();
+    if (out === '0' || !out) return false;
+  } catch { return false; }
+  console.log('[Recovery] AppArmor mosquitto profile is active and blocking config access — disabling');
+  const candidates = ['/etc/apparmor.d/mosquitto', '/etc/apparmor.d/usr.sbin.mosquitto'];
+  let disabled = false;
+  for (const profile of candidates) {
+    if (!fs.existsSync(profile)) continue;
+    try {
+      execSync(`mkdir -p /etc/apparmor.d/disable && ln -sf ${profile} /etc/apparmor.d/disable/${path.basename(profile)}`, { stdio: 'pipe', timeout: 3000 });
+      execSync(`apparmor_parser -R ${profile}`, { stdio: 'pipe', timeout: 5000 });
+      disabled = true;
+      console.log(`[Recovery] Disabled AppArmor profile: ${profile}`);
+    } catch (err) {
+      console.warn(`[Recovery] Could not disable ${profile}: ${err.message}`);
+    }
+  }
+  return disabled;
+}
+
 function killOrphanMosquittos() {
   // Anything that isn't our PM2 child — kill it. PM2's child carries the full
   // path to our project's mosquitto.conf in its argv, so we target only mosquittos
@@ -1991,6 +2021,9 @@ async function ensureMosquittoHealthy() {
   // 1) Make sure the distro's mosquitto.service isn't claiming the port
   killSystemMosquitto();
 
+  // 1b) Disable Ubuntu's AppArmor mosquitto profile if it's blocking us
+  disableMosquittoApparmor();
+
   // 2) Kill orphan mosquittos that aren't ours (e.g. detached daemon-mode legacy)
   killOrphanMosquittos();
 
@@ -2006,6 +2039,17 @@ async function ensureMosquittoHealthy() {
   if (!validation.ok) {
     const stderrLower = (validation.stderr || '').toLowerCase();
     console.warn(`[Recovery] Mosquitto config validation failed:\n${validation.stderr.slice(0, 600)}`);
+    // "Unable to open config file" is the AppArmor symptom on Ubuntu — try
+    // disabling the profile once more (in case step 1b missed it for some
+    // reason) and re-validate.
+    if (stderrLower.includes('unable to open config file')) {
+      if (disableMosquittoApparmor()) {
+        validation = await validateMosquittoConfig(confPath);
+      }
+    }
+  }
+  if (!validation.ok) {
+    const stderrLower = (validation.stderr || '').toLowerCase();
     if (stderrLower.includes('persistence') || stderrLower.includes('mosquitto.db') || stderrLower.includes('unable to open')) {
       const dataDir = path.join(PROJECT_ROOT, 'proxy', 'mosquitto_data');
       const ts = Date.now();

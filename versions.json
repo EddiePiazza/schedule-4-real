@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-05T18:32:37Z",
+  "generatedAt": "2026-05-06T10:09:49Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2450,11 +2450,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.11",
-      "archive": "s4r-supervisor-1.24.11.tar.gz",
-      "sha256": "9f1526afbc15dfaae07ccb0fe8c9609c54d6b087678168468852280bbfdf96cd",
-      "size": 81097,
+      "version": "1.24.12",
+      "archive": "s4r-supervisor-1.24.12.tar.gz",
+      "sha256": "debb3b300fef750f90b7e54b394a146082f9390868679680119d37023acddccb",
+      "size": 81648,
       "changelog": [
+        {
+          "version": "1.24.12",
+          "changes": [
+            "Auto-disable Ubuntu AppArmor profile that blocked Mosquitto from reading project config"
+          ]
+        },
         {
           "version": "1.24.11",
           "changes": [
