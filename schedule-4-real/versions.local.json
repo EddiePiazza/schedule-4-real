@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-06T20:00:03.249Z",
+  "lastCheck": "2026-05-07T11:21:17.467Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.123.3",
-      "installedAt": "2026-05-06T20:09:10Z"
+      "version": "1.123.4",
+      "installedAt": "2026-05-07T11:21:38Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.3",
+        "changes": [
+          "Stop the lab page from resetting Fahrenheit selection back to Celsius on mount"
+        ]
+      },
       {
         "version": "1.123.2",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.5",
         "changes": [
           "Fix light config not loading in passive/relay mode (darkTemp, sunrise/sunset)"
-        ]
-      },
-      {
-        "version": "1.105.4",
-        "changes": [
-          "Fix light settings not updating in real-time from device LCD changes"
         ]
       }
     ],
