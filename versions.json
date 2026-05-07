@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-07T13:29:32Z",
+  "generatedAt": "2026-05-07T16:21:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.123.5",
-      "archive": "s4r-web-1.123.5.tar.gz",
-      "sha256": "587e38e8a2458b5a06689a7ae1cb41d89a690783bb85313c2fb34fa3a72522de",
-      "size": 11445227,
+      "version": "1.123.6",
+      "archive": "s4r-web-1.123.6.tar.gz",
+      "sha256": "a4aa1b70e717e9e788f1f911eeeaa95e094b36a06861f53bb4d7c244e2f206a1",
+      "size": 11450818,
       "changelog": [
+        {
+          "version": "1.123.6",
+          "changes": [
+            "Fix live stream for MJPEG cameras (Android IP Webcam, HTTP-MJPEG)"
+          ]
+        },
         {
           "version": "1.123.5",
           "changes": [

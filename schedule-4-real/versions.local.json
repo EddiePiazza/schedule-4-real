@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-07T13:21:17.484Z",
+  "lastCheck": "2026-05-07T16:21:17.474Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.123.5",
-      "installedAt": "2026-05-07T13:29:32Z"
+      "version": "1.123.6",
+      "installedAt": "2026-05-07T16:21:39Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.5",
+        "changes": [
+          "Restore the PPFD sensor card on the dashboard"
+        ]
+      },
       {
         "version": "1.123.4",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.7",
         "changes": [
           "Fix light config fetch for CB devices and cache getConfigField responses"
-        ]
-      },
-      {
-        "version": "1.105.6",
-        "changes": [
-          "Fix device config not caching after getConfigField (lights, alarms, all settings)"
         ]
       }
     ],
