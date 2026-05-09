@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-07T16:21:17.474Z",
+  "lastCheck": "2026-05-09T15:01:21.455Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 13,
   "components": {
     "web": {
-      "version": "1.123.6",
-      "installedAt": "2026-05-07T16:21:39Z"
+      "version": "1.123.7",
+      "installedAt": "2026-05-09T15:06:31Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.6",
+        "changes": [
+          "Fix live stream for MJPEG cameras (Android IP Webcam, HTTP-MJPEG)"
+        ]
+      },
       {
         "version": "1.123.5",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.105.8",
         "changes": [
           "Fix Light 2 config not loading on CB devices (darkTemp, sunrise/sunset)"
-        ]
-      },
-      {
-        "version": "1.105.7",
-        "changes": [
-          "Fix light config fetch for CB devices and cache getConfigField responses"
         ]
       }
     ],

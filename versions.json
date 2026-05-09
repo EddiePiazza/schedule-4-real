@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-07T16:21:39Z",
+  "generatedAt": "2026-05-09T15:06:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.123.6",
-      "archive": "s4r-web-1.123.6.tar.gz",
-      "sha256": "a4aa1b70e717e9e788f1f911eeeaa95e094b36a06861f53bb4d7c244e2f206a1",
-      "size": 11450818,
+      "version": "1.123.7",
+      "archive": "s4r-web-1.123.7.tar.gz",
+      "sha256": "913a9368e65ea5d3a14cb8b6e74ecf4f59aec805ee6785036fd820ef7b26cbde",
+      "size": 11446846,
       "changelog": [
+        {
+          "version": "1.123.7",
+          "changes": [
+            "Hide floating AI assistant button until an AI provider is configured",
+            "Collapse and paginate Event Log on mobile so it stops dominating the screen",
+            "Accept seed-pack range format (55-60) for strain flowering days",
+            "Show eye-slash icon on hidden socket toggles so they aren't read as missing"
+          ]
+        },
         {
           "version": "1.123.6",
           "changes": [
