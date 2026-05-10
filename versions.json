@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-10T17:11:08Z",
+  "generatedAt": "2026-05-10T18:45:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.124.1",
-      "archive": "s4r-web-1.124.1.tar.gz",
-      "sha256": "f62020eaf6e50290d94367d8efff96f0b03ff4703337114365ae1c4875ab177e",
-      "size": 11446801,
+      "version": "1.125.0",
+      "archive": "s4r-web-1.125.0.tar.gz",
+      "sha256": "bf07fb61529b9fb40d4190a0c319bb5f2994c1dbb830b55c138b66c3e130567a",
+      "size": 11449962,
       "changelog": [
+        {
+          "version": "1.125.0",
+          "changes": [
+            "Preserve range format (50-56) for strain flowering days instead of collapsing to midpoint",
+            "Allow backdating log entries (Quick Observation and full Observation Wizard now accept a date)"
+          ]
+        },
         {
           "version": "1.124.1",
           "changes": [
@@ -2999,11 +3006,17 @@
       ]
     },
     "schema": {
-      "version": "14",
-      "archive": "s4r-schema-14.tar.gz",
-      "sha256": "890ffb5e283ea53d3c44ab0bf02799da51ba521f6a6d1d3f41fb1f599f816e01",
-      "size": 8261,
+      "version": "15",
+      "archive": "s4r-schema-15.tar.gz",
+      "sha256": "c9412ecabb6d77d9364e40b21d20bf773f7b42940e6bb6f1a4a05da1e3f074bb",
+      "size": 8433,
       "changelog": [
+        {
+          "version": "15",
+          "changes": [
+            "Add expected_flowering_text column to lab_strains for human-readable ranges"
+          ]
+        },
         {
           "version": "14",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-10T17:01:21.945Z",
+  "lastCheck": "2026-05-10T18:41:21.962Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 14,
+  "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.124.1",
-      "installedAt": "2026-05-10T17:11:08Z"
+      "version": "1.125.0",
+      "installedAt": "2026-05-10T18:45:24Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "14",
-      "installedAt": "2026-05-10T15:35:54Z"
+      "version": "15",
+      "installedAt": "2026-05-10T18:45:24Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.124.1",
+        "changes": [
+          "Persist socket-timeline visibility to localStorage so toggle sticks even when server save fails"
+        ]
+      },
       {
         "version": "1.124.0",
         "changes": [
@@ -388,12 +394,6 @@
         "version": "1.107.1",
         "changes": [
           "Unify mode labels across all dashboard modules (short consistent names)"
-        ]
-      },
-      {
-        "version": "1.107.0",
-        "changes": [
-          "Show module mode labels on dashboard, allow ON/OFF toggle in Trigger mode across all devices"
         ]
       }
     ],

@@ -452,6 +452,7 @@ const tables = [
         seed_type SYMBOL,
         indica_ratio INT,
         expected_flowering_days INT,
+        expected_flowering_text STRING,
         expected_thc DOUBLE,
         expected_cbd DOUBLE,
         dominant_terpenes STRING,
@@ -1410,6 +1411,14 @@ const migrations = [
   {
     name: 'lab_strains: add source_url column',
     sql: `ALTER TABLE lab_strains ADD COLUMN source_url STRING`
+  },
+  // Preserve the user's raw flowering-days input ("50-56") so we don't have to
+  // collapse a range to a single integer. The INT column stays for sorting and
+  // backwards compatibility, but display prefers this text when present.
+  // (JoeGhost report 2026-05-07: saw "50-56" stored as 53 — the midpoint.)
+  {
+    name: 'lab_strains: add expected_flowering_text column',
+    sql: `ALTER TABLE lab_strains ADD COLUMN expected_flowering_text STRING`
   }
 ];
 
