@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-10T15:31:21.883Z",
+  "lastCheck": "2026-05-10T17:01:21.945Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 14,
   "components": {
     "web": {
-      "version": "1.124.0",
-      "installedAt": "2026-05-10T15:35:54Z"
+      "version": "1.124.1",
+      "installedAt": "2026-05-10T17:11:08Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.124.0",
+        "changes": [
+          "Fix plant creation 400 error when origin is clone (early_veg/mid_veg/late_veg/harvest now accepted)",
+          "Make hidden socket-timeline chips look clickable instead of broken",
+          "Add seed-shop/breeder URL field to strains, shown as link on the card"
+        ]
+      },
       {
         "version": "1.123.7",
         "changes": [
@@ -386,12 +394,6 @@
         "version": "1.107.0",
         "changes": [
           "Show module mode labels on dashboard, allow ON/OFF toggle in Trigger mode across all devices"
-        ]
-      },
-      {
-        "version": "1.106.0",
-        "changes": [
-          "Dynamic currency symbol (\u20ac/$) and temperature unit conversion across all settings, lights and triggers"
         ]
       }
     ],
@@ -857,6 +859,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "14",
+        "changes": [
+          "Add source_url column to lab_strains for breeder/seed-shop links"
+        ]
+      },
       {
         "version": "13",
         "changes": [
