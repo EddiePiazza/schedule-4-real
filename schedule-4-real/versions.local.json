@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-09T15:01:21.455Z",
+  "lastCheck": "2026-05-10T15:31:21.883Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 13,
+  "schemaVersion": 14,
   "components": {
     "web": {
-      "version": "1.123.7",
-      "installedAt": "2026-05-09T15:06:31Z"
+      "version": "1.124.0",
+      "installedAt": "2026-05-10T15:35:54Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "13",
-      "installedAt": "2026-04-19T22:59:46Z"
+      "version": "14",
+      "installedAt": "2026-05-10T15:35:54Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.123.7",
+        "changes": [
+          "Hide floating AI assistant button until an AI provider is configured",
+          "Collapse and paginate Event Log on mobile so it stops dominating the screen",
+          "Accept seed-pack range format (55-60) for strain flowering days",
+          "Show eye-slash icon on hidden socket toggles so they aren't read as missing"
+        ]
+      },
       {
         "version": "1.123.6",
         "changes": [
@@ -383,12 +392,6 @@
         "version": "1.106.0",
         "changes": [
           "Dynamic currency symbol (\u20ac/$) and temperature unit conversion across all settings, lights and triggers"
-        ]
-      },
-      {
-        "version": "1.105.8",
-        "changes": [
-          "Fix Light 2 config not loading on CB devices (darkTemp, sunrise/sunset)"
         ]
       }
     ],

@@ -460,6 +460,7 @@ const tables = [
         breeder_notes STRING,
         acquisition_date STRING,
         acquisition_source STRING,
+        source_url STRING,
         total_seeds INT,
         seeds_remaining INT,
         is_clone_only INT,
@@ -1404,6 +1405,11 @@ const migrations = [
   {
     name: 'lab_harvest_data: add cure_log column',
     sql: `ALTER TABLE lab_harvest_data ADD COLUMN cure_log STRING`
+  },
+  // Breeder/seed-shop URL on the strain card (JoeGhost request 2026-05-07)
+  {
+    name: 'lab_strains: add source_url column',
+    sql: `ALTER TABLE lab_strains ADD COLUMN source_url STRING`
   }
 ];
 
