@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-10T18:45:24Z",
+  "generatedAt": "2026-05-11T23:01:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.125.0",
-      "archive": "s4r-web-1.125.0.tar.gz",
-      "sha256": "bf07fb61529b9fb40d4190a0c319bb5f2994c1dbb830b55c138b66c3e130567a",
-      "size": 11449962,
+      "version": "1.126.0",
+      "archive": "s4r-web-1.126.0.tar.gz",
+      "sha256": "a8acf759af0677b5d616ee4c3e7fb8654bc865e33e43bd2dc46041fa25e47ff0",
+      "size": 11448551,
       "changelog": [
+        {
+          "version": "1.126.0",
+          "changes": [
+            "Backdated observations no longer rewind a plant's current day/week counter",
+            "Add editable date to the observation editor and let backdating reorder pheno-hunt timeline correctly"
+          ]
+        },
         {
           "version": "1.125.0",
           "changes": [

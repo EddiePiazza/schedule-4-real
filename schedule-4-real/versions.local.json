@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-10T18:41:21.962Z",
+  "lastCheck": "2026-05-11T23:01:22.780Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.125.0",
-      "installedAt": "2026-05-10T18:45:24Z"
+      "version": "1.126.0",
+      "installedAt": "2026-05-11T23:01:24Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.125.0",
+        "changes": [
+          "Preserve range format (50-56) for strain flowering days instead of collapsing to midpoint",
+          "Allow backdating log entries (Quick Observation and full Observation Wizard now accept a date)"
+        ]
+      },
       {
         "version": "1.124.1",
         "changes": [
@@ -388,12 +395,6 @@
         "version": "1.108.0",
         "changes": [
           "Show target range with deadband on temperature and humidity dashboard cards"
-        ]
-      },
-      {
-        "version": "1.107.1",
-        "changes": [
-          "Unify mode labels across all dashboard modules (short consistent names)"
         ]
       }
     ],
@@ -859,6 +860,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "15",
+        "changes": [
+          "Add expected_flowering_text column to lab_strains for human-readable ranges"
+        ]
+      },
       {
         "version": "14",
         "changes": [
