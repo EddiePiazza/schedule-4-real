@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-11T23:01:24Z",
+  "generatedAt": "2026-05-12T19:49:26Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.126.0",
-      "archive": "s4r-web-1.126.0.tar.gz",
-      "sha256": "a8acf759af0677b5d616ee4c3e7fb8654bc865e33e43bd2dc46041fa25e47ff0",
-      "size": 11448551,
+      "version": "1.127.0",
+      "archive": "s4r-web-1.127.0.tar.gz",
+      "sha256": "8215c8234e77c979ddcbbf1a874d12ff37e68cfcabb780f9101c94a4258705dd",
+      "size": 11452968,
       "changelog": [
+        {
+          "version": "1.127.0",
+          "changes": [
+            "Add an \"Add Plant\" button to enrol existing plants into a running pheno hunt"
+          ]
+        },
         {
           "version": "1.126.0",
           "changes": [
