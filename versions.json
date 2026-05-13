@@ -1,14 +1,25 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-13T14:39:20Z",
+  "generatedAt": "2026-05-13T15:27:33Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.127.2",
-      "archive": "s4r-web-1.127.2.tar.gz",
-      "sha256": "404ea65d81f3c439342ba7c598a8fd65411e8e5773213fb6e72c1397aa7afb0d",
-      "size": 11451398,
+      "version": "1.128.0",
+      "archive": "s4r-web-1.128.0.tar.gz",
+      "sha256": "21733acecfe2e722254560ec2741d6e9aa667fe431339ef599129f92438ccb35",
+      "size": 11452633,
       "changelog": [
+        {
+          "version": "1.128.0",
+          "changes": [
+            "Add and remove photos from the Edit Observation modal",
+            "Fix 400 saving observation in hunt mode when stage is a checkpoint type",
+            "Fix 400 when advancing hunt status to Vegetative / Flowering / Harvest",
+            "Fix 400 when setting a keeper tier from the score wizard",
+            "Allow editing plants past one year (lift 365-day and 52-week caps)",
+            "Fix 400 editing pollen records when storage method is Room Temperature"
+          ]
+        },
         {
           "version": "1.127.2",
           "changes": [
