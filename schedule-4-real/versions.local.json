@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-13T15:21:23.369Z",
+  "lastCheck": "2026-05-13T19:11:23.376Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.128.0",
-      "installedAt": "2026-05-13T15:27:33Z"
+      "version": "1.129.0",
+      "installedAt": "2026-05-13T19:21:12Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,17 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.128.0",
+        "changes": [
+          "Add and remove photos from the Edit Observation modal",
+          "Fix 400 saving observation in hunt mode when stage is a checkpoint type",
+          "Fix 400 when advancing hunt status to Vegetative / Flowering / Harvest",
+          "Fix 400 when setting a keeper tier from the score wizard",
+          "Allow editing plants past one year (lift 365-day and 52-week caps)",
+          "Fix 400 editing pollen records when storage method is Room Temperature"
+        ]
+      },
       {
         "version": "1.127.2",
         "changes": [
@@ -388,13 +399,6 @@
         "changes": [
           "Fix multi-device data isolation: filter all sensors, charts and stats by active device MAC",
           "Fix multi-device: filter sensors/lights/sockets by active device, skip 1h post-transition for period stats"
-        ]
-      },
-      {
-        "version": "1.111.0",
-        "changes": [
-          "Persist temperature unit preference on server, sync across all devices and browsers",
-          "Fix VPD table leaf offset display to use selected temperature unit"
         ]
       }
     ],

@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-13T15:27:33Z",
+  "generatedAt": "2026-05-13T19:21:12Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.128.0",
-      "archive": "s4r-web-1.128.0.tar.gz",
-      "sha256": "21733acecfe2e722254560ec2741d6e9aa667fe431339ef599129f92438ccb35",
-      "size": 11452633,
+      "version": "1.129.0",
+      "archive": "s4r-web-1.129.0.tar.gz",
+      "sha256": "927f61199859d5fc80e307114dc48ab09dae6f85c9298666d20b99a05931cb5d",
+      "size": 11451106,
       "changelog": [
+        {
+          "version": "1.129.0",
+          "changes": [
+            "Journal link on a plant now focuses just that plant in the hunt timeline",
+            "Allow renaming a plant's code from the Edit Plant form"
+          ]
+        },
         {
           "version": "1.128.0",
           "changes": [
