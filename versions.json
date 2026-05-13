@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-13T11:37:46Z",
+  "generatedAt": "2026-05-13T14:39:20Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.127.1",
-      "archive": "s4r-web-1.127.1.tar.gz",
-      "sha256": "8be581c593ed94e0040f601aae9594238e52b1561bc24687ef87b488f55b3379",
-      "size": 11449137,
+      "version": "1.127.2",
+      "archive": "s4r-web-1.127.2.tar.gz",
+      "sha256": "404ea65d81f3c439342ba7c598a8fd65411e8e5773213fb6e72c1397aa7afb0d",
+      "size": 11451398,
       "changelog": [
+        {
+          "version": "1.127.2",
+          "changes": [
+            "Quick Photo: pick which plant the photo attaches to instead of always landing on the first"
+          ]
+        },
         {
           "version": "1.127.1",
           "changes": [

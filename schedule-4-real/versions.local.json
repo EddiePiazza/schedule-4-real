@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-13T11:31:23.310Z",
+  "lastCheck": "2026-05-13T14:31:23.372Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.127.1",
-      "installedAt": "2026-05-13T11:37:46Z"
+      "version": "1.127.2",
+      "installedAt": "2026-05-13T14:39:20Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.127.1",
+        "changes": [
+          "Fix \"1 plants\" / \"1 devices\" pluralization in hunt and rooms summaries",
+          "Fix \"Failed to save observation\" when adding photos or problem/stress entries"
+        ]
+      },
       {
         "version": "1.127.0",
         "changes": [
@@ -389,13 +396,6 @@
         "changes": [
           "Fix dashboard module layout: correct icons, switches aligned right, trigger mode detection, VPD table button",
           "Add VPD reference table to dashboard with Leaf/Air toggle and live position indicator"
-        ]
-      },
-      {
-        "version": "1.109.1",
-        "changes": [
-          "Remove redundant mode badge from socket cards (already shown in label)",
-          "Remove redundant mode badges from socket cards, shorten mode labels"
         ]
       }
     ],
