@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-12T19:41:22.868Z",
+  "lastCheck": "2026-05-13T11:31:23.310Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.127.0",
-      "installedAt": "2026-05-12T19:49:26Z"
+      "version": "1.127.1",
+      "installedAt": "2026-05-13T11:37:46Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.127.0",
+        "changes": [
+          "Add an \"Add Plant\" button to enrol existing plants into a running pheno hunt"
+        ]
+      },
       {
         "version": "1.126.0",
         "changes": [
@@ -390,12 +396,6 @@
         "changes": [
           "Remove redundant mode badge from socket cards (already shown in label)",
           "Remove redundant mode badges from socket cards, shorten mode labels"
-        ]
-      },
-      {
-        "version": "1.109.0",
-        "changes": [
-          "Multi-device dashboard with room selector, device naming, per-device sensor filtering and device selector in settings"
         ]
       }
     ],

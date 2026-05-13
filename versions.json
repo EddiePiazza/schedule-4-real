@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-12T19:49:26Z",
+  "generatedAt": "2026-05-13T11:37:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.127.0",
-      "archive": "s4r-web-1.127.0.tar.gz",
-      "sha256": "8215c8234e77c979ddcbbf1a874d12ff37e68cfcabb780f9101c94a4258705dd",
-      "size": 11452968,
+      "version": "1.127.1",
+      "archive": "s4r-web-1.127.1.tar.gz",
+      "sha256": "8be581c593ed94e0040f601aae9594238e52b1561bc24687ef87b488f55b3379",
+      "size": 11449137,
       "changelog": [
+        {
+          "version": "1.127.1",
+          "changes": [
+            "Fix \"1 plants\" / \"1 devices\" pluralization in hunt and rooms summaries",
+            "Fix \"Failed to save observation\" when adding photos or problem/stress entries"
+          ]
+        },
         {
           "version": "1.127.0",
           "changes": [
