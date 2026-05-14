@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-14T19:21:23.812Z",
+  "lastCheck": "2026-05-14T19:31:23.866Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.131.0",
-      "installedAt": "2026-05-14T19:26:59Z"
+      "version": "1.132.0",
+      "installedAt": "2026-05-14T19:33:47Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.131.0",
+        "changes": [
+          "Show streaming-engine error on Cameras tab even before any camera is added",
+          "Breeder Card button shows when locked, with a hint about the unlock criteria",
+          "Photo lightbox: Download button opens the photo full-size in a new tab",
+          "Rooms tab: toggle to hide 3D-scene info overlays for a clean view",
+          "Plant wizard: Skip-strain button moved next to the search box",
+          "Strain card empty plant list now has a one-click + Add plant shortcut",
+          "Differentiate New Plant vs New Strain buttons with sprout / helix emoji"
+        ]
+      },
       {
         "version": "1.130.0",
         "changes": [
@@ -406,13 +418,6 @@
         "version": "1.111.4",
         "changes": [
           "Fix sensor data not changing when switching between devices"
-        ]
-      },
-      {
-        "version": "1.111.3",
-        "changes": [
-          "Fix climate module data mixing between devices in multi-device setups",
-          "Replace emoji icons with Heroicons in room selector"
         ]
       }
     ],

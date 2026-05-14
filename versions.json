@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-14T19:26:59Z",
+  "generatedAt": "2026-05-14T19:33:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.131.0",
-      "archive": "s4r-web-1.131.0.tar.gz",
-      "sha256": "795e38d88cda7355ef58376a9a21eb6177ed88434eed0a099d691fd56db9ee42",
-      "size": 11459065,
+      "version": "1.132.0",
+      "archive": "s4r-web-1.132.0.tar.gz",
+      "sha256": "c6ff444c24a9bbe1130aaf299e4d62d9aef0c5ed9bc66b4ea11bf46f1bee39b9",
+      "size": 11456072,
       "changelog": [
+        {
+          "version": "1.132.0",
+          "changes": [
+            "Observation wizard: Save & finish escape hatch \u2014 save without clicking through every step",
+            "Label the plant timeline as \"Plant Journal\" \u2014 home growers don't need a Pheno Hunt to have one",
+            "Compare radar shows Score X buttons when fewer than 2 plants are scored",
+            "Score wizard refuses to save synthetic 5.0 scores when nothing was rated"
+          ]
+        },
         {
           "version": "1.131.0",
           "changes": [
