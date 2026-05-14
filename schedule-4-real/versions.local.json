@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-13T19:11:23.376Z",
+  "lastCheck": "2026-05-14T19:11:23.851Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.129.0",
-      "installedAt": "2026-05-13T19:21:12Z"
+      "version": "1.130.0",
+      "installedAt": "2026-05-14T19:17:46Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.129.0",
+        "changes": [
+          "Journal link on a plant now focuses just that plant in the hunt timeline",
+          "Allow renaming a plant's code from the Edit Plant form"
+        ]
+      },
       {
         "version": "1.128.0",
         "changes": [
@@ -392,13 +399,6 @@
         "version": "1.111.2",
         "changes": [
           "Fix multi-device MAC case mismatch in DB queries and clear stale data on device switch"
-        ]
-      },
-      {
-        "version": "1.111.1",
-        "changes": [
-          "Fix multi-device data isolation: filter all sensors, charts and stats by active device MAC",
-          "Fix multi-device: filter sensors/lights/sockets by active device, skip 1h post-transition for period stats"
         ]
       }
     ],

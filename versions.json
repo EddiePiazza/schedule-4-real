@@ -1,14 +1,34 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-13T19:21:12Z",
+  "generatedAt": "2026-05-14T19:17:46Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.129.0",
-      "archive": "s4r-web-1.129.0.tar.gz",
-      "sha256": "927f61199859d5fc80e307114dc48ab09dae6f85c9298666d20b99a05931cb5d",
-      "size": 11451106,
+      "version": "1.130.0",
+      "archive": "s4r-web-1.130.0.tar.gz",
+      "sha256": "f865a65fb1d1b0f49a4671457c5d439fa83bc0188a1e1b23381bdcd805460927",
+      "size": 11457083,
       "changelog": [
+        {
+          "version": "1.130.0",
+          "changes": [
+            "Distinguish Log Entry vs Add Plant in hunt header with different icons",
+            "Land on Strains tab by default if you don't have a pheno hunt set up",
+            "Use UUIDs for hunt checkpoints to prevent same-millisecond ID collisions",
+            "Journal/Pheno Hunt empty state explains pheno hunts are optional and links to plants",
+            "Overview inventory pills (Seeds/Pollen/Strains) are now clickable",
+            "Creating a plant from any tab no longer kicks you back to Strains",
+            "Male evaluation empty state links to where you actually mark a plant as male",
+            "Needs Attention card on Overview shows total count and expands beyond 5 items",
+            "Stop leaking keydown listener when closing a photo lightbox",
+            "Opening a plant pushes a URL \u2014 browser-back returns to the list instead of leaving the lab",
+            "Replace Quick Add with focused popover (plant / strain / quick log / full wizard)",
+            "Make Quick Log the primary hunt action and demote the detailed wizard",
+            "Score wizard: Save now button saves partial scores without finishing all 9 steps",
+            "Lab tabs stay in the same order \u2014 keyboard shortcuts no longer shift around",
+            "Welcome screen now offers three paths (plant, strain, tour) instead of forcing one"
+          ]
+        },
         {
           "version": "1.129.0",
           "changes": [
