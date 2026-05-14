@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-14T19:17:46Z",
+  "generatedAt": "2026-05-14T19:26:59Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.130.0",
-      "archive": "s4r-web-1.130.0.tar.gz",
-      "sha256": "f865a65fb1d1b0f49a4671457c5d439fa83bc0188a1e1b23381bdcd805460927",
-      "size": 11457083,
+      "version": "1.131.0",
+      "archive": "s4r-web-1.131.0.tar.gz",
+      "sha256": "795e38d88cda7355ef58376a9a21eb6177ed88434eed0a099d691fd56db9ee42",
+      "size": 11459065,
       "changelog": [
+        {
+          "version": "1.131.0",
+          "changes": [
+            "Show streaming-engine error on Cameras tab even before any camera is added",
+            "Breeder Card button shows when locked, with a hint about the unlock criteria",
+            "Photo lightbox: Download button opens the photo full-size in a new tab",
+            "Rooms tab: toggle to hide 3D-scene info overlays for a clean view",
+            "Plant wizard: Skip-strain button moved next to the search box",
+            "Strain card empty plant list now has a one-click + Add plant shortcut",
+            "Differentiate New Plant vs New Strain buttons with sprout / helix emoji"
+          ]
+        },
         {
           "version": "1.130.0",
           "changes": [
