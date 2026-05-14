@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-14T19:33:47Z",
+  "generatedAt": "2026-05-14T19:39:09Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.132.0",
-      "archive": "s4r-web-1.132.0.tar.gz",
-      "sha256": "c6ff444c24a9bbe1130aaf299e4d62d9aef0c5ed9bc66b4ea11bf46f1bee39b9",
-      "size": 11456072,
+      "version": "1.132.1",
+      "archive": "s4r-web-1.132.1.tar.gz",
+      "sha256": "85bdfeb7df484c195229663185cf9f64aa026c825781f04f83ea977824de38cf",
+      "size": 11457362,
       "changelog": [
+        {
+          "version": "1.132.1",
+          "changes": [
+            "Hunt: hide Compare/Keeper/Rankings tabs entirely until 2 plants scored (single hint instead)"
+          ]
+        },
         {
           "version": "1.132.0",
           "changes": [
