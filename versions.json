@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-14T19:39:09Z",
+  "generatedAt": "2026-05-15T01:20:38Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.132.1",
-      "archive": "s4r-web-1.132.1.tar.gz",
-      "sha256": "85bdfeb7df484c195229663185cf9f64aa026c825781f04f83ea977824de38cf",
-      "size": 11457362,
+      "version": "1.133.0",
+      "archive": "s4r-web-1.133.0.tar.gz",
+      "sha256": "26f71925b01ddd906f1bb8f6d162b3e570c13ebaaadedd7887b7d15e6f16f5f0",
+      "size": 11456809,
       "changelog": [
+        {
+          "version": "1.133.0",
+          "changes": [
+            "Guided mode now hides breeder-only fields (node count, stem diameter, trichome %)"
+          ]
+        },
         {
           "version": "1.132.1",
           "changes": [

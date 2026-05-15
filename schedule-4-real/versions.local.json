@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-14T19:31:23.866Z",
+  "lastCheck": "2026-05-15T01:11:24.378Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 15,
   "components": {
     "web": {
-      "version": "1.132.1",
-      "installedAt": "2026-05-14T19:39:09Z"
+      "version": "1.133.0",
+      "installedAt": "2026-05-15T01:20:38Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,21 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.132.1",
+        "changes": [
+          "Hunt: hide Compare/Keeper/Rankings tabs entirely until 2 plants scored (single hint instead)"
+        ]
+      },
+      {
+        "version": "1.132.0",
+        "changes": [
+          "Observation wizard: Save & finish escape hatch \u2014 save without clicking through every step",
+          "Label the plant timeline as \"Plant Journal\" \u2014 home growers don't need a Pheno Hunt to have one",
+          "Compare radar shows Score X buttons when fewer than 2 plants are scored",
+          "Score wizard refuses to save synthetic 5.0 scores when nothing was rated"
+        ]
+      },
       {
         "version": "1.131.0",
         "changes": [
@@ -406,18 +421,6 @@
         "version": "1.112.1",
         "changes": [
           "Fix multi-sensor layout to use real SensorCard components with day/night stats and soil"
-        ]
-      },
-      {
-        "version": "1.112.0",
-        "changes": [
-          "Redesign multi-device dashboard with unified sensor blocks and always-visible sockets"
-        ]
-      },
-      {
-        "version": "1.111.4",
-        "changes": [
-          "Fix sensor data not changing when switching between devices"
         ]
       }
     ],
