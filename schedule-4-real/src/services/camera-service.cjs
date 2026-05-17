@@ -703,6 +703,32 @@ async function captureFromCamera(host, port, outputPath, { useAutofocus = false 
   return false;
 }
 
+// Cached day/night schedule (refreshed every minute by the scheduler loop).
+let dayNightCache = { dayStart: '06:00', dayEnd: '00:00' };
+let dayNightCacheAt = 0;
+
+async function refreshDayNightCache() {
+  // Only re-query the DB once per minute; the schedule rarely changes.
+  if (Date.now() - dayNightCacheAt < 60_000) return;
+  try {
+    const rows = await dbQuery(`SELECT day_start, day_end FROM day_night_schedule LATEST ON timestamp PARTITION BY source`);
+    if (rows?.[0]) {
+      dayNightCache = { dayStart: rows[0].day_start || '06:00', dayEnd: rows[0].day_end || '00:00' };
+    }
+  } catch { /* keep previous cache on error */ }
+  dayNightCacheAt = Date.now();
+}
+
+function isNightNow(now) {
+  const { dayStart, dayEnd } = dayNightCache;
+  const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  // Same logic as the supervisor / AI prompt helper: support overnight windows.
+  const isDay = (dayEnd > dayStart)
+    ? (hhmm >= dayStart && hhmm < dayEnd)
+    : (hhmm >= dayStart || hhmm < dayEnd);
+  return !isDay;
+}
+
 /**
  * Check if a schedule should fire right now.
  */
@@ -730,6 +756,14 @@ function shouldCapture(schedule, now) {
       // Overnight range (e.g. 20:00 - 06:00)
       if (currentMinutes < startMin && currentMinutes > endMin) return false;
     }
+  }
+
+  // Night-skip: when enabled, suppress captures during the global lights-off window.
+  // Useful when the camera has no IR / when night frames are noise the user doesn't want
+  // in the final timelapse. Honours the global day_night_schedule (single grow today;
+  // per-grow source can be added later via daynight_source).
+  if (schedule.skip_night && isNightNow(now)) {
+    return false;
   }
 
   // Check interval since last capture
@@ -761,6 +795,10 @@ async function checkScheduledCaptures() {
 
     if (!rows || rows.length === 0) return;
 
+    // Make sure the day/night window is fresh before we evaluate any schedule
+    // with night-skip enabled.
+    await refreshDayNightCache();
+
     // Load cameras for host/port lookup
     const cameras = await loadCameras();
     const cameraMap = new Map();
@@ -779,6 +817,7 @@ async function checkScheduledCaptures() {
         start_time: row.start_time || '',
         end_time: row.end_time || '',
         days_active: row.days_active || 'all',
+        skip_night: row.skip_night === 1,
       };
 
       const cam = cameraMap.get(schedule.camera_id);

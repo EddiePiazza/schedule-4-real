@@ -1,14 +1,24 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-17T02:05:41Z",
+  "generatedAt": "2026-05-17T14:05:06Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.133.0",
-      "archive": "s4r-web-1.133.0.tar.gz",
-      "sha256": "26f71925b01ddd906f1bb8f6d162b3e570c13ebaaadedd7887b7d15e6f16f5f0",
-      "size": 11456809,
+      "version": "1.134.0",
+      "archive": "s4r-web-1.134.0.tar.gz",
+      "sha256": "621fee1a4b0f63c388e34e357493282cb20ae981fa17080b13be3f1b004885b7",
+      "size": 11462590,
       "changelog": [
+        {
+          "version": "1.134.0",
+          "changes": [
+            "Dashboard camera now opens true fullscreen with landscape lock on mobile",
+            "Pause dashboard camera snapshot polling while the live stream modal is open",
+            "Auto-reconnect MJPEG camera stream when it freezes (no more page reload needed)",
+            "Increase text size across settings, system and trigger pages for mobile readability",
+            "Add option to skip timelapse photos during the lights-off period"
+          ]
+        },
         {
           "version": "1.133.0",
           "changes": [
@@ -3117,11 +3127,17 @@
       ]
     },
     "schema": {
-      "version": "15",
-      "archive": "s4r-schema-15.tar.gz",
-      "sha256": "c9412ecabb6d77d9364e40b21d20bf773f7b42940e6bb6f1a4a05da1e3f074bb",
-      "size": 8433,
+      "version": "16",
+      "archive": "s4r-schema-16.tar.gz",
+      "sha256": "aa44a7be512f2c9927d5a09b2bdd18cc0f685b6b5e65e664474c4a13e483bdb6",
+      "size": 8559,
       "changelog": [
+        {
+          "version": "16",
+          "changes": [
+            "Add skip_night column to camera_timelapse_schedules table"
+          ]
+        },
         {
           "version": "15",
           "changes": [

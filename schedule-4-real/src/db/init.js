@@ -1419,6 +1419,13 @@ const migrations = [
   {
     name: 'lab_strains: add expected_flowering_text column',
     sql: `ALTER TABLE lab_strains ADD COLUMN expected_flowering_text STRING`
+  },
+  // Camera timelapse night-skip (don't waste storage on dark frames when the
+  // lamp is off). When skip_night=1 the camera service consults the global
+  // day/night schedule and silently skips captures during the night window.
+  {
+    name: 'camera_timelapse_schedules: add skip_night column',
+    sql: `ALTER TABLE camera_timelapse_schedules ADD COLUMN skip_night INT`
   }
 ];
 

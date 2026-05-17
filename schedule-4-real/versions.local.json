@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-17T02:01:52.231Z",
+  "lastCheck": "2026-05-17T13:55:56.675Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 15,
+  "schemaVersion": 16,
   "components": {
     "web": {
-      "version": "1.133.0",
-      "installedAt": "2026-05-15T01:20:38Z"
+      "version": "1.134.0",
+      "installedAt": "2026-05-17T14:05:06Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "15",
-      "installedAt": "2026-05-10T18:45:24Z"
+      "version": "16",
+      "installedAt": "2026-05-17T14:05:06Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -532,6 +532,20 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.13",
+        "changes": [
+          "Re-issue heater ON when device shows OFF but role says ON (safety-timeout desync)",
+          "Fix heater oscillating off/on while blower extracts humidity",
+          "Extend heater safety timeout to 240 min for cold-ambient grow setups",
+          "Start safety-timeout clock fresh on restart instead of using stale DB timestamps",
+          "Run heater and humidity-extraction blower sequentially instead of simultaneously",
+          "Fix humidity extraction deadlock when temp sits near idealMin",
+          "Stop VPD from spamming OFF commands every cycle on already-off devices",
+          "Fix VPD humidity extraction stuck when dehumidifier socket not in AI mode",
+          "Keep extraction running until VPD reaches target band, not just escapes red zone"
+        ]
+      },
+      {
         "version": "1.24.12",
         "changes": [
           "Auto-disable Ubuntu AppArmor profile that blocked Mosquitto from reading project config"
@@ -830,12 +844,6 @@
         "version": "1.11.0",
         "changes": [
           "Add room publisher auto-start migration on update"
-        ]
-      },
-      {
-        "version": "1.10.3",
-        "changes": [
-          "Auto-install npm dependencies when deploying web updates"
         ]
       }
     ],
