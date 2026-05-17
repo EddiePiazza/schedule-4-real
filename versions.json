@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-17T14:05:06Z",
+  "generatedAt": "2026-05-17T14:19:55Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.134.0",
-      "archive": "s4r-web-1.134.0.tar.gz",
-      "sha256": "621fee1a4b0f63c388e34e357493282cb20ae981fa17080b13be3f1b004885b7",
-      "size": 11462590,
+      "version": "1.135.0",
+      "archive": "s4r-web-1.135.0.tar.gz",
+      "sha256": "b370878e2b74656e11c299f38198e515e13b4bded0e18b2e6ebab54d57f5d4fd",
+      "size": 11459334,
       "changelog": [
+        {
+          "version": "1.135.0",
+          "changes": [
+            "Plants list switches to tap-friendly card layout on phones (no more horizontal scroll)",
+            "Tighter plant wizard chrome on mobile so the form fits without scrolling past the header",
+            "Add safe-area CSS helpers so bottom action bars respect mobile gesture bars"
+          ]
+        },
         {
           "version": "1.134.0",
           "changes": [

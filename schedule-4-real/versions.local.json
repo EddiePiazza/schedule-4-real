@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-17T13:55:56.675Z",
+  "lastCheck": "2026-05-17T14:15:56.617Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 16,
   "components": {
     "web": {
-      "version": "1.134.0",
-      "installedAt": "2026-05-17T14:05:06Z"
+      "version": "1.135.0",
+      "installedAt": "2026-05-17T14:19:55Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,16 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.134.0",
+        "changes": [
+          "Dashboard camera now opens true fullscreen with landscape lock on mobile",
+          "Pause dashboard camera snapshot polling while the live stream modal is open",
+          "Auto-reconnect MJPEG camera stream when it freezes (no more page reload needed)",
+          "Increase text size across settings, system and trigger pages for mobile readability",
+          "Add option to skip timelapse photos during the lights-off period"
+        ]
+      },
       {
         "version": "1.133.0",
         "changes": [
@@ -415,12 +425,6 @@
         "version": "1.112.3",
         "changes": [
           "Fix night stats missing (periodBounds not reading light2 schedule) and improve multi-sensor flex layout"
-        ]
-      },
-      {
-        "version": "1.112.2",
-        "changes": [
-          "Fix multi-sensor layout with proper SensorCard format, status colors, day/night stats and flex layout"
         ]
       }
     ],
@@ -894,6 +898,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "16",
+        "changes": [
+          "Add skip_night column to camera_timelapse_schedules table"
+        ]
+      },
       {
         "version": "15",
         "changes": [
