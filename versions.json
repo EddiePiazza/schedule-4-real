@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-17T15:07:35Z",
+  "generatedAt": "2026-05-17T15:50:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.0",
-      "archive": "s4r-web-1.136.0.tar.gz",
-      "sha256": "fa8643c89b8c19187e1b8111baacb3116bda637df7beacec57606140ab8bd9ee",
-      "size": 11464162,
+      "version": "1.136.1",
+      "archive": "s4r-web-1.136.1.tar.gz",
+      "sha256": "bfc4b34fed08783674571d3a4cd4d50930af679c3a284d7023d2096eb29f50cb",
+      "size": 11461254,
       "changelog": [
+        {
+          "version": "1.136.1",
+          "changes": [
+            "Make lab modals and wizards fullscreen on phone for usable touch flows",
+            "Replace remaining sub-16px arbitrary text sizes across lab, settings, system and triggers",
+            "Triggers right panel uses full screen width on phone instead of fixed narrow column"
+          ]
+        },
         {
           "version": "1.136.0",
           "changes": [

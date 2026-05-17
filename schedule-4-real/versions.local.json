@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-17T15:05:56.676Z",
+  "lastCheck": "2026-05-17T15:45:57.236Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.0",
-      "installedAt": "2026-05-17T15:07:35Z"
+      "version": "1.136.1",
+      "installedAt": "2026-05-17T15:50:36Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.0",
+        "changes": [
+          "Pick per-room lights schedule as the source for camera night-skip (multi-cabinet support)",
+          "Add lights on/off schedule to grow rooms for independent photoperiods"
+        ]
+      },
       {
         "version": "1.135.0",
         "changes": [
@@ -421,12 +428,6 @@
         "version": "1.112.5",
         "changes": [
           "Fix night stats in multi-sensor view and rebalance card columns"
-        ]
-      },
-      {
-        "version": "1.112.4",
-        "changes": [
-          "Balance sensor cards evenly across columns in multi-device layout"
         ]
       }
     ],
@@ -900,6 +901,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "17",
+        "changes": [
+          "Add lights_on/lights_off to grow rooms and daynight_source to camera schedules"
+        ]
+      },
       {
         "version": "16",
         "changes": [
