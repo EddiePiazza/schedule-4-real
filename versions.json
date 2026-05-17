@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-17T14:19:55Z",
+  "generatedAt": "2026-05-17T15:07:35Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.135.0",
-      "archive": "s4r-web-1.135.0.tar.gz",
-      "sha256": "b370878e2b74656e11c299f38198e515e13b4bded0e18b2e6ebab54d57f5d4fd",
-      "size": 11459334,
+      "version": "1.136.0",
+      "archive": "s4r-web-1.136.0.tar.gz",
+      "sha256": "fa8643c89b8c19187e1b8111baacb3116bda637df7beacec57606140ab8bd9ee",
+      "size": 11464162,
       "changelog": [
+        {
+          "version": "1.136.0",
+          "changes": [
+            "Pick per-room lights schedule as the source for camera night-skip (multi-cabinet support)",
+            "Add lights on/off schedule to grow rooms for independent photoperiods"
+          ]
+        },
         {
           "version": "1.135.0",
           "changes": [
@@ -3135,11 +3142,17 @@
       ]
     },
     "schema": {
-      "version": "16",
-      "archive": "s4r-schema-16.tar.gz",
-      "sha256": "aa44a7be512f2c9927d5a09b2bdd18cc0f685b6b5e65e664474c4a13e483bdb6",
-      "size": 8559,
+      "version": "17",
+      "archive": "s4r-schema-17.tar.gz",
+      "sha256": "80099d73fc633e85315a5b780a197bca5f845f80f58ce312bc3e09ee10d8438d",
+      "size": 8780,
       "changelog": [
+        {
+          "version": "17",
+          "changes": [
+            "Add lights_on/lights_off to grow rooms and daynight_source to camera schedules"
+          ]
+        },
         {
           "version": "16",
           "changes": [

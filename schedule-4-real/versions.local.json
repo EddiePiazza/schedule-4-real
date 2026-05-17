@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-17T14:15:56.617Z",
+  "lastCheck": "2026-05-17T15:05:56.676Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 16,
+  "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.135.0",
-      "installedAt": "2026-05-17T14:19:55Z"
+      "version": "1.136.0",
+      "installedAt": "2026-05-17T15:07:35Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "16",
-      "installedAt": "2026-05-17T14:05:06Z"
+      "version": "17",
+      "installedAt": "2026-05-17T15:07:35Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.135.0",
+        "changes": [
+          "Plants list switches to tap-friendly card layout on phones (no more horizontal scroll)",
+          "Tighter plant wizard chrome on mobile so the form fits without scrolling past the header",
+          "Add safe-area CSS helpers so bottom action bars respect mobile gesture bars"
+        ]
+      },
       {
         "version": "1.134.0",
         "changes": [
@@ -419,12 +427,6 @@
         "version": "1.112.4",
         "changes": [
           "Balance sensor cards evenly across columns in multi-device layout"
-        ]
-      },
-      {
-        "version": "1.112.3",
-        "changes": [
-          "Fix night stats missing (periodBounds not reading light2 schedule) and improve multi-sensor flex layout"
         ]
       }
     ],

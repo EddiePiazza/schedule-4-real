@@ -703,26 +703,42 @@ async function captureFromCamera(host, port, outputPath, { useAutofocus = false 
   return false;
 }
 
-// Cached day/night schedule (refreshed every minute by the scheduler loop).
-let dayNightCache = { dayStart: '06:00', dayEnd: '00:00' };
+// Cached day/night schedules. Refreshed every minute by the scheduler loop.
+// 'global' = the system day_night_schedule; 'room:{id}' = per-grow-room lights window.
+let dayNightCache = { global: { dayStart: '06:00', dayEnd: '00:00' } };
 let dayNightCacheAt = 0;
 
 async function refreshDayNightCache() {
-  // Only re-query the DB once per minute; the schedule rarely changes.
   if (Date.now() - dayNightCacheAt < 60_000) return;
+  const fresh = { global: dayNightCache.global };
   try {
     const rows = await dbQuery(`SELECT day_start, day_end FROM day_night_schedule LATEST ON timestamp PARTITION BY source`);
     if (rows?.[0]) {
-      dayNightCache = { dayStart: rows[0].day_start || '06:00', dayEnd: rows[0].day_end || '00:00' };
+      fresh.global = { dayStart: rows[0].day_start || '06:00', dayEnd: rows[0].day_end || '00:00' };
     }
-  } catch { /* keep previous cache on error */ }
+  } catch { /* keep previous */ }
+  try {
+    const rooms = await dbQuery(`
+      SELECT * FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY id ORDER BY timestamp DESC) as rn
+        FROM lab_grow_rooms
+      )
+      WHERE rn = 1 AND (is_deleted = 0 OR is_deleted IS NULL)
+    `);
+    for (const r of (rooms || [])) {
+      if (r.lights_on && r.lights_off) {
+        fresh[`room:${r.id}`] = { dayStart: r.lights_on, dayEnd: r.lights_off };
+      }
+    }
+  } catch { /* keep previous */ }
+  dayNightCache = fresh;
   dayNightCacheAt = Date.now();
 }
 
-function isNightNow(now) {
-  const { dayStart, dayEnd } = dayNightCache;
+function isNightNow(now, source) {
+  const key = source && dayNightCache[source] ? source : 'global';
+  const { dayStart, dayEnd } = dayNightCache[key] || dayNightCache.global;
   const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  // Same logic as the supervisor / AI prompt helper: support overnight windows.
   const isDay = (dayEnd > dayStart)
     ? (hhmm >= dayStart && hhmm < dayEnd)
     : (hhmm >= dayStart || hhmm < dayEnd);
@@ -758,11 +774,9 @@ function shouldCapture(schedule, now) {
     }
   }
 
-  // Night-skip: when enabled, suppress captures during the global lights-off window.
-  // Useful when the camera has no IR / when night frames are noise the user doesn't want
-  // in the final timelapse. Honours the global day_night_schedule (single grow today;
-  // per-grow source can be added later via daynight_source).
-  if (schedule.skip_night && isNightNow(now)) {
+  // Night-skip: when enabled, suppress captures during whichever lights-off window
+  // the schedule's daynight_source points to ('global' or 'room:{id}').
+  if (schedule.skip_night && isNightNow(now, schedule.daynight_source)) {
     return false;
   }
 
@@ -818,6 +832,7 @@ async function checkScheduledCaptures() {
         end_time: row.end_time || '',
         days_active: row.days_active || 'all',
         skip_night: row.skip_night === 1,
+        daynight_source: row.daynight_source || 'global',
       };
 
       const cam = cameraMap.get(schedule.camera_id);

@@ -1426,6 +1426,24 @@ const migrations = [
   {
     name: 'camera_timelapse_schedules: add skip_night column',
     sql: `ALTER TABLE camera_timelapse_schedules ADD COLUMN skip_night INT`
+  },
+  // Per-camera photoperiod source for night-skip. Lets users with multiple
+  // cabinets pick which schedule defines "night" for each camera: the global
+  // day_night_schedule, or a specific grow room's own lights schedule.
+  // Values: 'global' (default/null) or 'room:{roomId}'.
+  {
+    name: 'camera_timelapse_schedules: add daynight_source column',
+    sql: `ALTER TABLE camera_timelapse_schedules ADD COLUMN daynight_source STRING`
+  },
+  // Per-room lights schedule used by the camera service's night-skip when a
+  // schedule's daynight_source points here. Stored as HH:MM strings (24h).
+  {
+    name: 'lab_grow_rooms: add lights_on column',
+    sql: `ALTER TABLE lab_grow_rooms ADD COLUMN lights_on STRING`
+  },
+  {
+    name: 'lab_grow_rooms: add lights_off column',
+    sql: `ALTER TABLE lab_grow_rooms ADD COLUMN lights_off STRING`
   }
 ];
 
