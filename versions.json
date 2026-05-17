@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-15T01:20:38Z",
+  "generatedAt": "2026-05-17T02:05:41Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2607,11 +2607,25 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.12",
-      "archive": "s4r-supervisor-1.24.12.tar.gz",
-      "sha256": "debb3b300fef750f90b7e54b394a146082f9390868679680119d37023acddccb",
-      "size": 81648,
+      "version": "1.24.13",
+      "archive": "s4r-supervisor-1.24.13.tar.gz",
+      "sha256": "ed79a842fd6a58e409730d87cb418d17c20b773d28ce5d8e0de0dae49c72c6a4",
+      "size": 84729,
       "changelog": [
+        {
+          "version": "1.24.13",
+          "changes": [
+            "Re-issue heater ON when device shows OFF but role says ON (safety-timeout desync)",
+            "Fix heater oscillating off/on while blower extracts humidity",
+            "Extend heater safety timeout to 240 min for cold-ambient grow setups",
+            "Start safety-timeout clock fresh on restart instead of using stale DB timestamps",
+            "Run heater and humidity-extraction blower sequentially instead of simultaneously",
+            "Fix humidity extraction deadlock when temp sits near idealMin",
+            "Stop VPD from spamming OFF commands every cycle on already-off devices",
+            "Fix VPD humidity extraction stuck when dehumidifier socket not in AI mode",
+            "Keep extraction running until VPD reaches target band, not just escapes red zone"
+          ]
+        },
         {
           "version": "1.24.12",
           "changes": [
