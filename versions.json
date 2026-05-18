@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-17T15:50:36Z",
+  "generatedAt": "2026-05-18T14:49:26Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.1",
-      "archive": "s4r-web-1.136.1.tar.gz",
-      "sha256": "bfc4b34fed08783674571d3a4cd4d50930af679c3a284d7023d2096eb29f50cb",
-      "size": 11461254,
+      "version": "1.136.2",
+      "archive": "s4r-web-1.136.2.tar.gz",
+      "sha256": "b50725f2f6b658312eaf8b9837275e400999e8177e48cc3b324423785fd220b0",
+      "size": 11459839,
       "changelog": [
+        {
+          "version": "1.136.2",
+          "changes": [
+            "Hunts in a shared room no longer count plants from other strains",
+            "Count plants per room from actual zone_id instead of stale cached list"
+          ]
+        },
         {
           "version": "1.136.1",
           "changes": [

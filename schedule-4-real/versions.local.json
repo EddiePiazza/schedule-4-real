@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-17T15:45:57.236Z",
+  "lastCheck": "2026-05-18T14:41:01.547Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.1",
-      "installedAt": "2026-05-17T15:50:36Z"
+      "version": "1.136.2",
+      "installedAt": "2026-05-18T14:49:26Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.1",
+        "changes": [
+          "Make lab modals and wizards fullscreen on phone for usable touch flows",
+          "Replace remaining sub-16px arbitrary text sizes across lab, settings, system and triggers",
+          "Triggers right panel uses full screen width on phone instead of fixed narrow column"
+        ]
+      },
       {
         "version": "1.136.0",
         "changes": [
@@ -422,12 +430,6 @@
         "version": "1.112.6",
         "changes": [
           "Use CSS grid for multi-sensor cards with equal height rows and auto column distribution"
-        ]
-      },
-      {
-        "version": "1.112.5",
-        "changes": [
-          "Fix night stats in multi-sensor view and rebalance card columns"
         ]
       }
     ],
