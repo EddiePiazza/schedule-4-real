@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-18T14:49:26Z",
+  "generatedAt": "2026-05-18T16:07:33Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.2",
-      "archive": "s4r-web-1.136.2.tar.gz",
-      "sha256": "b50725f2f6b658312eaf8b9837275e400999e8177e48cc3b324423785fd220b0",
-      "size": 11459839,
+      "version": "1.136.3",
+      "archive": "s4r-web-1.136.3.tar.gz",
+      "sha256": "7f37ada199c5246429b0d13a657a11115650f675259807c88343fdaf8e6ad568",
+      "size": 11460686,
       "changelog": [
+        {
+          "version": "1.136.3",
+          "changes": [
+            "Event Log row reflows so socket name and flow reason stay visible on narrow screens"
+          ]
+        },
         {
           "version": "1.136.2",
           "changes": [

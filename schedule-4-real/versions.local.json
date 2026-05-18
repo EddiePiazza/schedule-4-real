@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-18T14:41:01.547Z",
+  "lastCheck": "2026-05-18T16:01:01.495Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.2",
-      "installedAt": "2026-05-18T14:49:26Z"
+      "version": "1.136.3",
+      "installedAt": "2026-05-18T16:07:33Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.2",
+        "changes": [
+          "Hunts in a shared room no longer count plants from other strains",
+          "Count plants per room from actual zone_id instead of stale cached list"
+        ]
+      },
       {
         "version": "1.136.1",
         "changes": [
@@ -424,12 +431,6 @@
         "version": "1.113.0",
         "changes": [
           "Add dashboard customization: reorder control boxes, rename, hide cards, and fix leaf VPD stats"
-        ]
-      },
-      {
-        "version": "1.112.6",
-        "changes": [
-          "Use CSS grid for multi-sensor cards with equal height rows and auto column distribution"
         ]
       }
     ],
