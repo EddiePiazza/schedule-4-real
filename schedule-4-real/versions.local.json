@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-18T16:01:01.495Z",
+  "lastCheck": "2026-05-18T16:11:01.508Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.3",
-      "installedAt": "2026-05-18T16:07:33Z"
+      "version": "1.136.4",
+      "installedAt": "2026-05-18T16:16:02Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.3",
+        "changes": [
+          "Event Log row reflows so socket name and flow reason stay visible on narrow screens"
+        ]
+      },
       {
         "version": "1.136.2",
         "changes": [
@@ -425,12 +431,6 @@
         "version": "1.113.1",
         "changes": [
           "Fix soil sensor grid layout for balanced rows and remove duplicate soil summary cards"
-        ]
-      },
-      {
-        "version": "1.113.0",
-        "changes": [
-          "Add dashboard customization: reorder control boxes, rename, hide cards, and fix leaf VPD stats"
         ]
       }
     ],
