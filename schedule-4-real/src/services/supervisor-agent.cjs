@@ -191,6 +191,23 @@ let lastVpdLogKey = ''; // Throttle VPD log: only log when conditions change
 // Thermal inertia tracking — devices have residual effect after deactivation
 let lastHeaterOffTime = 0;   // When heater was last turned off (ms)
 let lastHumidifierOffTime = 0; // When humidifier was last turned off (ms)
+
+// Heater effectiveness tracking. The supervisor turns on the heater expecting
+// temp to rise; if a few minutes pass with no rise, the heater is broken,
+// unplugged, undersized for the room, or thermal mass is winning. Skip it for
+// a cooldown so we don't sit waiting for nothing — switch lever to extraction.
+let heaterEvalStartTime = 0;        // ms when heater turned on in current run
+let heaterEvalStartTemp = 0;        // temp captured at heater-on
+let heaterIneffectiveUntil = 0;     // ms timestamp; while now < this, treat heater as broken
+const HEATER_EFFECT_CHECK_MS = 6 * 60 * 1000; // give heater 6 min to prove itself
+const HEATER_EFFECT_MIN_RISE = 0.4;            // °C of rise expected in that window
+const HEATER_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // skip heater for 30 min after a fail
+
+// Blower-off → heater grace. After extraction stops, the lamp + canopy / pot
+// mass naturally warm the room over a few minutes; don't fire the heater
+// immediately and waste a cycle.
+let lastExtractionStopTime = 0;
+const POST_EXTRACTION_HEATER_GRACE_MS = 5 * 60 * 1000;
 const HEATER_GRACE_MS = 2 * 60 * 1000;     // 2 min: after heater off, suppress cooling (hysteresis handles the rest)
 const HUMIDIFIER_GRACE_MS = 4 * 60 * 1000; // 4 min: after humidifier off, suppress extraction — residual moisture needs time to settle
 const DEHUM_ESCALATION_MS = 2 * 60 * 1000; // 2 min: dehumidifier must run this long before blower escalation
@@ -1751,8 +1768,14 @@ function evaluateVpdIntelligent() {
   // let leaf VPD sit at 0.4 for hours (incident 2026-05-19).
   const humiExcess = Math.max(0, humi - idealHumiMax);
   const tempDeficit = Math.max(0, idealTemp.min - temp);
+  // Need to act on humidity when it's above the max for the current target VPD band,
+  // OR when leaf VPD is below the target — in the second case we drop humi below its
+  // "normal" range on purpose to compensate for unreachable temperature.
   const needsExtraction = humiExcess > 2 || leafVpdBelowTarget;
-  const needsHeating = tempDeficit > 0.3;
+  // Heating is meaningful only if the heater can actually heat. If we just declared it
+  // ineffective (e.g. user unplugged it), don't bother — VPD will be fixed by
+  // pushing humi lower instead.
+  const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
   // "Severe humi" = leaf VPD truly red, or humi >> max, or stage-level emergency.
   // When severe, we never yield extraction to a heating turn.
   const severeHumi = humiEmergency || leafVpdCritical || humiExcess >= 8;
@@ -1786,6 +1809,41 @@ function evaluateVpdIntelligent() {
   }
   const phaseExtracting = vpdPhase === 'extracting';
   const phaseHeating = vpdPhase === 'heating';
+
+  // Track when extraction stops so we can grace the heater immediately after
+  // (residual lamp heat carries temp up without spending power on a heater).
+  if (!phaseExtracting && vpdEscalationState.wasExtracting) {
+    lastExtractionStopTime = now;
+  }
+  vpdEscalationState.wasExtracting = phaseExtracting;
+  const inPostExtractionGrace = lastExtractionStopTime > 0
+    && (now - lastExtractionStopTime) < POST_EXTRACTION_HEATER_GRACE_MS;
+
+  // Heater effectiveness self-test. When the heater is ON, we expect temp to
+  // rise within HEATER_EFFECT_CHECK_MS by at least HEATER_EFFECT_MIN_RISE.
+  // If it doesn't, the heater is plugged out / undersized / fighting thermal
+  // mass — declare it ineffective for a cooldown and switch lever (drop humi).
+  const heaterRoleActive = !!vpdEscalationState.roles['heater'];
+  if (heaterRoleActive && heaterEvalStartTime === 0) {
+    heaterEvalStartTime = now;
+    heaterEvalStartTemp = temp;
+  } else if (!heaterRoleActive && heaterEvalStartTime !== 0) {
+    heaterEvalStartTime = 0; // heater stopped → reset eval
+  }
+  if (heaterRoleActive && heaterEvalStartTime > 0
+      && (now - heaterEvalStartTime) >= HEATER_EFFECT_CHECK_MS) {
+    const rise = temp - heaterEvalStartTemp;
+    if (rise < HEATER_EFFECT_MIN_RISE) {
+      heaterIneffectiveUntil = now + HEATER_INEFFECTIVE_COOLDOWN_MS;
+      console.log(`[VPD] Heater INEFFECTIVE: +${rise.toFixed(2)}°C in ${(HEATER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HEATER_EFFECT_MIN_RISE}°C). Skipping heater for ${(HEATER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — switching strategy to humidity extraction.`);
+      heaterEvalStartTime = 0;
+    } else {
+      // Re-arm the test window so we keep validating during a long run.
+      heaterEvalStartTime = now;
+      heaterEvalStartTemp = temp;
+    }
+  }
+  const heaterIneffective = now < heaterIneffectiveUntil;
 
   // Heater authorisation lifted to function scope so phase / co-pilot logic and
   // the substitution rule below share one definition.
@@ -2183,25 +2241,36 @@ function evaluateVpdIntelligent() {
   // ═══════════════════════════════════════════════════════
   const tempReachedMin = temp >= idealTemp.min; // Heater target: bottom of range
 
-  // Heater only fires in the 'heating' phase. If the phase is 'extracting' the
-  // blower is pulling air out — heating that air now would waste energy. The phase
-  // machine alternates so the heater gets its turn when humidity is under control.
+  // Heater only fires in the 'heating' phase, never alongside extraction (wastes
+  // energy) and never during the post-extraction grace (residual lamp + canopy
+  // heat is doing the work). Also skipped while we've declared the heater
+  // ineffective — the system switches lever and extracts more instead.
+  const heaterAllowed = phaseHeating
+    && !heaterSuppressedByCoolingGrace
+    && !inPostExtractionGrace
+    && !heaterIneffective;
   if (phaseHeating && tempLow && heaterSuppressedByCoolingGrace) {
     if (curState !== prevState) {
       console.log(`[VPD] Heater suppressed by cooling grace (${(coolingGraceElapsed / 60000).toFixed(0)}min/${(COOLING_GRACE_MAX_MS / 60000)}min) — temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C but monitoring trend`);
     }
-  } else if (phaseHeating && tempLow && !heaterSuppressedByCoolingGrace) {
+  } else if (phaseHeating && tempLow && inPostExtractionGrace) {
+    if (curState !== prevState) {
+      const remaining = Math.ceil((POST_EXTRACTION_HEATER_GRACE_MS - (now - lastExtractionStopTime)) / 60000);
+      console.log(`[VPD] Heater suppressed: post-extraction grace ${remaining} min — letting lamp + canopy mass warm naturally`);
+    }
+  } else if (heaterAllowed && tempLow) {
     activateSocketRole('heater', `Temp ${temp.toFixed(1)}°C < ${tempLowThreshold.toFixed(1)}°C`);
     deactivateSocketRole('cooler', 'Temp too low');
-  } else if (phaseHeating && leafVpdCritical && temp < idealTemp.min && !heaterSuppressedByCoolingGrace) {
+  } else if (heaterAllowed && leafVpdCritical && temp < idealTemp.min) {
     activateSocketRole('heater', `Leaf VPD ${currentVpd.toFixed(2)} critical (<${(targetMin - 0.15).toFixed(2)}) — raise temp ${temp.toFixed(1)}°C toward ${idealTemp.min}°C`);
     deactivateSocketRole('cooler', 'Temp too low');
   } else if (tempReachedMin && isRoleActive('heater')) {
     deactivateSocketRole('heater', `Temp ${temp.toFixed(1)}°C reached ideal min ${idealTemp.min}°C — stopping to prevent overshoot`);
-  } else if (!phaseHeating && isRoleActive('heater')) {
-    // Phase switched away from heating — turn heater off so the blower (or idle) phase
-    // isn't fighting it.
-    deactivateSocketRole('heater', `Phase=${vpdPhase} — yielding to ${vpdPhase === 'extracting' ? 'extraction' : 'idle'}`);
+  } else if ((!phaseHeating || inPostExtractionGrace || heaterIneffective) && isRoleActive('heater')) {
+    const why = heaterIneffective ? 'heater ineffective — switching to extraction'
+      : inPostExtractionGrace ? 'post-extraction grace — letting room recover naturally'
+      : `phase=${vpdPhase}`;
+    deactivateSocketRole('heater', why);
   }
 
   // ═══════════════════════════════════════════════════════
@@ -2213,11 +2282,16 @@ function evaluateVpdIntelligent() {
   // ═══════════════════════════════════════════════════════
   // Humidity extraction only fires when the phase machine assigns us to 'extracting'.
   // During 'heating' or 'idle' the blower stays off (or runs only for Rule 1 cooling)
-  // so the heater isn't blowing its work out a vent. Emergency (humi > 85% or >>idealMax)
-  // bypasses this — mold beats energy cost.
+  // so the heater isn't blowing its work out a vent. Emergency overrides the gate.
+  //
+  // Goal-oriented extension: if the heater has been declared ineffective (e.g. user
+  // unplugged it) and leaf VPD is still below target, we must drive humi DOWN to
+  // reach the band even if it's already within the "normal" tolerance — extraction
+  // is the only lever left. We loosen the gate so the blower runs proactively in
+  // that scenario.
   const needsHumiAction = (phaseExtracting || humiEmergency)
     && humi > idealHumiMax
-    && (humiHigh || humiExtractionActive || isRoleActive('dehumidifier'))
+    && (humiHigh || humiExtractionActive || isRoleActive('dehumidifier') || (heaterIneffective && leafVpdBelowTarget))
     && !isRoleActive('humidifier')
     && (!humidifierRecentlyOff || humiEmergency);
 
@@ -2347,23 +2421,19 @@ function evaluateVpdIntelligent() {
           };
           newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
           console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
-        } else if (!severeHumi) {
+        } else if (!severeHumi && !heaterIneffective) {
           // 3-phase speed optimizer: hunts the minimum effective speed.
-          // Disabled while severeHumi (mold risk / leaf VPD critical) — under those
-          // conditions the optimizer was de-escalating to 30 %, which left humi
-          // climbing for hours (incident 2026-05-19). Lock the boost at 0 so the
-          // calibration baseFloor (often 100 % when humiExcess exceeds the cal
-          // table) drives the blower at max until the situation eases.
           evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
         } else if (vpdEscalationState.roles['extractor_humi']) {
-          // Force the optimizer to stop subtracting boost while severe.
+          // severeHumi OR heater is broken → don't let the optimizer de-escalate;
+          // extraction is the only lever left to recover VPD, so push it hard.
           vpdEscalationState.roles['extractor_humi'].speedBoost = 0;
           vpdEscalationState.roles['extractor_humi'].phase = 'holding';
         }
         const boost = vpdEscalationState.roles['extractor_humi']?.speedBoost || 0;
         newBlowerFloor = Math.max(0, Math.max(newBlowerFloor, baseFloor) + boost);
-        // Severe humi: never below 80 % regardless of calibration or boost.
-        if (severeHumi) newBlowerFloor = Math.max(newBlowerFloor, 80);
+        // High floor when extraction is the only path to recover VPD.
+        if (severeHumi || heaterIneffective) newBlowerFloor = Math.max(newBlowerFloor, 80);
         newBlowerFloor = Math.min(100, newBlowerFloor);
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
@@ -2407,16 +2477,10 @@ function evaluateVpdIntelligent() {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  // RULE 5 (restored, scoped): co-pilot heater while extracting
-  // The energy-efficient sequential policy still wins for mild swings, but when
-  // humi is SEVERE and temp is dropping below idealMin during extraction, leaf
-  // VPD goes red zone fast (mold). Run heater alongside the blower so temp
-  // doesn't crash while the room is being dried out. We accept the energy cost.
-  // ═══════════════════════════════════════════════════════
-  if (phaseExtracting && severeHumi && heaterAuthorised && temp < idealTemp.min - 0.5 && !heaterSuppressedByCoolingGrace) {
-    activateSocketRole('heater', `Co-pilot: extracting at ${humi.toFixed(0)}% while temp ${temp.toFixed(1)}°C is dropping`);
-  }
+  // RULE 5 (co-pilot heater) intentionally removed: heater MUST NOT run while the
+  // blower is extracting. Burning watts to warm air the blower immediately exhausts
+  // is wasted energy. The system relies on residual heat from the lamp + canopy
+  // mass to recover temp once extraction stops, gated by a grace period below.
 
   // ═══════════════════════════════════════════════════════
   // RULE 6: Everything in range → deactivate all, blower OFF

@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-19T23:21:03.372Z",
+  "lastCheck": "2026-05-19T23:44:28.862Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.14",
-      "installedAt": "2026-05-19T23:24:13Z"
+      "version": "1.25.0",
+      "installedAt": "2026-05-19T23:44:40Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.24.14",
+        "changes": [
+          "Run heater alongside blower while extracting if temperature drops below ideal during a humidity emergency",
+          "Lock blower at high speed and override phase rotation when humidity is severely high",
+          "Add hysteresis to tempLow flag so sensor noise stops resetting the speed optimizer"
+        ]
+      },
+      {
         "version": "1.24.13",
         "changes": [
           "Re-issue heater ON when device shows OFF but role says ON (safety-timeout desync)",
@@ -848,12 +856,6 @@
         "version": "1.12.0",
         "changes": [
           "Add rebranding migration and move downloads to schedule4real.com"
-        ]
-      },
-      {
-        "version": "1.11.0",
-        "changes": [
-          "Add room publisher auto-start migration on update"
         ]
       }
     ],

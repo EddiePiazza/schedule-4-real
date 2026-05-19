@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-19T23:24:13Z",
+  "generatedAt": "2026-05-19T23:44:40Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.14",
-      "archive": "s4r-supervisor-1.24.14.tar.gz",
-      "sha256": "6776fbdb0d9f5a3adad3152dee4b244d9a326a70806eeb5a0f9e799859463e59",
-      "size": 86109,
+      "version": "1.25.0",
+      "archive": "s4r-supervisor-1.25.0.tar.gz",
+      "sha256": "55a97d2d41a10c9be92dd1a46fdc38b5cadaeafe2a06cc0d33ee35f3ae435d67",
+      "size": 87307,
       "changelog": [
+        {
+          "version": "1.25.0",
+          "changes": [
+            "Detect ineffective heater and switch to humidity extraction instead of waiting forever",
+            "Never run heater and humidity-extraction blower at the same time",
+            "Wait a few minutes after extraction before firing the heater so residual lamp heat does the work"
+          ]
+        },
         {
           "version": "1.24.14",
           "changes": [
