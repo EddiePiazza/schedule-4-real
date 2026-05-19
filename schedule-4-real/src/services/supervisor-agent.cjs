@@ -1723,7 +1723,13 @@ function evaluateVpdIntelligent() {
   // tempRisingFast pre-activates cooling before crossing the hard threshold.
   const tempHigh = (temp > tempHighThreshold || tempRisingFast)
     && (!heaterRecentlyOff || tempEmergency); // Suppress cooling during heater grace (unless emergency)
-  const tempLow = temp < tempLowThreshold;
+  // tempLow with continuation hysteresis: once heater is active, keep it active until
+  // temp reaches idealMin (already handled separately). The flap we're avoiding here is
+  // the state-flag itself (TL ↔ T_) bouncing at exactly the threshold every cycle from
+  // 0.1 °C sensor noise. Add a 0.3 °C upward dead band so once we drop below threshold,
+  // we need to recover to threshold + 0.3 to clear the flag.
+  const tempLow = temp < tempLowThreshold || (vpdEscalationState.tempLowSticky && temp < tempLowThreshold + 0.3);
+  vpdEscalationState.tempLowSticky = tempLow;
   const humiLow = humi < humiLowThreshold;
   // Leaf VPD critical → escalate humidity as if it were high (even inside the +4% hysteresis).
   const humiHigh = humi > humiHighThreshold || (leafVpdCritical && humi > idealHumiMax);
@@ -1738,14 +1744,18 @@ function evaluateVpdIntelligent() {
 
   // ── SEQUENTIAL CLIMATE PHASE ──
   // Pick exactly one of {extracting, heating, idle} for the heater/extractor pair.
-  // Running both at once wastes energy (heater pumps in, blower exhausts immediately),
-  // so when both humi and temp need correction we ALTERNATE — never combine.
-  // Cooling (Rule 1, temp too high) is independent of phase; it can fire alongside
-  // anything.
+  // Energy-efficient ALTERNATION when both metrics are mildly off.
+  // BUT: when humidity is critically high (mold risk / leaf VPD red zone) we lock to
+  // extracting and let Rule 5 (below) bring the heater along as a co-pilot — the
+  // user has explicitly authorised heater→O5 and would rather pay extra power than
+  // let leaf VPD sit at 0.4 for hours (incident 2026-05-19).
   const humiExcess = Math.max(0, humi - idealHumiMax);
   const tempDeficit = Math.max(0, idealTemp.min - temp);
   const needsExtraction = humiExcess > 2 || leafVpdBelowTarget;
   const needsHeating = tempDeficit > 0.3;
+  // "Severe humi" = leaf VPD truly red, or humi >> max, or stage-level emergency.
+  // When severe, we never yield extraction to a heating turn.
+  const severeHumi = humiEmergency || leafVpdCritical || humiExcess >= 8;
   const phaseElapsed = vpdPhaseStartedAt > 0 ? (now - vpdPhaseStartedAt) : Infinity;
   let nextPhase = vpdPhase;
   if (!needsExtraction && !needsHeating) {
@@ -1754,26 +1764,20 @@ function evaluateVpdIntelligent() {
     nextPhase = 'extracting';
   } else if (!needsExtraction && needsHeating) {
     nextPhase = 'heating';
+  } else if (severeHumi) {
+    // Severe humidity always wins. Don't let the alternation steal cycles from extraction.
+    nextPhase = 'extracting';
   } else {
-    // Both metrics need correction — alternate phases.
-    // Stick with the current phase until its minimum dwell expires, unless we're idle
-    // (new entry to "both critical" → pick the worse-deviated metric first).
+    // Mild "both": cooperatively alternate so each side gets time to act.
     if (vpdPhase === 'idle') {
       nextPhase = humiExcess >= tempDeficit ? 'extracting' : 'heating';
     } else if (vpdPhase === 'extracting') {
-      // Switch to heating if humi mostly resolved OR we've been extracting long enough.
       if (humiExcess <= 1 && phaseElapsed >= VPD_PHASE_MIN_MS) nextPhase = 'heating';
       else if (phaseElapsed >= VPD_PHASE_MAX_MS && tempDeficit > 1.0) nextPhase = 'heating';
     } else if (vpdPhase === 'heating') {
-      // Switch to extracting if temp mostly resolved OR we've been heating long enough.
       if (tempDeficit <= 0.3 && phaseElapsed >= VPD_PHASE_MIN_MS) nextPhase = 'extracting';
       else if (phaseElapsed >= VPD_PHASE_MAX_MS && humiExcess > 2) nextPhase = 'extracting';
     }
-  }
-  // Emergency: critically high humidity overrides phase logic — extract immediately
-  // even if we just started heating.
-  if (humiEmergency && nextPhase !== 'extracting') {
-    nextPhase = 'extracting';
   }
   if (nextPhase !== vpdPhase) {
     console.log(`[VPD] Phase: ${vpdPhase} → ${nextPhase} (humi excess ${humiExcess.toFixed(1)}%, temp deficit ${tempDeficit.toFixed(1)}°C${humiEmergency ? ', HUMI_EMERG' : ''})`);
@@ -1782,6 +1786,16 @@ function evaluateVpdIntelligent() {
   }
   const phaseExtracting = vpdPhase === 'extracting';
   const phaseHeating = vpdPhase === 'heating';
+
+  // Heater authorisation lifted to function scope so phase / co-pilot logic and
+  // the substitution rule below share one definition.
+  const _hasHeaterRole = (() => { const a = vpdNodeConfig.roles.find(r => r.role === 'heater'); return !!(a && a.socket); })();
+  const heaterAuthorised = (() => {
+    if (!_hasHeaterRole) return false;
+    const a = vpdNodeConfig.roles.find(r => r.role === 'heater');
+    const k = a.deviceMac ? `${a.deviceMac}:${a.socket}` : a.socket;
+    return !!(socketAiModes[k] || socketAiModes[a.socket]);
+  })();
 
   // Throttled log — only print when conditions change
   const graceFlags = `${heaterRecentlyOff ? 'Hgrace' : ''}${humidifierRecentlyOff ? 'Ugrace' : ''}`;
@@ -2252,13 +2266,7 @@ function evaluateVpdIntelligent() {
     // temp drops far enough below idealMin that the heater clearly can't keep up.
     // Without this, a setup with tight idealMin (e.g. 21°C) and ambient near min sits
     // in a substitution loop every cycle and humidity never gets extracted.
-    const hasHeaterRole = !!getRoleAssignment('heater');
-    const heaterAuthorised = (() => {
-      if (!hasHeaterRole) return false;
-      const h = getRoleAssignment('heater');
-      const k = h.deviceMac ? `${h.deviceMac}:${h.socket}` : h.socket;
-      return !!(socketAiModes[k] || socketAiModes[h.socket]);
-    })();
+    const hasHeaterRole = _hasHeaterRole; // already computed at top — reuse
     // Threshold for substitution. With heater authorised the system can compensate the
     // blower's cooling effect, so the threshold drops well below idealMin. When leaf VPD
     // is critical (mold risk) the threshold drops further still — mold damage is harder
@@ -2339,12 +2347,23 @@ function evaluateVpdIntelligent() {
           };
           newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
           console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
-        } else {
-          // 3-phase speed optimizer for humidity extraction
+        } else if (!severeHumi) {
+          // 3-phase speed optimizer: hunts the minimum effective speed.
+          // Disabled while severeHumi (mold risk / leaf VPD critical) — under those
+          // conditions the optimizer was de-escalating to 30 %, which left humi
+          // climbing for hours (incident 2026-05-19). Lock the boost at 0 so the
+          // calibration baseFloor (often 100 % when humiExcess exceeds the cal
+          // table) drives the blower at max until the situation eases.
           evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
+        } else if (vpdEscalationState.roles['extractor_humi']) {
+          // Force the optimizer to stop subtracting boost while severe.
+          vpdEscalationState.roles['extractor_humi'].speedBoost = 0;
+          vpdEscalationState.roles['extractor_humi'].phase = 'holding';
         }
         const boost = vpdEscalationState.roles['extractor_humi']?.speedBoost || 0;
         newBlowerFloor = Math.max(0, Math.max(newBlowerFloor, baseFloor) + boost);
+        // Severe humi: never below 80 % regardless of calibration or boost.
+        if (severeHumi) newBlowerFloor = Math.max(newBlowerFloor, 80);
         newBlowerFloor = Math.min(100, newBlowerFloor);
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
@@ -2386,6 +2405,17 @@ function evaluateVpdIntelligent() {
         deactivateSocketRole('extractor', `Phase=${vpdPhase} — extraction yielding`);
       }
     }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RULE 5 (restored, scoped): co-pilot heater while extracting
+  // The energy-efficient sequential policy still wins for mild swings, but when
+  // humi is SEVERE and temp is dropping below idealMin during extraction, leaf
+  // VPD goes red zone fast (mold). Run heater alongside the blower so temp
+  // doesn't crash while the room is being dried out. We accept the energy cost.
+  // ═══════════════════════════════════════════════════════
+  if (phaseExtracting && severeHumi && heaterAuthorised && temp < idealTemp.min - 0.5 && !heaterSuppressedByCoolingGrace) {
+    activateSocketRole('heater', `Co-pilot: extracting at ${humi.toFixed(0)}% while temp ${temp.toFixed(1)}°C is dropping`);
   }
 
   // ═══════════════════════════════════════════════════════

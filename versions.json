@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-18T16:43:15Z",
+  "generatedAt": "2026-05-19T23:24:13Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.24.13",
-      "archive": "s4r-supervisor-1.24.13.tar.gz",
-      "sha256": "ed79a842fd6a58e409730d87cb418d17c20b773d28ce5d8e0de0dae49c72c6a4",
-      "size": 84729,
+      "version": "1.24.14",
+      "archive": "s4r-supervisor-1.24.14.tar.gz",
+      "sha256": "6776fbdb0d9f5a3adad3152dee4b244d9a326a70806eeb5a0f9e799859463e59",
+      "size": 86109,
       "changelog": [
+        {
+          "version": "1.24.14",
+          "changes": [
+            "Run heater alongside blower while extracting if temperature drops below ideal during a humidity emergency",
+            "Lock blower at high speed and override phase rotation when humidity is severely high",
+            "Add hysteresis to tempLow flag so sensor noise stops resetting the speed optimizer"
+          ]
+        },
         {
           "version": "1.24.13",
           "changes": [

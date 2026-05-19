@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-18T16:41:01.506Z",
+  "lastCheck": "2026-05-19T23:21:03.372Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.24.13",
-      "installedAt": "2026-05-17T02:05:41Z"
+      "version": "1.24.14",
+      "installedAt": "2026-05-19T23:24:13Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.5",
+        "changes": [
+          "Event Log stacks name, reason and time into rows so nothing crushes at narrow widths"
+        ]
+      },
       {
         "version": "1.136.4",
         "changes": [
@@ -425,12 +431,6 @@
           "HA bridge: per-device entities with custom names, soil sensor discovery, stale phantom cleanup, 10 outlet support",
           "Always show camera selector in Lab Room wizard, with empty state message",
           "Fix PS10 shown as Light Controller in Lab Rooms and add PS10 outlets to selector"
-        ]
-      },
-      {
-        "version": "1.113.2",
-        "changes": [
-          "Use container queries for soil sensor grid to respect parent width"
         ]
       }
     ],
