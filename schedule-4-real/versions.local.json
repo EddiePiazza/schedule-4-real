@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T01:55:47.288Z",
+  "lastCheck": "2026-05-20T03:15:14.293Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.25.2",
-      "installedAt": "2026-05-20T02:01:13Z"
+      "version": "1.25.3",
+      "installedAt": "2026-05-20T03:17:55Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.25.2",
+        "changes": [
+          "Freeze blower base speed at activation and debounce commands to stop speed wobble and 0% blips",
+          "Fix supervisor crash that disabled all climate control (heater check init order)",
+          "Blower hunts the lowest effective speed; only adds power on a real 2% RH / 1C move, ignores sensor noise"
+        ]
+      },
+      {
         "version": "1.25.1",
         "changes": [
           "Let blower auto-tune to the lowest effective speed instead of locking at 80%+",
@@ -853,12 +861,6 @@
         "version": "1.13.0",
         "changes": [
           "Add relay-to-relay RTT measurement in gossip protocol"
-        ]
-      },
-      {
-        "version": "1.12.2",
-        "changes": [
-          "Fix relay URL reading from UI config instead of obsolete env variable"
         ]
       }
     ],

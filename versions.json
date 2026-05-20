@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T02:01:13Z",
+  "generatedAt": "2026-05-20T03:17:55Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.25.2",
-      "archive": "s4r-supervisor-1.25.2.tar.gz",
-      "sha256": "4f3d2a2878de28867e0eb2740209a0ab38f97b6ea2b8f11b54848dd05172aa71",
-      "size": 88341,
+      "version": "1.25.3",
+      "archive": "s4r-supervisor-1.25.3.tar.gz",
+      "sha256": "659e6df531e313b013c133957c8ef35cd97c6e5190ad961a7c559ee9f00351c6",
+      "size": 89414,
       "changelog": [
+        {
+          "version": "1.25.3",
+          "changes": [
+            "Apply VPD blower speed reductions to the device (speed was previously pinned to its last value)",
+            "Smooth humidity readings so sensor jitter no longer ramps the blower up and down",
+            "Blower now settles at the lowest effective speed and stays there instead of getting stuck high or sinking too low"
+          ]
+        },
         {
           "version": "1.25.2",
           "changes": [
