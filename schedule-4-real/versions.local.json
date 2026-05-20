@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-19T23:44:28.862Z",
+  "lastCheck": "2026-05-20T01:24:54.748Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.25.0",
-      "installedAt": "2026-05-19T23:44:40Z"
+      "version": "1.25.1",
+      "installedAt": "2026-05-20T01:31:39Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.25.0",
+        "changes": [
+          "Detect ineffective heater and switch to humidity extraction instead of waiting forever",
+          "Never run heater and humidity-extraction blower at the same time",
+          "Wait a few minutes after extraction before firing the heater so residual lamp heat does the work"
+        ]
+      },
+      {
         "version": "1.24.14",
         "changes": [
           "Run heater alongside blower while extracting if temperature drops below ideal during a humidity emergency",
@@ -850,12 +858,6 @@
         "version": "1.12.1",
         "changes": [
           "Fix rebranding migration failing on client installations"
-        ]
-      },
-      {
-        "version": "1.12.0",
-        "changes": [
-          "Add rebranding migration and move downloads to schedule4real.com"
         ]
       }
     ],

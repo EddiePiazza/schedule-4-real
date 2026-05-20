@@ -164,12 +164,19 @@ const TEMP_LOW_HYSTERESIS = 0.5;  // °C below idealTemp.min before heating acti
 //   ESCALATING:    speed going up, looking for effective speed
 //   DEESCALATING:  speed going down, finding minimum effective speed
 //   HOLDING:       maintaining optimal speed, monitoring for changes
-const ESCALATION_CHECK_MS = 2 * 60 * 1000;   // Evaluate every 2 min
-const ESCALATION_STEP = 5;                     // ±5% per adjustment step
-const ESCALATION_IMPROVE_TEMP = 0.2;           // °C drop needed to count as "improving"
-const ESCALATION_IMPROVE_HUMI = 0.5;           // % drop needed to count as "improving"
-const ESCALATION_WORSEN_TEMP = 0.5;            // °C rise = "worsening" (speed too low)
-const ESCALATION_WORSEN_HUMI = 1.0;            // % rise = "worsening" (wider: sensor noise ±0.5%)
+// Tuning rationale:
+//   - 5 min check matches the user's "wait 5 min, then step" mental model and gives
+//     room temperature/humidity sensors time to actually respond between steps.
+//   - WORSEN_HUMI was 1.0 — too tolerant. A grow-tent picking up +1%/h of humi
+//     because the blower de-escalated too aggressively never crossed the threshold
+//     per cycle and the optimizer kept stepping down (incident 2026-05-19).
+//     0.4% is well above the ±0.1% sensor noise but catches slow drift in time.
+const ESCALATION_CHECK_MS = 5 * 60 * 1000;
+const ESCALATION_STEP = 10;                    // ±10% per step matches the user's described cadence
+const ESCALATION_IMPROVE_TEMP = 0.2;
+const ESCALATION_IMPROVE_HUMI = 0.5;
+const ESCALATION_WORSEN_TEMP = 0.3;
+const ESCALATION_WORSEN_HUMI = 0.4;
 const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
@@ -2421,19 +2428,16 @@ function evaluateVpdIntelligent() {
           };
           newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
           console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
-        } else if (!severeHumi && !heaterIneffective) {
-          // 3-phase speed optimizer: hunts the minimum effective speed.
+        } else {
+          // 3-phase speed optimizer always runs: escalate to find an effective speed,
+          // then de-escalate to find the lowest speed that still HOLDS the metric.
+          // The 5-min check + 0.4% humi worsen threshold catches slow drift, so we
+          // don't have to artificially clamp the floor: the optimizer reacts as soon
+          // as humi (or temp during cooling) starts trending back up.
           evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
-        } else if (vpdEscalationState.roles['extractor_humi']) {
-          // severeHumi OR heater is broken → don't let the optimizer de-escalate;
-          // extraction is the only lever left to recover VPD, so push it hard.
-          vpdEscalationState.roles['extractor_humi'].speedBoost = 0;
-          vpdEscalationState.roles['extractor_humi'].phase = 'holding';
         }
         const boost = vpdEscalationState.roles['extractor_humi']?.speedBoost || 0;
         newBlowerFloor = Math.max(0, Math.max(newBlowerFloor, baseFloor) + boost);
-        // High floor when extraction is the only path to recover VPD.
-        if (severeHumi || heaterIneffective) newBlowerFloor = Math.max(newBlowerFloor, 80);
         newBlowerFloor = Math.min(100, newBlowerFloor);
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);

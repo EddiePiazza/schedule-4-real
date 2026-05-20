@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-19T23:44:40Z",
+  "generatedAt": "2026-05-20T01:31:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.25.0",
-      "archive": "s4r-supervisor-1.25.0.tar.gz",
-      "sha256": "55a97d2d41a10c9be92dd1a46fdc38b5cadaeafe2a06cc0d33ee35f3ae435d67",
-      "size": 87307,
+      "version": "1.25.1",
+      "archive": "s4r-supervisor-1.25.1.tar.gz",
+      "sha256": "245273600fcaa7c23e1899dfa0d92b6c6a82b68fed4b2fa948d01a151fe969e2",
+      "size": 87452,
       "changelog": [
+        {
+          "version": "1.25.1",
+          "changes": [
+            "Let blower auto-tune to the lowest effective speed instead of locking at 80%+",
+            "Tune blower optimizer to 5 min steps and detect slower humidity drift"
+          ]
+        },
         {
           "version": "1.25.0",
           "changes": [
