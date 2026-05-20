@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T18:55:25Z",
+  "generatedAt": "2026-05-20T19:20:21Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.5",
-      "archive": "s4r-web-1.136.5.tar.gz",
-      "sha256": "1672e037300dcda8fc495a79fccbfe5edf0ccd383534a0d7452f505ecaa2de60",
-      "size": 11460083,
+      "version": "1.136.6",
+      "archive": "s4r-web-1.136.6.tar.gz",
+      "sha256": "18ada9092ce0e391f94ac9897bfa81aec044743822242080b41e3d320df5e3e6",
+      "size": 11461336,
       "changelog": [
+        {
+          "version": "1.136.6",
+          "changes": [
+            "Leaf VPD table now uses the day/night leaf offset so its highlighted cell matches the dashboard reading"
+          ]
+        },
         {
           "version": "1.136.5",
           "changes": [

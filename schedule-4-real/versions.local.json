@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T18:46:01.466Z",
+  "lastCheck": "2026-05-20T19:15:40.204Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.5",
-      "installedAt": "2026-05-18T16:43:15Z"
+      "version": "1.136.6",
+      "installedAt": "2026-05-20T19:20:21Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -542,6 +542,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.26.2",
+        "changes": [
+          "Smooth blower control: continuous baseline airflow plus proportional cooling instead of 100%/0% on-off cycling"
+        ]
+      },
+      {
         "version": "1.26.1",
         "changes": [
           "Anchor blower control to the absolute VPD target so slow all-day humidity/temperature drift is always corrected"
@@ -860,12 +866,6 @@
           "Make chaff traffic conditional on 2+ active circuits and direct peers only",
           "Fix relay stats endpoint to expose circuits, rooms and tunnel metrics",
           "Enable tracker by default so local rooms register without manual config"
-        ]
-      },
-      {
-        "version": "1.14.4",
-        "changes": [
-          "Block auto-updates while backup or restore operation is in progress"
         ]
       }
     ],
