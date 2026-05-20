@@ -315,8 +315,6 @@ let lastBlowerSpeed = null; // Last commanded speed to avoid redundant commands
 // dwell time so each phase has time to actually move the metric before we switch.
 let vpdPhase = 'idle';
 let vpdPhaseStartedAt = 0;
-const VPD_PHASE_MIN_MS = 3 * 60 * 1000;   // Don't switch phases faster than every 3 min
-const VPD_PHASE_MAX_MS = 12 * 60 * 1000;  // Force-switch after 12 min if other metric is critical
 
 // Calibration lock — when running, supervisor skips all trigger/blower evaluation
 function isCalibrationLocked() {
@@ -1026,6 +1024,19 @@ function validateFlowGraph(flow) {
   if (orphanActions.length > 0) {
     console.warn(`[Supervisor] Flow validation: ${orphanActions.length} orphan action node(s) — [${orphanActions.map(n => `${n.data?.config?.socket}→${n.data?.config?.action}`).join(', ')}]. These actions will never fire.`);
   }
+
+  // Mandatory-flag direction mismatch: mandatoryOn only has meaning on an action that
+  // fires ON; mandatoryOff only on one that fires OFF. A user who ticks "Mandatory ON"
+  // on an OFF action gets no priority and no error — silently confusing. Warn so they
+  // can fix the wiring.
+  const mismatched = nodes.filter(n => {
+    if (n.type !== 'action') return false;
+    const c = n.data?.config || {};
+    return (c.action === 'off' && c.mandatoryOn) || (c.action === 'on' && c.mandatoryOff);
+  });
+  if (mismatched.length > 0) {
+    console.warn(`[Supervisor] Flow validation: ${mismatched.length} action(s) with a mandatory flag that doesn't match their direction — [${mismatched.map(n => `${n.data?.config?.socket}:${n.data?.config?.action} has ${n.data?.config?.mandatoryOn ? 'mandatoryOn' : 'mandatoryOff'}`).join(', ')}]. The flag is ignored; mandatoryOn applies to ON actions, mandatoryOff to OFF actions.`);
+  }
 }
 
 /**
@@ -1073,15 +1084,36 @@ function evaluateFlow(flow) {
   // Track evaluation results
   const nodeResults = new Map();
 
-  // BFS evaluation
-  const queue = [...entryNodes];
-  const visited = new Set();
+  // Topological evaluation order (Kahn's algorithm). Guarantees every node is
+  // evaluated only AFTER all of its inputs are ready. The previous BFS dequeued
+  // nodes in discovery order, so a logic gate fed by branches of different depth
+  // could be evaluated before one of its inputs existed — that input was then
+  // silently dropped (`.filter(r => r !== undefined)`) and the AND/OR produced the
+  // wrong result. Topological order eliminates that whole class of bug.
+  const inDegree = new Map();
+  for (const n of nodes) inDegree.set(n.id, 0);
+  for (const c of connections) {
+    if (inDegree.has(c.target)) inDegree.set(c.target, inDegree.get(c.target) + 1);
+  }
+  const ready = [...entryNodes];          // in-degree 0 == no incoming edges
+  const evalOrder = [];
+  const queued = new Set(entryNodes.map(n => n.id));
+  while (ready.length > 0) {
+    const node = ready.shift();
+    evalOrder.push(node);
+    for (const targetId of (adjacencyList.get(node.id) || [])) {
+      if (!inDegree.has(targetId)) continue;
+      inDegree.set(targetId, inDegree.get(targetId) - 1);
+      if (inDegree.get(targetId) <= 0 && !queued.has(targetId)) {
+        const tn = nodes.find(n => n.id === targetId);
+        if (tn) { ready.push(tn); queued.add(targetId); }
+      }
+    }
+  }
+  // Nodes left out of evalOrder are part of a cycle — validateFlowGraph already
+  // warned about them; they are intentionally not evaluated.
 
-  while (queue.length > 0) {
-    const node = queue.shift();
-    if (visited.has(node.id)) continue;
-    visited.add(node.id);
-
+  for (const node of evalOrder) {
     let result = false;
 
     switch (node.type) {
@@ -1216,19 +1248,13 @@ function evaluateFlow(flow) {
           mandatoryOff,
           reason: reasonText
         });
+        // Reflect the fired state in nodeResults so the visualization marks the
+        // action node active without relying solely on the edge-trace below.
+        result = anyInputTrue;
         break;
     }
 
     nodeResults.set(node.id, result);
-
-    // Add connected nodes to queue
-    const connected = adjacencyList.get(node.id) || [];
-    for (const targetId of connected) {
-      const targetNode = nodes.find(n => n.id === targetId);
-      if (targetNode) {
-        queue.push(targetNode);
-      }
-    }
   }
 
   // Build active edges: trace which connections carry a "true" signal
@@ -1810,9 +1836,6 @@ function evaluateVpdIntelligent() {
   const tempDeficit = Math.max(0, idealTemp.min - temp);
   const needsExtraction = humiExcess > 2 || leafVpdBelowTarget;
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
-  // "Severe humi" = leaf VPD truly red, or humi >> max, or stage-level emergency.
-  // When severe, we never yield extraction to a heating turn.
-  const severeHumi = humiEmergency || leafVpdCritical || humiExcess >= 8;
   let nextPhase = vpdPhase;
   if (!needsExtraction && !needsHeating) {
     nextPhase = 'idle';
@@ -3089,9 +3112,20 @@ function handleMessage(topic, payload) {
       processSensorData(message, deviceMac);
     }
   } catch (err) {
-    // Ignore parse errors
+    // Genuine JSON parse errors on malformed packets are expected and noisy, but a
+    // programming error inside processSensorData / evaluateFlow would otherwise vanish
+    // here forever. Log non-parse errors, throttled, so real bugs surface.
+    const isParseError = err instanceof SyntaxError;
+    if (!isParseError) {
+      const nowMs = Date.now();
+      if (nowMs - lastHandleMessageErrorLog > 30000) {
+        lastHandleMessageErrorLog = nowMs;
+        console.error(`[Supervisor] handleMessage error on ${topic}:`, err && err.stack ? err.stack : err);
+      }
+    }
   }
 }
+let lastHandleMessageErrorLog = 0;
 
 /**
  * Connect to MQTT broker

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T10:00:09Z",
+  "generatedAt": "2026-05-20T10:48:16Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.25.4",
-      "archive": "s4r-supervisor-1.25.4.tar.gz",
-      "sha256": "14ca42645199a852275f9eeae8b6580c6666d951a0ba56999eb6e755ed1ab437",
-      "size": 89989,
+      "version": "1.25.5",
+      "archive": "s4r-supervisor-1.25.5.tar.gz",
+      "sha256": "b434244a77a958e252f770704f109a6d43f1f39e62d4446ba4e7cc4e735b2d13",
+      "size": 90810,
       "changelog": [
+        {
+          "version": "1.25.5",
+          "changes": [
+            "Warn when an action's mandatory flag direction doesn't match its on/off action",
+            "Evaluate trigger graphs in topological order so multi-input AND/OR gates always read correct values",
+            "Surface real errors in MQTT/trigger processing instead of silently swallowing them"
+          ]
+        },
         {
           "version": "1.25.4",
           "changes": [
