@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T03:15:14.293Z",
+  "lastCheck": "2026-05-20T09:55:29.499Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.25.3",
-      "installedAt": "2026-05-20T03:17:55Z"
+      "version": "1.25.4",
+      "installedAt": "2026-05-20T10:00:09Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.25.3",
+        "changes": [
+          "Apply VPD blower speed reductions to the device (speed was previously pinned to its last value)",
+          "Smooth humidity readings so sensor jitter no longer ramps the blower up and down",
+          "Blower now settles at the lowest effective speed and stays there instead of getting stuck high or sinking too low"
+        ]
+      },
+      {
         "version": "1.25.2",
         "changes": [
           "Freeze blower base speed at activation and debounce commands to stop speed wobble and 0% blips",
@@ -853,12 +861,6 @@
       },
       {
         "version": "1.14.0",
-        "changes": [
-          "Add relay-to-relay RTT measurement in gossip protocol"
-        ]
-      },
-      {
-        "version": "1.13.0",
         "changes": [
           "Add relay-to-relay RTT measurement in gossip protocol"
         ]

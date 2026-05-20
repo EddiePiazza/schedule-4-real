@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T03:17:55Z",
+  "generatedAt": "2026-05-20T10:00:09Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.25.3",
-      "archive": "s4r-supervisor-1.25.3.tar.gz",
-      "sha256": "659e6df531e313b013c133957c8ef35cd97c6e5190ad961a7c559ee9f00351c6",
-      "size": 89414,
+      "version": "1.25.4",
+      "archive": "s4r-supervisor-1.25.4.tar.gz",
+      "sha256": "14ca42645199a852275f9eeae8b6580c6666d951a0ba56999eb6e755ed1ab437",
+      "size": 89989,
       "changelog": [
+        {
+          "version": "1.25.4",
+          "changes": [
+            "Humidity extraction starts at a moderate speed and ramps only as needed, no sudden jumps to 100%",
+            "Blower auto-adapts to the room's real desaturation capacity instead of pinning 100% against an unreachable target"
+          ]
+        },
         {
           "version": "1.25.3",
           "changes": [
