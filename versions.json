@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T16:57:54Z",
+  "generatedAt": "2026-05-20T18:55:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.26.1",
-      "archive": "s4r-supervisor-1.26.1.tar.gz",
-      "sha256": "75046b1bee540116d3a4a572d2a3a482a1957f8a5ee2a8a4b82a90552fa7624f",
-      "size": 90294,
+      "version": "1.26.2",
+      "archive": "s4r-supervisor-1.26.2.tar.gz",
+      "sha256": "68163d9bf0d630a00cb69acf9dec2eaa3e95780a7d5a9cfbb042ce0c2353bc44",
+      "size": 90942,
       "changelog": [
+        {
+          "version": "1.26.2",
+          "changes": [
+            "Smooth blower control: continuous baseline airflow plus proportional cooling instead of 100%/0% on-off cycling"
+          ]
+        },
         {
           "version": "1.26.1",
           "changes": [

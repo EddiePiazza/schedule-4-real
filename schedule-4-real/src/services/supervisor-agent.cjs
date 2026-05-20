@@ -182,6 +182,11 @@ const ESCALATION_IMPROVE_HUMI = 1.0;
 // (sun/cloud/rain, watering, transpiration), so what "gave nothing" before may help now.
 const EXPLORE_UP_INTERVAL_MS = 30 * 60 * 1000;
 const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
+// Continuous baseline airflow for a VPD-controlled exhaust blower. It should never fully
+// stop — stagnant air pools humidity unevenly and makes VPD swing between on/off cycles.
+// The extraction/cooling logic still ramps far above this when needed; this is just the
+// gentle floor that keeps air exchanging. Suppressed only during a cycle-transition stop.
+const VPD_BLOWER_IDLE_SPEED = 20;
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
@@ -2082,18 +2087,18 @@ function evaluateVpdIntelligent() {
   // Speed: 3-phase optimizer (escalate → de-escalate → hold at minimum effective speed)
   // ═══════════════════════════════════════════════════════
 
-  // Track time below idealTemp.max during cooling — safety timeout
-  if (coolingActive && temp <= idealTemp.max) {
-    if (!coolingBelowMaxSince) coolingBelowMaxSince = now;
-  } else {
-    coolingBelowMaxSince = 0;
-  }
-  const belowMaxSaturated = coolingBelowMaxSince > 0 && (now - coolingBelowMaxSince) >= COOLING_BELOW_MAX_TIMEOUT_MS;
 
-  const needsCooling = temp > idealTemp.min
-    && (tempHigh || coolingActive)
-    && (!heaterRecentlyOff || tempEmergency)
-    && !belowMaxSaturated;
+  // Cool only to just INSIDE the range (idealMax − 0.5), not all the way down to idealMin.
+  // Driving temp to the bottom of the range over-cools, fights an often-unreachable target,
+  // and oscillated the blower 85↔0 % every few minutes (incident 2026-05-20). Stopping just
+  // inside range keeps temp stable near the top of the band (which also keeps VPD higher).
+  // Cooling is now CONTINUOUS + PROPORTIONAL: it engages whenever temp is above the stop
+  // target and the speed (computed below) tapers to the baseline exactly at the target, so
+  // there is no on/off bang-bang and no need for the tempHigh trigger or the saturation
+  // timeout (both caused cycling). The only suppressor is the heater grace / emergency.
+  const coolingStopTarget = idealTemp.max - 0.5;
+  const needsCooling = temp > coolingStopTarget
+    && (!heaterRecentlyOff || tempEmergency);
 
   if (needsCooling) {
     // Cooling needed — lift ceiling
@@ -2106,41 +2111,28 @@ function evaluateVpdIntelligent() {
         vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp };
       }
     } else {
-      // Blower extractor: calculate initial speed from calibration or formula
-      const tempExcess = temp - idealTemp.min;
-      const period = isDaytime ? 'day' : 'night';
-      const calSpeed = calcSpeedFromCalibration(tempExcess, 0, period);
-      const baseFloor = calSpeed > 0
-        ? calSpeed
-        : Math.min(80, Math.round(25 + tempExcess * 15));
-
-      if (!coolingActive) {
-        // First activation — create optimizer state
-        vpdEscalationState.roles['extractor_temp'] = {
-          activatedAt: now, metricAtActivation: temp,
-          speedBoost: 0, lastCheckTime: now, lastMetric: temp,
-          phase: 'escalating', noImproveCount: 0
-        };
-        console.log(`[VPD] Blower floor ${baseFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C (cooling to ${idealTemp.min}°C)`);
-      } else {
-        // Target-anchored optimizer: drive temp down toward the top of the ideal range.
-        evaluateEscalation('extractor_temp', temp, idealTemp.max, true, ESCALATION_IMPROVE_TEMP);
+      // Blower extractor: PROPORTIONAL cooling. Speed rises smoothly with how far temp
+      // exceeds the cooling stop target — gentle near the target (no 100 % slam to shave
+      // 0.1 °C), strong when genuinely hot. Recomputed each cycle, so it tracks the load
+      // continuously instead of bang-banging 100↔0/20 % (incident 2026-05-20). It blends
+      // seamlessly into the baseline at the stop target (need 0 → baseline speed).
+      const coolingNeed = Math.max(0, temp - coolingStopTarget);
+      const COOLING_GAIN = 40; // % blower per °C above the stop target
+      const coolingSpeed = Math.min(100, VPD_BLOWER_IDLE_SPEED + Math.round(coolingNeed * COOLING_GAIN));
+      if (!vpdEscalationState.roles['extractor_temp']) {
+        vpdEscalationState.roles['extractor_temp'] = { activatedAt: now, metricAtActivation: temp };
+        console.log(`[VPD] Cooling engaged — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C, proportional speed ${coolingSpeed}% (toward ≤ ${coolingStopTarget.toFixed(1)}°C)`);
       }
-      // Apply optimizer boost (can be negative during de-escalation)
-      const boost = vpdEscalationState.roles['extractor_temp']?.speedBoost || 0;
-      newBlowerFloor = Math.max(0, baseFloor + boost);
-      newBlowerFloor = Math.min(100, newBlowerFloor);
+      newBlowerFloor = Math.max(newBlowerFloor, coolingSpeed);
     }
 
     // Temp too high → no heater needed
     deactivateSocketRole('heater', 'Temp too high');
 
-  } else if (temp <= idealTemp.min || belowMaxSaturated) {
-    // Either reached idealTemp.min OR below max for 5+ min (best effort)
+  } else if (temp <= coolingStopTarget) {
+    // Cooled back into range (≤ idealMax − 0.5) — release cooling; baseline keeps air moving.
     if (coolingActive) {
-      const reason = belowMaxSaturated
-        ? `below ${idealTemp.max}°C for 5 min, best effort ${temp.toFixed(1)}°C`
-        : `reached target ${idealTemp.min}°C`;
+      const reason = `back in range at ${temp.toFixed(1)}°C (≤ ${coolingStopTarget.toFixed(1)}°C)`;
       console.log(`[VPD] Cooling done: ${reason} — starting post-cooling grace`);
       lastCoolingStopTime = now;
       coolingGraceLastTemp = temp;
@@ -2594,6 +2586,16 @@ function evaluateVpdIntelligent() {
     const committed = vpdEscalationState.roles['extractor_humi'].committedFloor || 40;
     newBlowerCeiling = 100;
     newBlowerFloor = Math.max(newBlowerFloor, committed);
+  }
+
+  // Continuous baseline airflow: keep the exhaust gently moving instead of fully
+  // stopping, for even humidity and stable VPD. BUT never while the room is being
+  // heated (temp low / heater on) — a baseline exhaust would pull out the very warmth
+  // the heater is adding, wasting energy. Also skipped during a cycle-transition stop.
+  const heatingNow = tempLow || isRoleActive('heater') || temp < idealTemp.min;
+  if (extIsBlower && !cycleTransitionGraceActive && !heatingNow) {
+    if (newBlowerCeiling < VPD_BLOWER_IDLE_SPEED) newBlowerCeiling = VPD_BLOWER_IDLE_SPEED;
+    if (newBlowerFloor < VPD_BLOWER_IDLE_SPEED) newBlowerFloor = VPD_BLOWER_IDLE_SPEED;
   }
 
   // Apply blower overrides
