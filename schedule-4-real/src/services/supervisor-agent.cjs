@@ -173,20 +173,13 @@ const TEMP_LOW_HYSTERESIS = 0.5;  // °C below idealTemp.min before heating acti
 //     0.4% is well above the ±0.1% sensor noise but catches slow drift in time.
 const ESCALATION_CHECK_MS = 90 * 1000;         // re-evaluate every 90 s — responsive without chasing noise
 const ESCALATION_STEP = 10;                    // ±10% per step
-// "Improving" = metric moved the desired way by at least this much in a check window.
-// Anything smaller is treated as noise → the optimizer keeps de-escalating to find the
-// minimum effective speed.
+// "Improving" = a power increase that moves the metric the desired way by at least this
+// much counts as effective; anything smaller means we've hit the equipment's capacity.
 const ESCALATION_IMPROVE_TEMP = 0.3;
 const ESCALATION_IMPROVE_HUMI = 1.0;
-// "Worsening" = metric moved the WRONG way by at least this much. Set to the user's
-// own tolerance — 1 °C / 2 % — so normal ±1 % humidity / ±1 °C sensor jitter does NOT
-// bump the blower up. Only a genuine deterioration adds power (incident 2026-05-20:
-// blower kept ramping 45↔50 % chasing ±1 % noise).
-const ESCALATION_WORSEN_TEMP = 1.0;
-const ESCALATION_WORSEN_HUMI = 2.0;
-// Periodic upward exploration: every 30 min the optimizer probes one step higher to
-// check whether changed conditions (sun/cloud/rain, watering, transpiration rhythms)
-// now make extra power effective. If it doesn't help, it drops straight back down.
+// Periodic capacity re-test: every 30 min the optimizer forgets a previously-detected
+// capacity limit so it re-probes upward — the grow's load changes through the day
+// (sun/cloud/rain, watering, transpiration), so what "gave nothing" before may help now.
 const EXPLORE_UP_INTERVAL_MS = 30 * 60 * 1000;
 const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
 /** Saturation vapor pressure (Tetens formula) */
@@ -1915,28 +1908,30 @@ function evaluateVpdIntelligent() {
   const extAssignment = getRoleAssignment('extractor');
   const extIsBlower = extAssignment && extAssignment.socket === 'blower';
 
-  // ── Minimum-effective-speed controller ──
-  // Behaves like a human/AI tuning the blower:
-  //   • Metric got WORSE by ≥ worsenThreshold (real 2 %/1 °C move, not sensor noise)
-  //       → add one step of power. Remember we needed it: pause de-escalation for a
-  //         couple of cycles so we don't immediately undo a justified bump.
-  //   • Otherwise (metric stable within noise, or improving)
-  //       → the current speed is holding it, so try ONE step LESS to hunt the floor.
-  // The result naturally settles at the lowest speed that keeps the metric from
-  // climbing: it steps down on stability until the metric finally ticks up, bumps
-  // back one step, and holds — exactly the user's described behaviour. The 5-min
-  // window + noise-immune thresholds keep it from chasing ±1 % jitter.
-  // speedBoost is an offset on the frozen baseSpeed; clamped later so the effective
-  // command never drops below ~20 % while extraction is active.
-  function evaluateEscalation(roleName, metricNow, wantLower, improveThreshold, worsenThreshold) {
+  // ── Target-anchored, capacity-aware speed controller ──
+  // The control objective is ABSOLUTE: keep the metric (humidity / temperature) at or
+  // just under its target ceiling (idealHumiMax / idealTemp.max). Comparing against the
+  // target — not against recent history — is what makes it immune to slow drift: if the
+  // metric creeps up 0.5 %/20 min the relative delta per check is invisible, but the
+  // distance-from-target keeps growing, so the controller still reacts. It can never
+  // "accept" 60 % as fine when the target is 53 %.
+  //
+  // Behaviour:
+  //   • metric > target + DEAD  → push harder (escalate), unless we've proven the
+  //                               equipment is at its desaturation capacity here.
+  //   • metric < target − EASE  → headroom to spare → ease power off to save energy.
+  //   • within the deadband     → sweet spot, hold steady.
+  // Capacity: if a power increase doesn't move the metric, we mark the cap and hold the
+  // best achievable instead of flooring the blower against an unwinnable load. The cap is
+  // re-tested every EXPLORE_UP_INTERVAL because a living grow's load changes all day.
+  // EMA pre-filters sensor jitter so neither the deadband nor the capacity test chase noise.
+  function evaluateEscalation(roleName, metricNow, target, wantLower, improveThreshold) {
     const state = vpdEscalationState.roles[roleName];
     if (!state) return { boost: 0 };
     if (state.speedBoost === undefined) state.speedBoost = 0;
     if (state.holdCycles === undefined) state.holdCycles = 0;
     if (state.lastAction === undefined) state.lastAction = 'init';
 
-    // EMA every cycle (~2 s) filters the ±0.5 % sensor jitter so noise never drives
-    // the controller — only sustained, real movement does.
     if (state.metricEma === undefined) state.metricEma = metricNow;
     else state.metricEma = state.metricEma * 0.8 + metricNow * 0.2;
 
@@ -1945,104 +1940,65 @@ function evaluateVpdIntelligent() {
       return { boost: state.speedBoost };
     }
     state.lastCheckTime = now;
-    if (state.emaRef === undefined) state.emaRef = state.metricEma;
 
-    // drift > 0 ⇒ the metric moved the WRONG way (humidity rose) since emaRef was set.
-    const drift = wantLower ? (state.metricEma - state.emaRef) : (state.emaRef - state.metricEma);
-    // gain > 0 ⇒ the metric moved the RIGHT way (humidity fell) — used to judge whether
-    // the last power increase actually achieved anything.
-    const gain = -drift;
-    const T = Math.min(1.0, worsenThreshold);   // real-drift threshold on the smoothed signal
     const STEP = ESCALATION_STEP;
+    const ema = state.metricEma;
+    // over > 0 ⇒ metric is on the WRONG side of the target (above the ceiling for
+    // wantLower). This is an ABSOLUTE distance, so slow drift is always caught.
+    const over = wantLower ? (ema - target) : (target - ema);
+    const DEAD = 1.0;   // tolerated overshoot above target before adding power
+    const EASE = 2.0;   // how far below target before easing power off to save energy
 
-    // This is a living ecosystem (transpiration, watering, weather) — there is no fixed
-    // "correct" speed. The controller continuously hunts the LOWEST speed that holds the
-    // best ACHIEVABLE humidity for current conditions, and recognises when the equipment
-    // is at its desaturation capacity (more power stops helping) instead of pinning 100 %.
+    // Periodic capacity re-test — the grow's moisture/heat load changes through the day
+    // (sun/cloud/rain, watering, transpiration), so a speed that "gave nothing" before may
+    // help now. Forget the cap so the logic below re-probes upward while still over target.
+    if (state.capacityClearedAt === undefined) state.capacityClearedAt = now;
+    if (now - state.capacityClearedAt >= EXPLORE_UP_INTERVAL_MS) {
+      state.capacitySpeed = undefined;
+      state.capacityClearedAt = now;
+    }
 
-    // ── 1. Judge the previous action ──────────────────────────────
+    // Judge the previous upward step: did the extra power actually move the metric?
     if (state.lastAction === 'up') {
-      if (gain >= 0.5) {
-        // The extra power helped → keep it, clear any stale capacity cap, settle briefly.
-        state.capacityBoost = undefined;
-        state.lastAction = 'hold'; state.holdCycles = 2;
-        state.emaRef = state.metricEma;
-        console.log(`[VPD] ${roleName}: +power effective (humi ${gain.toFixed(2)} better) → hold (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)})`);
+      const moved = wantLower ? (state.emaBeforeUp - ema) : (ema - state.emaBeforeUp);
+      if (moved >= improveThreshold) {
+        state.capacitySpeed = undefined; // it responds → allow climbing further if still over
+        state.lastAction = 'hold'; state.holdCycles = 1;
+        console.log(`[VPD] ${roleName}: +power effective (${moved.toFixed(2)} better, ema ${ema.toFixed(1)}/target ${target.toFixed(1)}) → keep boost ${state.speedBoost}%`);
       } else {
-        // More power did NOT help → equipment capacity reached at this level. Back off a
-        // step (the previous speed was just as good) and remember the cap so we don't
-        // keep flooring the blower against an unwinnable load.
-        state.capacityBoost = state.speedBoost - STEP;
+        state.capacitySpeed = state.speedBoost; // beyond this, more power does nothing
         state.speedBoost -= STEP;
-        state.lastAction = 'hold'; state.holdCycles = 3;
-        state.emaRef = state.metricEma;
-        console.log(`[VPD] ${roleName}: +power gave nothing (Δ${gain.toFixed(2)}) → CAPACITY reached, back to boost ${state.speedBoost}% — holding best achievable (ema ${state.metricEma.toFixed(1)})`);
+        state.lastAction = 'hold'; state.holdCycles = 2;
+        console.log(`[VPD] ${roleName}: +power gave nothing (Δ${moved.toFixed(2)}) → CAPACITY (ema ${ema.toFixed(1)}/target ${target.toFixed(1)}) — back to boost ${state.speedBoost}%, best achievable`);
       }
       return { boost: state.speedBoost };
     }
 
-    if (state.lastAction === 'down' && drift >= T) {
-      // The cut was too deep — humidity climbed. Revert one step, mark this as the
-      // minimum effective speed and protect it for a while so the blower settles quietly.
-      state.speedBoost += STEP;
-      state.minEffectiveBoost = state.speedBoost;
-      state.minLockUntil = now + 30 * 60 * 1000;
-      state.lastAction = 'hold'; state.holdCycles = 3;
-      state.emaRef = state.metricEma;
-      console.log(`[VPD] ${roleName}: cut too deep (drift +${drift.toFixed(2)}) → +${STEP}% (boost ${state.speedBoost}%) — minimum effective, settling`);
-      return { boost: state.speedBoost };
-    }
-
-    // ── 2. Choose the next action ─────────────────────────────────
-    if (drift >= T) {
-      // Humidity is genuinely rising at the current speed.
-      const atCapacity = state.capacityBoost !== undefined && state.speedBoost >= state.capacityBoost;
+    if (over > DEAD) {
+      // Above the target ceiling → must reduce the metric.
+      const atCapacity = state.capacitySpeed !== undefined && state.speedBoost >= state.capacitySpeed;
       if (atCapacity) {
-        // The room is producing moisture faster than the blower can ever remove. Holding
-        // at the capacity speed is the best we can do — don't waste energy ramping to 100%.
         state.lastAction = 'hold';
-        console.log(`[VPD] ${roleName}: humi rising but at desaturation capacity (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)}) — holding best achievable`);
+        console.log(`[VPD] ${roleName}: ${over.toFixed(1)} over target but at capacity (boost ${state.speedBoost}%, ema ${ema.toFixed(1)}) — holding best achievable`);
       } else {
+        state.emaBeforeUp = ema;
         state.speedBoost += STEP;
         state.lastAction = 'up';
-        state.emaRef = state.metricEma; // baseline to judge whether this step helps
-        console.log(`[VPD] ${roleName}: humi rising (drift +${drift.toFixed(2)}) → +${STEP}% (boost ${state.speedBoost}%) chasing`);
+        console.log(`[VPD] ${roleName}: ${over.toFixed(1)} over target → +${STEP}% (boost ${state.speedBoost}%, ema ${ema.toFixed(1)} → ${target.toFixed(1)})`);
       }
-    } else if (state.holdCycles > 0) {
-      state.holdCycles--;
-      console.log(`[VPD] ${roleName}: holding boost ${state.speedBoost}% (${state.holdCycles} left, ema ${state.metricEma.toFixed(1)}, drift ${drift.toFixed(2)})`);
-    } else if (now - (state.lastExploreUp || state.activatedAt) >= EXPLORE_UP_INTERVAL_MS) {
-      // ── Periodic upward probe ──
-      // The grow's climate shifts through the day (sun/cloud/rain, watering, transpiration
-      // rhythms). A speed that gave "no improvement" an hour ago might now actually pull
-      // temp/humidity down — the load changed. So every EXPLORE_UP_INTERVAL we deliberately
-      // step UP one notch (clearing any capacity cap) and let the normal 'up' evaluation
-      // next cycle judge it: if it helps we keep climbing, if not we drop right back to the
-      // settled minimum. Costs one step for a few minutes; finds newly-available headroom.
-      state.lastExploreUp = now;
-      state.capacityBoost = undefined;       // re-test capacity from scratch
-      state.minEffectiveBoost = undefined;   // allow settling lower if the probe reveals it
-      state.minLockUntil = 0;
-      state.speedBoost += STEP;
-      state.lastAction = 'up';
-      state.emaRef = state.metricEma;         // baseline to measure whether the probe helps
-      console.log(`[VPD] ${roleName}: periodic explore — +${STEP}% (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)}) testing if more power now helps`);
-    } else {
-      // Stable, not exploring. Hunt the minimum (respecting the locked floor).
-      if (state.minLockUntil && now >= state.minLockUntil) {
-        state.minEffectiveBoost = undefined;
-        state.minLockUntil = 0;
-        state.capacityBoost = undefined;
-      }
-      const floor = state.minEffectiveBoost;
-      if (floor !== undefined && state.speedBoost - STEP < floor) {
-        console.log(`[VPD] ${roleName}: at minimum effective (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)}) — holding`);
+    } else if (over < -EASE) {
+      // Comfortably under target → spare capacity, ease off to save energy/noise.
+      if (state.holdCycles > 0) {
+        state.holdCycles--;
       } else {
-        // Try one step lower. Keep emaRef FIXED so cumulative drift is caught next checks.
         state.speedBoost -= STEP;
         state.lastAction = 'down';
-        console.log(`[VPD] ${roleName}: stable (drift ${drift.toFixed(2)}) → −${STEP}% (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)}) probing minimum`);
+        console.log(`[VPD] ${roleName}: ${(-over).toFixed(1)} under target → −${STEP}% (boost ${state.speedBoost}%, ema ${ema.toFixed(1)}) easing`);
       }
+    } else {
+      // Within the deadband around target — the sweet spot. Hold.
+      state.lastAction = 'hold';
+      console.log(`[VPD] ${roleName}: at target (ema ${ema.toFixed(1)} ≈ ${target.toFixed(1)}, boost ${state.speedBoost}%) — holding`);
     }
 
     return { boost: state.speedBoost };
@@ -2167,8 +2123,8 @@ function evaluateVpdIntelligent() {
         };
         console.log(`[VPD] Blower floor ${baseFloor}% (${calSpeed > 0 ? 'calibrated' : 'estimated'}) — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C (cooling to ${idealTemp.min}°C)`);
       } else {
-        // 3-phase speed optimizer
-        evaluateEscalation('extractor_temp', temp, true, ESCALATION_IMPROVE_TEMP, ESCALATION_WORSEN_TEMP);
+        // Target-anchored optimizer: drive temp down toward the top of the ideal range.
+        evaluateEscalation('extractor_temp', temp, idealTemp.max, true, ESCALATION_IMPROVE_TEMP);
       }
       // Apply optimizer boost (can be negative during de-escalation)
       const boost = vpdEscalationState.roles['extractor_temp']?.speedBoost || 0;
@@ -2506,16 +2462,16 @@ function evaluateVpdIntelligent() {
           const baseSpeed = humi > 85 ? 100 : Math.min(calSpeed > 0 ? calSpeed : 40, 60);
           vpdEscalationState.roles['extractor_humi'] = {
             activatedAt: now, metricAtActivation: humi,
-            baseSpeed, speedBoost: 0, lastCheckTime: now, lastMetric: humi,
-            metricEma: humi, emaRef: humi, lastAction: 'init'
+            baseSpeed, speedBoost: 0, lastCheckTime: now,
+            metricEma: humi, lastAction: 'init', capacityClearedAt: now
           };
           newBlowerFloor = Math.max(newBlowerFloor, baseSpeed);
           console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
         } else {
-          // Optimizer hunts the minimum effective speed: ±10 % every 5 min, only
-          // stepping UP on a real 2 %/1 °C deterioration (noise is ignored), stepping
-          // DOWN whenever the metric holds steady.
-          evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
+          // Target-anchored optimizer: drive humidity down toward idealHumiMax (the band
+          // ceiling). Absolute anchoring means a slow daytime creep is always caught; the
+          // capacity logic prevents flooring the blower against an unreachable target.
+          evaluateEscalation('extractor_humi', humi, idealHumiMax, true, ESCALATION_IMPROVE_HUMI);
         }
         const role = vpdEscalationState.roles['extractor_humi'];
         const baseSpeed = role?.baseSpeed ?? 40;

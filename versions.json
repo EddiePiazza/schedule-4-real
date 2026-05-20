@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T16:24:15Z",
+  "generatedAt": "2026-05-20T16:57:54Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.26.0",
-      "archive": "s4r-supervisor-1.26.0.tar.gz",
-      "sha256": "54d45276e00bdb87d9fab03502b8a6f50410695998bca79d197fd8a6c1ef8c15",
-      "size": 91304,
+      "version": "1.26.1",
+      "archive": "s4r-supervisor-1.26.1.tar.gz",
+      "sha256": "75046b1bee540116d3a4a572d2a3a482a1957f8a5ee2a8a4b82a90552fa7624f",
+      "size": 90294,
       "changelog": [
+        {
+          "version": "1.26.1",
+          "changes": [
+            "Anchor blower control to the absolute VPD target so slow all-day humidity/temperature drift is always corrected"
+          ]
+        },
         {
           "version": "1.26.0",
           "changes": [

@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T16:22:26.407Z",
+  "lastCheck": "2026-05-20T16:55:55.364Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.26.0",
-      "installedAt": "2026-05-20T16:24:15Z"
+      "version": "1.26.1",
+      "installedAt": "2026-05-20T16:57:54Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.26.0",
+        "changes": [
+          "Blower periodically probes higher power to discover if changing conditions now let it lower temp/humidity further"
+        ]
+      },
+      {
         "version": "1.25.5",
         "changes": [
           "Warn when an action's mandatory flag direction doesn't match its on/off action",
@@ -860,12 +866,6 @@
         "version": "1.14.3",
         "changes": [
           "Fix database wipe on Docker container restart after rebranding"
-        ]
-      },
-      {
-        "version": "1.14.2",
-        "changes": [
-          "Add HMAC challenge-response for tunnel registration and restrict private room metadata"
         ]
       }
     ],
