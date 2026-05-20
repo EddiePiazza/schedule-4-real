@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T10:46:25.434Z",
+  "lastCheck": "2026-05-20T16:22:26.407Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.25.5",
-      "installedAt": "2026-05-20T10:48:16Z"
+      "version": "1.26.0",
+      "installedAt": "2026-05-20T16:24:15Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.25.5",
+        "changes": [
+          "Warn when an action's mandatory flag direction doesn't match its on/off action",
+          "Evaluate trigger graphs in topological order so multi-input AND/OR gates always read correct values",
+          "Surface real errors in MQTT/trigger processing instead of silently swallowing them"
+        ]
+      },
+      {
         "version": "1.25.4",
         "changes": [
           "Humidity extraction starts at a moderate speed and ramps only as needed, no sudden jumps to 100%",
@@ -858,12 +866,6 @@
         "version": "1.14.2",
         "changes": [
           "Add HMAC challenge-response for tunnel registration and restrict private room metadata"
-        ]
-      },
-      {
-        "version": "1.14.1",
-        "changes": [
-          "Fix room publisher re-registration loop by caching invite tokens"
         ]
       }
     ],

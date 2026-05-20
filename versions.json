@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T10:48:16Z",
+  "generatedAt": "2026-05-20T16:24:15Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2665,11 +2665,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.25.5",
-      "archive": "s4r-supervisor-1.25.5.tar.gz",
-      "sha256": "b434244a77a958e252f770704f109a6d43f1f39e62d4446ba4e7cc4e735b2d13",
-      "size": 90810,
+      "version": "1.26.0",
+      "archive": "s4r-supervisor-1.26.0.tar.gz",
+      "sha256": "54d45276e00bdb87d9fab03502b8a6f50410695998bca79d197fd8a6c1ef8c15",
+      "size": 91304,
       "changelog": [
+        {
+          "version": "1.26.0",
+          "changes": [
+            "Blower periodically probes higher power to discover if changing conditions now let it lower temp/humidity further"
+          ]
+        },
         {
           "version": "1.25.5",
           "changes": [

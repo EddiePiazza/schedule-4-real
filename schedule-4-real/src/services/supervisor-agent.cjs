@@ -184,6 +184,10 @@ const ESCALATION_IMPROVE_HUMI = 1.0;
 // blower kept ramping 45↔50 % chasing ±1 % noise).
 const ESCALATION_WORSEN_TEMP = 1.0;
 const ESCALATION_WORSEN_HUMI = 2.0;
+// Periodic upward exploration: every 30 min the optimizer probes one step higher to
+// check whether changed conditions (sun/cloud/rain, watering, transpiration rhythms)
+// now make extra power effective. If it doesn't help, it drops straight back down.
+const EXPLORE_UP_INTERVAL_MS = 30 * 60 * 1000;
 const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
@@ -2007,14 +2011,28 @@ function evaluateVpdIntelligent() {
     } else if (state.holdCycles > 0) {
       state.holdCycles--;
       console.log(`[VPD] ${roleName}: holding boost ${state.speedBoost}% (${state.holdCycles} left, ema ${state.metricEma.toFixed(1)}, drift ${drift.toFixed(2)})`);
+    } else if (now - (state.lastExploreUp || state.activatedAt) >= EXPLORE_UP_INTERVAL_MS) {
+      // ── Periodic upward probe ──
+      // The grow's climate shifts through the day (sun/cloud/rain, watering, transpiration
+      // rhythms). A speed that gave "no improvement" an hour ago might now actually pull
+      // temp/humidity down — the load changed. So every EXPLORE_UP_INTERVAL we deliberately
+      // step UP one notch (clearing any capacity cap) and let the normal 'up' evaluation
+      // next cycle judge it: if it helps we keep climbing, if not we drop right back to the
+      // settled minimum. Costs one step for a few minutes; finds newly-available headroom.
+      state.lastExploreUp = now;
+      state.capacityBoost = undefined;       // re-test capacity from scratch
+      state.minEffectiveBoost = undefined;   // allow settling lower if the probe reveals it
+      state.minLockUntil = 0;
+      state.speedBoost += STEP;
+      state.lastAction = 'up';
+      state.emaRef = state.metricEma;         // baseline to measure whether the probe helps
+      console.log(`[VPD] ${roleName}: periodic explore — +${STEP}% (boost ${state.speedBoost}%, ema ${state.metricEma.toFixed(1)}) testing if more power now helps`);
     } else {
-      // Stable. Periodically forget the locked minimum and re-probe — conditions in a
-      // living grow change constantly (watering, transpiration cycles, weather), so the
-      // efficient speed now may be lower than it was 30 min ago.
+      // Stable, not exploring. Hunt the minimum (respecting the locked floor).
       if (state.minLockUntil && now >= state.minLockUntil) {
         state.minEffectiveBoost = undefined;
         state.minLockUntil = 0;
-        state.capacityBoost = undefined; // also re-test capacity afresh
+        state.capacityBoost = undefined;
       }
       const floor = state.minEffectiveBoost;
       if (floor !== undefined && state.speedBoost - STEP < floor) {
