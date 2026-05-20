@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T19:15:40.204Z",
+  "lastCheck": "2026-05-20T20:45:40.212Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.136.6",
-      "installedAt": "2026-05-20T19:20:21Z"
+      "version": "1.136.7",
+      "installedAt": "2026-05-20T20:50:00Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.136.6",
+        "changes": [
+          "Leaf VPD table now uses the day/night leaf offset so its highlighted cell matches the dashboard reading"
+        ]
+      },
       {
         "version": "1.136.5",
         "changes": [
@@ -418,19 +424,6 @@
         "version": "1.115.0",
         "changes": [
           "Add supervisor watchdog: web server monitors heartbeat and auto-restarts supervisor if dead for 5 minutes"
-        ]
-      },
-      {
-        "version": "1.114.0",
-        "changes": [
-          "Update blower and fan charts in real time like temperature and humidity",
-          "Default chart range to 24h and remember last selection across sessions",
-          "Save and calculate power cost for blower, fan, heater, humidifier, dehumidifier",
-          "Add cameras block to dashboard with live thumbnails and fullscreen viewer",
-          "Show blower and fan on/off transitions in dashboard Event Log",
-          "HA bridge: per-device entities with custom names, soil sensor discovery, stale phantom cleanup, 10 outlet support",
-          "Always show camera selector in Lab Room wizard, with empty state message",
-          "Fix PS10 shown as Light Controller in Lab Rooms and add PS10 outlets to selector"
         ]
       }
     ],

@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T19:20:21Z",
+  "generatedAt": "2026-05-20T20:50:00Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.6",
-      "archive": "s4r-web-1.136.6.tar.gz",
-      "sha256": "18ada9092ce0e391f94ac9897bfa81aec044743822242080b41e3d320df5e3e6",
-      "size": 11461336,
+      "version": "1.136.7",
+      "archive": "s4r-web-1.136.7.tar.gz",
+      "sha256": "765e55147eb5d1b9147eb71704bef30a332126e82117e0b98e22eedc51fadced",
+      "size": 11460138,
       "changelog": [
+        {
+          "version": "1.136.7",
+          "changes": [
+            "VPD table highlighted cell shows the exact current reading so it matches the dashboard value"
+          ]
+        },
         {
           "version": "1.136.6",
           "changes": [
