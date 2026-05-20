@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-20T01:24:54.748Z",
+  "lastCheck": "2026-05-20T01:55:47.288Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.25.1",
-      "installedAt": "2026-05-20T01:31:39Z"
+      "version": "1.25.2",
+      "installedAt": "2026-05-20T02:01:13Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -542,6 +542,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.25.1",
+        "changes": [
+          "Let blower auto-tune to the lowest effective speed instead of locking at 80%+",
+          "Tune blower optimizer to 5 min steps and detect slower humidity drift"
+        ]
+      },
+      {
         "version": "1.25.0",
         "changes": [
           "Detect ineffective heater and switch to humidity extraction instead of waiting forever",
@@ -852,12 +859,6 @@
         "version": "1.12.2",
         "changes": [
           "Fix relay URL reading from UI config instead of obsolete env variable"
-        ]
-      },
-      {
-        "version": "1.12.1",
-        "changes": [
-          "Fix rebranding migration failing on client installations"
         ]
       }
     ],

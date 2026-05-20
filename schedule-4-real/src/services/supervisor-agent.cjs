@@ -173,10 +173,17 @@ const TEMP_LOW_HYSTERESIS = 0.5;  // °C below idealTemp.min before heating acti
 //     0.4% is well above the ±0.1% sensor noise but catches slow drift in time.
 const ESCALATION_CHECK_MS = 5 * 60 * 1000;
 const ESCALATION_STEP = 10;                    // ±10% per step matches the user's described cadence
-const ESCALATION_IMPROVE_TEMP = 0.2;
-const ESCALATION_IMPROVE_HUMI = 0.5;
-const ESCALATION_WORSEN_TEMP = 0.3;
-const ESCALATION_WORSEN_HUMI = 0.4;
+// "Improving" = metric moved the desired way by at least this much in a check window.
+// Anything smaller is treated as noise → the optimizer keeps de-escalating to find the
+// minimum effective speed.
+const ESCALATION_IMPROVE_TEMP = 0.3;
+const ESCALATION_IMPROVE_HUMI = 1.0;
+// "Worsening" = metric moved the WRONG way by at least this much. Set to the user's
+// own tolerance — 1 °C / 2 % — so normal ±1 % humidity / ±1 °C sensor jitter does NOT
+// bump the blower up. Only a genuine deterioration adds power (incident 2026-05-20:
+// blower kept ramping 45↔50 % chasing ±1 % noise).
+const ESCALATION_WORSEN_TEMP = 1.0;
+const ESCALATION_WORSEN_HUMI = 2.0;
 const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max → stop (best effort reached)
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
@@ -1773,15 +1780,35 @@ function evaluateVpdIntelligent() {
   // extracting and let Rule 5 (below) bring the heater along as a co-pilot — the
   // user has explicitly authorised heater→O5 and would rather pay extra power than
   // let leaf VPD sit at 0.4 for hours (incident 2026-05-19).
+  // Heater effectiveness self-test (must be computed BEFORE phase logic, which
+  // gates `needsHeating` on it). When the heater is ON, we expect temp to rise
+  // within HEATER_EFFECT_CHECK_MS by at least HEATER_EFFECT_MIN_RISE. If it
+  // doesn't, the heater is plugged out / undersized / fighting thermal mass —
+  // declare it ineffective for a cooldown and switch lever (drop humi).
+  const heaterRoleActive = !!vpdEscalationState.roles['heater'];
+  if (heaterRoleActive && heaterEvalStartTime === 0) {
+    heaterEvalStartTime = now;
+    heaterEvalStartTemp = temp;
+  } else if (!heaterRoleActive && heaterEvalStartTime !== 0) {
+    heaterEvalStartTime = 0;
+  }
+  if (heaterRoleActive && heaterEvalStartTime > 0
+      && (now - heaterEvalStartTime) >= HEATER_EFFECT_CHECK_MS) {
+    const rise = temp - heaterEvalStartTemp;
+    if (rise < HEATER_EFFECT_MIN_RISE) {
+      heaterIneffectiveUntil = now + HEATER_INEFFECTIVE_COOLDOWN_MS;
+      console.log(`[VPD] Heater INEFFECTIVE: +${rise.toFixed(2)}°C in ${(HEATER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HEATER_EFFECT_MIN_RISE}°C). Skipping heater for ${(HEATER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — switching strategy to humidity extraction.`);
+      heaterEvalStartTime = 0;
+    } else {
+      heaterEvalStartTime = now;
+      heaterEvalStartTemp = temp;
+    }
+  }
+  const heaterIneffective = now < heaterIneffectiveUntil;
+
   const humiExcess = Math.max(0, humi - idealHumiMax);
   const tempDeficit = Math.max(0, idealTemp.min - temp);
-  // Need to act on humidity when it's above the max for the current target VPD band,
-  // OR when leaf VPD is below the target — in the second case we drop humi below its
-  // "normal" range on purpose to compensate for unreachable temperature.
   const needsExtraction = humiExcess > 2 || leafVpdBelowTarget;
-  // Heating is meaningful only if the heater can actually heat. If we just declared it
-  // ineffective (e.g. user unplugged it), don't bother — VPD will be fixed by
-  // pushing humi lower instead.
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
   // "Severe humi" = leaf VPD truly red, or humi >> max, or stage-level emergency.
   // When severe, we never yield extraction to a heating turn.
@@ -1826,32 +1853,6 @@ function evaluateVpdIntelligent() {
   const inPostExtractionGrace = lastExtractionStopTime > 0
     && (now - lastExtractionStopTime) < POST_EXTRACTION_HEATER_GRACE_MS;
 
-  // Heater effectiveness self-test. When the heater is ON, we expect temp to
-  // rise within HEATER_EFFECT_CHECK_MS by at least HEATER_EFFECT_MIN_RISE.
-  // If it doesn't, the heater is plugged out / undersized / fighting thermal
-  // mass — declare it ineffective for a cooldown and switch lever (drop humi).
-  const heaterRoleActive = !!vpdEscalationState.roles['heater'];
-  if (heaterRoleActive && heaterEvalStartTime === 0) {
-    heaterEvalStartTime = now;
-    heaterEvalStartTemp = temp;
-  } else if (!heaterRoleActive && heaterEvalStartTime !== 0) {
-    heaterEvalStartTime = 0; // heater stopped → reset eval
-  }
-  if (heaterRoleActive && heaterEvalStartTime > 0
-      && (now - heaterEvalStartTime) >= HEATER_EFFECT_CHECK_MS) {
-    const rise = temp - heaterEvalStartTemp;
-    if (rise < HEATER_EFFECT_MIN_RISE) {
-      heaterIneffectiveUntil = now + HEATER_INEFFECTIVE_COOLDOWN_MS;
-      console.log(`[VPD] Heater INEFFECTIVE: +${rise.toFixed(2)}°C in ${(HEATER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HEATER_EFFECT_MIN_RISE}°C). Skipping heater for ${(HEATER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — switching strategy to humidity extraction.`);
-      heaterEvalStartTime = 0;
-    } else {
-      // Re-arm the test window so we keep validating during a long run.
-      heaterEvalStartTime = now;
-      heaterEvalStartTemp = temp;
-    }
-  }
-  const heaterIneffective = now < heaterIneffectiveUntil;
-
   // Heater authorisation lifted to function scope so phase / co-pilot logic and
   // the substitution rule below share one definition.
   const _hasHeaterRole = (() => { const a = vpdNodeConfig.roles.find(r => r.role === 'heater'); return !!(a && a.socket); })();
@@ -1889,105 +1890,52 @@ function evaluateVpdIntelligent() {
   const extAssignment = getRoleAssignment('extractor');
   const extIsBlower = extAssignment && extAssignment.socket === 'blower';
 
-  // ── 3-Phase Blower Speed Optimizer ──
-  // ESCALATING:    trying higher speed. If 2 consecutive steps don't help → revert, DEESCALATE.
-  // DEESCALATING:  lowering speed. If metric worsens → bump up one step, HOLD.
-  // HOLDING:       optimal speed found. If metric worsens → ESCALATE. If improves → DEESCALATE.
-  //
-  // This finds the MINIMUM effective speed: escalate to find a speed that works,
-  // then de-escalate to find the lowest speed that still holds the metric.
-  // @param {number} improveThreshold - metric must drop by this to count as "improving"
-  // @param {number} worsenThreshold  - metric must rise by this to count as "worsening" (0.5°C / 1.0%)
-  // Returns { boost: number, phase: string }
+  // ── Minimum-effective-speed controller ──
+  // Behaves like a human/AI tuning the blower:
+  //   • Metric got WORSE by ≥ worsenThreshold (real 2 %/1 °C move, not sensor noise)
+  //       → add one step of power. Remember we needed it: pause de-escalation for a
+  //         couple of cycles so we don't immediately undo a justified bump.
+  //   • Otherwise (metric stable within noise, or improving)
+  //       → the current speed is holding it, so try ONE step LESS to hunt the floor.
+  // The result naturally settles at the lowest speed that keeps the metric from
+  // climbing: it steps down on stability until the metric finally ticks up, bumps
+  // back one step, and holds — exactly the user's described behaviour. The 5-min
+  // window + noise-immune thresholds keep it from chasing ±1 % jitter.
+  // speedBoost is an offset on the frozen baseSpeed; clamped later so the effective
+  // command never drops below ~20 % while extraction is active.
   function evaluateEscalation(roleName, metricNow, wantLower, improveThreshold, worsenThreshold) {
     const state = vpdEscalationState.roles[roleName];
-    if (!state) return { boost: 0, phase: 'none' };
-
-    // Initialize optimizer state if missing
-    if (!state.phase) state.phase = 'escalating';
+    if (!state) return { boost: 0 };
     if (state.speedBoost === undefined) state.speedBoost = 0;
-    if (state.noImproveCount === undefined) state.noImproveCount = 0;
+    if (state.holdCycles === undefined) state.holdCycles = 0;
 
     const lastCheck = state.lastCheckTime || state.activatedAt;
     if (now - lastCheck < ESCALATION_CHECK_MS) {
-      return { boost: state.speedBoost, phase: state.phase };
+      return { boost: state.speedBoost };
     }
 
-    // Compare metric against last check (for step-level improvement detection)
     const baseline = state.lastMetric ?? state.metricAtActivation;
-    const delta = wantLower ? (metricNow - baseline) : (baseline - metricNow);
-    // delta > 0 means WORSE (metric rose when we want it lower, or dropped when we want it higher)
-    // delta < 0 means BETTER
-    const improved = delta < -improveThreshold;
-    const worsened = delta > worsenThreshold;
-
-    // ALSO compare against de-escalation start point: catches gradual cumulative worsening
-    // that individual small steps miss (e.g. temp rises 0.2°C per step, never hits 0.5°C threshold,
-    // but total rise is 1°C). Only used in deescalating phase.
-    const deescStartMetric = state.metricAtDeescStart ?? baseline;
-    const cumulativeDelta = wantLower ? (metricNow - deescStartMetric) : (deescStartMetric - metricNow);
-    const cumulativelyWorsened = cumulativeDelta > worsenThreshold;
-
+    // Positive `change` = metric moved the WRONG way (rose for extraction).
+    const change = wantLower ? (metricNow - baseline) : (baseline - metricNow);
     state.lastCheckTime = now;
     state.lastMetric = metricNow;
 
-    switch (state.phase) {
-      case 'escalating':
-        if (improved) {
-          // This speed works → hold here, try de-escalating later
-          state.phase = 'holding';
-          state.noImproveCount = 0;
-          console.log(`[VPD] ${roleName}: speed effective at boost ${state.speedBoost}% — HOLDING (metric ${metricNow.toFixed(1)})`);
-        } else {
-          state.noImproveCount++;
-          if (state.noImproveCount >= 2) {
-            // 2 consecutive no-improve → higher speed is useless
-            // Revert last step and start de-escalating to find minimum
-            state.speedBoost -= ESCALATION_STEP;
-            state.phase = 'deescalating';
-            state.noImproveCount = 0;
-            state.metricAtDeescStart = metricNow; // Capture starting point for cumulative drift detection
-            console.log(`[VPD] ${roleName}: escalation ineffective — reverting to boost ${state.speedBoost}%, DEESCALATING`);
-          } else {
-            // First no-improve: try one more step up
-            state.speedBoost += ESCALATION_STEP;
-            console.log(`[VPD] ${roleName}: ESCALATING to boost ${state.speedBoost}% (metric ${metricNow.toFixed(1)}, attempt ${state.noImproveCount}/2)`);
-          }
-        }
-        break;
-
-      case 'deescalating':
-        if (worsened || cumulativelyWorsened) {
-          // Speed too low → bump back up and hold
-          state.speedBoost += ESCALATION_STEP;
-          state.phase = 'holding';
-          delete state.metricAtDeescStart;
-          const reason = cumulativelyWorsened && !worsened ? 'cumulative drift' : 'step worsened';
-          console.log(`[VPD] ${roleName}: too low at boost ${state.speedBoost - ESCALATION_STEP}% (${reason}, metric ${metricNow.toFixed(1)}) — back to ${state.speedBoost}%, HOLDING`);
-        } else {
-          // Not worse → keep reducing to find minimum (clamp at -100)
-          state.speedBoost = Math.max(-100, state.speedBoost - ESCALATION_STEP);
-          console.log(`[VPD] ${roleName}: DEESCALATING to boost ${state.speedBoost}% (metric ${metricNow.toFixed(1)}, stable)`);
-        }
-        break;
-
-      case 'holding':
-        if (worsened) {
-          // Conditions changed, need more power
-          state.phase = 'escalating';
-          state.noImproveCount = 0;
-          console.log(`[VPD] ${roleName}: metric worsening at boost ${state.speedBoost}% — ESCALATING (metric ${metricNow.toFixed(1)})`);
-        } else if (improved) {
-          // Maybe can reduce further
-          state.phase = 'deescalating';
-          state.metricAtDeescStart = metricNow; // Capture starting point for cumulative drift detection
-          console.log(`[VPD] ${roleName}: metric still improving at boost ${state.speedBoost}% — DEESCALATING (metric ${metricNow.toFixed(1)})`);
-        }
-        // Stable → stay at current speed
-        break;
+    if (change >= worsenThreshold) {
+      // Real deterioration → add power and protect this bump for 2 cycles.
+      state.speedBoost = state.speedBoost + ESCALATION_STEP;
+      state.holdCycles = 2;
+      console.log(`[VPD] ${roleName}: metric worsened ${change.toFixed(1)} (≥${worsenThreshold}) → +${ESCALATION_STEP}% (boost ${state.speedBoost}%)`);
+    } else if (state.holdCycles > 0) {
+      // Recently bumped up — hold to let the higher speed take effect before probing down.
+      state.holdCycles--;
+      console.log(`[VPD] ${roleName}: holding boost ${state.speedBoost}% (${state.holdCycles} cycle(s) left, metric ${metricNow.toFixed(1)})`);
+    } else {
+      // Metric stable or improving → this speed is enough, hunt a lower one.
+      state.speedBoost = state.speedBoost - ESCALATION_STEP;
+      console.log(`[VPD] ${roleName}: metric stable (${change.toFixed(1)}) → −${ESCALATION_STEP}% (boost ${state.speedBoost}%) hunting minimum`);
     }
 
-    return { boost: state.speedBoost, phase: state.phase };
+    return { boost: state.speedBoost };
   }
 
   // Activate a socket-based role (ON)
@@ -2360,7 +2308,12 @@ function evaluateVpdIntelligent() {
     const blowerCrashingTemp = humiExtractionActive
       && temp < crashThreshold
       && !humiEmergency
-      && !(leafVpdBelowTarget && heaterAuthorised); // never abort extraction while VPD < target if heater can compensate
+      && !(leafVpdBelowTarget && heaterAuthorised) // never abort while VPD < target if heater can compensate
+      // If the heater is ineffective (unplugged / undersized), there is no temperature
+      // lever at all — stopping the blower would just let humidity climb with no upside.
+      // Keep extracting down to an absolute cold floor (idealMin - 5 °C) to protect VPD;
+      // only a genuinely dangerous temp aborts.
+      && !(heaterIneffective && temp > idealTemp.min - 5);
 
     if (blowerCrashingTemp) {
       console.log(`[VPD] SUBSTITUTION: blower crashing temp (${temp.toFixed(1)}°C < ${crashThreshold.toFixed(1)}°C${heaterAuthorised ? ', heater can not keep up' : ''}) — switching to dehumidifier-only for humidity`);
@@ -2385,10 +2338,18 @@ function evaluateVpdIntelligent() {
     // Temperature safety: blower for humidity extraction would COOL the room.
     // With heater role authorised, Rule 5 compensates → safe down to 1.5°C below min.
     // Without heater, we need temp above idealMin + 0.5 to start extraction.
+    // Continuation bias: once extraction is running, keep the gate open through small
+    // temp dips — the SUBSTITUTION/crash logic above is the authority on when to stop,
+    // not this activation gate. Without this, temp oscillating ±0.3 °C around the
+    // (idealMin − 1.5) threshold toggled the blower 0↔45 % every cycle (incident
+    // 2026-05-20). And when the heater is ineffective, extraction is the only lever,
+    // so stay safe down to an absolute cold floor.
     const tempSafeForBlower = temp > idealTemp.min + 0.5
       || humiEmergency
       || leafVpdCritical
-      || (heaterAuthorised && temp > idealTemp.min - 1.5);
+      || (heaterAuthorised && temp > idealTemp.min - 1.5)
+      || (humiExtractionActive && temp > idealTemp.min - 2.0)
+      || (heaterIneffective && temp > idealTemp.min - 5);
 
     // Anti-oscillation cooldown: after a substitution, suppress reactivation briefly so
     // the heater / dehumidifier can do work. But if humidity keeps RISING during the
@@ -2415,30 +2376,48 @@ function evaluateVpdIntelligent() {
     if (!crashCooldownActive && dehumExhausted && !blowerCrashingTemp && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
       if (extIsBlower) {
         newBlowerCeiling = 100;
-        const humiExcess = humi - idealHumiMax;
-        const period = isDaytime ? 'day' : 'night';
-        const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
-        const baseFloor = calSpeed > 0 ? calSpeed : 40;
 
         if (!humiExtractionActive) {
+          // Compute the starting speed from calibration ONCE, at activation, and
+          // freeze it as baseSpeed. We deliberately do NOT recompute it from the
+          // instantaneous humi each cycle — that made the floor wobble 40↔50 % as
+          // the sensor jittered ±1 % (incident 2026-05-20). From here the optimizer
+          // owns the speed via ±10 % steps every 5 min.
+          const humiExcess = humi - idealHumiMax;
+          const period = isDaytime ? 'day' : 'night';
+          const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
+          const baseSpeed = calSpeed > 0 ? calSpeed : 40;
           vpdEscalationState.roles['extractor_humi'] = {
             activatedAt: now, metricAtActivation: humi,
-            speedBoost: 0, lastCheckTime: now, lastMetric: humi,
+            baseSpeed, speedBoost: 0, lastCheckTime: now, lastMetric: humi,
             phase: 'escalating', noImproveCount: 0
           };
-          newBlowerFloor = Math.max(newBlowerFloor, baseFloor);
+          newBlowerFloor = Math.max(newBlowerFloor, baseSpeed);
           console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
         } else {
-          // 3-phase speed optimizer always runs: escalate to find an effective speed,
-          // then de-escalate to find the lowest speed that still HOLDS the metric.
-          // The 5-min check + 0.4% humi worsen threshold catches slow drift, so we
-          // don't have to artificially clamp the floor: the optimizer reacts as soon
-          // as humi (or temp during cooling) starts trending back up.
+          // Optimizer hunts the minimum effective speed: ±10 % every 5 min, only
+          // stepping UP on a real 2 %/1 °C deterioration (noise is ignored), stepping
+          // DOWN whenever the metric holds steady.
           evaluateEscalation('extractor_humi', humi, true, ESCALATION_IMPROVE_HUMI, ESCALATION_WORSEN_HUMI);
         }
-        const boost = vpdEscalationState.roles['extractor_humi']?.speedBoost || 0;
-        newBlowerFloor = Math.max(0, Math.max(newBlowerFloor, baseFloor) + boost);
-        newBlowerFloor = Math.min(100, newBlowerFloor);
+        const role = vpdEscalationState.roles['extractor_humi'];
+        const baseSpeed = role?.baseSpeed ?? 40;
+        let boost = role?.speedBoost || 0;
+        // Effective extraction speed clamped to [20, 100] while the role is active.
+        // Anti-windup: pin the stored boost back to whatever the clamp allows so it
+        // can't drift to a huge negative number that would take many cycles to climb
+        // back from when humidity finally rises.
+        let effFloor = baseSpeed + boost;
+        if (effFloor < 20) { effFloor = 20; boost = 20 - baseSpeed; }
+        if (effFloor > 100) { effFloor = 100; boost = 100 - baseSpeed; }
+        if (role) role.speedBoost = boost;
+        newBlowerFloor = Math.max(newBlowerFloor, effFloor);
+        // Commit the chosen speed onto the role so cycles that don't re-traverse
+        // this exact block (cooldown windows, momentary temp dips) keep driving the
+        // blower instead of letting newBlowerCeiling reset to 0 → spurious 0 % blips.
+        if (vpdEscalationState.roles['extractor_humi']) {
+          vpdEscalationState.roles['extractor_humi'].committedFloor = newBlowerFloor;
+        }
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
       }
@@ -2528,6 +2507,20 @@ function evaluateVpdIntelligent() {
   }
   if (temp <= idealTemp.min && isRoleActive('cooler')) {
     deactivateSocketRole('cooler', `SAFETY: temp ${temp.toFixed(1)}°C <= min ${idealTemp.min}°C`);
+  }
+
+  // Fallback: if humidity extraction is still the active role (blower extractor) but
+  // no rule lifted the ceiling this cycle — e.g. crash-cooldown window, a momentary
+  // temp dip below a gate, or the "humi just touched idealHumiMax" edge — keep driving
+  // the previously committed extraction speed instead of dropping to 0. Extraction is
+  // only truly ended when the role is deleted (humi reached target, or substitution).
+  if (extIsBlower
+      && vpdEscalationState.roles['extractor_humi']
+      && newBlowerCeiling === 0
+      && !needsCooling) {
+    const committed = vpdEscalationState.roles['extractor_humi'].committedFloor || 40;
+    newBlowerCeiling = 100;
+    newBlowerFloor = Math.max(newBlowerFloor, committed);
   }
 
   // Apply blower overrides
@@ -2672,10 +2665,13 @@ function evaluateBlowerCurve() {
     maxSpeed = Math.max(maxSpeed, speed);
   }
 
-  // If no curve is demanding, use standby speed
-  const finalSpeed = maxSpeed > 0 ? maxSpeed : (standbySpeed || 0);
-
-  return finalSpeed;
+  // If no curve demanded a speed, return null so the caller defers to the VPD
+  // floor/ceiling instead of clobbering it with a literal 0 (which produced
+  // spurious "speed=0%" blips between VPD-driven speeds — incident 2026-05-20).
+  // Only emit the explicit standby speed when one is configured (> 0).
+  if (maxSpeed > 0) return maxSpeed;
+  if (standbySpeed && standbySpeed > 0) return standbySpeed;
+  return null;
 }
 
 /**
@@ -2886,7 +2882,14 @@ async function processSensorData(sensorData, deviceMac) {
     if (emergTempHigh || emergHumiHigh) {
       effectiveSpeed = 100;
     }
-    if (effectiveSpeed !== lastBlowerSpeed) {
+    // Debounce: only re-issue a command when the speed actually changes by a
+    // meaningful step (≥ 5 %), or when crossing the on/off boundary. The base
+    // floor wobbles ±5 % cycle-to-cycle as humi micro-fluctuates ±1 %; without
+    // this guard the device was spammed with a new command every 2 s.
+    const lastSpeed = lastBlowerSpeed ?? -1;
+    const crossedOnOff = (effectiveSpeed > 0) !== (lastSpeed > 0);
+    const changedEnough = Math.abs(effectiveSpeed - lastSpeed) >= 5;
+    if (crossedOnOff || changedEnough) {
       console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)${(emergTempHigh || emergHumiHigh) ? ' EMERGENCY' : ''}`);
       lastBlowerSpeed = effectiveSpeed;
       await sendBlowerCommand(effectiveSpeed, effectiveSpeed > 0);
