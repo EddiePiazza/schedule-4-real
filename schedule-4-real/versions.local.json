@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T01:30:46.080Z",
+  "lastCheck": "2026-05-21T01:44:28.181Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.138.0",
-      "installedAt": "2026-05-21T01:34:12Z"
+      "version": "1.138.1",
+      "installedAt": "2026-05-21T01:53:37Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.138.0",
+        "changes": [
+          "Sync grow stage to flowering and log a Journal entry when flipping lights"
+        ]
+      },
       {
         "version": "1.137.2",
         "changes": [
@@ -395,19 +401,6 @@
           "Log trichome maturity percentages with harvest-window hint",
           "Show trichome distribution and runoff readings on the timeline"
         ]
-      },
-      {
-        "version": "1.117.0",
-        "changes": [
-          "Add ARIA roles to breeding and strains toolbar controls",
-          "Add printable breeder card for keeper plants and top scorers",
-          "Confirm before deleting a saved hunt template",
-          "Log node count and stem diameter in the observation wizard",
-          "Show only the sensors assigned to the active room on its dashboard",
-          "Show skeleton placeholder while lab data loads",
-          "Show node count, stem diameter and localised height in observation timeline",
-          "Replace unsaved-changes browser confirm with in-app dialog"
-        ]
       }
     ],
     "ingest": [
@@ -517,6 +510,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.28.0",
+        "changes": [
+          "Sync the grow's flowering stage to the Lab when the 12/12 flip begins"
+        ]
+      },
       {
         "version": "1.27.0",
         "changes": [
@@ -833,13 +832,6 @@
         "version": "1.15.1",
         "changes": [
           "Fix tunnel agent connecting to own relay via both localhost and public URL"
-        ]
-      },
-      {
-        "version": "1.15.0",
-        "changes": [
-          "Use leaf VPD instead of air VPD for automation decisions with dehumidifier support",
-          "Add multi-relay tunnel agent for room redundancy across relays"
         ]
       }
     ],

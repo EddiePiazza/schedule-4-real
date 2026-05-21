@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T01:34:12Z",
+  "generatedAt": "2026-05-21T01:53:37Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.138.0",
-      "archive": "s4r-web-1.138.0.tar.gz",
-      "sha256": "2b88dc7bee2028da73c2ba03ae5cb6b7f6b213b3d885036450dcca72fc7765dc",
-      "size": 11477765,
+      "version": "1.138.1",
+      "archive": "s4r-web-1.138.1.tar.gz",
+      "sha256": "1da389f43b7ab144f86d0996c9e2f7ffe1ade7b48ed0988fafb436d8bcbfa4d4",
+      "size": 11477830,
       "changelog": [
+        {
+          "version": "1.138.1",
+          "changes": [
+            "Flip to Flower replaces the old light schedule and starts darkness at night"
+          ]
+        },
         {
           "version": "1.138.0",
           "changes": [
