@@ -498,6 +498,31 @@ function publishLightCycleConfig(t, config, label) {
   return true;
 }
 
+// Tell the web API to flip the grow room's plants to early_flower + add a Journal entry.
+// We call the authenticated Nitro endpoint (x-auth-token = APP_PASSWORD) rather than touching
+// the lab tables here, so all the append-only stage bookkeeping stays in one place.
+async function syncLabRoomToFlower(roomId) {
+  try {
+    const port = process.env.NITRO_PORT || process.env.PORT || 3000;
+    const token = process.env.APP_PASSWORD || '';
+    const res = await fetch(`http://127.0.0.1:${port}/api/lab/rooms/${roomId}/flip-to-flower`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+      body: JSON.stringify({ note: 'Switched to 12/12 flowering (Flip to Flower)' })
+    });
+    if (!res.ok) {
+      console.error(`[LightCycle] Lab sync HTTP ${res.status}`);
+      return false;
+    }
+    const data = await res.json().catch(() => ({}));
+    console.log(`[LightCycle] Lab synced — ${data.affected || 0} plant(s) → early_flower in room ${roomId}`);
+    return true;
+  } catch (err) {
+    console.error('[LightCycle] Lab sync failed:', err.message);
+    return false;
+  }
+}
+
 async function processLightCycleTransitions() {
   const store = readLightTransitions();
   const keys = Object.keys(store.transitions);
@@ -539,6 +564,12 @@ async function processLightCycleTransitions() {
           } catch (err) {
             console.error('[LightCycle] day/night sync failed:', err.message);
           }
+        }
+        // Sync the Lab: flip the grow room's plants to early_flower + add a Journal entry.
+        // Done via the authenticated Nitro endpoint so we reuse the lab data-model logic.
+        if (t.roomId) {
+          const synced = await syncLabRoomToFlower(t.roomId);
+          if (synced) { t.labSyncedAt = now; }
         }
       } else {
         anyDark = true;

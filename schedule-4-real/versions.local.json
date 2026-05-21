@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T01:10:45.726Z",
+  "lastCheck": "2026-05-21T01:30:46.080Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.137.2",
-      "installedAt": "2026-05-21T01:20:33Z"
+      "version": "1.138.0",
+      "installedAt": "2026-05-21T01:34:12Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.27.0",
-      "installedAt": "2026-05-21T01:00:28Z"
+      "version": "1.28.0",
+      "installedAt": "2026-05-21T01:34:12Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.137.2",
+        "changes": [
+          "Translate Flip to Flower wizard to English; hide start option when lights are off"
+        ]
+      },
       {
         "version": "1.137.1",
         "changes": [
@@ -401,29 +407,6 @@
           "Show skeleton placeholder while lab data loads",
           "Show node count, stem diameter and localised height in observation timeline",
           "Replace unsaved-changes browser confirm with in-app dialog"
-        ]
-      },
-      {
-        "version": "1.116.0",
-        "changes": [
-          "Validate lab API payloads with clear error messages",
-          "Preserve deleted harvests and pollen during strain cascade",
-          "Surface clone rooting milestones from real observations",
-          "Show inbreeding coefficient on offspring in genetic tree",
-          "Add CSV and JSON export of lab records from settings",
-          "Add 2-week and 4-week cure checkpoints to hunt timeline",
-          "Add dry and cure timeline with weight log and burp schedule",
-          "Display plant height in preferred unit in pheno comparison",
-          "Lazy-load heavy lab wizards and tab panels",
-          "Trap focus and restore it when closing lab modals",
-          "Estimate pollen viability decay and prompt re-testing",
-          "Add recycle bin to restore deleted strains, plants and harvests",
-          "Replace browser alerts and confirms with in-app dialogs",
-          "Assign sensors, lights and climate modules per grow room",
-          "Confirm backward stage transitions before saving",
-          "Add structured 15-terpene intensity profile to scoring wizard",
-          "Record transplant date when training event logs up-potting",
-          "Skip tutorial steps when the target element is missing"
         ]
       }
     ],
