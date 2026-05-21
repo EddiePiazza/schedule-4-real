@@ -120,6 +120,7 @@ else
         docker run -d \
             --name s4r-questdb \
             --restart=always \
+            --log-opt max-size=10m --log-opt max-file=3 \
             -p ${QUESTDB_PG_PORT}:8812 -p ${QUESTDB_HTTP_PORT}:9000 -p ${QUESTDB_ILP_PORT}:9009 \
             -v "$EXPECTED_MOUNT:/var/lib/questdb" \
             -e QDB_PG_USER="$QUESTDB_USER" \

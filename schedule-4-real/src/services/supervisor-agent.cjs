@@ -3584,6 +3584,19 @@ async function start() {
   // Connect to MQTT
   connectMqtt();
 
+  // One-time: cap the QuestDB container log if it isn't already (uncapped json-file logs grew
+  // to 12 GB on a user's disk — incident 2026-05-21). Deferred so it never delays startup;
+  // idempotent and a no-op once the container has rotation. Guarded for older updater builds.
+  setTimeout(() => {
+    try {
+      if (typeof updateChecker.ensureQuestdbLogRotation === 'function') {
+        updateChecker.ensureQuestdbLogRotation();
+      }
+    } catch (err) {
+      console.warn('[Supervisor] QuestDB log rotation check failed:', err.message);
+    }
+  }, 8000);
+
   // ── Safe Startup Sequence ──
   // After connecting MQTT, wait briefly then send ALL OFF to every registered device.
   // This prevents devices from staying in an unknown ON state after supervisor restart.

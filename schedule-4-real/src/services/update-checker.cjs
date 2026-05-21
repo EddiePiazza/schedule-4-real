@@ -1453,6 +1453,72 @@ async function syncAppData() {
 // --- Post-update migrations ---
 // These run ONCE after successful updates to enable new features on existing installs.
 
+/**
+ * Cap the QuestDB container log. Docker's json-file driver is unbounded by default and QuestDB
+ * is chatty — one user's container log grew to 12 GB, saturating the disk (2026-05-21). If the
+ * container isn't already capped, recreate it with rotation (10 MB × 3). Removing the old
+ * container discards the oversized log; data is safe in the bind-mounted volume. Idempotent.
+ */
+function ensureQuestdbLogRotation() {
+  try {
+    // Operate on whichever QuestDB container exists — post-rebrand 's4r-questdb' or the legacy
+    // 'spiderapp-questdb' — recreating it under the SAME name so we don't interfere with the
+    // separate rebranding rename migration.
+    const name = ['s4r-questdb', 'spiderapp-questdb'].find(n => {
+      try { execSync(`docker inspect ${n}`, { stdio: 'pipe', timeout: 10000 }); return true; }
+      catch { return false; }
+    });
+    if (!name) return; // no container — pm2-start.sh creates s4r-questdb with rotation already
+
+    let logCfg = '';
+    try {
+      logCfg = execSync(
+        `docker inspect ${name} --format '{{json .HostConfig.LogConfig}}'`,
+        { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' }
+      ).trim();
+    } catch { return; }
+    if (!logCfg || logCfg.includes('max-size')) return; // already capped
+
+    console.log(`[Updater] ${name} container log is uncapped — recreating with rotation...`);
+    let mount = '';
+    try {
+      mount = execSync(
+        `docker inspect ${name} --format '{{range .Mounts}}{{if eq .Destination "/var/lib/questdb"}}{{.Source}}{{end}}{{end}}'`,
+        { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' }
+      ).trim();
+    } catch {}
+    if (!mount) mount = path.join(PROJECT_ROOT, 'database', 'data');
+
+    const pgPort = process.env.QUESTDB_PG_PORT || '8812';
+    const httpPort = process.env.QUESTDB_HTTP_PORT || '9000';
+    const ilpPort = process.env.QUESTDB_ILP_PORT || '9009';
+    const qdbUser = process.env.QUESTDB_USER || 'admin';
+    const qdbPass = process.env.QUESTDB_PASSWORD || 'quest';
+
+    try { execSync(`docker stop ${name} 2>/dev/null`, { stdio: 'pipe', timeout: 30000 }); } catch {}
+    try { execSync(`docker rm ${name} 2>/dev/null`, { stdio: 'pipe', timeout: 10000 }); } catch {}
+    fs.mkdirSync(mount, { recursive: true });
+    execSync(
+      `docker run -d --name ${name} --restart=always ` +
+      `--log-opt max-size=10m --log-opt max-file=3 ` +
+      `-p ${pgPort}:8812 -p ${httpPort}:9000 -p ${ilpPort}:9009 ` +
+      `-v "${mount}:/var/lib/questdb" ` +
+      `-e QDB_PG_USER="${qdbUser}" -e QDB_PG_PASSWORD="${qdbPass}" ` +
+      `-e QDB_TELEMETRY_ENABLED=false questdb/questdb:latest`,
+      { stdio: 'pipe', timeout: 60000 }
+    );
+    console.log(`[Updater] ${name} recreated with log rotation (max ~30 MB); oversized log discarded`);
+    for (let i = 0; i < 15; i++) {
+      try {
+        execSync(`docker exec ${name} curl -s http://localhost:9000/exec?query=SELECT+1`, { stdio: 'pipe', timeout: 5000 });
+        break;
+      } catch { execSync('sleep 1', { stdio: 'pipe' }); }
+    }
+  } catch (logFixErr) {
+    console.warn('[Updater] QuestDB log rotation fix warning:', logFixErr.message);
+  }
+}
+
 function runPostUpdateMigrations() {
   try {
     const envFile = path.join(PROJECT_ROOT, '.env');
@@ -1678,6 +1744,7 @@ rm -f "${migrateScript}"
         fs.mkdirSync(expectedMount, { recursive: true });
         execSync(
           `docker run -d --name s4r-questdb --restart=always ` +
+          `--log-opt max-size=10m --log-opt max-file=3 ` +
           `-p ${pgPort}:8812 -p ${httpPort}:9000 -p ${ilpPort}:9009 ` +
           `-v "${expectedMount}:/var/lib/questdb" ` +
           `-e QDB_PG_USER="${qdbUser}" -e QDB_PG_PASSWORD="${qdbPass}" ` +
@@ -1702,6 +1769,10 @@ rm -f "${migrateScript}"
     } catch (dockerFixErr) {
       console.warn('[Updater] Docker mount fix warning:', dockerFixErr.message);
     }
+
+    // Cap the QuestDB container log (12 GB-log incident, 2026-05-21). Also called on
+    // supervisor startup so it fixes existing installs without waiting for the next update.
+    ensureQuestdbLogRotation();
 
     // ═══════════════════════════════════════════════════════════════════
     // Migration: Enable tunnel + relay for existing installations
@@ -2183,5 +2254,6 @@ module.exports = {
   recoverErroredServices,
   ensureMosquittoHealthy,
   ensureProxyHealthy,
+  ensureQuestdbLogRotation,
   COMPONENT_DEFS
 };

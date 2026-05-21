@@ -548,6 +548,7 @@ else
     docker run -d \
         --name s4r-questdb \
         --restart=always \
+        --log-opt max-size=10m --log-opt max-file=3 \
         -p ${QDB_PG}:8812 -p ${QDB_HTTP}:9000 -p ${QDB_ILP}:9009 \
         -v "${INSTALL_DIR}/database/data:/var/lib/questdb" \
         -e QDB_PG_USER="${QUESTDB_USER}" \

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T12:54:36Z",
+  "generatedAt": "2026-05-21T13:03:53Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2733,11 +2733,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.1",
-      "archive": "s4r-supervisor-1.28.1.tar.gz",
-      "sha256": "52c27df55ea889e7515c7bd146d34a93e8ab9f8af478e7da96b502c49b0846bb",
-      "size": 93341,
+      "version": "1.28.2",
+      "archive": "s4r-supervisor-1.28.2.tar.gz",
+      "sha256": "cdc3dfa9057e9ed1f059e6ee4ad279190e1b6815313fd34161233b0637c112a5",
+      "size": 94382,
       "changelog": [
+        {
+          "version": "1.28.2",
+          "changes": [
+            "Cap the QuestDB container log so it can't grow unbounded and fill the disk"
+          ]
+        },
         {
           "version": "1.28.1",
           "changes": [
