@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T01:05:58.226Z",
+  "lastCheck": "2026-05-21T01:10:45.726Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.137.1",
-      "installedAt": "2026-05-21T01:07:35Z"
+      "version": "1.137.2",
+      "installedAt": "2026-05-21T01:20:33Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.137.1",
+        "changes": [
+          "Show Flip to Flower button in single-light layout"
+        ]
+      },
       {
         "version": "1.137.0",
         "changes": [
@@ -418,12 +424,6 @@
           "Add structured 15-terpene intensity profile to scoring wizard",
           "Record transplant date when training event logs up-potting",
           "Skip tutorial steps when the target element is missing"
-        ]
-      },
-      {
-        "version": "1.115.2",
-        "changes": [
-          "Leaf VPD uses 1.0\u00b0C offset at night (lights off) instead of the 2.8\u00b0C day value"
         ]
       }
     ],

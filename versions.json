@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T01:07:35Z",
+  "generatedAt": "2026-05-21T01:20:33Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.137.1",
-      "archive": "s4r-web-1.137.1.tar.gz",
-      "sha256": "af526e0825b59f1b32721dab4ba20a4d3eda8ace09d75bb3c94fdee610032883",
-      "size": 11473070,
+      "version": "1.137.2",
+      "archive": "s4r-web-1.137.2.tar.gz",
+      "sha256": "27f7742f641ac6d3d155cc2bea1bb966be40aa26e3bbe2523b9cf450ffe36cc0",
+      "size": 11476030,
       "changelog": [
+        {
+          "version": "1.137.2",
+          "changes": [
+            "Translate Flip to Flower wizard to English; hide start option when lights are off"
+          ]
+        },
         {
           "version": "1.137.1",
           "changes": [
