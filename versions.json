@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T12:17:14Z",
+  "generatedAt": "2026-05-21T12:54:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.140.1",
-      "archive": "s4r-web-1.140.1.tar.gz",
-      "sha256": "4f1c156f23a78abc4024e5abd7ce90972509ed2a34b64d825f927ea73bb0c569",
-      "size": 11477832,
+      "version": "1.140.2",
+      "archive": "s4r-web-1.140.2.tar.gz",
+      "sha256": "f71693201069239994071076136f67ff718cb7c8f0aa8b1b8255e3dc2aeebcfd",
+      "size": 11479276,
       "changelog": [
+        {
+          "version": "1.140.2",
+          "changes": [
+            "Tag observation logs with the plant's current stage instead of the wrong default",
+            "Surface plants not assigned to any room so they aren't lost from view"
+          ]
+        },
         {
           "version": "1.140.1",
           "changes": [

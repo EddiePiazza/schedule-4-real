@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T12:09:59.621Z",
+  "lastCheck": "2026-05-21T12:49:59.620Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.140.1",
-      "installedAt": "2026-05-21T12:17:14Z"
+      "version": "1.140.2",
+      "installedAt": "2026-05-21T12:54:36Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.140.1",
+        "changes": [
+          "Fix Home Assistant fan flooding the log with out-of-range speed errors"
+        ]
+      },
       {
         "version": "1.140.0",
         "changes": [
@@ -382,12 +388,6 @@
         "version": "1.119.3",
         "changes": [
           "Sync environment targets with SF app grow plan stages"
-        ]
-      },
-      {
-        "version": "1.119.2",
-        "changes": [
-          "Keep timelapse chart and text overlays when a sensor metric is missing"
         ]
       }
     ],
