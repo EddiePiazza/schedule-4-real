@@ -1444,6 +1444,28 @@ const migrations = [
   {
     name: 'lab_grow_rooms: add lights_off column',
     sql: `ALTER TABLE lab_grow_rooms ADD COLUMN lights_off STRING`
+  },
+  // Timelapse Studio (Movie-Maker editor): persist the edit on the project.
+  // `clips` is a JSON array of { date, cameraId, videoFile, trimStart, trimEnd, enabled }.
+  {
+    name: 'lab_timelapse_projects: add clips column',
+    sql: `ALTER TABLE lab_timelapse_projects ADD COLUMN clips STRING`
+  },
+  {
+    name: 'lab_timelapse_projects: add fps column',
+    sql: `ALTER TABLE lab_timelapse_projects ADD COLUMN fps INT`
+  },
+  {
+    name: 'lab_timelapse_projects: add transition column',
+    sql: `ALTER TABLE lab_timelapse_projects ADD COLUMN transition SYMBOL`
+  },
+  {
+    name: 'lab_timelapse_projects: add render_status column',
+    sql: `ALTER TABLE lab_timelapse_projects ADD COLUMN render_status SYMBOL`
+  },
+  {
+    name: 'lab_timelapse_projects: add render_error column',
+    sql: `ALTER TABLE lab_timelapse_projects ADD COLUMN render_error STRING`
   }
 ];
 

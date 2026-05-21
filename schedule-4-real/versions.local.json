@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T13:03:20.305Z",
+  "lastCheck": "2026-05-21T20:44:06.748Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
-  "schemaVersion": 17,
+  "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.140.2",
-      "installedAt": "2026-05-21T12:54:36Z"
+      "version": "1.141.0",
+      "installedAt": "2026-05-21T20:49:19Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -29,8 +29,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "schema": {
-      "version": "17",
-      "installedAt": "2026-05-17T15:07:35Z"
+      "version": "18",
+      "installedAt": "2026-05-21T20:49:19Z"
     },
     "relay": {
       "version": "1.6.2",
@@ -500,6 +500,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.28.2",
+        "changes": [
+          "Cap the QuestDB container log so it can't grow unbounded and fill the disk"
+        ]
+      },
+      {
         "version": "1.28.1",
         "changes": [
           "Refresh light schedule display after flip transitions"
@@ -814,13 +820,6 @@
         "version": "1.16.0",
         "changes": [
           "Add scientific VPD algorithm with calibration-based blower speed and thermal grace periods"
-        ]
-      },
-      {
-        "version": "1.15.2",
-        "changes": [
-          "Remove unauthenticated fallback proxy on relay when single host connected",
-          "Fix room metadata exposing host IP and causing 502 for unreachable relays"
         ]
       }
     ],

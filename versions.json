@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T13:03:53Z",
+  "generatedAt": "2026-05-21T20:49:19Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.140.2",
-      "archive": "s4r-web-1.140.2.tar.gz",
-      "sha256": "f71693201069239994071076136f67ff718cb7c8f0aa8b1b8255e3dc2aeebcfd",
-      "size": 11479276,
+      "version": "1.141.0",
+      "archive": "s4r-web-1.141.0.tar.gz",
+      "sha256": "b04356974e9b73294267765ab79b992966a699dcd0690c7b483ad9f979dc394c",
+      "size": 11510666,
       "changelog": [
+        {
+          "version": "1.141.0",
+          "changes": [
+            "Create multiple plants at once from a strain",
+            "Add a per-room Grow Journal timeline",
+            "Save adjustable grow-light height in the 3D room",
+            "Fix incorrect plant count when editing a grow room",
+            "Add immersive 3D grow tent with grow light, shadows and fan",
+            "Redesign Grow Rooms with a live multi-room gallery",
+            "Add Timelapse Movie Studio to splice daily clips into a movie"
+          ]
+        },
         {
           "version": "1.140.2",
           "changes": [
@@ -3339,11 +3351,17 @@
       ]
     },
     "schema": {
-      "version": "17",
-      "archive": "s4r-schema-17.tar.gz",
-      "sha256": "80099d73fc633e85315a5b780a197bca5f845f80f58ce312bc3e09ee10d8438d",
-      "size": 8780,
+      "version": "18",
+      "archive": "s4r-schema-18.tar.gz",
+      "sha256": "b85024bba24f0ba2d23b50e91848d073139b987c20a23d3bc6071efc21a89d53",
+      "size": 8938,
       "changelog": [
+        {
+          "version": "18",
+          "changes": [
+            "Add timelapse movie project storage"
+          ]
+        },
         {
           "version": "17",
           "changes": [
