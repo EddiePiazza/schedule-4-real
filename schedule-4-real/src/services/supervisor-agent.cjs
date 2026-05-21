@@ -194,6 +194,11 @@ function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 const sensorValuesByDevice = new Map();  // mac -> { temp, humi, vpd, co2, ... }
 const socketStatesByDevice = new Map();  // mac -> { O1: 0|1, O2: 0|1, ... }
 let dayNightSchedule = { dayStart: '06:00', dayEnd: '00:00' };
+// Flip-to-flower transitions (see server/utils/lightCycle.ts for the store format). When a
+// light is in its dark transition we force the climate to NIGHT regardless of the schedule.
+const LIGHT_CYCLE_STORE = path.resolve(__dirname, '../../data/light-cycle-transitions.json');
+const DARK_REASSERT_MS = 10 * 60 * 1000; // re-push manual-off every 10 min while dark (survives device reboot / missed msg)
+let darkTransitionActive = false;
 // VPD Intelligent Control State
 let vpdNodeConfig = null; // Parsed from flow vpd_control node
 let vpdEscalationState = {
@@ -446,6 +451,117 @@ async function loadDayNightSchedule() {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// FLIP-TO-FLOWER EXECUTOR
+// The flip endpoint persists pre-built device payloads + the times they should fire. Here we
+// just compare `now` against those times and publish — no recomputation, so no drift. State
+// machine per light: scheduled → dark → done. The dark payload is manual-OFF; the flower
+// payload is a 12/12 TimeSlot. When flowering starts we also sync the climate day/night window.
+// ─────────────────────────────────────────────────────────────────────
+function readLightTransitions() {
+  try {
+    if (!fs.existsSync(LIGHT_CYCLE_STORE)) return { transitions: {} };
+    const parsed = JSON.parse(fs.readFileSync(LIGHT_CYCLE_STORE, 'utf8'));
+    return parsed && parsed.transitions ? parsed : { transitions: {} };
+  } catch (err) {
+    console.error('[LightCycle] read failed:', err.message);
+    return { transitions: {} };
+  }
+}
+
+function writeLightTransitions(store) {
+  try {
+    fs.writeFileSync(LIGHT_CYCLE_STORE, JSON.stringify(store, null, 2));
+  } catch (err) {
+    console.error('[LightCycle] write failed:', err.message);
+  }
+}
+
+function publishLightCycleConfig(t, config, label) {
+  if (!mqttClient || !mqttClient.connected) return false;
+  const dev = getDevice(t.deviceMac) || {};
+  const type = (t.deviceType || dev.type || '').toLowerCase();
+  const mac = t.deviceMac || dev.mac;
+  if (!type || !mac) {
+    console.error(`[LightCycle] No device for transition ${t.lightId} (${t.deviceMac})`);
+    return false;
+  }
+  const command = {
+    method: 'setConfigField',
+    pid: mac,
+    params: { keyPath: t.keyPath, [t.dataKey]: config },
+    msgId: String(Date.now()),
+    uid: String(t.uid || dev.uid || '')
+  };
+  mqttClient.publish(`ggs/${type}/${mac}/cmd`, JSON.stringify(command), { qos: 1 });
+  console.log(`[LightCycle] ${label} — ${t.lightId} on ${type}/${mac}`);
+  return true;
+}
+
+async function processLightCycleTransitions() {
+  const store = readLightTransitions();
+  const keys = Object.keys(store.transitions);
+  if (keys.length === 0) {
+    if (darkTransitionActive) { darkTransitionActive = false; lastBlowerSpeed = null; }
+    return;
+  }
+  const now = Date.now();
+  let changed = false;
+  let anyDark = false;
+
+  for (const key of keys) {
+    const t = store.transitions[key];
+    if (!t) continue;
+
+    if (t.status === 'scheduled') {
+      if (now >= t.darkStartAt) {
+        publishLightCycleConfig(t, t.darkConfig, 'Dark period started (lights OFF)');
+        t.status = 'dark';
+        t.darkAppliedAt = now;
+        t.lastDarkAssertAt = now;
+        anyDark = true;
+        changed = true;
+      }
+    } else if (t.status === 'dark') {
+      if (now >= t.flowerStartAt) {
+        publishLightCycleConfig(t, t.flowerConfig, `Flower 12/12 started (ON ${t.flowerOn}–${t.flowerOff})`);
+        t.status = 'done';
+        t.flowerAppliedAt = now;
+        changed = true;
+        if (t.syncDayNight) {
+          try {
+            await query(
+              `INSERT INTO day_night_schedule (timestamp, day_start, day_end, source) VALUES (now(), $1, $2, 'flip')`,
+              [t.flowerOn, t.flowerOff]
+            );
+            await loadDayNightSchedule();
+            console.log(`[LightCycle] Climate day/night synced to ${t.flowerOn}–${t.flowerOff}`);
+          } catch (err) {
+            console.error('[LightCycle] day/night sync failed:', err.message);
+          }
+        }
+      } else {
+        anyDark = true;
+        // Re-assert the OFF payload periodically so a device reboot or a missed message can't
+        // accidentally let the lights come back on mid-transition.
+        if (!t.lastDarkAssertAt || (now - t.lastDarkAssertAt) >= DARK_REASSERT_MS) {
+          publishLightCycleConfig(t, t.darkConfig, 'Dark re-assert (lights OFF)');
+          t.lastDarkAssertAt = now;
+          changed = true;
+        }
+      }
+    }
+  }
+
+  // Toggle climate night-mode when entering/leaving dark; force a blower re-eval on change.
+  if (anyDark !== darkTransitionActive) {
+    darkTransitionActive = anyDark;
+    lastBlowerSpeed = null;
+    console.log(`[LightCycle] Dark transition ${anyDark ? 'ACTIVE — climate forced to NIGHT' : 'cleared'}`);
+  }
+  if (changed) writeLightTransitions(store);
+}
+
 /**
  * Load VPD config from the flow's vpd_control node
  */
@@ -511,6 +627,9 @@ function loadVpdFromFlow() {
  * Determine if current time is during the day period
  */
 function getCurrentPeriod() {
+  // During a flip-to-flower dark transition the lights are forced OFF, so the climate must
+  // treat it as night (night targets, night leaf offset) regardless of the stored schedule.
+  if (darkTransitionActive) return 'night';
   const now = new Date();
   const hh = String(now.getHours()).padStart(2, '0');
   const mm = String(now.getMinutes()).padStart(2, '0');
@@ -3164,6 +3283,7 @@ async function refreshData() {
   await loadFlows();
   await loadSocketAiModes();
   await loadDayNightSchedule();
+  await processLightCycleTransitions(); // resume any in-flight flip + set night-mode flag before first eval
   await loadSafetyTimeouts();
   loadCalibrationData();
   loadVpdFromFlow();
@@ -3511,6 +3631,15 @@ async function start() {
       await processSensorData({});
     }
   }, 10000);
+
+  // Drive flip-to-flower transitions (dark → 12/12). Runs every 30 s — plenty for multi-hour
+  // schedules, and the dark/flower instants are stored as absolute times so a tick boundary
+  // only adds at most 30 s of slack.
+  setInterval(() => {
+    processLightCycleTransitions().catch(err => {
+      console.error('[LightCycle] tick error:', err.message);
+    });
+  }, 30000);
 
   // Check for software updates every 10 minutes
   setInterval(() => {

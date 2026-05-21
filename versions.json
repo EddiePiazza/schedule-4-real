@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-20T20:50:00Z",
+  "generatedAt": "2026-05-21T01:00:28Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.136.7",
-      "archive": "s4r-web-1.136.7.tar.gz",
-      "sha256": "765e55147eb5d1b9147eb71704bef30a332126e82117e0b98e22eedc51fadced",
-      "size": 11460138,
+      "version": "1.137.0",
+      "archive": "s4r-web-1.137.0.tar.gz",
+      "sha256": "bf424053725c9608a285b6211bfd99e85f05f6b20d0c7bb03fa76b9059f772fc",
+      "size": 11474988,
       "changelog": [
+        {
+          "version": "1.137.0",
+          "changes": [
+            "Add Flip to Flower assistant with data-driven light schedule recommendation"
+          ]
+        },
         {
           "version": "1.136.7",
           "changes": [
@@ -2677,11 +2683,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.26.2",
-      "archive": "s4r-supervisor-1.26.2.tar.gz",
-      "sha256": "68163d9bf0d630a00cb69acf9dec2eaa3e95780a7d5a9cfbb042ce0c2353bc44",
-      "size": 90942,
+      "version": "1.27.0",
+      "archive": "s4r-supervisor-1.27.0.tar.gz",
+      "sha256": "f3cd1c76678ea9ebf8c166bd29cdbaae8d0d7b35983851a5a4492006465e2183",
+      "size": 92703,
       "changelog": [
+        {
+          "version": "1.27.0",
+          "changes": [
+            "Run scheduled flip-to-flower transitions with dark period and climate sync"
+          ]
+        },
         {
           "version": "1.26.2",
           "changes": [
