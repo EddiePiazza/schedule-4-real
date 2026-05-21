@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T02:29:05Z",
+  "generatedAt": "2026-05-21T12:17:14Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.140.0",
-      "archive": "s4r-web-1.140.0.tar.gz",
-      "sha256": "8ff50add99c67df985ba6ea9046a28dab22a3e194ec181b3bbad56953e44c4b6",
-      "size": 11477657,
+      "version": "1.140.1",
+      "archive": "s4r-web-1.140.1.tar.gz",
+      "sha256": "4f1c156f23a78abc4024e5abd7ce90972509ed2a34b64d825f927ea73bb0c569",
+      "size": 11477832,
       "changelog": [
+        {
+          "version": "1.140.1",
+          "changes": [
+            "Fix Home Assistant fan flooding the log with out-of-range speed errors"
+          ]
+        },
         {
           "version": "1.140.0",
           "changes": [

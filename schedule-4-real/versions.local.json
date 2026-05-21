@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T02:21:10.327Z",
+  "lastCheck": "2026-05-21T12:09:59.621Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.140.0",
-      "installedAt": "2026-05-21T02:29:05Z"
+      "version": "1.140.1",
+      "installedAt": "2026-05-21T12:17:14Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.140.0",
+        "changes": [
+          "Lock light controls while a flip is scheduled and refresh the view without reload"
+        ]
+      },
       {
         "version": "1.139.0",
         "changes": [
@@ -382,13 +388,6 @@
         "version": "1.119.2",
         "changes": [
           "Keep timelapse chart and text overlays when a sensor metric is missing"
-        ]
-      },
-      {
-        "version": "1.119.1",
-        "changes": [
-          "Keep Live Messages toggle and device filter after page navigation",
-          "Stop the Unsaved changes toast from flashing on System page load"
         ]
       }
     ],
