@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T02:19:18.648Z",
+  "lastCheck": "2026-05-21T02:21:10.327Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.139.0",
-      "installedAt": "2026-05-21T02:19:43Z"
+      "version": "1.140.0",
+      "installedAt": "2026-05-21T02:29:05Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.139.0",
+        "changes": [
+          "Fix Flip to Flower showing the old light schedule after scheduling",
+          "Add restore-or-keep-off choice with warning when cancelling a flip"
+        ]
+      },
       {
         "version": "1.138.1",
         "changes": [
@@ -383,19 +390,6 @@
           "Keep Live Messages toggle and device filter after page navigation",
           "Stop the Unsaved changes toast from flashing on System page load"
         ]
-      },
-      {
-        "version": "1.119.0",
-        "changes": [
-          "Add ARIA labels to photo viewer and camera card actions",
-          "Add AI language selector (16 languages) and respect temperature unit in prompts",
-          "Add AI presets: improve triggers, design fire safety, watering, VPD and custom schemes",
-          "Add AI-designed trigger schemes with editable Save/Cancel modal",
-          "Feeding schedule templates with stage-based presets",
-          "Show IPM treatment details on the observation timeline",
-          "Track pest, severity, product and re-entry in IPM observations",
-          "Show data-driven insights panel on the Overview tab"
-        ]
       }
     ],
     "ingest": [
@@ -505,6 +499,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.28.1",
+        "changes": [
+          "Refresh light schedule display after flip transitions"
+        ]
+      },
       {
         "version": "1.28.0",
         "changes": [
@@ -821,12 +821,6 @@
         "changes": [
           "Remove unauthenticated fallback proxy on relay when single host connected",
           "Fix room metadata exposing host IP and causing 502 for unreachable relays"
-        ]
-      },
-      {
-        "version": "1.15.1",
-        "changes": [
-          "Fix tunnel agent connecting to own relay via both localhost and public URL"
         ]
       }
     ],

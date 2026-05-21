@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T02:19:43Z",
+  "generatedAt": "2026-05-21T02:29:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.139.0",
-      "archive": "s4r-web-1.139.0.tar.gz",
-      "sha256": "6c0d444f0dd4475c9ce53385c14f947e8ad363cb1c1647dec091f0c1ce26616b",
-      "size": 11480147,
+      "version": "1.140.0",
+      "archive": "s4r-web-1.140.0.tar.gz",
+      "sha256": "8ff50add99c67df985ba6ea9046a28dab22a3e194ec181b3bbad56953e44c4b6",
+      "size": 11477657,
       "changelog": [
+        {
+          "version": "1.140.0",
+          "changes": [
+            "Lock light controls while a flip is scheduled and refresh the view without reload"
+          ]
+        },
         {
           "version": "1.139.0",
           "changes": [
