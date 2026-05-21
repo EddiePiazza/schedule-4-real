@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T20:49:19Z",
+  "generatedAt": "2026-05-21T23:15:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.141.0",
-      "archive": "s4r-web-1.141.0.tar.gz",
-      "sha256": "b04356974e9b73294267765ab79b992966a699dcd0690c7b483ad9f979dc394c",
-      "size": 11510666,
+      "version": "1.141.1",
+      "archive": "s4r-web-1.141.1.tar.gz",
+      "sha256": "a37a66d76d83cdd1b7f4924b3986a303ab3af72599481beb27fcde6b3400dcad",
+      "size": 11510892,
       "changelog": [
+        {
+          "version": "1.141.1",
+          "changes": [
+            "Fix flip-to-flower scheduling slipping a day past your lights-on time"
+          ]
+        },
         {
           "version": "1.141.0",
           "changes": [

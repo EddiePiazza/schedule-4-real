@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T20:44:06.748Z",
+  "lastCheck": "2026-05-21T23:11:13.271Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.141.0",
-      "installedAt": "2026-05-21T20:49:19Z"
+      "version": "1.141.1",
+      "installedAt": "2026-05-21T23:15:01Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.141.0",
+        "changes": [
+          "Create multiple plants at once from a strain",
+          "Add a per-room Grow Journal timeline",
+          "Save adjustable grow-light height in the 3D room",
+          "Fix incorrect plant count when editing a grow room",
+          "Add immersive 3D grow tent with grow light, shadows and fan",
+          "Redesign Grow Rooms with a live multi-room gallery",
+          "Add Timelapse Movie Studio to splice daily clips into a movie"
+        ]
+      },
       {
         "version": "1.140.2",
         "changes": [
@@ -383,12 +395,6 @@
         "version": "1.119.5",
         "changes": [
           "Auto-refresh Settings page when SF app changes env targets"
-        ]
-      },
-      {
-        "version": "1.119.4",
-        "changes": [
-          "Sync env targets from SF app to s4r without reload"
         ]
       }
     ],
@@ -870,6 +876,12 @@
       }
     ],
     "schema": [
+      {
+        "version": "18",
+        "changes": [
+          "Add timelapse movie project storage"
+        ]
+      },
       {
         "version": "17",
         "changes": [
