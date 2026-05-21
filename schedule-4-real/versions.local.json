@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T00:51:07.329Z",
+  "lastCheck": "2026-05-21T01:05:58.226Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.137.0",
-      "installedAt": "2026-05-21T01:00:28Z"
+      "version": "1.137.1",
+      "installedAt": "2026-05-21T01:07:35Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.137.0",
+        "changes": [
+          "Add Flip to Flower assistant with data-driven light schedule recommendation"
+        ]
+      },
       {
         "version": "1.136.7",
         "changes": [
@@ -419,12 +425,6 @@
         "changes": [
           "Leaf VPD uses 1.0\u00b0C offset at night (lights off) instead of the 2.8\u00b0C day value"
         ]
-      },
-      {
-        "version": "1.115.1",
-        "changes": [
-          "Persist Event Log expanded toggle across page navigation"
-        ]
       }
     ],
     "ingest": [
@@ -534,6 +534,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.27.0",
+        "changes": [
+          "Run scheduled flip-to-flower transitions with dark period and climate sync"
+        ]
+      },
       {
         "version": "1.26.2",
         "changes": [
@@ -851,14 +857,6 @@
         "changes": [
           "Use leaf VPD instead of air VPD for automation decisions with dehumidifier support",
           "Add multi-relay tunnel agent for room redundancy across relays"
-        ]
-      },
-      {
-        "version": "1.14.5",
-        "changes": [
-          "Make chaff traffic conditional on 2+ active circuits and direct peers only",
-          "Fix relay stats endpoint to expose circuits, rooms and tunnel metrics",
-          "Enable tracker by default so local rooms register without manual config"
         ]
       }
     ],

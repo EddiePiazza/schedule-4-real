@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T01:00:28Z",
+  "generatedAt": "2026-05-21T01:07:35Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.137.0",
-      "archive": "s4r-web-1.137.0.tar.gz",
-      "sha256": "bf424053725c9608a285b6211bfd99e85f05f6b20d0c7bb03fa76b9059f772fc",
-      "size": 11474988,
+      "version": "1.137.1",
+      "archive": "s4r-web-1.137.1.tar.gz",
+      "sha256": "af526e0825b59f1b32721dab4ba20a4d3eda8ace09d75bb3c94fdee610032883",
+      "size": 11473070,
       "changelog": [
+        {
+          "version": "1.137.1",
+          "changes": [
+            "Show Flip to Flower button in single-light layout"
+          ]
+        },
         {
           "version": "1.137.0",
           "changes": [
