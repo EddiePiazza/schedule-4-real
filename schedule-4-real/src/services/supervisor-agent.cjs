@@ -495,6 +495,21 @@ function publishLightCycleConfig(t, config, label) {
   };
   mqttClient.publish(`ggs/${type}/${mac}/cmd`, JSON.stringify(command), { qos: 1 });
   console.log(`[LightCycle] ${label} — ${t.lightId} on ${type}/${mac}`);
+
+  // Nudge the device to re-report its config a moment later, so the web app's config cache
+  // (which only updates from device 'config' messages) reflects the change instead of showing
+  // the stale schedule.
+  setTimeout(() => {
+    try {
+      mqttClient.publish(`ggs/${type}/${mac}/cmd`, JSON.stringify({
+        method: 'getConfigField',
+        pid: mac,
+        params: { keyPath: t.keyPath },
+        msgId: String(Date.now()),
+        uid: String(t.uid || dev.uid || '')
+      }), { qos: 1 });
+    } catch { /* best-effort cache refresh */ }
+  }, 1500);
   return true;
 }
 

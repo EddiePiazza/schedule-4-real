@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-21T01:44:28.181Z",
+  "lastCheck": "2026-05-21T02:19:18.648Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 17,
   "components": {
     "web": {
-      "version": "1.138.1",
-      "installedAt": "2026-05-21T01:53:37Z"
+      "version": "1.139.0",
+      "installedAt": "2026-05-21T02:19:43Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.28.0",
-      "installedAt": "2026-05-21T01:34:12Z"
+      "version": "1.28.1",
+      "installedAt": "2026-05-21T02:19:43Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.138.1",
+        "changes": [
+          "Flip to Flower replaces the old light schedule and starts darkness at night"
+        ]
+      },
       {
         "version": "1.138.0",
         "changes": [
@@ -389,17 +395,6 @@
           "Show IPM treatment details on the observation timeline",
           "Track pest, severity, product and re-entry in IPM observations",
           "Show data-driven insights panel on the Overview tab"
-        ]
-      },
-      {
-        "version": "1.118.0",
-        "changes": [
-          "AI Assistant upgrade: 30 categorised preset prompts, 11 new context tools (flow audit, power summary, lab summary, system health, anomalies, safety status, period comparison, AI memory), live snapshot in prompt, smarter autonomous loop with memory",
-          "Fix scoring thresholds and add overdue, pollen-decay, harvest-window insights",
-          "Stack difficulty and sex pickers on narrow mobile screens",
-          "Track runoff EC, pH and volume in watering observations",
-          "Log trichome maturity percentages with harvest-window hint",
-          "Show trichome distribution and runoff readings on the timeline"
         ]
       }
     ],
