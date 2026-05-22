@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T14:01:03.369Z",
+  "lastCheck": "2026-05-22T14:41:03.358Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.142.1",
-      "installedAt": "2026-05-22T14:06:56Z"
+      "version": "1.142.2",
+      "installedAt": "2026-05-22T14:49:05Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.142.1",
+        "changes": [
+          "Add cure checkpoints to the stage picker so hunts advance past curing",
+          "Open the hunt you click from the Lab overview",
+          "Keep the full notification list after a dashboard refresh",
+          "Plants assigned to a room now show in the 3D view and hunts",
+          "Show correct score colours and keeper recommendations",
+          "Changing a plant's stage no longer erases its score, tier or hunt",
+          "Strain editor offers Clone seed type and Beginner difficulty"
+        ]
+      },
       {
         "version": "1.142.0",
         "changes": [
@@ -392,12 +404,6 @@
         "changes": [
           "Stop fan flicker, group soil per controller, persist temp unit, filter by room",
           "Expand socket names on dashboard so they use the full card width"
-        ]
-      },
-      {
-        "version": "1.119.7",
-        "changes": [
-          "Stop HA outlet toggling on multi-device setups (route state by source MAC)"
         ]
       }
     ],

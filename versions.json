@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T14:06:56Z",
+  "generatedAt": "2026-05-22T14:49:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.1",
-      "archive": "s4r-web-1.142.1.tar.gz",
-      "sha256": "6df99179c1e760ad4954796d8c4691efb3dcb474a995fe3d4074f38dec62af05",
-      "size": 11508838,
+      "version": "1.142.2",
+      "archive": "s4r-web-1.142.2.tar.gz",
+      "sha256": "1c2b0d78e5797b8e883a5cfa22092895b219bba2d4adb9a3bd3350eb41f0c1a3",
+      "size": 11510005,
       "changelog": [
+        {
+          "version": "1.142.2",
+          "changes": [
+            "Show correct hunt attrition and culled counts for room/strain hunts",
+            "Allow scoring plants from early hunt stages",
+            "New observations show their plant code immediately",
+            "Moving a plant back a stage clears stale flowering/harvest dates"
+          ]
+        },
         {
           "version": "1.142.1",
           "changes": [
