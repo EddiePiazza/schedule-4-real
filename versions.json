@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T15:34:18Z",
+  "generatedAt": "2026-05-22T15:39:01Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.4",
-      "archive": "s4r-web-1.142.4.tar.gz",
-      "sha256": "54e05b33796780741c0f70d14a86e90ba8ce51a1235c2b33c4f49b2ccbce778e",
-      "size": 11515053,
+      "version": "1.142.5",
+      "archive": "s4r-web-1.142.5.tar.gz",
+      "sha256": "92674a36e0cb2420a73fb53cd4848ac56fefb2eb9a0b94f02e50c25c9545d146",
+      "size": 11512700,
       "changelog": [
+        {
+          "version": "1.142.5",
+          "changes": [
+            "Show a clear note on rooms with no climate sensor instead of blank readings"
+          ]
+        },
         {
           "version": "1.142.4",
           "changes": [
