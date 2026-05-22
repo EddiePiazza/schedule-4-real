@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T18:11:03.396Z",
+  "lastCheck": "2026-05-22T19:11:04.688Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.143.2",
-      "installedAt": "2026-05-22T18:18:25Z"
+      "version": "1.143.3",
+      "installedAt": "2026-05-22T19:15:45Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,18 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.143.2",
+        "changes": [
+          "Stop dashboard refresh from reverting a just-changed plant stage/score"
+        ]
+      },
+      {
+        "version": "1.143.1",
+        "changes": [
+          "Quick Log opened after a stage advance now records the new stage, not the previous one"
+        ]
+      },
       {
         "version": "1.143.0",
         "changes": [
@@ -399,18 +411,6 @@
         "version": "1.123.2",
         "changes": [
           "Stop resetting Fahrenheit selection back to Celsius on every page reload"
-        ]
-      },
-      {
-        "version": "1.123.1",
-        "changes": [
-          "Auto-recover broker when Settings Restart button hits a missing PM2 entry"
-        ]
-      },
-      {
-        "version": "1.123.0",
-        "changes": [
-          "Add Empty/Full and OK/Low text status sensors for dehumidifier and humidifier in HA"
         ]
       }
     ],
