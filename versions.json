@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T14:49:05Z",
+  "generatedAt": "2026-05-22T15:11:06Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.2",
-      "archive": "s4r-web-1.142.2.tar.gz",
-      "sha256": "1c2b0d78e5797b8e883a5cfa22092895b219bba2d4adb9a3bd3350eb41f0c1a3",
-      "size": 11510005,
+      "version": "1.142.3",
+      "archive": "s4r-web-1.142.3.tar.gz",
+      "sha256": "8fed514081ca2c74e54de660a3342107b92fb367c7964195ed6b9e1de9a578c9",
+      "size": 11512557,
       "changelog": [
+        {
+          "version": "1.142.3",
+          "changes": [
+            "Show a dash for un-scored categories in plant comparison"
+          ]
+        },
         {
           "version": "1.142.2",
           "changes": [

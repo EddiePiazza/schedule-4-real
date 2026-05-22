@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T14:41:03.358Z",
+  "lastCheck": "2026-05-22T15:11:03.407Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.142.2",
-      "installedAt": "2026-05-22T14:49:05Z"
+      "version": "1.142.3",
+      "installedAt": "2026-05-22T15:11:06Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.142.2",
+        "changes": [
+          "Show correct hunt attrition and culled counts for room/strain hunts",
+          "Allow scoring plants from early hunt stages",
+          "New observations show their plant code immediately",
+          "Moving a plant back a stage clears stale flowering/harvest dates"
+        ]
+      },
       {
         "version": "1.142.1",
         "changes": [
@@ -397,13 +406,6 @@
         "version": "1.119.9",
         "changes": [
           "Make Play from here actually chain consecutive days instead of looping one"
-        ]
-      },
-      {
-        "version": "1.119.8",
-        "changes": [
-          "Stop fan flicker, group soil per controller, persist temp unit, filter by room",
-          "Expand socket names on dashboard so they use the full card width"
         ]
       }
     ],
