@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T15:11:03.407Z",
+  "lastCheck": "2026-05-22T15:31:03.397Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.142.3",
-      "installedAt": "2026-05-22T15:11:06Z"
+      "version": "1.142.4",
+      "installedAt": "2026-05-22T15:34:18Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.142.3",
+        "changes": [
+          "Show a dash for un-scored categories in plant comparison"
+        ]
+      },
       {
         "version": "1.142.2",
         "changes": [
@@ -400,12 +406,6 @@
         "version": "1.120.0",
         "changes": [
           "Flash dashboard alert when dehumidifier tank is full or humidifier is low"
-        ]
-      },
-      {
-        "version": "1.119.9",
-        "changes": [
-          "Make Play from here actually chain consecutive days instead of looping one"
         ]
       }
     ],

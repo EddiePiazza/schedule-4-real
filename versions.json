@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T15:11:06Z",
+  "generatedAt": "2026-05-22T15:34:18Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.3",
-      "archive": "s4r-web-1.142.3.tar.gz",
-      "sha256": "8fed514081ca2c74e54de660a3342107b92fb367c7964195ed6b9e1de9a578c9",
-      "size": 11512557,
+      "version": "1.142.4",
+      "archive": "s4r-web-1.142.4.tar.gz",
+      "sha256": "54e05b33796780741c0f70d14a86e90ba8ce51a1235c2b33c4f49b2ccbce778e",
+      "size": 11515053,
       "changelog": [
+        {
+          "version": "1.142.4",
+          "changes": [
+            "Assign or change a plant's grow room from its detail panel",
+            "Each grow room shows its own climate; sensor-less rooms show none, not another room's data",
+            "Grow room shows exactly the plants assigned to it (summary matches view)",
+            "Remember the Strains Cards/List view choice"
+          ]
+        },
         {
           "version": "1.142.3",
           "changes": [
