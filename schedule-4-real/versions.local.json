@@ -5,8 +5,8 @@
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.143.1",
-      "installedAt": "2026-05-22T18:12:32Z"
+      "version": "1.143.2",
+      "installedAt": "2026-05-22T18:18:25Z"
     },
     "ingest": {
       "version": "1.9.1",

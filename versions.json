@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T18:12:32Z",
+  "generatedAt": "2026-05-22T18:18:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.143.1",
-      "archive": "s4r-web-1.143.1.tar.gz",
-      "sha256": "a4b73aa83d805d54557620b2ec7b7881987e6559ed65f008ea7f95c4ecda09a4",
-      "size": 11513862,
+      "version": "1.143.2",
+      "archive": "s4r-web-1.143.2.tar.gz",
+      "sha256": "21fe42193d20cf7b2045f9a5e52f3846d84d51b3502e5d2948ba6892905f9cfb",
+      "size": 11513897,
       "changelog": [
+        {
+          "version": "1.143.2",
+          "changes": [
+            "Stop dashboard refresh from reverting a just-changed plant stage/score"
+          ]
+        },
         {
           "version": "1.143.1",
           "changes": [
