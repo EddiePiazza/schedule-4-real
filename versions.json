@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T19:27:10Z",
+  "generatedAt": "2026-05-22T21:46:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.143.4",
-      "archive": "s4r-web-1.143.4.tar.gz",
-      "sha256": "ac90673276b84cba0ac3547620211bb438b792c276de7b51bb7cb926bf0d2d4c",
-      "size": 11512950,
+      "version": "1.144.0",
+      "archive": "s4r-web-1.144.0.tar.gz",
+      "sha256": "0334053c464ee103f222d78257c1f0a0d9b4b82f896d376baa6d18b6759786f9",
+      "size": 11517497,
       "changelog": [
+        {
+          "version": "1.144.0",
+          "changes": [
+            "AI assistant now reads soil sensors, O6-O10 outlets and respects supervisor behaviours",
+            "AI Autonomous Mode moves to Triggers and now adjusts rules instead of fighting the supervisor",
+            "Fix AI VPD stage control silently failing in vegetative stages"
+          ]
+        },
         {
           "version": "1.143.4",
           "changes": [
