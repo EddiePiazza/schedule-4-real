@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T15:31:03.397Z",
+  "lastCheck": "2026-05-22T16:41:03.737Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.142.5",
-      "installedAt": "2026-05-22T15:39:01Z"
+      "version": "1.143.0",
+      "installedAt": "2026-05-22T16:46:15Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,21 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.142.5",
+        "changes": [
+          "Show a clear note on rooms with no climate sensor instead of blank readings"
+        ]
+      },
+      {
+        "version": "1.142.4",
+        "changes": [
+          "Assign or change a plant's grow room from its detail panel",
+          "Each grow room shows its own climate; sensor-less rooms show none, not another room's data",
+          "Grow room shows exactly the plants assigned to it (summary matches view)",
+          "Remember the Strains Cards/List view choice"
+        ]
+      },
       {
         "version": "1.142.3",
         "changes": [
@@ -394,18 +409,6 @@
         "version": "1.122.0",
         "changes": [
           "Expose fan/blower speed and light brightness as numeric HA sensors for automations"
-        ]
-      },
-      {
-        "version": "1.121.0",
-        "changes": [
-          "Show climate alarms in a top banner and publish them to Home Assistant"
-        ]
-      },
-      {
-        "version": "1.120.0",
-        "changes": [
-          "Flash dashboard alert when dehumidifier tank is full or humidifier is low"
         ]
       }
     ],

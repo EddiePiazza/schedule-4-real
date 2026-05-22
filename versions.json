@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T15:39:01Z",
+  "generatedAt": "2026-05-22T16:46:15Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.5",
-      "archive": "s4r-web-1.142.5.tar.gz",
-      "sha256": "92674a36e0cb2420a73fb53cd4848ac56fefb2eb9a0b94f02e50c25c9545d146",
-      "size": 11512700,
+      "version": "1.143.0",
+      "archive": "s4r-web-1.143.0.tar.gz",
+      "sha256": "329c466ff1a123f2d7802839b6611daed64c69f927d5feea860d0d58412179fa",
+      "size": 11515351,
       "changelog": [
+        {
+          "version": "1.143.0",
+          "changes": [
+            "Attach a daytime photo from your grow camera to a Quick Log",
+            "Lab edits persist instantly everywhere \u2014 no more stale or reverted state after an action",
+            "Quick Log records the plant's current stage, not the previous one"
+          ]
+        },
         {
           "version": "1.142.5",
           "changes": [
