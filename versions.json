@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T21:46:34Z",
+  "generatedAt": "2026-05-22T21:54:28Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.0",
-      "archive": "s4r-web-1.144.0.tar.gz",
-      "sha256": "0334053c464ee103f222d78257c1f0a0d9b4b82f896d376baa6d18b6759786f9",
-      "size": 11517497,
+      "version": "1.144.1",
+      "archive": "s4r-web-1.144.1.tar.gz",
+      "sha256": "462f57a2277df6232822425b66ed63fc7bd64752001ebd838eed44fbdacb8ae1",
+      "size": 11517859,
       "changelog": [
+        {
+          "version": "1.144.1",
+          "changes": [
+            "AI can read climate module state and tune CO2 blower curves; night leaf-VPD awareness"
+          ]
+        },
         {
           "version": "1.144.0",
           "changes": [

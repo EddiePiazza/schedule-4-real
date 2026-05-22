@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T21:41:03.450Z",
+  "lastCheck": "2026-05-22T21:51:03.392Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.0",
-      "installedAt": "2026-05-22T21:46:34Z"
+      "version": "1.144.1",
+      "installedAt": "2026-05-22T21:54:28Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.0",
+        "changes": [
+          "AI assistant now reads soil sensors, O6-O10 outlets and respects supervisor behaviours",
+          "AI Autonomous Mode moves to Triggers and now adjusts rules instead of fighting the supervisor",
+          "Fix AI VPD stage control silently failing in vegetative stages"
+        ]
+      },
       {
         "version": "1.143.4",
         "changes": [
@@ -405,12 +413,6 @@
         "version": "1.123.5",
         "changes": [
           "Restore the PPFD sensor card on the dashboard"
-        ]
-      },
-      {
-        "version": "1.123.4",
-        "changes": [
-          "Persist fan and blower settings across navigation instead of resetting to zeros"
         ]
       }
     ],
