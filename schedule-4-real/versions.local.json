@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T22:21:03.840Z",
+  "lastCheck": "2026-05-22T23:11:03.867Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.2",
-      "installedAt": "2026-05-22T22:23:11Z"
+      "version": "1.144.3",
+      "installedAt": "2026-05-22T23:20:36Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.2",
+        "changes": [
+          "Replace Emergency Stop browser pop-ups with a proper in-app confirmation",
+          "Quick Log records the plant's current stage from the database, not a stale local copy"
+        ]
+      },
       {
         "version": "1.144.1",
         "changes": [
@@ -407,12 +414,6 @@
           "Collapse and paginate Event Log on mobile so it stops dominating the screen",
           "Accept seed-pack range format (55-60) for strain flowering days",
           "Show eye-slash icon on hidden socket toggles so they aren't read as missing"
-        ]
-      },
-      {
-        "version": "1.123.6",
-        "changes": [
-          "Fix live stream for MJPEG cameras (Android IP Webcam, HTTP-MJPEG)"
         ]
       }
     ],

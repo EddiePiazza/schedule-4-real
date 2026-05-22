@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T22:23:11Z",
+  "generatedAt": "2026-05-22T23:20:36Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.2",
-      "archive": "s4r-web-1.144.2.tar.gz",
-      "sha256": "cb6c34399b15ad9f278f81c82ab3cb0df2d46990e5b8bd3fa8960f21206b8a79",
-      "size": 11519508,
+      "version": "1.144.3",
+      "archive": "s4r-web-1.144.3.tar.gz",
+      "sha256": "b7a0721c5f60b07723e58b711f22e5a22efb4765521b2cbc70068f98bdef0cdf",
+      "size": 11521364,
       "changelog": [
+        {
+          "version": "1.144.3",
+          "changes": [
+            "Fix journal timeline placing observations under the wrong stage (boundary date bug)"
+          ]
+        },
         {
           "version": "1.144.2",
           "changes": [
