@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T16:46:15Z",
+  "generatedAt": "2026-05-22T18:12:32Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.143.0",
-      "archive": "s4r-web-1.143.0.tar.gz",
-      "sha256": "329c466ff1a123f2d7802839b6611daed64c69f927d5feea860d0d58412179fa",
-      "size": 11515351,
+      "version": "1.143.1",
+      "archive": "s4r-web-1.143.1.tar.gz",
+      "sha256": "a4b73aa83d805d54557620b2ec7b7881987e6559ed65f008ea7f95c4ecda09a4",
+      "size": 11513862,
       "changelog": [
+        {
+          "version": "1.143.1",
+          "changes": [
+            "Quick Log opened after a stage advance now records the new stage, not the previous one"
+          ]
+        },
         {
           "version": "1.143.0",
           "changes": [
