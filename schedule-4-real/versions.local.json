@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T19:11:04.688Z",
+  "lastCheck": "2026-05-22T19:21:03.382Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.143.3",
-      "installedAt": "2026-05-22T19:15:45Z"
+      "version": "1.143.4",
+      "installedAt": "2026-05-22T19:27:10Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.143.3",
+        "changes": [
+          "Hide AI assistant endpoint and config from logged-out visitors"
+        ]
+      },
       {
         "version": "1.143.2",
         "changes": [
@@ -405,12 +411,6 @@
         "version": "1.123.3",
         "changes": [
           "Stop the lab page from resetting Fahrenheit selection back to Celsius on mount"
-        ]
-      },
-      {
-        "version": "1.123.2",
-        "changes": [
-          "Stop resetting Fahrenheit selection back to Celsius on every page reload"
         ]
       }
     ],
