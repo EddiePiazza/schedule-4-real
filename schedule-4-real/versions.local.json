@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-22T21:51:03.392Z",
+  "lastCheck": "2026-05-22T22:21:03.840Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.1",
-      "installedAt": "2026-05-22T21:54:28Z"
+      "version": "1.144.2",
+      "installedAt": "2026-05-22T22:23:11Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.1",
+        "changes": [
+          "AI can read climate module state and tune CO2 blower curves; night leaf-VPD awareness"
+        ]
+      },
       {
         "version": "1.144.0",
         "changes": [
@@ -407,12 +413,6 @@
         "version": "1.123.6",
         "changes": [
           "Fix live stream for MJPEG cameras (Android IP Webcam, HTTP-MJPEG)"
-        ]
-      },
-      {
-        "version": "1.123.5",
-        "changes": [
-          "Restore the PPFD sensor card on the dashboard"
         ]
       }
     ],

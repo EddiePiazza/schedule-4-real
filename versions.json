@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T21:54:28Z",
+  "generatedAt": "2026-05-22T22:23:11Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.1",
-      "archive": "s4r-web-1.144.1.tar.gz",
-      "sha256": "462f57a2277df6232822425b66ed63fc7bd64752001ebd838eed44fbdacb8ae1",
-      "size": 11517859,
+      "version": "1.144.2",
+      "archive": "s4r-web-1.144.2.tar.gz",
+      "sha256": "cb6c34399b15ad9f278f81c82ab3cb0df2d46990e5b8bd3fa8960f21206b8a79",
+      "size": 11519508,
       "changelog": [
+        {
+          "version": "1.144.2",
+          "changes": [
+            "Replace Emergency Stop browser pop-ups with a proper in-app confirmation",
+            "Quick Log records the plant's current stage from the database, not a stale local copy"
+          ]
+        },
         {
           "version": "1.144.1",
           "changes": [
