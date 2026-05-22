@@ -1,14 +1,26 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T13:48:58Z",
+  "generatedAt": "2026-05-22T14:06:56Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.142.0",
-      "archive": "s4r-web-1.142.0.tar.gz",
-      "sha256": "08b131e6c1f528b724fb91f83bfdc972e969f43961234335b4f774751ede9756",
-      "size": 11509128,
+      "version": "1.142.1",
+      "archive": "s4r-web-1.142.1.tar.gz",
+      "sha256": "6df99179c1e760ad4954796d8c4691efb3dcb474a995fe3d4074f38dec62af05",
+      "size": 11508838,
       "changelog": [
+        {
+          "version": "1.142.1",
+          "changes": [
+            "Add cure checkpoints to the stage picker so hunts advance past curing",
+            "Open the hunt you click from the Lab overview",
+            "Keep the full notification list after a dashboard refresh",
+            "Plants assigned to a room now show in the 3D view and hunts",
+            "Show correct score colours and keeper recommendations",
+            "Changing a plant's stage no longer erases its score, tier or hunt",
+            "Strain editor offers Clone seed type and Beginner difficulty"
+          ]
+        },
         {
           "version": "1.142.0",
           "changes": [
