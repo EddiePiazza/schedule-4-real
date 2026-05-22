@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-21T23:15:01Z",
+  "generatedAt": "2026-05-22T13:48:58Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.141.1",
-      "archive": "s4r-web-1.141.1.tar.gz",
-      "sha256": "a37a66d76d83cdd1b7f4924b3986a303ab3af72599481beb27fcde6b3400dcad",
-      "size": 11510892,
+      "version": "1.142.0",
+      "archive": "s4r-web-1.142.0.tar.gz",
+      "sha256": "08b131e6c1f528b724fb91f83bfdc972e969f43961234335b4f774751ede9756",
+      "size": 11509128,
       "changelog": [
+        {
+          "version": "1.142.0",
+          "changes": [
+            "Make the stage-advance modal scroll and show what to do",
+            "Hide Add Plant when none to enrol; clearer Detailed Log button",
+            "Quick Log can record several plants at once (all selected by default)",
+            "Fix advancing a hunt stage not moving plants to the new stage"
+          ]
+        },
         {
           "version": "1.141.1",
           "changes": [
