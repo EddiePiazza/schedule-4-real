@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-23T02:02:17.486Z",
+  "lastCheck": "2026-05-23T02:38:22.117Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.4",
-      "installedAt": "2026-05-23T02:01:30Z"
+      "version": "1.144.5",
+      "installedAt": "2026-05-23T02:40:29Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -520,6 +520,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.28.4",
+        "changes": [
+          "Auto-updater loads .env so it always probes the right port (no more bogus rollbacks)"
+        ]
+      },
+      {
         "version": "1.28.3",
         "changes": [
           "Auto-updater retries on transient 5xx and uses a longer health-check timeout to avoid rolling back healthy releases"
@@ -834,12 +840,6 @@
         "version": "1.16.2",
         "changes": [
           "Fix camera service auto-start using correct PROJECT_ROOT variable"
-        ]
-      },
-      {
-        "version": "1.16.1",
-        "changes": [
-          "Auto-start camera service on update if not registered in PM2"
         ]
       }
     ],
