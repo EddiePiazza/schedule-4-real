@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T02:40:29Z",
+  "generatedAt": "2026-05-23T02:48:22Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.5",
-      "archive": "s4r-web-1.144.5.tar.gz",
-      "sha256": "70f366e275f9e2226ac8ebfb1f0a9bf9947f2a988c804e6538d248c14deb4cfe",
-      "size": 11520305,
+      "version": "1.144.6",
+      "archive": "s4r-web-1.144.6.tar.gz",
+      "sha256": "57158fb43ebe0fd62830803d8cca1cb0f13888fef5177e87e0ec0cd66b9e3c8c",
+      "size": 11522007,
       "changelog": [
+        {
+          "version": "1.144.6",
+          "changes": [
+            "Sidebar menu no longer overlaps the logo or pushes the login OK button off on small screens"
+          ]
+        },
         {
           "version": "1.144.5",
           "changes": [

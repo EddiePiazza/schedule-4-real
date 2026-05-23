@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-23T02:38:22.117Z",
+  "lastCheck": "2026-05-23T02:48:22.148Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.5",
-      "installedAt": "2026-05-23T02:40:29Z"
+      "version": "1.144.6",
+      "installedAt": "2026-05-23T02:48:22Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.5",
+        "changes": [
+          "Cull date and reason are saved on the plant when culling at a checkpoint, and cleared on undo",
+          "All checkpoint icons render correctly; harvesting/cured legacy statuses no longer get dropped",
+          "Advancing a plant through a stage now stamps the flower/veg/harvest date so day counts work everywhere",
+          "Journal timeline shows real stage duration and start date instead of a misleading Day 0 label"
+        ]
+      },
       {
         "version": "1.144.4",
         "changes": [
@@ -403,12 +412,6 @@
         "changes": [
           "Preserve range format (50-56) for strain flowering days instead of collapsing to midpoint",
           "Allow backdating log entries (Quick Observation and full Observation Wizard now accept a date)"
-        ]
-      },
-      {
-        "version": "1.124.1",
-        "changes": [
-          "Persist socket-timeline visibility to localStorage so toggle sticks even when server save fails"
         ]
       }
     ],
