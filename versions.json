@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T11:06:47Z",
+  "generatedAt": "2026-05-23T11:19:35Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.7",
-      "archive": "s4r-web-1.144.7.tar.gz",
-      "sha256": "ab6da863d1fc181155284726f62bfc4ac2dda3f266506d9357c810661e36a2e5",
-      "size": 11519945,
+      "version": "1.144.8",
+      "archive": "s4r-web-1.144.8.tar.gz",
+      "sha256": "778028a0f407778d8d7cf830db3a8fc3fa3ee81f1d1e0dc0895adb75fb544835",
+      "size": 11521372,
       "changelog": [
+        {
+          "version": "1.144.8",
+          "changes": [
+            "Sidebar secondary buttons sit at the bottom; password input no longer pushes the OK button off the menu"
+          ]
+        },
         {
           "version": "1.144.7",
           "changes": [

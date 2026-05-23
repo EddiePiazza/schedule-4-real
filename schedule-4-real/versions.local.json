@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-23T10:58:22.103Z",
+  "lastCheck": "2026-05-23T11:18:22.135Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.7",
-      "installedAt": "2026-05-23T11:06:47Z"
+      "version": "1.144.8",
+      "installedAt": "2026-05-23T11:19:35Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.7",
+        "changes": [
+          "Sidebar secondary buttons now scroll with the main nav so login stays anchored inside the menu on short screens"
+        ]
+      },
       {
         "version": "1.144.6",
         "changes": [
@@ -404,13 +410,6 @@
         "version": "1.127.0",
         "changes": [
           "Add an \"Add Plant\" button to enrol existing plants into a running pheno hunt"
-        ]
-      },
-      {
-        "version": "1.126.0",
-        "changes": [
-          "Backdated observations no longer rewind a plant's current day/week counter",
-          "Add editable date to the observation editor and let backdating reorder pheno-hunt timeline correctly"
         ]
       }
     ],
