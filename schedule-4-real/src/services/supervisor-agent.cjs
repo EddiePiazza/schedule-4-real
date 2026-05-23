@@ -2757,8 +2757,17 @@ function evaluateVpdIntelligent() {
   // stopping, for even humidity and stable VPD. BUT never while the room is being
   // heated (temp low / heater on) — a baseline exhaust would pull out the very warmth
   // the heater is adding, wasting energy. Also skipped during a cycle-transition stop.
+  //
+  // ALSO skipped when humidity needs to RISE (low humi / high leaf VPD / humidifier active /
+  // dehumidifier explicitly OFF in this cycle): a 20% extraction baseline pulls moisture out
+  // and pushes VPD even higher — directly contradicting the humidifier's job. User report:
+  // temp 21.5°C, humi 47%, leaf VPD 1.21 kPa → blower should be 0, not the 20% baseline.
   const heatingNow = tempLow || isRoleActive('heater') || temp < idealTemp.min;
-  if (extIsBlower && !cycleTransitionGraceActive && !heatingNow) {
+  const humidifyingNow = humiLow
+    || isRoleActive('humidifier')
+    || currentVpd > targetMax
+    || leafVpdCritical;
+  if (extIsBlower && !cycleTransitionGraceActive && !heatingNow && !humidifyingNow) {
     if (newBlowerCeiling < VPD_BLOWER_IDLE_SPEED) newBlowerCeiling = VPD_BLOWER_IDLE_SPEED;
     if (newBlowerFloor < VPD_BLOWER_IDLE_SPEED) newBlowerFloor = VPD_BLOWER_IDLE_SPEED;
   }

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T11:19:35Z",
+  "generatedAt": "2026-05-23T12:52:34Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.4",
-      "archive": "s4r-supervisor-1.28.4.tar.gz",
-      "sha256": "45de55dd94037af066a4efff0f929464e837058abf27949e0d029c7530a7bef9",
-      "size": 95187,
+      "version": "1.28.5",
+      "archive": "s4r-supervisor-1.28.5.tar.gz",
+      "sha256": "d4a0708f722c3637a48d01b75f0cb93ed9a01d9ce37bc2049ee1014f3a1b8061",
+      "size": 95367,
       "changelog": [
+        {
+          "version": "1.28.5",
+          "changes": [
+            "Blower turns OFF (not 20% baseline) when humidity is low or leaf VPD is above target"
+          ]
+        },
         {
           "version": "1.28.4",
           "changes": [

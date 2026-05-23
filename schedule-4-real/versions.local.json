@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-23T11:18:22.135Z",
+  "lastCheck": "2026-05-23T12:48:22.735Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.28.4",
-      "installedAt": "2026-05-23T02:08:08Z"
+      "version": "1.28.5",
+      "installedAt": "2026-05-23T12:52:34Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.8",
+        "changes": [
+          "Sidebar secondary buttons sit at the bottom; password input no longer pushes the OK button off the menu"
+        ]
+      },
       {
         "version": "1.144.7",
         "changes": [
@@ -404,12 +410,6 @@
         "changes": [
           "Fix \"1 plants\" / \"1 devices\" pluralization in hunt and rooms summaries",
           "Fix \"Failed to save observation\" when adding photos or problem/stress entries"
-        ]
-      },
-      {
-        "version": "1.127.0",
-        "changes": [
-          "Add an \"Add Plant\" button to enrol existing plants into a running pheno hunt"
         ]
       }
     ],
