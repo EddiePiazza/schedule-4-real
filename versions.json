@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T02:01:30Z",
+  "generatedAt": "2026-05-23T02:08:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2867,11 +2867,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.3",
-      "archive": "s4r-supervisor-1.28.3.tar.gz",
-      "sha256": "88e0be622fe60e07b15299e05b51340eadd70fe0d74089ba2dae326c71459ecd",
-      "size": 94827,
+      "version": "1.28.4",
+      "archive": "s4r-supervisor-1.28.4.tar.gz",
+      "sha256": "45de55dd94037af066a4efff0f929464e837058abf27949e0d029c7530a7bef9",
+      "size": 95187,
       "changelog": [
+        {
+          "version": "1.28.4",
+          "changes": [
+            "Auto-updater loads .env so it always probes the right port (no more bogus rollbacks)"
+          ]
+        },
         {
           "version": "1.28.3",
           "changes": [

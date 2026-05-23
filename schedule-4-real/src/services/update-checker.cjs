@@ -18,6 +18,24 @@ const http = require('http');
 // Paths
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 const VERSIONS_FILE = path.join(PROJECT_ROOT, 'versions.local.json');
+
+// Load PROJECT_ROOT/.env into process.env early — PM2 normally injects these, but when the updater
+// is invoked standalone (CLI / manual force-update), API_PORT and friends would otherwise fall back
+// to defaults that don't match the install (probing :3000 instead of :2500 → "timeout" → bogus
+// rollback of a healthy release).
+(function loadDotEnv() {
+  try {
+    const envPath = path.join(PROJECT_ROOT, '.env');
+    if (!fs.existsSync(envPath)) return;
+    for (const line of fs.readFileSync(envPath, 'utf-8').split('\n')) {
+      const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
+      if (!m || process.env[m[1]] != null) continue;
+      let v = m[2].trim();
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+      process.env[m[1]] = v;
+    }
+  } catch { /* missing/unreadable .env — fall through to defaults */ }
+})();
 const BACKUP_DIR = path.join(PROJECT_ROOT, '.backup');
 const TEMP_DIR = '/tmp/s4r-updates';
 const LOCK_FILE = '/tmp/s4r-update.lock';

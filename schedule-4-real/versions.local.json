@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-23T02:01:03.866Z",
+  "lastCheck": "2026-05-23T02:02:17.486Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.28.3",
-      "installedAt": "2026-05-23T02:01:30Z"
+      "version": "1.28.4",
+      "installedAt": "2026-05-23T02:08:08Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.144.4",
+        "changes": [
+          "Add lightweight health endpoint so the auto-updater never rolls back a healthy release"
+        ]
+      },
       {
         "version": "1.144.3",
         "changes": [
@@ -404,14 +410,6 @@
         "changes": [
           "Persist socket-timeline visibility to localStorage so toggle sticks even when server save fails"
         ]
-      },
-      {
-        "version": "1.124.0",
-        "changes": [
-          "Fix plant creation 400 error when origin is clone (early_veg/mid_veg/late_veg/harvest now accepted)",
-          "Make hidden socket-timeline chips look clickable instead of broken",
-          "Add seed-shop/breeder URL field to strains, shown as link on the card"
-        ]
       }
     ],
     "ingest": [
@@ -521,6 +519,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.28.3",
+        "changes": [
+          "Auto-updater retries on transient 5xx and uses a longer health-check timeout to avoid rolling back healthy releases"
+        ]
+      },
       {
         "version": "1.28.2",
         "changes": [
@@ -836,12 +840,6 @@
         "version": "1.16.1",
         "changes": [
           "Auto-start camera service on update if not registered in PM2"
-        ]
-      },
-      {
-        "version": "1.16.0",
-        "changes": [
-          "Add scientific VPD algorithm with calibration-based blower speed and thermal grace periods"
         ]
       }
     ],
