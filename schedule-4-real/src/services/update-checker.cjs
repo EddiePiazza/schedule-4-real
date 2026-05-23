@@ -36,7 +36,11 @@ const COMPONENT_DEFS = {
     pm2Name: 's4r-web',
     pm2NameLegacy: 'spiderapp-web',
     postInstall: 'npm install --production 2>&1 | tail -3',
-    healthCheck: { type: 'http', port: parseInt(process.env.API_PORT) || 3000, path: '/', timeout: 15000 }
+    // Probe a dedicated lightweight endpoint (no DB / no SSR) so a slow dashboard render or a
+    // briefly-5xx home page can't make us roll back a healthy build. Old web versions without
+    // /api/health return 404 — still <500, still counts as up. Total timeout generous for slow
+    // VPS hosts where startup + first response can take longer than the old 15s.
+    healthCheck: { type: 'http', port: parseInt(process.env.API_PORT) || 3000, path: '/api/health', timeout: 60000 }
   },
   ingest: {
     label: 'MQTT Ingestion',
@@ -457,7 +461,12 @@ function healthCheck(component) {
           case 'http': {
             const { port, path: urlPath } = def.healthCheck;
             const req = http.get(`http://127.0.0.1:${port}${urlPath || '/'}`, { timeout: 3000 }, (res) => {
-              resolve(res.statusCode < 500);
+              // 2xx/3xx/4xx = process is responding (a 404 just means the probe path doesn't exist
+              // on this version — still "up"). 5xx = the server is up but a downstream is briefly
+              // failing during boot (DB/MQTT not ready) — retry instead of failing the update.
+              const sc = res.statusCode;
+              if (sc != null && sc >= 200 && sc < 500) resolve(true);
+              else setTimeout(check, 1000);
             });
             req.on('error', () => setTimeout(check, 1000));
             req.on('timeout', () => { req.destroy(); setTimeout(check, 1000); });
@@ -486,8 +495,9 @@ function healthCheck(component) {
       }
     };
 
-    // Wait a moment for service to start
-    setTimeout(check, 2000);
+    // Warm-up window: PM2 reports "online" before the Node process has bound its port. 3s lets
+    // the first probe land on a server that's actually accepting connections (less retry noise).
+    setTimeout(check, 3000);
   });
 }
 

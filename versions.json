@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-22T23:20:36Z",
+  "generatedAt": "2026-05-23T02:01:30Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.3",
-      "archive": "s4r-web-1.144.3.tar.gz",
-      "sha256": "b7a0721c5f60b07723e58b711f22e5a22efb4765521b2cbc70068f98bdef0cdf",
-      "size": 11521364,
+      "version": "1.144.4",
+      "archive": "s4r-web-1.144.4.tar.gz",
+      "sha256": "4656a3b6a9306760aea8e6ae35a98e9dfd4bd74afe54ef2cb0754cfa49866592",
+      "size": 11521084,
       "changelog": [
+        {
+          "version": "1.144.4",
+          "changes": [
+            "Add lightweight health endpoint so the auto-updater never rolls back a healthy release"
+          ]
+        },
         {
           "version": "1.144.3",
           "changes": [
@@ -2861,11 +2867,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.2",
-      "archive": "s4r-supervisor-1.28.2.tar.gz",
-      "sha256": "cdc3dfa9057e9ed1f059e6ee4ad279190e1b6815313fd34161233b0637c112a5",
-      "size": 94382,
+      "version": "1.28.3",
+      "archive": "s4r-supervisor-1.28.3.tar.gz",
+      "sha256": "88e0be622fe60e07b15299e05b51340eadd70fe0d74089ba2dae326c71459ecd",
+      "size": 94827,
       "changelog": [
+        {
+          "version": "1.28.3",
+          "changes": [
+            "Auto-updater retries on transient 5xx and uses a longer health-check timeout to avoid rolling back healthy releases"
+          ]
+        },
         {
           "version": "1.28.2",
           "changes": [
