@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T02:48:22Z",
+  "generatedAt": "2026-05-23T11:06:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.6",
-      "archive": "s4r-web-1.144.6.tar.gz",
-      "sha256": "57158fb43ebe0fd62830803d8cca1cb0f13888fef5177e87e0ec0cd66b9e3c8c",
-      "size": 11522007,
+      "version": "1.144.7",
+      "archive": "s4r-web-1.144.7.tar.gz",
+      "sha256": "ab6da863d1fc181155284726f62bfc4ac2dda3f266506d9357c810661e36a2e5",
+      "size": 11519945,
       "changelog": [
+        {
+          "version": "1.144.7",
+          "changes": [
+            "Sidebar secondary buttons now scroll with the main nav so login stays anchored inside the menu on short screens"
+          ]
+        },
         {
           "version": "1.144.6",
           "changes": [
