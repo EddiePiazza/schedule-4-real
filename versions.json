@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T02:21:05Z",
+  "generatedAt": "2026-05-25T02:56:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.30.0",
-      "archive": "s4r-supervisor-1.30.0.tar.gz",
-      "sha256": "096a52a177a7f4c30dc8f03f8a68ca3ce98daee7fa8eeec8122309a10ed8cba8",
-      "size": 98554,
+      "version": "1.30.1",
+      "archive": "s4r-supervisor-1.30.1.tar.gz",
+      "sha256": "b10536f0110cb00c8b4131ddf29d3e33fe93f8fc5d65e9f3deb9a00a3e1194a8",
+      "size": 98739,
       "changelog": [
+        {
+          "version": "1.30.1",
+          "changes": [
+            "Stop blower from ping-ponging speed once humidity extraction hits its capacity ceiling"
+          ]
+        },
         {
           "version": "1.30.0",
           "changes": [

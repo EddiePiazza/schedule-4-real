@@ -2247,7 +2247,11 @@ function evaluateVpdIntelligent() {
 
     if (over > DEAD) {
       // Above the target ceiling → must reduce the metric.
-      const atCapacity = state.capacitySpeed !== undefined && state.speedBoost >= state.capacitySpeed;
+      // "At capacity" if the NEXT step up would hit the recorded ceiling — otherwise the prior
+      // revert (speedBoost -= STEP after a capacity hit) leaves us one step below, and we re-test
+      // forever (incident observed 2026-05-25 around 04:50 — boost ping-ponged 10↔20 every cycle).
+      // EXPLORE_UP_INTERVAL_MS still re-tests the cap periodically once the load may have changed.
+      const atCapacity = state.capacitySpeed !== undefined && (state.speedBoost + STEP >= state.capacitySpeed);
       if (atCapacity) {
         state.lastAction = 'hold';
         console.log(`[VPD] ${roleName}: ${over.toFixed(1)} over target but at capacity (boost ${state.speedBoost}%, ema ${ema.toFixed(1)}) — holding best achievable`);
