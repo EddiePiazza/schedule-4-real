@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T03:00:28Z",
+  "generatedAt": "2026-05-25T11:58:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.8",
-      "archive": "s4r-web-1.144.8.tar.gz",
-      "sha256": "778028a0f407778d8d7cf830db3a8fc3fa3ee81f1d1e0dc0895adb75fb544835",
-      "size": 11521372,
+      "version": "1.144.9",
+      "archive": "s4r-web-1.144.9.tar.gz",
+      "sha256": "b588c3ebfa0f1ec4c835f3d1325b214914b7a77e1aa838eff3a7b6b95fbb6d20",
+      "size": 11523386,
       "changelog": [
+        {
+          "version": "1.144.9",
+          "changes": [
+            "Stage change requires explicit confirmation before culling or archiving a plant",
+            "Plant Stage Guide shows days IN the current stage (not the plant's total age)",
+            "Add Mid Veg to journal stage picker, checkpoint config and observation dropdown",
+            "Editing an observation now saves the picked stage and type"
+          ]
+        },
         {
           "version": "1.144.8",
           "changes": [
@@ -2894,11 +2903,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.30.2",
-      "archive": "s4r-supervisor-1.30.2.tar.gz",
-      "sha256": "881882f6f8a3f2da6cf8e718f4b1894c4a8955fb358b1eea5fe656d15409147c",
-      "size": 99638,
+      "version": "1.30.3",
+      "archive": "s4r-supervisor-1.30.3.tar.gz",
+      "sha256": "b333c9a70c2ec81f641fbed3b6376f242fa63b99282bbdc401fa582f57b331b6",
+      "size": 99637,
       "changelog": [
+        {
+          "version": "1.30.3",
+          "changes": [
+            "Scoped systemd ExecReload to s4r services only (no longer touches other PM2 apps)"
+          ]
+        },
         {
           "version": "1.30.2",
           "changes": [

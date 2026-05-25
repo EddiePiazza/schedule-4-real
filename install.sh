@@ -835,7 +835,8 @@ RestartSec=5
 # pm2-start.sh handles everything: QuestDB, Mosquitto, all services, pm2 save
 ExecStart=/bin/bash ${INSTALL_DIR}/pm2-start.sh
 ExecStop=/bin/bash ${INSTALL_DIR}/kill.sh all
-ExecReload=/usr/lib/node_modules/pm2/bin/pm2 reload all
+# Only reload s4r-* / spiderapp-* services — never touch unrelated PM2 apps on the same host.
+ExecReload=/bin/bash ${INSTALL_DIR}/reload.sh
 
 # Safety limits
 LimitNOFILE=65536
