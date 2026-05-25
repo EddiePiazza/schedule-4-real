@@ -236,6 +236,19 @@ const HUMIDIFIER_EFFECT_CHECK_MS = 10 * 60 * 1000; // 10 min — humidifiers are
 const HUMIDIFIER_EFFECT_MIN_RISE = 1.0;             // % humi rise expected in that window
 const HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS = 45 * 60 * 1000; // 45 min, then re-test (gives time to refill)
 
+// ── User intent holds ──
+// Two distinct holds prevent VPD/automation from instantly reverting user intent:
+//  • manualOverrideUntil: socket flipped ON without our request (manual UI / external) — hold OFFs.
+//  • userMandatoryOnUntil: WE sent ON because a user trigger had mandatoryOn — hold the ON state
+//    for a stickier window even after the trigger condition stops matching. Without this, a
+//    schedule trigger fires ON for 1s, the VPD wants OFF on the next 10s cycle, and the user's
+//    intent (e.g. "run auxiliary extractor periodically") evaporates.
+const manualOverrideUntil = {};      // key → epoch ms
+const userMandatoryOnUntil = {};     // key → epoch ms
+const lastRequestedSocketState = {}; // what we *asked* the device for last cycle
+const MANUAL_OVERRIDE_GRACE_MS = 10 * 60 * 1000;       // 10 min for manual UI ON
+const USER_MANDATORY_ON_HOLD_MS = 30 * 60 * 1000;       // 30 min for user trigger mandatoryOn
+
 // ── Periodic ventilation ──
 // Even when retaining humidity (humi low, blower otherwise off), the room still needs a
 // regular air refresh to keep CO2 / O2 / stale-air pockets healthy. Pulse the blower at a
@@ -1696,6 +1709,38 @@ async function executeActions(actions) {
     const currentState = getSocketState(deviceMac, socket);
     const targetState = targetAction === 'on' ? 1 : 0;
 
+    // Honour user intent holds before VPD/automation OFFs. SAFETY/cycle-transition/EMERGENCY OFFs
+    // and explicit mandatoryOff still pass through — only "routine" VPD/automation OFFs are held.
+    const isHardOff = action.mandatoryOff === true
+      || (reason && (reason.includes('SAFETY') || reason.includes('cycle transition') || reason.includes('EMERGENCY')));
+    if (targetAction === 'off' && currentState === 1 && !isHardOff) {
+      // (a) Manual / external ON detected: state is ON but we last requested OFF.
+      const lastReq = lastRequestedSocketState[actionKey];
+      if (lastReq === 0 && !manualOverrideUntil[actionKey]) {
+        manualOverrideUntil[actionKey] = now + MANUAL_OVERRIDE_GRACE_MS;
+        console.log(`[Supervisor] ${socket} came ON outside the supervisor — holding routine OFFs for ${(MANUAL_OVERRIDE_GRACE_MS / 60000).toFixed(0)} min`);
+      }
+      if (manualOverrideUntil[actionKey] && now < manualOverrideUntil[actionKey]) {
+        console.log(`[Supervisor] ${socket} → off SKIPPED (manual override hold, ${Math.round((manualOverrideUntil[actionKey] - now) / 60000)} min left) | ${reason || ''}`);
+        continue;
+      }
+      // (b) User trigger mandatoryOn hold: a user trigger recently fired ON; keep ON sticky
+      //     so brief schedule pulses don't evaporate on the very next VPD cycle.
+      if (userMandatoryOnUntil[actionKey] && now < userMandatoryOnUntil[actionKey]) {
+        console.log(`[Supervisor] ${socket} → off SKIPPED (user mandatoryOn hold, ${Math.round((userMandatoryOnUntil[actionKey] - now) / 60000)} min left) | ${reason || ''}`);
+        continue;
+      }
+    }
+    // Clear stale grace when we naturally agree (device matches what we'd want)
+    if (currentState === 0) {
+      delete manualOverrideUntil[actionKey];
+      delete userMandatoryOnUntil[actionKey];
+    }
+    // Mark mandatoryOn ON requests as sticky for the hold window
+    if (action.mandatoryOn === true && targetAction === 'on') {
+      userMandatoryOnUntil[actionKey] = now + USER_MANDATORY_ON_HOLD_MS;
+    }
+
     // Skip if already in desired state
     if (currentState === targetState) {
       // Log occasionally so we know triggers ARE evaluating even when state matches
@@ -1734,6 +1779,8 @@ async function executeActions(actions) {
 
     if (success) {
       lastActionTimes[actionKey] = now;
+      // Record what we asked the device for — drives manualOverrideUntil detection (lastReq=0 + state ON = manual).
+      lastRequestedSocketState[actionKey] = targetState;
 
       // Track ON/OFF time for safety timeouts
       if (targetState === 1) {

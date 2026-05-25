@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T02:14:25Z",
+  "generatedAt": "2026-05-25T02:21:05Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.29.0",
-      "archive": "s4r-supervisor-1.29.0.tar.gz",
-      "sha256": "ff372767628c359a277231b6efe176a88b1f7ee74f9b0e9b4749b86ed335beb4",
-      "size": 97621,
+      "version": "1.30.0",
+      "archive": "s4r-supervisor-1.30.0.tar.gz",
+      "sha256": "096a52a177a7f4c30dc8f03f8a68ca3ce98daee7fa8eeec8122309a10ed8cba8",
+      "size": 98554,
       "changelog": [
+        {
+          "version": "1.30.0",
+          "changes": [
+            "Respect user mandatoryOn (30min sticky) and manual UI ON (10min hold) so VPD does not revert user intent instantly"
+          ]
+        },
         {
           "version": "1.29.0",
           "changes": [
