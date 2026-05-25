@@ -3137,7 +3137,12 @@ async function processSensorData(sensorData, deviceMac) {
   );
   const blowerControlledByUserTrigger = userBlowerAction && !userBlowerIsVpdOrSafety
     && !emergTempHigh && !emergHumiHigh;
-  const curveSpeed = evaluateBlowerCurve();
+  // When the VPD Controller node is configured, IT is the sole authority over blower speed.
+  // The Blower Curve is open-loop per-sensor calibration that doesn't know the current stage's
+  // target — after a stage change (e.g. veg → flowering shifts humi target up) the calibrated
+  // curve over-extracts based on stale absolute humi values, fighting the VPD algorithm and
+  // crashing humidity. The VPD optimizer's min/max already drive the blower; skip the curve.
+  const curveSpeed = vpdNodeConfig ? null : evaluateBlowerCurve();
 
   if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100)) {
     // Resolve the target speed.

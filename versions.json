@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T01:53:27Z",
+  "generatedAt": "2026-05-25T01:56:17Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.6",
-      "archive": "s4r-supervisor-1.28.6.tar.gz",
-      "sha256": "db72dac4f2ea507d1bfb70747b647620e515b2d59b09bacf0454a8ddd6a8dea2",
-      "size": 95922,
+      "version": "1.28.7",
+      "archive": "s4r-supervisor-1.28.7.tar.gz",
+      "sha256": "ef69502fab7f8df2d14597cb70852c25c79d904d7d391cb66a0f429a587c4939",
+      "size": 96077,
       "changelog": [
+        {
+          "version": "1.28.7",
+          "changes": [
+            "Blower Curve is ignored when VPD Controller is active so the two never fight"
+          ]
+        },
         {
           "version": "1.28.6",
           "changes": [

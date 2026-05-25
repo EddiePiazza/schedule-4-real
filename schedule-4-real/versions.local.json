@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-25T01:51:04.935Z",
+  "lastCheck": "2026-05-25T01:54:41.857Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.28.6",
-      "installedAt": "2026-05-25T01:53:27Z"
+      "version": "1.28.7",
+      "installedAt": "2026-05-25T01:56:17Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -521,6 +521,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.28.6",
+        "changes": [
+          "Stop VPD oscillation at target boundary and cap blower so a stage change does not unleash old-calibration extraction"
+        ]
+      },
+      {
         "version": "1.28.5",
         "changes": [
           "Blower turns OFF (not 20% baseline) when humidity is low or leaf VPD is above target"
@@ -835,12 +841,6 @@
         "version": "1.16.4",
         "changes": [
           "Fix rebranding migration re-running on every update and killing mosquitto/proxy"
-        ]
-      },
-      {
-        "version": "1.16.3",
-        "changes": [
-          "Include camera-service.cjs in supervisor update extraction paths"
         ]
       }
     ],
