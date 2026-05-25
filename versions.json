@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T11:58:24Z",
+  "generatedAt": "2026-05-25T23:47:00Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.30.3",
-      "archive": "s4r-supervisor-1.30.3.tar.gz",
-      "sha256": "b333c9a70c2ec81f641fbed3b6376f242fa63b99282bbdc401fa582f57b331b6",
-      "size": 99637,
+      "version": "1.31.0",
+      "archive": "s4r-supervisor-1.31.0.tar.gz",
+      "sha256": "5f7b3ac67f605b2fa5a9708764702088b4b8262ddf9df88d33be59ba67d85987",
+      "size": 100875,
       "changelog": [
+        {
+          "version": "1.31.0",
+          "changes": [
+            "Lower default leaf-temp offset to 0.5C day / 0.2C night so leaf VPD aligns with chart-based air VPD",
+            "VPD high with no heater now activates the humidifier (no longer extracts and worsens it)",
+            "VPD log now shows both leaf and air VPD so the chosen action is verifiable"
+          ]
+        },
         {
           "version": "1.30.3",
           "changes": [

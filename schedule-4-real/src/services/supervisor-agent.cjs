@@ -141,17 +141,25 @@ function enforceSafetyTimeouts() {
 }
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
 // Leaf temperature offset below air temperature, depends on lighting:
-//   DAY:   2.8°C (LED high power — hot leaves via radiation, DimLux standard)
-//   NIGHT: 1.0°C (lights off — leaves barely cooler than air, mostly transpiration)
-// Night VPD rises fast if we keep using the day offset → system triggers false extraction.
-const LEAF_TEMP_OFFSET_DAY = 2.8;
-const LEAF_TEMP_OFFSET_NIGHT = 1.0;
-const LEAF_TEMP_OFFSET = LEAF_TEMP_OFFSET_DAY; // Kept for backward-compat callers; see getLeafOffset()
+//   DAY:   1.0°C (moderate LED + airflow — leaves a hair cooler than air via transpiration)
+//   NIGHT: 0.3°C (lights off — leaves equilibrate with air within ~30 min)
+// 2026-05-25: lowered from 2.8/1.0. Eddie reported the system extracting when the air-VPD chart
+// said it should humidify — the 2.8°C offset (DimLux assumption: dense canopy + peak LED) was
+// flipping the phase decision for his sparser/lower-intensity setup. The VPD Control node can
+// override these via leafOffsetDay / leafOffsetNight if a specific grow needs the old aggressive
+// values back. The "air VPD" the user sees in the UI now matches the supervisor's view within
+// ~0.05 kPa, so the control intent matches the user's reading of the VPD chart.
+const LEAF_TEMP_OFFSET_DAY_DEFAULT = 0.5;
+const LEAF_TEMP_OFFSET_NIGHT_DEFAULT = 0.2;
+const LEAF_TEMP_OFFSET = LEAF_TEMP_OFFSET_DAY_DEFAULT; // Kept for backward-compat callers; see getLeafOffset()
 function getLeafOffset() {
+  // VPD Control node may override the defaults (leafOffsetDay / leafOffsetNight).
+  const cfgDay = (vpdNodeConfig && typeof vpdNodeConfig.leafOffsetDay === 'number') ? vpdNodeConfig.leafOffsetDay : LEAF_TEMP_OFFSET_DAY_DEFAULT;
+  const cfgNight = (vpdNodeConfig && typeof vpdNodeConfig.leafOffsetNight === 'number') ? vpdNodeConfig.leafOffsetNight : LEAF_TEMP_OFFSET_NIGHT_DEFAULT;
   try {
-    return getCurrentPeriod() === 'day' ? LEAF_TEMP_OFFSET_DAY : LEAF_TEMP_OFFSET_NIGHT;
+    return getCurrentPeriod() === 'day' ? cfgDay : cfgNight;
   } catch {
-    return LEAF_TEMP_OFFSET_DAY;
+    return cfgDay;
   }
 }
 
@@ -2113,7 +2121,19 @@ function evaluateVpdIntelligent() {
   const leafVpdBelowTargetHyst = vpdPhase === 'extracting'
     ? currentVpd > 0 && currentVpd < targetMin + VPD_PHASE_HYST  // stay extracting until clearly above
     : currentVpd > 0 && currentVpd < targetMin - VPD_PHASE_HYST; // start extracting only when clearly below
-  const needsExtraction = humiExcess > 2 || leafVpdBelowTargetHyst;
+  // Mirror: extraction would lower humi, which RAISES VPD. If leafVPD is already ABOVE the
+  // upper band (too dry), extracting would push us further from target. (Eddie 2026-05-25:
+  // "no hay heater, debería estar humidificando para bajar el VPD" — algorithm was extracting
+  // because humi > absolute max, ignoring that the action would worsen the VPD it's meant to fix.)
+  // If we're currently extracting (NOT in the VPD-too-dry veto), only switch into veto when VPD
+  // is CLEARLY above the band. If we're not extracting (likely already in veto), STAY in veto
+  // until VPD has dropped CLEARLY back inside. Otherwise hovering around targetMax flips the
+  // decision every cycle.
+  const leafVpdAboveTargetHyst = vpdPhase === 'extracting'
+    ? currentVpd > targetMax + VPD_PHASE_HYST  // enter veto only when clearly above
+    : currentVpd > targetMax - VPD_PHASE_HYST; // keep veto until clearly below
+  // VETO extraction when VPD is too high — humidification (below) is the right lever instead.
+  const needsExtraction = !leafVpdAboveTargetHyst && (humiExcess > 2 || leafVpdBelowTargetHyst);
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
   let nextPhase = vpdPhase;
   if (!needsExtraction && !needsHeating) {
@@ -2170,7 +2190,11 @@ function evaluateVpdIntelligent() {
   if (logKey !== lastVpdLogKey) {
     lastVpdLogKey = logKey;
     const anticFlag = tempRisingFast ? ` TREND+${tempTrend.perMin.toFixed(2)}/min` : '';
-    console.log(`[VPD] ${currentVpd.toFixed(2)} kPa (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${tempEmergency ? ' TEMP_EMERG' : ''}${humiEmergency ? ' HUMI_EMERG' : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}${anticFlag}`);
+    // Compute air VPD alongside leaf VPD so the operator can verify both numbers — the UI shows air
+    // VPD but the controller acts on leaf VPD. Printing them side-by-side avoids the "VPD high in
+    // UI but supervisor doing the opposite" confusion (Eddie 2026-05-25).
+    const _airVpd = svpAir - svpAir * (humi / 100);
+    console.log(`[VPD] leaf ${currentVpd.toFixed(2)} kPa (air ${_airVpd.toFixed(2)}, Δ${(_airVpd - currentVpd).toFixed(2)} via leaf-offset ${getLeafOffset().toFixed(1)}°C) (${targetMin.toFixed(2)}-${targetMax.toFixed(2)}, target ${vpdTarget.toFixed(2)}) | T:${temp.toFixed(1)}°C (${idealTemp.min}-${idealTemp.max}, cool@${tempHighThreshold}, heat@${tempLowThreshold.toFixed(1)}) H:${humi.toFixed(0)}% (${idealHumiMin.toFixed(0)}-[${idealHumiTarget.toFixed(0)}]-${idealHumiMax.toFixed(0)}%) | ${curState}${graceFlags ? ' ' + graceFlags : ''}${tempEmergency ? ' TEMP_EMERG' : ''}${humiEmergency ? ' HUMI_EMERG' : ''}${coolingActive ? ' COOLING' : ''}${humiExtractionActive ? ' HEXT' : ''}${anticFlag}`);
   }
 
   // Track condition changes for escalation reset
@@ -2500,6 +2524,17 @@ function evaluateVpdIntelligent() {
     deactivateSocketRole('humidifier', `Humidifier appears DRY (no humi rise during last self-test) — suspended for ${Math.round((humidifierIneffectiveUntil - now) / 60000)} min; refill tank`);
     delete vpdEscalationState.roles['humidifier'];
     lastHumidifierOffTime = now;
+  } else if (leafVpdAboveTargetHyst && !humidifierIneffective) {
+    // VPD-driven humidification: leaf VPD is ABOVE the upper band → room is too dry. The only
+    // two levers to lower VPD are heat (which is gated by temperature ceiling and may be
+    // unauthorised — Eddie disconnected his heater) or humidity. Activate the humidifier even
+    // if absolute humi is "within" the stage range — the goal at this point is VPD, not humi.
+    activateSocketRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax.toFixed(2)} (air ${(svpAir - svpAir * humi / 100).toFixed(2)}, humi ${humi.toFixed(0)}%) — raising humi to lower VPD`);
+    if (!vpdEscalationState.roles['humidifier']) {
+      vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
+    }
+    deactivateSocketRole('dehumidifier', 'VPD too high — pulling moisture out would worsen it');
+    deactivateSocketRole('extractor_humi', 'VPD too high — extraction would worsen it');
   } else if (humiLow && !humidifierIneffective) {
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${humiLowThreshold.toFixed(0)}% (target ${idealHumiTarget.toFixed(0)}%)`);
     if (!vpdEscalationState.roles['humidifier']) {
@@ -2512,9 +2547,12 @@ function evaluateVpdIntelligent() {
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
-  } else if (humi >= idealHumiTarget) {
-    // Humidity reached TARGET (VPD midpoint) — turn off humidifier
-    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target ${idealHumiTarget.toFixed(0)}%`);
+  } else if (humi >= idealHumiTarget && !leafVpdAboveTargetHyst) {
+    // Humidity reached TARGET (VPD midpoint) AND VPD is in/under band — turn off humidifier.
+    // (Don't shut off purely on humi when VPD is still above the upper band — the VPD branch
+    // above re-activated humidifier precisely to drag VPD down, and humi 44% may not be enough
+    // to satisfy VPD at the current temperature.)
+    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target ${idealHumiTarget.toFixed(0)}% (VPD ${currentVpd.toFixed(2)} in band)`);
     delete vpdEscalationState.roles['humidifier'];
   }
   // Between humiLow and idealHumiTarget: humidifier stays in whatever state it's in (keeps pushing)

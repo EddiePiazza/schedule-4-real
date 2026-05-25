@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-25T11:53:02.645Z",
+  "lastCheck": "2026-05-25T23:46:45.936Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.30.3",
-      "installedAt": "2026-05-25T11:58:24Z"
+      "version": "1.31.0",
+      "installedAt": "2026-05-25T23:47:00Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -523,6 +523,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.30.3",
+        "changes": [
+          "Scoped systemd ExecReload to s4r services only (no longer touches other PM2 apps)"
+        ]
+      },
+      {
         "version": "1.30.2",
         "changes": [
           "Throttle dehumidifier/heater/humidifier re-issue commands and back off when device hardware doesn't respond"
@@ -837,12 +843,6 @@
         "version": "1.17.1",
         "changes": [
           "Fix go2rtc crash loop caused by pkill killing newly spawned process"
-        ]
-      },
-      {
-        "version": "1.17.0",
-        "changes": [
-          "Add 20-min grace period on day/night transition with 5-min trend monitoring to prevent abrupt climate changes"
         ]
       }
     ],
