@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-23T12:52:34Z",
+  "generatedAt": "2026-05-25T01:53:27Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.5",
-      "archive": "s4r-supervisor-1.28.5.tar.gz",
-      "sha256": "d4a0708f722c3637a48d01b75f0cb93ed9a01d9ce37bc2049ee1014f3a1b8061",
-      "size": 95367,
+      "version": "1.28.6",
+      "archive": "s4r-supervisor-1.28.6.tar.gz",
+      "sha256": "db72dac4f2ea507d1bfb70747b647620e515b2d59b09bacf0454a8ddd6a8dea2",
+      "size": 95922,
       "changelog": [
+        {
+          "version": "1.28.6",
+          "changes": [
+            "Stop VPD oscillation at target boundary and cap blower so a stage change does not unleash old-calibration extraction"
+          ]
+        },
         {
           "version": "1.28.5",
           "changes": [

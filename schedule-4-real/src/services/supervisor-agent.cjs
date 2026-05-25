@@ -2001,7 +2001,14 @@ function evaluateVpdIntelligent() {
 
   const humiExcess = Math.max(0, humi - idealHumiMax);
   const tempDeficit = Math.max(0, idealTemp.min - temp);
-  const needsExtraction = humiExcess > 2 || leafVpdBelowTarget;
+  // Hysteresis around leafVpd's targetMin — without it, currentVpd oscillating across the
+  // boundary (e.g. 0.94 ↔ 0.95) flipped phase every 10s and cycled dehumidifier + blower curve
+  // constantly. Enter "extracting" only when CLEARLY below; exit only when CLEARLY above.
+  const VPD_PHASE_HYST = 0.05;
+  const leafVpdBelowTargetHyst = vpdPhase === 'extracting'
+    ? currentVpd > 0 && currentVpd < targetMin + VPD_PHASE_HYST  // stay extracting until clearly above
+    : currentVpd > 0 && currentVpd < targetMin - VPD_PHASE_HYST; // start extracting only when clearly below
+  const needsExtraction = humiExcess > 2 || leafVpdBelowTargetHyst;
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
   let nextPhase = vpdPhase;
   if (!needsExtraction && !needsHeating) {
@@ -2326,6 +2333,18 @@ function evaluateVpdIntelligent() {
   }
   // When needsCooling + humiLow: blower ceiling stays at 100 (from Rule 1).
   // Humidifier compensates below.
+
+  // Gentle-extraction cap: when humi is only marginally above target, the user's CALIBRATED
+  // blower curve can still return very high speeds (e.g. 90% at humi 48%) because the curve was
+  // calibrated against a different target (typically veg, lower humi target). After a stage
+  // change shifts the target down (flowering needs higher humi), 48% becomes "just at target"
+  // but the curve hasn't moved — it would over-extract and crash humidity. Cap the ceiling here
+  // so a mild humi excess can't unleash 90% extraction. Cooling (Rule 1) overrides this; a
+  // genuine humidity emergency also overrides.
+  if (phaseExtracting && !needsCooling && !humiEmergency && humiExcess < 3 && newBlowerCeiling > 0) {
+    const gentleCap = 25 + Math.round(humiExcess * 12); // 0% excess → 25, 3% excess → 61
+    if (newBlowerCeiling > gentleCap) newBlowerCeiling = gentleCap;
+  }
 
   // Activate humidifier when humidity is low
   if (humiLow) {
