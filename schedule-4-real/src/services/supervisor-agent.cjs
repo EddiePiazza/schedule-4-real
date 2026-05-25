@@ -268,6 +268,17 @@ const HEATER_GRACE_MS = 2 * 60 * 1000;     // 2 min: after heater off, suppress 
 const HUMIDIFIER_GRACE_MS = 4 * 60 * 1000; // 4 min: after humidifier off, suppress extraction — residual moisture needs time to settle
 const DEHUM_ESCALATION_MS = 2 * 60 * 1000; // 2 min: dehumidifier must run this long before blower escalation
 
+// ── Socket-role re-issue throttle ──
+// When a role wants the device ON but MQTT keeps reporting OFF (cooldown blocks command, or
+// device truly didn't latch), the activateSocketRole() check fires every cycle — flooding logs
+// and burning CPU. Throttle the re-issue, and after enough consecutive misses mark the role
+// "unresponsive" and back off so the operator can investigate hardware (dry tank, broken plug,
+// firmware reject). Reset on a successful state=1 observation.
+const roleReissueState = {}; // { [roleName]: { lastAttemptAt, consecutiveMisses, unresponsiveUntil } }
+const ROLE_REISSUE_THROTTLE_MS = 30 * 1000;             // never re-issue same role faster than this
+const ROLE_UNRESPONSIVE_MISS_THRESHOLD = 6;             // ~3 min of misses at 30s throttle
+const ROLE_UNRESPONSIVE_BACKOFF_MS = 10 * 60 * 1000;    // back off 10 min before next re-attempt
+
 // ── Post-Cooling Intelligent Heater Suppression ──
 // After blower/extractor finishes cooling, DON'T immediately fire heater.
 // Monitor temp trend: if environment is self-correcting (rising), heater is unnecessary.
@@ -2296,16 +2307,36 @@ function evaluateVpdIntelligent() {
     const deviceState = getSocketState(deviceMac, socket);
     const roleWasActive = !!vpdEscalationState.roles[roleName];
     const deviceIsOff = deviceState === 0;
+    // Reset re-issue tracking on a successful ON observation — the device is alive.
+    if (deviceState === 1 && roleReissueState[roleName]) {
+      roleReissueState[roleName].consecutiveMisses = 0;
+      roleReissueState[roleName].unresponsiveUntil = 0;
+    }
     // Trigger a push when the role is newly active OR when device is actually off.
     // The second case catches safety-timeout-induced desync.
     if (!roleWasActive || deviceIsOff) {
       if (!roleWasActive) {
         vpdEscalationState.roles[roleName] = { activatedAt: now, metricAtActivation: 0 };
         console.log(`[VPD] → ${roleName} ON (${socket}): ${reason}`);
+        actions.push({ deviceMac, socket, action: 'on', reason: `VPD: ${reason}` });
       } else if (deviceIsOff) {
-        console.log(`[VPD] ↺ ${roleName} ON (${socket}) re-issue — device shows OFF: ${reason}`);
+        // Throttled re-issue with unresponsive-backoff. Without this we re-pushed every cycle
+        // (observed 2026-05-25: dehumidifier on O4 logged 20+ "re-issue / cooldown skipping"
+        // lines per second because the device persistently reported OFF).
+        const rs = roleReissueState[roleName] || { lastAttemptAt: 0, consecutiveMisses: 0, unresponsiveUntil: 0 };
+        if (rs.unresponsiveUntil > now) return;
+        if (now - rs.lastAttemptAt < ROLE_REISSUE_THROTTLE_MS) return;
+        rs.lastAttemptAt = now;
+        rs.consecutiveMisses++;
+        if (rs.consecutiveMisses >= ROLE_UNRESPONSIVE_MISS_THRESHOLD) {
+          rs.unresponsiveUntil = now + ROLE_UNRESPONSIVE_BACKOFF_MS;
+          console.warn(`[VPD] ⚠ ${roleName} (${socket}) unresponsive after ${rs.consecutiveMisses} attempts — backing off ${ROLE_UNRESPONSIVE_BACKOFF_MS / 60000} min. Check hardware (dry tank? unplugged? firmware reject?).`);
+        } else {
+          console.log(`[VPD] ↺ ${roleName} ON (${socket}) re-issue #${rs.consecutiveMisses} — device shows OFF: ${reason}`);
+        }
+        roleReissueState[roleName] = rs;
+        actions.push({ deviceMac, socket, action: 'on', reason: `VPD: ${reason}` });
       }
-      actions.push({ deviceMac, socket, action: 'on', reason: `VPD: ${reason}` });
     }
   }
 
@@ -2321,16 +2352,34 @@ function evaluateVpdIntelligent() {
     const deviceState = getSocketState(deviceMac, socket);
     const roleWasActive = !!vpdEscalationState.roles[roleName];
     const deviceIsOn = deviceState === 1;
+    // Reset re-issue tracking on a successful OFF observation.
+    if (deviceState === 0 && roleReissueState[roleName]) {
+      roleReissueState[roleName].consecutiveMisses = 0;
+      roleReissueState[roleName].unresponsiveUntil = 0;
+    }
     if (roleWasActive || deviceIsOn) {
       if (roleWasActive) {
         console.log(`[VPD] → ${roleName} OFF (${socket}): ${reason}`);
         delete vpdEscalationState.roles[roleName];
         if (roleName === 'heater') lastHeaterOffTime = now;
         if (roleName === 'humidifier') lastHumidifierOffTime = now;
+        actions.push({ deviceMac, socket, action: 'off', reason: `VPD: ${reason}` });
       } else if (deviceIsOn) {
-        console.log(`[VPD] ↺ ${roleName} OFF (${socket}) re-issue — device shows ON: ${reason}`);
+        // Same throttled re-issue pattern as activateSocketRole (see comment there).
+        const rs = roleReissueState[roleName] || { lastAttemptAt: 0, consecutiveMisses: 0, unresponsiveUntil: 0 };
+        if (rs.unresponsiveUntil > now) return;
+        if (now - rs.lastAttemptAt < ROLE_REISSUE_THROTTLE_MS) return;
+        rs.lastAttemptAt = now;
+        rs.consecutiveMisses++;
+        if (rs.consecutiveMisses >= ROLE_UNRESPONSIVE_MISS_THRESHOLD) {
+          rs.unresponsiveUntil = now + ROLE_UNRESPONSIVE_BACKOFF_MS;
+          console.warn(`[VPD] ⚠ ${roleName} (${socket}) won't turn OFF after ${rs.consecutiveMisses} attempts — backing off ${ROLE_UNRESPONSIVE_BACKOFF_MS / 60000} min.`);
+        } else {
+          console.log(`[VPD] ↺ ${roleName} OFF (${socket}) re-issue #${rs.consecutiveMisses} — device shows ON: ${reason}`);
+        }
+        roleReissueState[roleName] = rs;
+        actions.push({ deviceMac, socket, action: 'off', reason: `VPD: ${reason}` });
       }
-      actions.push({ deviceMac, socket, action: 'off', reason: `VPD: ${reason}` });
     }
   }
 
