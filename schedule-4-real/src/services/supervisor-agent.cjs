@@ -224,6 +224,28 @@ const HEATER_EFFECT_CHECK_MS = 6 * 60 * 1000; // give heater 6 min to prove itse
 const HEATER_EFFECT_MIN_RISE = 0.4;            // °C of rise expected in that window
 const HEATER_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // skip heater for 30 min after a fail
 
+// ── Humidifier "dry tank" self-test ──
+// Mirrors the heater pattern: when humidifier is ON we expect humi to rise within
+// HUMIDIFIER_EFFECT_CHECK_MS by at least HUMIDIFIER_EFFECT_MIN_RISE. If it doesn't, the tank
+// is probably empty — keep humidifier OFF for a long cooldown to avoid wasting power, and
+// let plant transpiration recover humi naturally (the operator must refill).
+let humidifierEvalStartTime = 0;
+let humidifierEvalStartHumi = 0;
+let humidifierIneffectiveUntil = 0;
+const HUMIDIFIER_EFFECT_CHECK_MS = 10 * 60 * 1000; // 10 min — humidifiers are slower than heaters
+const HUMIDIFIER_EFFECT_MIN_RISE = 1.0;             // % humi rise expected in that window
+const HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS = 45 * 60 * 1000; // 45 min, then re-test (gives time to refill)
+
+// ── Periodic ventilation ──
+// Even when retaining humidity (humi low, blower otherwise off), the room still needs a
+// regular air refresh to keep CO2 / O2 / stale-air pockets healthy. Pulse the blower at a
+// gentle speed for a few minutes whenever it has been idle for VENTILATION_INTERVAL_MS.
+let lastBlowerActiveAt = Date.now(); // any time blower ran at ≥ VENTILATION_SPEED counts
+let ventilationPulseStart = 0;       // > 0 while the pulse is active
+const VENTILATION_INTERVAL_MS = 30 * 60 * 1000;     // 30 min — max time the blower may stay idle
+const VENTILATION_DURATION_MS = 3 * 60 * 1000;      // 3 min per pulse
+const VENTILATION_SPEED = 30;                        // % — gentle, just to swap the air
+
 // Blower-off → heater grace. After extraction stops, the lamp + canopy / pot
 // mass naturally warm the room over a few minutes; don't fire the heater
 // immediately and waste a cycle.
@@ -1999,6 +2021,31 @@ function evaluateVpdIntelligent() {
   }
   const heaterIneffective = now < heaterIneffectiveUntil;
 
+  // Humidifier "dry tank" self-test (mirror of the heater pattern). If humi doesn't rise while
+  // the humidifier is ON, assume an empty tank → suspend humidifier for a cooldown, and let the
+  // plants' transpiration + reduced blower extraction recover humi naturally. Re-test after the
+  // cooldown so a refilled tank gets picked up automatically.
+  const humidifierRoleActive = !!vpdEscalationState.roles['humidifier'];
+  if (humidifierRoleActive && humidifierEvalStartTime === 0) {
+    humidifierEvalStartTime = now;
+    humidifierEvalStartHumi = humi;
+  } else if (!humidifierRoleActive && humidifierEvalStartTime !== 0) {
+    humidifierEvalStartTime = 0;
+  }
+  if (humidifierRoleActive && humidifierEvalStartTime > 0
+      && (now - humidifierEvalStartTime) >= HUMIDIFIER_EFFECT_CHECK_MS) {
+    const rise = humi - humidifierEvalStartHumi;
+    if (rise < HUMIDIFIER_EFFECT_MIN_RISE) {
+      humidifierIneffectiveUntil = now + HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS;
+      console.log(`[VPD] Humidifier INEFFECTIVE: +${rise.toFixed(2)}% humi in ${(HUMIDIFIER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HUMIDIFIER_EFFECT_MIN_RISE}%). Tank likely empty. Skipping humidifier for ${(HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — letting plant transpiration raise humi (refill the tank to resume).`);
+      humidifierEvalStartTime = 0;
+    } else {
+      humidifierEvalStartTime = now;
+      humidifierEvalStartHumi = humi;
+    }
+  }
+  const humidifierIneffective = now < humidifierIneffectiveUntil;
+
   const humiExcess = Math.max(0, humi - idealHumiMax);
   const tempDeficit = Math.max(0, idealTemp.min - temp);
   // Hysteresis around leafVpd's targetMin — without it, currentVpd oscillating across the
@@ -2346,14 +2393,20 @@ function evaluateVpdIntelligent() {
     if (newBlowerCeiling > gentleCap) newBlowerCeiling = gentleCap;
   }
 
-  // Activate humidifier when humidity is low
-  if (humiLow) {
+  // Activate humidifier when humidity is low — UNLESS the dry-tank self-test flagged it as
+  // ineffective. In that case keep it off (no point burning the pump dry) and let plant
+  // transpiration recover humi. The cooldown will re-test automatically.
+  if (humidifierIneffective && humidifierRoleActive) {
+    deactivateSocketRole('humidifier', `Humidifier appears DRY (no humi rise during last self-test) — suspended for ${Math.round((humidifierIneffectiveUntil - now) / 60000)} min; refill tank`);
+    delete vpdEscalationState.roles['humidifier'];
+    lastHumidifierOffTime = now;
+  } else if (humiLow && !humidifierIneffective) {
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${humiLowThreshold.toFixed(0)}% (target ${idealHumiTarget.toFixed(0)}%)`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
     deactivateSocketRole('dehumidifier', 'Humi too low');
-  } else if (humi < idealHumiMin) {
+  } else if (humi < idealHumiMin && !humidifierIneffective) {
     // Humidity below ideal minimum — activate humidifier regardless of cooling state
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${idealHumiMin.toFixed(0)}%`);
     if (!vpdEscalationState.roles['humidifier']) {
@@ -2789,6 +2842,34 @@ function evaluateVpdIntelligent() {
   if (extIsBlower && !cycleTransitionGraceActive && !heatingNow && !humidifyingNow) {
     if (newBlowerCeiling < VPD_BLOWER_IDLE_SPEED) newBlowerCeiling = VPD_BLOWER_IDLE_SPEED;
     if (newBlowerFloor < VPD_BLOWER_IDLE_SPEED) newBlowerFloor = VPD_BLOWER_IDLE_SPEED;
+  }
+
+  // ── Periodic ventilation pulse ──
+  // Even when we're deliberately keeping the blower OFF (humi too low — extraction would make
+  // VPD worse), the room still needs a regular air refresh. Force a gentle pulse every
+  // VENTILATION_INTERVAL_MS so CO2/O2/stale-air pockets stay healthy. Skip during cycle-
+  // transition grace (the supervisor deliberately stops everything there).
+  if ((lastBlowerSpeed ?? 0) >= VENTILATION_SPEED) {
+    lastBlowerActiveAt = now;
+  }
+  const ventilationPulseActive = ventilationPulseStart > 0
+    && (now - ventilationPulseStart) < VENTILATION_DURATION_MS;
+  const needsVentilationPulse = !cycleTransitionGraceActive
+    && !ventilationPulseActive
+    && (now - lastBlowerActiveAt) >= VENTILATION_INTERVAL_MS;
+  if (needsVentilationPulse) {
+    ventilationPulseStart = now;
+    console.log(`[VPD] Periodic ventilation pulse: blower → ${VENTILATION_SPEED}% for ${(VENTILATION_DURATION_MS / 60000).toFixed(0)} min (idle for ${((now - lastBlowerActiveAt) / 60000).toFixed(0)} min, max allowed ${(VENTILATION_INTERVAL_MS / 60000).toFixed(0)} min)`);
+  }
+  if (ventilationPulseStart > 0 && (now - ventilationPulseStart) < VENTILATION_DURATION_MS) {
+    // Inside the pulse: enforce a gentle airflow floor (and lift the ceiling so it's actually
+    // allowed to run). The pulse is a SAFETY refresh — don't let humi-conserving rules block it.
+    if (newBlowerCeiling < VENTILATION_SPEED) newBlowerCeiling = VENTILATION_SPEED;
+    if (newBlowerFloor < VENTILATION_SPEED) newBlowerFloor = VENTILATION_SPEED;
+  } else if (ventilationPulseStart > 0) {
+    // Pulse just ended — clear it so the next interval can fire.
+    ventilationPulseStart = 0;
+    lastBlowerActiveAt = now;
   }
 
   // Apply blower overrides

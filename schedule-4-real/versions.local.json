@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-25T01:54:41.857Z",
+  "lastCheck": "2026-05-25T02:07:00.161Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.28.7",
-      "installedAt": "2026-05-25T01:56:17Z"
+      "version": "1.29.0",
+      "installedAt": "2026-05-25T02:14:25Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -521,6 +521,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.28.7",
+        "changes": [
+          "Blower Curve is ignored when VPD Controller is active so the two never fight"
+        ]
+      },
+      {
         "version": "1.28.6",
         "changes": [
           "Stop VPD oscillation at target boundary and cap blower so a stage change does not unleash old-calibration extraction"
@@ -835,12 +841,6 @@
         "version": "1.16.5",
         "changes": [
           "Fix go2rtc orphan process blocking camera restart after service update"
-        ]
-      },
-      {
-        "version": "1.16.4",
-        "changes": [
-          "Fix rebranding migration re-running on every update and killing mosquitto/proxy"
         ]
       }
     ],

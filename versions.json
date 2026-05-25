@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T01:56:17Z",
+  "generatedAt": "2026-05-25T02:14:25Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2894,11 +2894,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.28.7",
-      "archive": "s4r-supervisor-1.28.7.tar.gz",
-      "sha256": "ef69502fab7f8df2d14597cb70852c25c79d904d7d391cb66a0f429a587c4939",
-      "size": 96077,
+      "version": "1.29.0",
+      "archive": "s4r-supervisor-1.29.0.tar.gz",
+      "sha256": "ff372767628c359a277231b6efe176a88b1f7ee74f9b0e9b4749b86ed335beb4",
+      "size": 97621,
       "changelog": [
+        {
+          "version": "1.29.0",
+          "changes": [
+            "Detect dry humidifier tank and pulse blower every 30min to keep air fresh"
+          ]
+        },
         {
           "version": "1.28.7",
           "changes": [
