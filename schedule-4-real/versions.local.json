@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-26T21:27:14.064Z",
+  "lastCheck": "2026-05-26T23:22:51.949Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.0",
-      "installedAt": "2026-05-26T21:27:47Z"
+      "version": "1.32.1",
+      "installedAt": "2026-05-26T23:24:24Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -523,6 +523,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.32.0",
+        "changes": [
+          "Warn at startup about invalid trigger wiring, misplaced mandatory flags and dual-authority sockets",
+          "Replace mandatory-on hold map with per-cycle intent resolution so conflicting triggers resolve deterministically"
+        ]
+      },
+      {
         "version": "1.31.2",
         "changes": [
           "Blower minimum effective speed lifted from 20% to 30% so it produces real air movement",
@@ -841,12 +848,6 @@
         "version": "1.19.0",
         "changes": [
           "Redesign VPD climate algorithm with smart escalation, plateau detection and cooling priority"
-        ]
-      },
-      {
-        "version": "1.18.1",
-        "changes": [
-          "Fix supervisor not reconnecting to MQTT after startup failure"
         ]
       }
     ],

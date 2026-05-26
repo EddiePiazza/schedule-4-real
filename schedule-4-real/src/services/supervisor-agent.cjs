@@ -194,7 +194,10 @@ const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max
 // stop — stagnant air pools humidity unevenly and makes VPD swing between on/off cycles.
 // The extraction/cooling logic still ramps far above this when needed; this is just the
 // gentle floor that keeps air exchanging. Suppressed only during a cycle-transition stop.
-const VPD_BLOWER_IDLE_SPEED = 20;
+// Idle baseline for the blower when it doubles as the extractor role and conditions are quiet
+// (no extraction, no heating, no humidifying). 30 % is the minimum speed at which the blower
+// produces measurable air movement; anything below is just current draw. Eddie 2026-05-26.
+const VPD_BLOWER_IDLE_SPEED = 30;
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
@@ -1454,8 +1457,6 @@ function evaluateFlow(flow) {
         //  - mandatoryOff: when the action fires OFF, it's an absolute brake (wins over
         //                  everything including mandatoryOn) — wire it to an ELSE edge
         //                  (or a safety condition) to get "force OFF when X".
-        // We do NOT synthesise opposite actions from these flags — that's the user's job
-        // via ELSE edges. Doing so caused constant OFF spam when AND gates were false.
         const incomingConnections = connections.filter(c => c.target === node.id);
         if (incomingConnections.length === 0) break;
 
@@ -1476,7 +1477,27 @@ function evaluateFlow(flow) {
             anyInputTrue = true; thenFired = true;
           }
         }
-        if (!anyInputTrue) break;
+        if (!anyInputTrue) {
+          // Auto-release: when an ON action's upstream is no longer firing, emit a low-priority
+          // OFF intent so the socket releases. Otherwise a Schedule pulse that fires ON for 120 s
+          // would never get a corresponding OFF — the socket sticks ON forever (Eddie 2026-05-26:
+          // O4 stuck ON for >2 h after the schedule pulse ended). The intent resolver still lets
+          // VPD or other ON triggers override; this OFF is just "I'm not the one keeping it on".
+          // The previous "do not synthesise opposite actions" comment was a workaround for OFF
+          // spam in logs — fixed properly now by the resolver + already-in-state filter.
+          const acfg = node.data?.config || {};
+          if (acfg.action === 'on' && acfg.socket) {
+            actions.push({
+              deviceMac: acfg.deviceMac,
+              socket: acfg.socket,
+              action: 'off',
+              mandatoryOn: false,
+              mandatoryOff: false,
+              reason: `Auto-release: upstream stopped firing (${node.id.slice(0, 14)})`
+            });
+          }
+          break;
+        }
 
         if (thenFired && elseFired) {
           console.warn(`[Supervisor] Flow ${flow.name}: action ${node.id} has BOTH a THEN and ELSE edge firing simultaneously — check wiring.`);
@@ -3550,6 +3571,10 @@ async function processSensorData(sensorData, deviceMac) {
       ? Math.max(curveSpeed, vpdBlowerMinSpeed)
       : vpdBlowerMinSpeed;
     effectiveSpeed = Math.min(effectiveSpeed, vpdBlowerMaxSpeed);
+    // Floor: any non-zero blower speed must be ≥ 30 % — below that the blower barely moves air
+    // (Eddie 2026-05-26 calibration). 0 % stays 0 % (off). Belt-and-suspenders against curve
+    // points calibrated at 25 % and other historical sources of sub-30 % values.
+    if (effectiveSpeed > 0 && effectiveSpeed < 30) effectiveSpeed = 30;
     // In emergency, force the blower ON at 100% even if curve/floor say otherwise
     if (emergTempHigh || emergHumiHigh) {
       effectiveSpeed = 100;

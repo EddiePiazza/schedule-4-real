@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-26T21:27:47Z",
+  "generatedAt": "2026-05-26T23:24:24Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.32.0",
-      "archive": "s4r-supervisor-1.32.0.tar.gz",
-      "sha256": "8f927c6cec281f98188fbdca0773aca4432e54bd141582f99775f572c596d4e8",
-      "size": 104479,
+      "version": "1.32.1",
+      "archive": "s4r-supervisor-1.32.1.tar.gz",
+      "sha256": "3835a3f892ae74fd4d004ea2e9dca7654477a986b870b99ebcd8880f17d2b27d",
+      "size": 104973,
       "changelog": [
+        {
+          "version": "1.32.1",
+          "changes": [
+            "Action auto-releases OFF when upstream stops firing so schedule pulses do not stick the socket on forever",
+            "Blower idle baseline raised from 20 to 30 percent"
+          ]
+        },
         {
           "version": "1.32.0",
           "changes": [
