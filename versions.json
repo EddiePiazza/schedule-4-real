@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-26T19:30:57Z",
+  "generatedAt": "2026-05-26T21:27:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.31.2",
-      "archive": "s4r-supervisor-1.31.2.tar.gz",
-      "sha256": "c92cb26fd5a36b6ca519a8932712c570066721cc2b9b1a72f89cb86d676a58ad",
-      "size": 102325,
+      "version": "1.32.0",
+      "archive": "s4r-supervisor-1.32.0.tar.gz",
+      "sha256": "8f927c6cec281f98188fbdca0773aca4432e54bd141582f99775f572c596d4e8",
+      "size": 104479,
       "changelog": [
+        {
+          "version": "1.32.0",
+          "changes": [
+            "Warn at startup about invalid trigger wiring, misplaced mandatory flags and dual-authority sockets",
+            "Replace mandatory-on hold map with per-cycle intent resolution so conflicting triggers resolve deterministically"
+          ]
+        },
         {
           "version": "1.31.2",
           "changes": [

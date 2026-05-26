@@ -244,22 +244,15 @@ const HUMIDIFIER_EFFECT_CHECK_MS = 10 * 60 * 1000; // 10 min — humidifiers are
 const HUMIDIFIER_EFFECT_MIN_RISE = 1.0;             // % humi rise expected in that window
 const HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS = 45 * 60 * 1000; // 45 min, then re-test (gives time to refill)
 
-// ── User intent holds ──
-// Two distinct holds prevent VPD/automation from instantly reverting user intent:
-//  • manualOverrideUntil: socket flipped ON without our request (manual UI / external) — hold OFFs.
-//  • userMandatoryOnUntil: WE sent ON because a user trigger had mandatoryOn — hold the ON state
-//    for a stickier window even after the trigger condition stops matching. Without this, a
-//    schedule trigger fires ON for 1s, the VPD wants OFF on the next 10s cycle, and the user's
-//    intent (e.g. "run auxiliary extractor periodically") evaporates.
+// ── Manual override grace ──
+// Only one hold remains in the new model: detecting that a socket came ON outside the supervisor
+// (manual UI toggle, external MQTT publish, etc.) and suppressing the supervisor's routine OFFs
+// for a few minutes so the user's manual decision is respected.
+// All cross-cycle "mandatoryOn hold" semantics were removed in favour of in-cycle intent
+// resolution — see resolveSocketIntents().
 const manualOverrideUntil = {};      // key → epoch ms
-const userMandatoryOnUntil = {};     // key → epoch ms
 const lastRequestedSocketState = {}; // what we *asked* the device for last cycle
 const MANUAL_OVERRIDE_GRACE_MS = 10 * 60 * 1000;       // 10 min for manual UI ON
-// Refresh-based hold: the lock only persists for ~3 supervisor cycles past the last time the
-// trigger fired the ON. While the trigger keeps firing (condition still true) the hold renews;
-// once the trigger stops firing the hold expires quickly so a brief Schedule pulse (120s) doesn't
-// pin the socket on for 30 minutes (Eddie 2026-05-25). USE_MANDATORY_ON_HOLD_MS_REFRESH below.
-const USER_MANDATORY_ON_HOLD_MS = 90 * 1000;            // 90s — short enough to release after a pulse, long enough to survive a missed cycle
 
 // ── Periodic ventilation ──
 // Even when retaining humidity (humi low, blower otherwise off), the room still needs a
@@ -681,6 +674,8 @@ function loadVpdFromFlow() {
           roles: vpdNodeConfig.roles?.length || 0,
           timeout: vpdNodeConfig.escalationTimeoutSeconds
         });
+        // Audit dual-authority: a socket assigned to a VPD role AND targeted by a user action.
+        validateVpdVsTriggers(vpdNodeConfig, flow.flow);
 
         // Detect config changes → reset escalation state so rules re-evaluate cleanly
         // This ensures that when the user changes temp ranges, stage, roles, etc.,
@@ -1262,6 +1257,73 @@ function validateFlowGraph(flow) {
   if (mismatched.length > 0) {
     console.warn(`[Supervisor] Flow validation: ${mismatched.length} action(s) with a mandatory flag that doesn't match their direction — [${mismatched.map(n => `${n.data?.config?.socket}:${n.data?.config?.action} has ${n.data?.config?.mandatoryOn ? 'mandatoryOn' : 'mandatoryOff'}`).join(', ')}]. The flag is ignored; mandatoryOn applies to ON actions, mandatoryOff to OFF actions.`);
   }
+
+  // Invalid wiring: a connection whose target is a condition/schedule/state node's input. Those
+  // node types are sensor/timer evaluators — they have no input (their state comes from the
+  // sensor/clock). The flow editor allows you to draw such an edge anyway, which silently does
+  // nothing. Surface it so the user can fix it.
+  const nodeById = new Map(nodes.map(n => [n.id, n]));
+  const NO_INPUT_TYPES = new Set(['condition', 'schedule', 'state']);
+  const badEdges = connections.filter(c => {
+    const tgt = nodeById.get(c.target);
+    return tgt && NO_INPUT_TYPES.has(tgt.type);
+  });
+  if (badEdges.length > 0) {
+    console.warn(`[Supervisor] Flow validation: ${badEdges.length} invalid edge(s) pointing INTO a sensor/schedule/state node — [${badEdges.map(e => `${e.source}(${e.sourceHandle || 'out'})→${e.target}`).slice(0, 5).join(', ')}]. These edges do nothing; the target evaluates only from its own sensor / timer / socket state.`);
+  }
+
+  // Mandatory flags on non-action nodes are misleading. The flag is honoured via inheritance
+  // (action inherits from upstream logic/condition that has it set), but visually it lives in
+  // the wrong place. Recommend moving it to the action node.
+  const misplacedMandatory = nodes.filter(n => {
+    if (n.type === 'action') return false;
+    const c = n.data?.config || {};
+    return c.mandatoryOn === true || c.mandatoryOff === true;
+  });
+  if (misplacedMandatory.length > 0) {
+    console.warn(`[Supervisor] Flow validation: mandatoryOn/Off set on ${misplacedMandatory.length} non-action node(s) — [${misplacedMandatory.map(n => `${n.type} ${n.id.slice(0, 10)}`).join(', ')}]. Honoured via inheritance, but it is clearer to set the flag on the action node it feeds.`);
+  }
+
+  // Multiple action nodes targeting the same socket — likely intentional (ON + OFF triggers)
+  // but worth surfacing in case the user accidentally duplicated a trigger.
+  const socketActionCounts = new Map(); // socket -> [{id, action}]
+  for (const n of nodes) {
+    if (n.type !== 'action') continue;
+    const s = n.data?.config?.socket;
+    if (!s) continue;
+    if (!socketActionCounts.has(s)) socketActionCounts.set(s, []);
+    socketActionCounts.get(s).push({ id: n.id.slice(0, 10), action: n.data?.config?.action || '?' });
+  }
+  for (const [sock, list] of socketActionCounts) {
+    if (list.length > 2) {
+      console.warn(`[Supervisor] Flow validation: socket ${sock} is targeted by ${list.length} action nodes — [${list.map(l => `${l.id}:${l.action}`).join(', ')}]. Conflicts are resolved by precedence (mOff > mOn > on > off) but ${list.length}-way duplication is usually a mistake.`);
+    }
+  }
+}
+
+/**
+ * Cross-validate VPD role assignments against user trigger actions. If a socket is both a VPD
+ * role (humidifier / dehumidifier / extractor / heater) AND the explicit target of a user
+ * trigger action, the two controllers compete on every cycle. The intent resolver picks a winner
+ * but the user almost certainly intended a single source of authority — surface it so they can
+ * either remove the VPD role or remove the user trigger.
+ */
+function validateVpdVsTriggers(vpdCfg, flow) {
+  if (!vpdCfg || !Array.isArray(vpdCfg.roles)) return;
+  const roleSockets = new Set();
+  for (const r of vpdCfg.roles) {
+    if (r && r.socket) roleSockets.add(r.socket);
+  }
+  const userActionSockets = new Set();
+  for (const n of (flow?.nodes || [])) {
+    if (n.type !== 'action') continue;
+    const s = n.data?.config?.socket;
+    if (s) userActionSockets.add(s);
+  }
+  const both = [...roleSockets].filter(s => userActionSockets.has(s));
+  if (both.length > 0) {
+    console.warn(`[Supervisor] Config audit: socket(s) ${both.join(', ')} are claimed BOTH by a VPD role and by user trigger action(s). This is dual-authority and conflicts will be auto-resolved each cycle, but the cleaner setup is to remove the socket from the VPD role assignment OR remove the user trigger so only one controller manages it.`);
+  }
 }
 
 /**
@@ -1698,12 +1760,76 @@ async function logExecution(triggerReason, deviceMac, socket, action, result) {
 }
 
 /**
+ * Resolve conflicting intents per socket BEFORE executing them.
+ *
+ * Background: each cycle, the system collects intent from multiple sources — user trigger flow,
+ * VPD algorithmic control, schedule pulses, cycle-transition logic — and pushes them all into
+ * `actions[]`. Before this resolver, the executor processed each one sequentially and relied on a
+ * `userMandatoryOnUntil` *hold map* (30 min, then 90 s) to "remember" that a mandatoryOn was set
+ * earlier and suppress later OFFs. That created month-long pain: the hold was either too long
+ * (sockets stuck ON 30 min after a 120 s schedule pulse) or too short (safety triggers turned off
+ * instantly because the actionKey didn't match across cycles).
+ *
+ * New model — IN-CYCLE INTENT RESOLUTION. The trigger that's firing in *this* cycle is the
+ * source of truth. If the user trigger fires ON this cycle, that's the intent. If next cycle the
+ * trigger's upstream condition is false, no ON is fired → only the VPD/algorithm intent remains
+ * → the system naturally relaxes. No cross-cycle hold needed. Conflicts within the same cycle are
+ * resolved by precedence (mandatoryOff > mandatoryOn > regular ON > regular OFF).
+ *
+ * This makes the system "self-healing": there is no stale state in hold maps that can desync.
+ * Editor mistakes (e.g. action with mandatoryOn on an OFF action) become impossible to chain into
+ * weeks-long zombies — they only affect the cycle in which they fire.
+ */
+function resolveSocketIntents(actions) {
+  const groups = new Map();
+  for (const a of actions) {
+    if (!a || !a.socket) continue;
+    const key = (a.deviceMac || 'NOMAC') + ':' + a.socket;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(a);
+  }
+
+  const winners = [];
+  for (const [key, intents] of groups) {
+    if (intents.length === 1) {
+      winners.push(intents[0]);
+      continue;
+    }
+
+    // Precedence: mandatoryOff > mandatoryOn > regular ON > regular OFF.
+    // Within each tier we pick the FIRST occurrence — flow processing order is stable.
+    const mOff = intents.find(i => i.action === 'off' && i.mandatoryOff === true);
+    const mOn  = intents.find(i => i.action === 'on'  && i.mandatoryOn  === true);
+    const rOn  = intents.find(i => i.action === 'on');
+    const rOff = intents.find(i => i.action === 'off');
+    const winner = mOff || mOn || rOn || rOff;
+    if (!winner) continue;
+
+    // Log the conflict so dashboards / debugging surface the resolution choice.
+    const summary = intents.map(i => `${i.action}${i.mandatoryOff ? '!!' : ''}${i.mandatoryOn ? '!' : ''}(${(i.reason || '?').slice(0, 40)})`).join(' vs ');
+    const winnerTag = winner.mandatoryOff ? 'mOff' : (winner.mandatoryOn ? 'mOn' : winner.action);
+    console.log(`[Supervisor] Intent conflict on ${key}: ${summary} → ${winnerTag} wins`);
+
+    winners.push({
+      ...winner,
+      reason: `[${intents.length}-way resolution, ${winnerTag} wins] ${winner.reason || ''}`.trim()
+    });
+  }
+
+  return winners;
+}
+
+/**
  * Execute actions with cooldown (supports multi-device)
  */
 async function executeActions(actions) {
   const now = Date.now();
 
-  for (const action of actions) {
+  // Collapse multi-source conflicts BEFORE per-action processing. After this loop, each socket
+  // has at most one intent per cycle, which is the only one we ever send to the device.
+  const resolvedActions = resolveSocketIntents(actions);
+
+  for (const action of resolvedActions) {
     const { deviceMac, socket, action: targetAction, reason, moduleSpeedMode, moduleSpeed } = action;
 
     // Use device-specific key for cooldown tracking
@@ -1758,22 +1884,14 @@ async function executeActions(actions) {
         console.log(`[Supervisor] ${socket} → off SKIPPED (manual override hold, ${Math.round((until - now) / 60000)} min left) | ${reason || ''}`);
         continue;
       }
-      // (b) User trigger mandatoryOn hold: a user trigger recently fired ON; keep ON sticky
-      //     so brief schedule pulses don't evaporate on the very next VPD cycle.
-      if (holdActive(userMandatoryOnUntil)) {
-        const until = Math.max(userMandatoryOnUntil[actionKey] || 0, altActionKey ? (userMandatoryOnUntil[altActionKey] || 0) : 0);
-        console.log(`[Supervisor] ${socket} → off SKIPPED (user mandatoryOn hold, ${Math.round((until - now) / 60000)} min left) | ${reason || ''}`);
-        continue;
-      }
+      // (Removed: cross-cycle `userMandatoryOnUntil` hold. The in-cycle intent resolver above
+      // already lets user triggers beat VPD/algorithmic OFFs while they're firing, and stops
+      // overriding the moment the trigger's upstream condition releases. The hold map was the
+      // root of the month-long "schedule pulse pins socket on for 30 min" pain.)
     }
     // Clear stale grace when we naturally agree (device matches what we'd want)
     if (currentState === 0) {
       clearHold(manualOverrideUntil);
-      clearHold(userMandatoryOnUntil);
-    }
-    // Mark mandatoryOn ON requests as sticky for the hold window
-    if (action.mandatoryOn === true && targetAction === 'on') {
-      setHold(userMandatoryOnUntil, now + USER_MANDATORY_ON_HOLD_MS);
     }
 
     // Skip if already in desired state

@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-26T19:24:11.204Z",
+  "lastCheck": "2026-05-26T21:27:14.064Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.31.2",
-      "installedAt": "2026-05-26T19:30:57Z"
+      "version": "1.32.0",
+      "installedAt": "2026-05-26T21:27:47Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -523,6 +523,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.31.2",
+        "changes": [
+          "Blower minimum effective speed lifted from 20% to 30% so it produces real air movement",
+          "Mandatory ON hold is now ephemeral and refreshes per cycle so brief schedule pulses release naturally",
+          "Ventilation pulse only fires when humi and VPD are both safely in band"
+        ]
+      },
+      {
         "version": "1.31.1",
         "changes": [
           "Blower optimizer steps adapt to distance from target and requires multiple misses before declaring capacity",
@@ -839,15 +847,6 @@
         "version": "1.18.1",
         "changes": [
           "Fix supervisor not reconnecting to MQTT after startup failure"
-        ]
-      },
-      {
-        "version": "1.18.0",
-        "changes": [
-          "Add hard temperature safety limits \u2014 heater always OFF at max temp",
-          "Fix duplicate mqttConnected declaration causing supervisor crash on startup",
-          "Fix VPD humidity extraction blocked when temperature is low \u2014 emergency override and continuation",
-          "Add self-watchdog and MQTT heartbeat for crash/hang recovery"
         ]
       }
     ],
