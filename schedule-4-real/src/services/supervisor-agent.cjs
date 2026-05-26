@@ -1732,32 +1732,44 @@ async function executeActions(actions) {
     // and explicit mandatoryOff still pass through — only "routine" VPD/automation OFFs are held.
     const isHardOff = action.mandatoryOff === true
       || (reason && (reason.includes('SAFETY') || reason.includes('cycle transition') || reason.includes('EMERGENCY')));
+    // User triggers may store the action without a deviceMac (saved before multi-device), while
+    // the supervisor's VPD/role actions always include the deviceMac of the role assignment. We
+    // need both forms to match for the hold to honor user intent — otherwise the trigger fires
+    // ON under one key, the supervisor checks for hold under another, finds nothing, sends OFF.
+    // Eddie 2026-05-25: safety triggers were turning off "instantly" because of this mismatch.
+    const altActionKey = deviceMac ? socket : null; // bare socket variant
+    const holdActive = (m) => (m[actionKey] && now < m[actionKey]) || (altActionKey && m[altActionKey] && now < m[altActionKey]);
+    const setHold = (m, until) => { m[actionKey] = until; if (altActionKey) m[altActionKey] = until; };
+    const clearHold = (m) => { delete m[actionKey]; if (altActionKey) delete m[altActionKey]; };
+
     if (targetAction === 'off' && currentState === 1 && !isHardOff) {
       // (a) Manual / external ON detected: state is ON but we last requested OFF.
-      const lastReq = lastRequestedSocketState[actionKey];
-      if (lastReq === 0 && !manualOverrideUntil[actionKey]) {
-        manualOverrideUntil[actionKey] = now + MANUAL_OVERRIDE_GRACE_MS;
+      const lastReq = lastRequestedSocketState[actionKey] ?? (altActionKey ? lastRequestedSocketState[altActionKey] : undefined);
+      if (lastReq === 0 && !holdActive(manualOverrideUntil)) {
+        setHold(manualOverrideUntil, now + MANUAL_OVERRIDE_GRACE_MS);
         console.log(`[Supervisor] ${socket} came ON outside the supervisor — holding routine OFFs for ${(MANUAL_OVERRIDE_GRACE_MS / 60000).toFixed(0)} min`);
       }
-      if (manualOverrideUntil[actionKey] && now < manualOverrideUntil[actionKey]) {
-        console.log(`[Supervisor] ${socket} → off SKIPPED (manual override hold, ${Math.round((manualOverrideUntil[actionKey] - now) / 60000)} min left) | ${reason || ''}`);
+      if (holdActive(manualOverrideUntil)) {
+        const until = Math.max(manualOverrideUntil[actionKey] || 0, altActionKey ? (manualOverrideUntil[altActionKey] || 0) : 0);
+        console.log(`[Supervisor] ${socket} → off SKIPPED (manual override hold, ${Math.round((until - now) / 60000)} min left) | ${reason || ''}`);
         continue;
       }
       // (b) User trigger mandatoryOn hold: a user trigger recently fired ON; keep ON sticky
       //     so brief schedule pulses don't evaporate on the very next VPD cycle.
-      if (userMandatoryOnUntil[actionKey] && now < userMandatoryOnUntil[actionKey]) {
-        console.log(`[Supervisor] ${socket} → off SKIPPED (user mandatoryOn hold, ${Math.round((userMandatoryOnUntil[actionKey] - now) / 60000)} min left) | ${reason || ''}`);
+      if (holdActive(userMandatoryOnUntil)) {
+        const until = Math.max(userMandatoryOnUntil[actionKey] || 0, altActionKey ? (userMandatoryOnUntil[altActionKey] || 0) : 0);
+        console.log(`[Supervisor] ${socket} → off SKIPPED (user mandatoryOn hold, ${Math.round((until - now) / 60000)} min left) | ${reason || ''}`);
         continue;
       }
     }
     // Clear stale grace when we naturally agree (device matches what we'd want)
     if (currentState === 0) {
-      delete manualOverrideUntil[actionKey];
-      delete userMandatoryOnUntil[actionKey];
+      clearHold(manualOverrideUntil);
+      clearHold(userMandatoryOnUntil);
     }
     // Mark mandatoryOn ON requests as sticky for the hold window
     if (action.mandatoryOn === true && targetAction === 'on') {
-      userMandatoryOnUntil[actionKey] = now + USER_MANDATORY_ON_HOLD_MS;
+      setHold(userMandatoryOnUntil, now + USER_MANDATORY_ON_HOLD_MS);
     }
 
     // Skip if already in desired state
@@ -1799,7 +1811,9 @@ async function executeActions(actions) {
     if (success) {
       lastActionTimes[actionKey] = now;
       // Record what we asked the device for — drives manualOverrideUntil detection (lastReq=0 + state ON = manual).
+      // Mirror under both keys for the same reason as the holds above (user-trigger / VPD-action mismatch).
       lastRequestedSocketState[actionKey] = targetState;
+      if (altActionKey) lastRequestedSocketState[altActionKey] = targetState;
 
       // Track ON/OFF time for safety timeouts
       if (targetState === 1) {
@@ -2125,13 +2139,15 @@ function evaluateVpdIntelligent() {
   // upper band (too dry), extracting would push us further from target. (Eddie 2026-05-25:
   // "no hay heater, debería estar humidificando para bajar el VPD" — algorithm was extracting
   // because humi > absolute max, ignoring that the action would worsen the VPD it's meant to fix.)
-  // If we're currently extracting (NOT in the VPD-too-dry veto), only switch into veto when VPD
-  // is CLEARLY above the band. If we're not extracting (likely already in veto), STAY in veto
-  // until VPD has dropped CLEARLY back inside. Otherwise hovering around targetMax flips the
-  // decision every cycle.
-  const leafVpdAboveTargetHyst = vpdPhase === 'extracting'
-    ? currentVpd > targetMax + VPD_PHASE_HYST  // enter veto only when clearly above
-    : currentVpd > targetMax - VPD_PHASE_HYST; // keep veto until clearly below
+  // Hysteresis around targetMax using a dedicated flag — vpdPhase ('extracting' / 'heating' /
+  // 'idle') is a poor proxy for "currently humidifying for VPD reasons", which made the veto
+  // engage at 1.10 instead of waiting for 1.20+ (Eddie 2026-05-25: humidifier kicked at 1.12).
+  if (vpdEscalationState.humidifyMode === undefined) vpdEscalationState.humidifyMode = false;
+  const _inHumidifyMode = vpdEscalationState.humidifyMode;
+  const leafVpdAboveTargetHyst = _inHumidifyMode
+    ? currentVpd > targetMax - VPD_PHASE_HYST  // already humidifying — stay until clearly back in band (≤1.10)
+    : currentVpd > targetMax + VPD_PHASE_HYST; // not humidifying — enter only when clearly above (>1.20)
+  vpdEscalationState.humidifyMode = leafVpdAboveTargetHyst;
   // VETO extraction when VPD is too high — humidification (below) is the right lever instead.
   const needsExtraction = !leafVpdAboveTargetHyst && (humiExcess > 2 || leafVpdBelowTargetHyst);
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
@@ -2247,13 +2263,26 @@ function evaluateVpdIntelligent() {
     }
     state.lastCheckTime = now;
 
-    const STEP = ESCALATION_STEP;
     const ema = state.metricEma;
     // over > 0 ⇒ metric is on the WRONG side of the target (above the ceiling for
     // wantLower). This is an ABSOLUTE distance, so slow drift is always caught.
     const over = wantLower ? (ema - target) : (target - ema);
     const DEAD = 1.0;   // tolerated overshoot above target before adding power
     const EASE = 2.0;   // how far below target before easing power off to save energy
+
+    // Adaptive step: when we're FAR from target, take big bites; when close, be gentle. Without
+    // this the controller crawled 10% per 90s while humi was 8% over target — way too slow.
+    // Eddie 2026-05-25: full daytime period at 25-35% blower while humi pinned at 65-70%.
+    const STEP = (over > 5) ? 25
+               : (over > 3) ? 15
+               : (over > 1.5) ? 10
+                              : ESCALATION_STEP; // ≤1.5 over → small step
+    // We refuse to declare "capacity" at trivial speeds — at boost 0-20% a measurement < threshold
+    // is almost certainly noise, not the real desaturation limit. Only freeze the cap once we're
+    // running at substantial power AND have seen the failure twice in a row.
+    const CAPACITY_MIN_BOOST = 30;
+    const CAPACITY_MISSES_REQUIRED = 2;
+    if (state.capacityMisses === undefined) state.capacityMisses = 0;
 
     // Periodic capacity re-test — the grow's moisture/heat load changes through the day
     // (sun/cloud/rain, watering, transpiration), so a speed that "gave nothing" before may
@@ -2262,6 +2291,7 @@ function evaluateVpdIntelligent() {
     if (now - state.capacityClearedAt >= EXPLORE_UP_INTERVAL_MS) {
       state.capacitySpeed = undefined;
       state.capacityClearedAt = now;
+      state.capacityMisses = 0;
     }
 
     // Judge the previous upward step: did the extra power actually move the metric?
@@ -2269,13 +2299,25 @@ function evaluateVpdIntelligent() {
       const moved = wantLower ? (state.emaBeforeUp - ema) : (ema - state.emaBeforeUp);
       if (moved >= improveThreshold) {
         state.capacitySpeed = undefined; // it responds → allow climbing further if still over
+        state.capacityMisses = 0;
         state.lastAction = 'hold'; state.holdCycles = 1;
         console.log(`[VPD] ${roleName}: +power effective (${moved.toFixed(2)} better, ema ${ema.toFixed(1)}/target ${target.toFixed(1)}) → keep boost ${state.speedBoost}%`);
+      } else if (state.speedBoost < CAPACITY_MIN_BOOST) {
+        // Not enough power to credibly call this "capacity" — keep escalating regardless.
+        state.lastAction = 'hold'; state.holdCycles = 0;
+        console.log(`[VPD] ${roleName}: +power gave Δ${moved.toFixed(2)} at boost ${state.speedBoost}% — too noisy to call capacity yet (need ≥${CAPACITY_MIN_BOOST}%), continuing to escalate`);
       } else {
-        state.capacitySpeed = state.speedBoost; // beyond this, more power does nothing
-        state.speedBoost -= STEP;
-        state.lastAction = 'hold'; state.holdCycles = 2;
-        console.log(`[VPD] ${roleName}: +power gave nothing (Δ${moved.toFixed(2)}) → CAPACITY (ema ${ema.toFixed(1)}/target ${target.toFixed(1)}) — back to boost ${state.speedBoost}%, best achievable`);
+        state.capacityMisses++;
+        if (state.capacityMisses >= CAPACITY_MISSES_REQUIRED) {
+          state.capacitySpeed = state.speedBoost;
+          state.speedBoost -= STEP;
+          state.lastAction = 'hold'; state.holdCycles = 2;
+          console.log(`[VPD] ${roleName}: +power gave nothing (Δ${moved.toFixed(2)}, miss ${state.capacityMisses}/${CAPACITY_MISSES_REQUIRED}) → CAPACITY (ema ${ema.toFixed(1)}/target ${target.toFixed(1)}) — back to boost ${state.speedBoost}%, best achievable`);
+        } else {
+          // First weak step at high power — could be a noisy measurement. Try once more.
+          state.lastAction = 'hold'; state.holdCycles = 0;
+          console.log(`[VPD] ${roleName}: +power weak (Δ${moved.toFixed(2)}, miss ${state.capacityMisses}/${CAPACITY_MISSES_REQUIRED}) at boost ${state.speedBoost}% — re-testing before calling capacity`);
+        }
       }
       return { boost: state.speedBoost };
     }
@@ -2292,7 +2334,7 @@ function evaluateVpdIntelligent() {
         console.log(`[VPD] ${roleName}: ${over.toFixed(1)} over target but at capacity (boost ${state.speedBoost}%, ema ${ema.toFixed(1)}) — holding best achievable`);
       } else {
         state.emaBeforeUp = ema;
-        state.speedBoost += STEP;
+        state.speedBoost = Math.min(100, state.speedBoost + STEP);
         state.lastAction = 'up';
         console.log(`[VPD] ${roleName}: ${over.toFixed(1)} over target → +${STEP}% (boost ${state.speedBoost}%, ema ${ema.toFixed(1)} → ${target.toFixed(1)})`);
       }
@@ -2505,17 +2547,12 @@ function evaluateVpdIntelligent() {
   // When needsCooling + humiLow: blower ceiling stays at 100 (from Rule 1).
   // Humidifier compensates below.
 
-  // Gentle-extraction cap: when humi is only marginally above target, the user's CALIBRATED
-  // blower curve can still return very high speeds (e.g. 90% at humi 48%) because the curve was
-  // calibrated against a different target (typically veg, lower humi target). After a stage
-  // change shifts the target down (flowering needs higher humi), 48% becomes "just at target"
-  // but the curve hasn't moved — it would over-extract and crash humidity. Cap the ceiling here
-  // so a mild humi excess can't unleash 90% extraction. Cooling (Rule 1) overrides this; a
-  // genuine humidity emergency also overrides.
-  if (phaseExtracting && !needsCooling && !humiEmergency && humiExcess < 3 && newBlowerCeiling > 0) {
-    const gentleCap = 25 + Math.round(humiExcess * 12); // 0% excess → 25, 3% excess → 61
-    if (newBlowerCeiling > gentleCap) newBlowerCeiling = gentleCap;
-  }
+  // (Earlier we had a "gentle extraction cap" that limited the blower to 25-61% whenever humi
+  // was only marginally above target. That logic was designed for the old calibrated blower
+  // curve which would over-extract at low humi excess. Now that vpd_control disables the curve
+  // entirely and the in-supervisor optimizer is the controller, the gentle cap was actively
+  // sabotaging the optimizer — capping the ceiling at 25% while the optimizer wanted 70% — so
+  // humidity ran away to 70% (Eddie 2026-05-25, full daytime period at 25% blower). Removed.)
 
   // Activate humidifier when humidity is low — UNLESS the dry-tank self-test flagged it as
   // ineffective. In that case keep it off (no point burning the pump dry) and let plant
@@ -2529,7 +2566,7 @@ function evaluateVpdIntelligent() {
     // two levers to lower VPD are heat (which is gated by temperature ceiling and may be
     // unauthorised — Eddie disconnected his heater) or humidity. Activate the humidifier even
     // if absolute humi is "within" the stage range — the goal at this point is VPD, not humi.
-    activateSocketRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} > ${targetMax.toFixed(2)} (air ${(svpAir - svpAir * humi / 100).toFixed(2)}, humi ${humi.toFixed(0)}%) — raising humi to lower VPD`);
+    activateSocketRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} above band ${targetMin.toFixed(2)}-${targetMax.toFixed(2)} (air ${(svpAir - svpAir * humi / 100).toFixed(2)}, humi ${humi.toFixed(0)}%) — raising humi to lower VPD`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
@@ -2992,8 +3029,14 @@ function evaluateVpdIntelligent() {
   }
   const ventilationPulseActive = ventilationPulseStart > 0
     && (now - ventilationPulseStart) < VENTILATION_DURATION_MS;
+  // Suppress the pulse while the humidifier is running OR while we're in VPD-too-dry mode —
+  // extracting would directly undo the humidifier's work and worsen the VPD we're fighting.
+  // The air refresh will happen organically when humi comes back into range.
+  const humidifierRunning = !!vpdEscalationState.roles['humidifier'];
   const needsVentilationPulse = !cycleTransitionGraceActive
     && !ventilationPulseActive
+    && !humidifierRunning
+    && !leafVpdAboveTargetHyst
     && (now - lastBlowerActiveAt) >= VENTILATION_INTERVAL_MS;
   if (needsVentilationPulse) {
     ventilationPulseStart = now;

@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-25T23:47:00Z",
+  "generatedAt": "2026-05-26T16:06:26Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,20 @@
       ]
     },
     "supervisor": {
-      "version": "1.31.0",
-      "archive": "s4r-supervisor-1.31.0.tar.gz",
-      "sha256": "5f7b3ac67f605b2fa5a9708764702088b4b8262ddf9df88d33be59ba67d85987",
-      "size": 100875,
+      "version": "1.31.1",
+      "archive": "s4r-supervisor-1.31.1.tar.gz",
+      "sha256": "984159a0351503a6ebe61e960d9fb79dfe4a52d0373a070a9d289f78a2938337",
+      "size": 101906,
       "changelog": [
+        {
+          "version": "1.31.1",
+          "changes": [
+            "Blower optimizer steps adapt to distance from target and requires multiple misses before declaring capacity",
+            "User trigger mandatoryOn now overrides supervisor regardless of device-mac key form",
+            "Remove blower gentle cap that prevented the optimizer from escalating beyond 25-55%",
+            "Ventilation pulse no longer fires while humidifier is running or VPD is too high"
+          ]
+        },
         {
           "version": "1.31.0",
           "changes": [
