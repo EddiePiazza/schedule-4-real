@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-26T16:06:12.067Z",
+  "lastCheck": "2026-05-26T19:24:11.204Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.31.1",
-      "installedAt": "2026-05-26T16:06:26Z"
+      "version": "1.31.2",
+      "installedAt": "2026-05-26T19:30:57Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -523,6 +523,15 @@
     ],
     "supervisor": [
       {
+        "version": "1.31.1",
+        "changes": [
+          "Blower optimizer steps adapt to distance from target and requires multiple misses before declaring capacity",
+          "User trigger mandatoryOn now overrides supervisor regardless of device-mac key form",
+          "Remove blower gentle cap that prevented the optimizer from escalating beyond 25-55%",
+          "Ventilation pulse no longer fires while humidifier is running or VPD is too high"
+        ]
+      },
+      {
         "version": "1.31.0",
         "changes": [
           "Lower default leaf-temp offset to 0.5C day / 0.2C night so leaf VPD aligns with chart-based air VPD",
@@ -839,12 +848,6 @@
           "Fix duplicate mqttConnected declaration causing supervisor crash on startup",
           "Fix VPD humidity extraction blocked when temperature is low \u2014 emergency override and continuation",
           "Add self-watchdog and MQTT heartbeat for crash/hang recovery"
-        ]
-      },
-      {
-        "version": "1.17.2",
-        "changes": [
-          "Fix supervisor not reconnecting to MQTT after startup failure, preventing automation deadlock"
         ]
       }
     ],

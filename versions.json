@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-26T16:06:26Z",
+  "generatedAt": "2026-05-26T19:30:57Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.31.1",
-      "archive": "s4r-supervisor-1.31.1.tar.gz",
-      "sha256": "984159a0351503a6ebe61e960d9fb79dfe4a52d0373a070a9d289f78a2938337",
-      "size": 101906,
+      "version": "1.31.2",
+      "archive": "s4r-supervisor-1.31.2.tar.gz",
+      "sha256": "c92cb26fd5a36b6ca519a8932712c570066721cc2b9b1a72f89cb86d676a58ad",
+      "size": 102325,
       "changelog": [
+        {
+          "version": "1.31.2",
+          "changes": [
+            "Blower minimum effective speed lifted from 20% to 30% so it produces real air movement",
+            "Mandatory ON hold is now ephemeral and refreshes per cycle so brief schedule pulses release naturally",
+            "Ventilation pulse only fires when humi and VPD are both safely in band"
+          ]
+        },
         {
           "version": "1.31.1",
           "changes": [

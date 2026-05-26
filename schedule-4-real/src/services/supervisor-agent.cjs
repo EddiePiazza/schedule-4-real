@@ -255,7 +255,11 @@ const manualOverrideUntil = {};      // key → epoch ms
 const userMandatoryOnUntil = {};     // key → epoch ms
 const lastRequestedSocketState = {}; // what we *asked* the device for last cycle
 const MANUAL_OVERRIDE_GRACE_MS = 10 * 60 * 1000;       // 10 min for manual UI ON
-const USER_MANDATORY_ON_HOLD_MS = 30 * 60 * 1000;       // 30 min for user trigger mandatoryOn
+// Refresh-based hold: the lock only persists for ~3 supervisor cycles past the last time the
+// trigger fired the ON. While the trigger keeps firing (condition still true) the hold renews;
+// once the trigger stops firing the hold expires quickly so a brief Schedule pulse (120s) doesn't
+// pin the socket on for 30 minutes (Eddie 2026-05-25). USE_MANDATORY_ON_HOLD_MS_REFRESH below.
+const USER_MANDATORY_ON_HOLD_MS = 90 * 1000;            // 90s — short enough to release after a pulse, long enough to survive a missed cycle
 
 // ── Periodic ventilation ──
 // Even when retaining humidity (humi low, blower otherwise off), the room still needs a
@@ -263,7 +267,7 @@ const USER_MANDATORY_ON_HOLD_MS = 30 * 60 * 1000;       // 30 min for user trigg
 // gentle speed for a few minutes whenever it has been idle for VENTILATION_INTERVAL_MS.
 let lastBlowerActiveAt = Date.now(); // any time blower ran at ≥ VENTILATION_SPEED counts
 let ventilationPulseStart = 0;       // > 0 while the pulse is active
-const VENTILATION_INTERVAL_MS = 30 * 60 * 1000;     // 30 min — max time the blower may stay idle
+const VENTILATION_INTERVAL_MS = 60 * 60 * 1000;     // 60 min — pulse interval bumped from 30 to reduce nuisance pulses; natural extraction handles real load
 const VENTILATION_DURATION_MS = 3 * 60 * 1000;      // 3 min per pulse
 const VENTILATION_SPEED = 30;                        // % — gentle, just to swap the air
 
@@ -2880,12 +2884,14 @@ function evaluateVpdIntelligent() {
         const role = vpdEscalationState.roles['extractor_humi'];
         const baseSpeed = role?.baseSpeed ?? 40;
         let boost = role?.speedBoost || 0;
-        // Effective extraction speed clamped to [20, 100] while the role is active.
+        // Effective extraction speed clamped to [30, 100] while the role is active.
         // Anti-windup: pin the stored boost back to whatever the clamp allows so it
         // can't drift to a huge negative number that would take many cycles to climb
-        // back from when humidity finally rises.
+        // back from when humidity finally rises. Eddie 2026-05-25: lifted floor from 20→30
+        // because the blower produces ~no measurable air movement below ~30%.
+        const BLOWER_MIN_EFFECTIVE_SPEED = 30;
         let effFloor = baseSpeed + boost;
-        if (effFloor < 20) { effFloor = 20; boost = 20 - baseSpeed; }
+        if (effFloor < BLOWER_MIN_EFFECTIVE_SPEED) { effFloor = BLOWER_MIN_EFFECTIVE_SPEED; boost = BLOWER_MIN_EFFECTIVE_SPEED - baseSpeed; }
         if (effFloor > 100) { effFloor = 100; boost = 100 - baseSpeed; }
         if (role) role.speedBoost = boost;
         newBlowerFloor = Math.max(newBlowerFloor, effFloor);
@@ -3029,14 +3035,21 @@ function evaluateVpdIntelligent() {
   }
   const ventilationPulseActive = ventilationPulseStart > 0
     && (now - ventilationPulseStart) < VENTILATION_DURATION_MS;
-  // Suppress the pulse while the humidifier is running OR while we're in VPD-too-dry mode —
-  // extracting would directly undo the humidifier's work and worsen the VPD we're fighting.
-  // The air refresh will happen organically when humi comes back into range.
+  // The pulse only makes sense if extracting won't make any conditions WORSE — that means humi
+  // and VPD must both already be inside their bands (or higher). Otherwise extraction crashes
+  // humi or pushes VPD further out. The natural extraction logic above runs the blower anyway
+  // when conditions actually need it; the pulse is purely a "stale air" safety check.
+  // (Eddie 2026-05-25: pulse was firing at humi=57 < target=59 while humidifier was actively
+  // trying to raise humi — directly fighting itself.)
   const humidifierRunning = !!vpdEscalationState.roles['humidifier'];
+  const safeToPulse = humi >= idealHumiTarget
+    && currentVpd >= targetMin
+    && !humidifierRunning
+    && !humidifierRecentlyOff
+    && !leafVpdAboveTargetHyst;
   const needsVentilationPulse = !cycleTransitionGraceActive
     && !ventilationPulseActive
-    && !humidifierRunning
-    && !leafVpdAboveTargetHyst
+    && safeToPulse
     && (now - lastBlowerActiveAt) >= VENTILATION_INTERVAL_MS;
   if (needsVentilationPulse) {
     ventilationPulseStart = now;
