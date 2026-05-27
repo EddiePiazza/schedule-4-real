@@ -1,14 +1,23 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-27T11:49:37Z",
+  "generatedAt": "2026-05-27T18:34:31Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.144.9",
-      "archive": "s4r-web-1.144.9.tar.gz",
-      "sha256": "b588c3ebfa0f1ec4c835f3d1325b214914b7a77e1aa838eff3a7b6b95fbb6d20",
-      "size": 11523386,
+      "version": "1.145.0",
+      "archive": "s4r-web-1.145.0.tar.gz",
+      "sha256": "732f6d52df8977e93ce0f91823e2712811f445f0c5c7c8ebe09206c4d26d2bca",
+      "size": 11521395,
       "changelog": [
+        {
+          "version": "1.145.0",
+          "changes": [
+            "Default heater power consumption set to 540 W (Spider Farmer spec)",
+            "Heater dashboard card now shows level bars like the fan",
+            "Power strip socket grid uses min-width so cards wrap before becoming unreadable on narrow viewports",
+            "Socket activity timeline now includes heater, humidifier, dehumidifier and fan modules alongside outlets"
+          ]
+        },
         {
           "version": "1.144.9",
           "changes": [

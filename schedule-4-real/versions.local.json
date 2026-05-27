@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-27T11:49:15.964Z",
+  "lastCheck": "2026-05-27T18:30:21.374Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.144.9",
-      "installedAt": "2026-05-25T11:31:52Z"
+      "version": "1.145.0",
+      "installedAt": "2026-05-27T18:34:31Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -523,6 +523,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.32.3",
+        "changes": [
+          "Blower no longer sticks at last commanded speed when extraction demand ends",
+          "Humidifier dry-tank self-test invalidates when extraction runs simultaneously"
+        ]
+      },
+      {
         "version": "1.32.2",
         "changes": [
           "Blower ON without explicit speed now defaults to 50 percent instead of firmware 100 percent slam",
@@ -845,12 +852,6 @@
         "version": "1.20.2",
         "changes": [
           "Fix triggers not firing for blower, fan and climate modules"
-        ]
-      },
-      {
-        "version": "1.20.1",
-        "changes": [
-          "Fix module state tracking and command routing for trigger actions"
         ]
       }
     ],
