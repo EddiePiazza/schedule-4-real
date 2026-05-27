@@ -1663,11 +1663,25 @@ async function sendSocketCommand(deviceMac, socket, action, opts = {}) {
       // Fixed: user-specified speed
       moduleConfig.mLevel = opts.moduleSpeed;
     } else if (opts.moduleSpeedMode === 'auto') {
-      // Auto: minimum speed — Blower Curve takes over within seconds
-      moduleConfig.mLevel = socket === 'fan' ? 1 : 25;
+      // Auto: minimum speed — Blower Curve / VPD optimizer takes over within seconds.
+      // Eddie 2026-05-26: blower minimum lifted to 30 % because below that the blower barely
+      // moves air. Fan stays at 1 (proven adequate for circulation).
+      moduleConfig.mLevel = socket === 'fan' ? 1 : 30;
     } else {
-      // No mode (VPD/legacy): preserve last known speed
-      moduleConfig.mLevel = cached.mLevel || cached.level || defaults.mLevel;
+      // No mode (VPD/legacy): for the blower, ALWAYS use a moderate default (50 %) regardless
+      // of cached speed. Preserving a cached 100 % from a previous emergency causes the next
+      // user-trigger ON to slam the blower at 100 %, crashing humidity below target in seconds
+      // — Eddie 2026-05-27. The supervisor's own speed controller (BlowerCurve / VPD optimizer)
+      // will adjust the speed within seconds if it has authority; if the user trigger is the
+      // sole controller, 50 % is a sensible mid-point that moves real air without slamming.
+      moduleConfig.mLevel = (socket === 'blower')
+        ? 50
+        : (cached.mLevel || cached.level || defaults.mLevel);
+    }
+    // Hard floor for the blower module — anything below 30 % is wasted current with no air
+    // movement. Applies to ON commands only; the OFF path above set mLevel=0 explicitly.
+    if (onOff && socket === 'blower' && moduleConfig.mLevel > 0 && moduleConfig.mLevel < 30) {
+      moduleConfig.mLevel = 30;
     }
   }
   const command = {
@@ -1837,6 +1851,46 @@ function resolveSocketIntents(actions) {
     });
   }
 
+  // ── Cross-device mutex: humidifier vs extractor never run together ──
+  // Humidifier (adds moisture) and extractor/blower (removes moisture) are physically opposed.
+  // Running both wastes water + power and produces no net change. The per-socket resolver
+  // above can't see this — it works one socket at a time. Sweep the winners and, if we have
+  // BOTH a humidifier-ON winner AND an extractor-ON winner this cycle, drop the lower-priority
+  // one. mandatoryOn wins over regular; among equal priority, the extractor wins (humi reduction
+  // is usually more time-critical than addition).
+  // Sockets recognised as "humidifier" / "extractor" come from the VPD Control role assignment
+  // — the user is expected to declare which physical socket plays which role there.
+  if (vpdNodeConfig && Array.isArray(vpdNodeConfig.roles)) {
+    const humSocks = new Set();
+    const extSocks = new Set();
+    for (const r of vpdNodeConfig.roles) {
+      if (!r || !r.socket) continue;
+      if (r.role === 'humidifier') humSocks.add(r.socket);
+      // 'extractor' / 'dehumidifier' both REMOVE moisture from the perspective of humi target.
+      if (r.role === 'extractor' || r.role === 'dehumidifier') extSocks.add(r.socket);
+    }
+    const humOn = winners.find(w => w.action === 'on' && humSocks.has(w.socket));
+    const extOn = winners.find(w => w.action === 'on' && extSocks.has(w.socket));
+    if (humOn && extOn) {
+      const humPri = humOn.mandatoryOn ? 2 : 1;
+      const extPri = extOn.mandatoryOn ? 2 : 1;
+      // Tie-break favours extractor — humidity excess is a faster mold/VPD risk than dryness.
+      const dropHum = extPri >= humPri;
+      const dropped = dropHum ? humOn : extOn;
+      const kept = dropHum ? extOn : humOn;
+      console.log(`[Supervisor] Cross-device mutex: ${dropped.socket}=on AND ${kept.socket}=on cannot coexist — dropping ${dropped.socket}=on (${dropped.mandatoryOn ? 'mOn' : 'on'}) in favour of ${kept.socket}=on (${kept.mandatoryOn ? 'mOn' : 'on'}).`);
+      // Replace the dropped intent with an OFF for the same socket so the device actually turns off.
+      const idx = winners.indexOf(dropped);
+      winners[idx] = {
+        ...dropped,
+        action: 'off',
+        mandatoryOn: false,
+        mandatoryOff: false,
+        reason: `Cross-device mutex: yielded to ${kept.socket}=on`
+      };
+    }
+  }
+
   return winners;
 }
 
@@ -1888,32 +1942,20 @@ async function executeActions(actions) {
     // need both forms to match for the hold to honor user intent — otherwise the trigger fires
     // ON under one key, the supervisor checks for hold under another, finds nothing, sends OFF.
     // Eddie 2026-05-25: safety triggers were turning off "instantly" because of this mismatch.
-    const altActionKey = deviceMac ? socket : null; // bare socket variant
-    const holdActive = (m) => (m[actionKey] && now < m[actionKey]) || (altActionKey && m[altActionKey] && now < m[altActionKey]);
-    const setHold = (m, until) => { m[actionKey] = until; if (altActionKey) m[altActionKey] = until; };
-    const clearHold = (m) => { delete m[actionKey]; if (altActionKey) delete m[altActionKey]; };
+    const altActionKey = deviceMac ? socket : null; // bare socket variant (for lastRequestedSocketState mirroring)
 
-    if (targetAction === 'off' && currentState === 1 && !isHardOff) {
-      // (a) Manual / external ON detected: state is ON but we last requested OFF.
-      const lastReq = lastRequestedSocketState[actionKey] ?? (altActionKey ? lastRequestedSocketState[altActionKey] : undefined);
-      if (lastReq === 0 && !holdActive(manualOverrideUntil)) {
-        setHold(manualOverrideUntil, now + MANUAL_OVERRIDE_GRACE_MS);
-        console.log(`[Supervisor] ${socket} came ON outside the supervisor — holding routine OFFs for ${(MANUAL_OVERRIDE_GRACE_MS / 60000).toFixed(0)} min`);
-      }
-      if (holdActive(manualOverrideUntil)) {
-        const until = Math.max(manualOverrideUntil[actionKey] || 0, altActionKey ? (manualOverrideUntil[altActionKey] || 0) : 0);
-        console.log(`[Supervisor] ${socket} → off SKIPPED (manual override hold, ${Math.round((until - now) / 60000)} min left) | ${reason || ''}`);
-        continue;
-      }
-      // (Removed: cross-cycle `userMandatoryOnUntil` hold. The in-cycle intent resolver above
-      // already lets user triggers beat VPD/algorithmic OFFs while they're firing, and stops
-      // overriding the moment the trigger's upstream condition releases. The hold map was the
-      // root of the month-long "schedule pulse pins socket on for 30 min" pain.)
-    }
-    // Clear stale grace when we naturally agree (device matches what we'd want)
-    if (currentState === 0) {
-      clearHold(manualOverrideUntil);
-    }
+    // (Removed: the auto-detected manualOverride hold. Logic was: "currentState=1 + lastReq=0
+    // ⇒ user must have toggled it on, hold OFFs 10 min." But after a supervisor restart, lastReq
+    // is reset; the first OFF we send sets lastReq=0; if the DEVICE doesn't comply (real issue!)
+    // the next cycle sees state=1+lastReq=0 and triggers the hold — locking the supervisor out
+    // of fixing its OWN unacknowledged OFF for 10 minutes. Eddie 2026-05-27.
+    //
+    // The device-non-compliance case is handled by ROLE_UNRESPONSIVE_BACKOFF_MS (10-min back-off
+    // after N failed retries) in activate/deactivateSocketRole. That's the correct mechanism.
+    //
+    // True manual UI toggles will be re-OFF'd by the supervisor within seconds; that's fine —
+    // the user can always switch the outlet to a non-AI/non-trigger firmware mode if they want
+    // to retain manual control. Better than the algorithm gaslighting itself.)
 
     // Skip if already in desired state
     if (currentState === targetState) {

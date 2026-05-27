@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-26T23:24:24Z",
+  "generatedAt": "2026-05-27T02:45:51Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.32.1",
-      "archive": "s4r-supervisor-1.32.1.tar.gz",
-      "sha256": "3835a3f892ae74fd4d004ea2e9dca7654477a986b870b99ebcd8880f17d2b27d",
-      "size": 104973,
+      "version": "1.32.2",
+      "archive": "s4r-supervisor-1.32.2.tar.gz",
+      "sha256": "53045959ffe31d1ff4082859e5db69417a875a9649516ffcf5915382d97296e0",
+      "size": 105991,
       "changelog": [
+        {
+          "version": "1.32.2",
+          "changes": [
+            "Blower ON without explicit speed now defaults to 50 percent instead of firmware 100 percent slam",
+            "Cross-device mutex prevents humidifier and extractor running simultaneously",
+            "Remove auto-triggered manual override hold so non-compliant devices do not block their own OFF commands"
+          ]
+        },
         {
           "version": "1.32.1",
           "changes": [
