@@ -2291,11 +2291,20 @@ function evaluateVpdIntelligent() {
   // plants' transpiration + reduced blower extraction recover humi naturally. Re-test after the
   // cooldown so a refilled tank gets picked up automatically.
   const humidifierRoleActive = !!vpdEscalationState.roles['humidifier'];
+  const extractorRoleActiveNow = !!vpdEscalationState.roles['extractor_humi'] || !!vpdEscalationState.roles['extractor'];
   if (humidifierRoleActive && humidifierEvalStartTime === 0) {
     humidifierEvalStartTime = now;
     humidifierEvalStartHumi = humi;
   } else if (!humidifierRoleActive && humidifierEvalStartTime !== 0) {
     humidifierEvalStartTime = 0;
+  }
+  // INVALIDATE the test if extraction is also running — the blower will counteract the
+  // humidifier and any "no humi rise" result is meaningless. Eddie 2026-05-27 incident:
+  // humidifier ran while blower extracted at 85 % → humi didn't rise → false "DRY tank"
+  // verdict locked the humidifier out for 45 min while humi crashed to 48 %.
+  if (humidifierEvalStartTime > 0 && extractorRoleActiveNow) {
+    humidifierEvalStartTime = now;
+    humidifierEvalStartHumi = humi;
   }
   if (humidifierRoleActive && humidifierEvalStartTime > 0
       && (now - humidifierEvalStartTime) >= HUMIDIFIER_EFFECT_CHECK_MS) {
@@ -3600,7 +3609,12 @@ async function processSensorData(sensorData, deviceMac) {
   // crashing humidity. The VPD optimizer's min/max already drive the blower; skip the curve.
   const curveSpeed = vpdNodeConfig ? null : evaluateBlowerCurve();
 
-  if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100)) {
+  // Enter the speed-send block whenever VPD has any opinion. The old guard skipped the block
+  // entirely when both floor=0 and ceiling=100 (no demand), which left the blower stuck at its
+  // last commanded value — Eddie 2026-05-27 saw blower stuck at 85 % long after humi had crashed
+  // to 48 % and extraction was no longer wanted. With vpdNodeConfig present, the supervisor IS
+  // the authority over the blower; if no extraction is needed, that means OFF, not "leave as is".
+  if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100 || vpdNodeConfig)) {
     // Resolve the target speed.
     //  - When a curve demands a speed, the VPD floor can only RAISE it (and the
     //    ceiling caps it).

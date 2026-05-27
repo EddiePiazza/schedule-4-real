@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-27T02:45:51Z",
+  "generatedAt": "2026-05-27T11:49:37Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2903,11 +2903,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.32.2",
-      "archive": "s4r-supervisor-1.32.2.tar.gz",
-      "sha256": "53045959ffe31d1ff4082859e5db69417a875a9649516ffcf5915382d97296e0",
-      "size": 105991,
+      "version": "1.32.3",
+      "archive": "s4r-supervisor-1.32.3.tar.gz",
+      "sha256": "b1c90237219850a30fe13a9fb96158299093a583179267e916f8d3170645e140",
+      "size": 106334,
       "changelog": [
+        {
+          "version": "1.32.3",
+          "changes": [
+            "Blower no longer sticks at last commanded speed when extraction demand ends",
+            "Humidifier dry-tank self-test invalidates when extraction runs simultaneously"
+          ]
+        },
         {
           "version": "1.32.2",
           "changes": [

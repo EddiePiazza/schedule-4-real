@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-27T02:42:59.511Z",
+  "lastCheck": "2026-05-27T11:49:15.964Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.2",
-      "installedAt": "2026-05-27T02:45:51Z"
+      "version": "1.32.3",
+      "installedAt": "2026-05-27T11:49:37Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -523,6 +523,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.32.2",
+        "changes": [
+          "Blower ON without explicit speed now defaults to 50 percent instead of firmware 100 percent slam",
+          "Cross-device mutex prevents humidifier and extractor running simultaneously",
+          "Remove auto-triggered manual override hold so non-compliant devices do not block their own OFF commands"
+        ]
+      },
+      {
         "version": "1.32.1",
         "changes": [
           "Action auto-releases OFF when upstream stops firing so schedule pulses do not stick the socket on forever",
@@ -843,12 +851,6 @@
         "version": "1.20.1",
         "changes": [
           "Fix module state tracking and command routing for trigger actions"
-        ]
-      },
-      {
-        "version": "1.20.0",
-        "changes": [
-          "Intelligent blower speed optimizer, cooling priority over humidity, smart heater suppression"
         ]
       }
     ],
