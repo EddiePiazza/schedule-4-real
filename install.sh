@@ -62,18 +62,52 @@ fi
 # ═══════════════════════════════════════════
 info "Checking system requirements..."
 
-if ! command -v docker &>/dev/null; then
-    error "Docker is not installed. Install it first: https://docs.docker.com/engine/install/"
-fi
-success "Docker installed"
-
+# curl/wget is required for the Docker install script and our archive downloads, so prove it
+# exists before we try to bootstrap Docker. If neither is present we can't proceed at all.
 if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
-    error "curl or wget is required"
+    if command -v apt-get &>/dev/null; then
+        info "curl missing — installing..."
+        apt-get update -qq >/dev/null 2>&1 || true
+        apt-get install -y curl >/dev/null 2>&1 && success "curl installed" || error "Failed to install curl. Install manually: apt-get install curl"
+    elif command -v yum &>/dev/null; then
+        yum install -y curl >/dev/null 2>&1 && success "curl installed" || error "Failed to install curl"
+    elif command -v dnf &>/dev/null; then
+        dnf install -y curl >/dev/null 2>&1 && success "curl installed" || error "Failed to install curl"
+    else
+        error "curl or wget is required and no supported package manager found"
+    fi
+fi
+
+# Docker — install via the official convenience script if missing. (Eddie 2026-05-27: the
+# previous "you install it first" error sent users back to docs.docker.com mid-install for what
+# the script can do itself. Most distros support `get.docker.com` and it covers Debian, Ubuntu,
+# Raspberry Pi OS, Fedora, CentOS, etc. Falls back to apt-get for clean Debian installs.)
+if ! command -v docker &>/dev/null; then
+    warning "Docker is not installed — installing now..."
+    if command -v curl &>/dev/null; then
+        # Official Docker convenience installer — supports all the distros we target.
+        curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && \
+            sh /tmp/get-docker.sh >/dev/null 2>&1 && \
+            rm -f /tmp/get-docker.sh
+    fi
+    # Fallback to apt-get's docker.io if the script didn't land Docker.
+    if ! command -v docker &>/dev/null && command -v apt-get &>/dev/null; then
+        info "Convenience installer failed — trying apt-get docker.io..."
+        apt-get update -qq >/dev/null 2>&1 || true
+        apt-get install -y docker.io >/dev/null 2>&1 || true
+    fi
+    if ! command -v docker &>/dev/null; then
+        error "Docker install failed. Install manually: https://docs.docker.com/engine/install/"
+    fi
+    success "Docker installed"
+else
+    success "Docker installed"
 fi
 
 # Docker must be running
 if ! docker info &>/dev/null; then
     warning "Docker is installed but not running. Starting Docker..."
+    systemctl enable docker 2>/dev/null || true
     systemctl start docker 2>/dev/null || true
     sleep 2
     if ! docker info &>/dev/null; then

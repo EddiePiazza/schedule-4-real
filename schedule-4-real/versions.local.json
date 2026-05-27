@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-27T18:30:21.374Z",
+  "lastCheck": "2026-05-27T22:10:21.404Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.145.0",
-      "installedAt": "2026-05-27T18:34:31Z"
+      "version": "1.145.1",
+      "installedAt": "2026-05-27T22:18:09Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.3",
-      "installedAt": "2026-05-27T11:49:37Z"
+      "version": "1.32.4",
+      "installedAt": "2026-05-27T22:18:09Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,15 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.145.0",
+        "changes": [
+          "Default heater power consumption set to 540 W (Spider Farmer spec)",
+          "Heater dashboard card now shows level bars like the fan",
+          "Power strip socket grid uses min-width so cards wrap before becoming unreadable on narrow viewports",
+          "Socket activity timeline now includes heater, humidifier, dehumidifier and fan modules alongside outlets"
+        ]
+      },
       {
         "version": "1.144.9",
         "changes": [
@@ -406,12 +415,6 @@
           "Fix 400 when setting a keeper tier from the score wizard",
           "Allow editing plants past one year (lift 365-day and 52-week caps)",
           "Fix 400 editing pollen records when storage method is Room Temperature"
-        ]
-      },
-      {
-        "version": "1.127.2",
-        "changes": [
-          "Quick Photo: pick which plant the photo attaches to instead of always landing on the first"
         ]
       }
     ],
