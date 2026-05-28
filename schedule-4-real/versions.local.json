@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-27T22:10:21.404Z",
+  "lastCheck": "2026-05-28T13:14:18.621Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.145.1",
-      "installedAt": "2026-05-27T22:18:09Z"
+      "version": "1.146.0",
+      "installedAt": "2026-05-28T13:14:50Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.145.1",
+        "changes": [
+          "Make laboratory Quick Add dropdown click handling robust against bubbling and overlay z-index issues"
+        ]
+      },
       {
         "version": "1.145.0",
         "changes": [
@@ -405,17 +411,6 @@
           "Journal link on a plant now focuses just that plant in the hunt timeline",
           "Allow renaming a plant's code from the Edit Plant form"
         ]
-      },
-      {
-        "version": "1.128.0",
-        "changes": [
-          "Add and remove photos from the Edit Observation modal",
-          "Fix 400 saving observation in hunt mode when stage is a checkpoint type",
-          "Fix 400 when advancing hunt status to Vegetative / Flowering / Harvest",
-          "Fix 400 when setting a keeper tier from the score wizard",
-          "Allow editing plants past one year (lift 365-day and 52-week caps)",
-          "Fix 400 editing pollen records when storage method is Room Temperature"
-        ]
       }
     ],
     "ingest": [
@@ -525,6 +520,12 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.32.4",
+        "changes": [
+          "Installer auto-installs Docker and curl when missing instead of erroring out"
+        ]
+      },
       {
         "version": "1.32.3",
         "changes": [
@@ -849,12 +850,6 @@
         "version": "1.21.0",
         "changes": [
           "Smart module command routing with speed preservation and curve-controlled auto mode"
-        ]
-      },
-      {
-        "version": "1.20.2",
-        "changes": [
-          "Fix triggers not firing for blower, fan and climate modules"
         ]
       }
     ],

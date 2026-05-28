@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-27T22:18:09Z",
+  "generatedAt": "2026-05-28T13:14:50Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.145.1",
-      "archive": "s4r-web-1.145.1.tar.gz",
-      "sha256": "d8adc7f2383cf4f71990e03122c7eb388e3443faae75e8b63f8c765697fec70b",
-      "size": 11521943,
+      "version": "1.146.0",
+      "archive": "s4r-web-1.146.0.tar.gz",
+      "sha256": "14805335daf9023d00afe80189a6b25f7904bed5cb0800a78ae9311b94046855",
+      "size": 11523633,
       "changelog": [
+        {
+          "version": "1.146.0",
+          "changes": [
+            "Flip-to-Flower wizard now lets you link a grow room in-place or skip linking without leaving the dialog"
+          ]
+        },
         {
           "version": "1.145.1",
           "changes": [

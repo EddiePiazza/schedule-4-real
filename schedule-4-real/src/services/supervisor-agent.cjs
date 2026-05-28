@@ -2251,7 +2251,15 @@ function evaluateVpdIntelligent() {
 
   // ── DEACTIVATION thresholds (at target, instant, no hysteresis) ──
   const tempInRange = temp >= idealTemp.min && temp <= idealTemp.max;
-  const humiOk = humi >= idealHumiTarget && humi <= idealHumiMax;
+  // humiOk = humi is in the COMFORT BAND below target (humidifier off, extractor off zone).
+  // The natural shape:
+  //   • humi << target → humidifier wants to fire (humiLow).
+  //   • humi > target  → extractor wants to fire (push it back down).
+  //   • humi in [min, target] → nobody acts. THAT's RULE 6's "full comfort".
+  // Eddie 2026-05-28: the old definitions (`target..max` and then `target ± 1`) flagged humi
+  // ABOVE target as "OK", which constantly wiped the extractor_humi role Eddie had just
+  // activated to push humi down. Now the role survives until humi actually reaches target.
+  const humiOk = humi >= idealHumiMin && humi <= idealHumiTarget;
 
   // ── SEQUENTIAL CLIMATE PHASE ──
   // Pick exactly one of {extracting, heating, idle} for the heater/extractor pair.
@@ -2343,7 +2351,16 @@ function evaluateVpdIntelligent() {
     : currentVpd > targetMax + VPD_PHASE_HYST; // not humidifying — enter only when clearly above (>1.20)
   vpdEscalationState.humidifyMode = leafVpdAboveTargetHyst;
   // VETO extraction when VPD is too high — humidification (below) is the right lever instead.
-  const needsExtraction = !leafVpdAboveTargetHyst && (humiExcess > 2 || leafVpdBelowTargetHyst);
+  // Eddie 2026-05-28: enter the extracting phase as soon as humi drifts above target (with a
+  // small deadband to avoid jitter), not just when it exceeds the absolute ceiling. Otherwise
+  // the optimizer never gets a chance to start escalating speed until humi is already in trouble.
+  // humiAboveTarget keeps the phase machine in 'extracting' through a WIDE deadband — the
+  // role deactivation at line ~3146 uses `humi <= target-3`, so the phase machine has to
+  // agree with that or line 3166's `!phaseExtracting && humiExtractionActive` will wipe the
+  // role first. Setting humiAboveTarget at target-2 (= 59 for target=61) gives both gates a
+  // common range — phase stays extracting between target-2 and infinity, role persists.
+  const humiAboveTarget = humi > idealHumiTarget - 2;
+  const needsExtraction = !leafVpdAboveTargetHyst && (humiExcess > 2 || leafVpdBelowTargetHyst || humiAboveTarget);
   const needsHeating = tempDeficit > 0.3 && !heaterIneffective;
   let nextPhase = vpdPhase;
   if (!needsExtraction && !needsHeating) {
@@ -2908,11 +2925,29 @@ function evaluateVpdIntelligent() {
   // reach the band even if it's already within the "normal" tolerance — extraction
   // is the only lever left. We loosen the gate so the blower runs proactively in
   // that scenario.
+  // Activate extraction when humi crosses the TARGET (sweet spot) — not just the absolute
+  // ceiling. Eddie 2026-05-28: at humi 64 with band 58-65 (target 61), the blower sat at 30 %
+  // idle because two gates conspired against it:
+  //   1) old gate: `humi > idealHumiMax` (65) — humi=64 didn't qualify
+  //   2) old gate: `(humiHigh || humiExtractionActive || ...)` where humiHigh = humi > humiMax+4
+  //      (69) — also didn't qualify for first activation; the system was waiting for humi to
+  //      get worse before doing anything.
+  // The user wants the optimizer to start its smart escalation as soon as humi drifts above
+  // target so it can find the desaturation sweetspot well before the ceiling is hit. The
+  // dropped `humiHigh || ...` gate was a conservative noise filter, but with the in-cycle
+  // intent resolver + the humidifier-active guard below, it isn't needed.
+  // The humidifier-recently-off grace (4 min) exists so a brief overshoot doesn't immediately
+  // get extracted away. But when humi is CLEARLY above target (≥ 2 % over), it's not a transient
+  // overshoot — it's a real load and waiting just lets it climb. Bypass the grace in that case.
+  // Eddie 2026-05-28: blower sat at 30 % idle with humi=64 (target 61) for the whole grace
+  // window because the grace blocked extraction unconditionally.
+  // Eddie 2026-05-28: dropped the humidifierRecentlyOff guard from this gate. The 4-min grace
+  // was preventing extraction whenever the humidifier had just been off — even at humi=62 well
+  // above target. That created the on/off oscillation he kept seeing. The cross-device mutex
+  // already blocks simultaneous humidifier+blower, so the grace is redundant here.
   const needsHumiAction = (phaseExtracting || humiEmergency)
-    && humi > idealHumiMax
-    && (humiHigh || humiExtractionActive || isRoleActive('dehumidifier') || (heaterIneffective && leafVpdBelowTarget))
-    && !isRoleActive('humidifier')
-    && (!humidifierRecentlyOff || humiEmergency);
+    && (humi > idealHumiTarget || isRoleActive('extractor_humi'))
+    && !isRoleActive('humidifier');
 
   if (needsHumiAction) {
     deactivateSocketRole('humidifier', 'Humi too high');
@@ -3037,69 +3072,75 @@ function evaluateVpdIntelligent() {
       console.log(`[VPD] Humi extraction cooldown active (${Math.round((HUMI_EXTRACTION_CRASH_COOLDOWN_MS - (now - lastHumiExtractionCrashTime)) / 60000)}min remaining) — skipping reactivation`);
     }
 
-    if (!crashCooldownActive && dehumExhausted && !blowerCrashingTemp && (humiHigh || humiExtractionActive) && tempSafeForBlower) {
+    // Activation gate — `humiHigh` (humi > idealHumiMax + 4) was the original trigger but it
+    // meant nothing happens until humi is 4 % over the ceiling. We now also trigger on
+    // `humi > idealHumiTarget` so the optimizer starts probing for the desaturation sweetspot
+    // as soon as humi drifts above the target band centre (Eddie 2026-05-28).
+    if (!crashCooldownActive && dehumExhausted && !blowerCrashingTemp
+        && (humiHigh || humiExtractionActive || humi > idealHumiTarget)
+        && tempSafeForBlower) {
       if (extIsBlower) {
         newBlowerCeiling = 100;
 
+        // ── PROPORTIONAL CONTROL ──
+        // Eddie 2026-05-28: the user wants the blower to stay running steadily and reach +
+        // hold target VPD, not to slam to a fixed speed and then toggle on/off. The previous
+        // step-based optimizer (±10 % bites every 90 s) overshot at the chosen speed, humi
+        // crashed below target, role deactivated, then humi rose back and the cycle restarted.
+        //
+        // The new behaviour: the blower runs CONTINUOUSLY while extraction is wanted, and the
+        // speed varies smoothly with how far humi is from target. Bigger error → faster
+        // extraction. Small error around target → low steady speed (just enough to fight the
+        // moisture input the plants put back into the air). This naturally converges to a
+        // stable equilibrium speed instead of bouncing between 40 % and 0 %.
+        //
+        //   speed = MIN_SPEED + GAIN * max(0, humi - target)
+        //
+        // GAIN tunes how aggressive the response is. 6 %/percent means humi=target+1 → 36 %,
+        // target+3 → 48 %, target+5 → 60 %, target+8 → 78 %. The MIN_SPEED (30) is the lowest
+        // setting the blower actually moves air at.
+        const PROP_MIN_SPEED = 30;
+        const PROP_GAIN = 6;
+        const errOverTarget = Math.max(0, humi - idealHumiTarget);
+        const propSpeed = Math.min(100, PROP_MIN_SPEED + Math.round(errOverTarget * PROP_GAIN));
+
         if (!humiExtractionActive) {
-          // Compute the starting speed from calibration ONCE, at activation, and
-          // freeze it as baseSpeed. We deliberately do NOT recompute it from the
-          // instantaneous humi each cycle — that made the floor wobble 40↔50 % as
-          // the sensor jittered ±1 % (incident 2026-05-20). From here the optimizer
-          // owns the speed via ±10 % steps every 5 min.
-          // Start from a MODERATE speed, never a jump to 100 %. The calibration estimate
-          // is only a hint and clamped to 60 % on activation; the capacity-aware optimizer
-          // then climbs only as far as actually helps. The sole exception is a genuine
-          // flood (humi > 85 %) where we start at full power immediately.
-          // (Previously a huge humiExcess against an unreachable day target made the
-          // calibration return 100 %, so every (re)activation slammed the blower to
-          // 100 % out of nowhere — incident 2026-05-20.)
-          const humiExcess = humi - idealHumiMax;
-          const period = isDaytime ? 'day' : 'night';
-          const calSpeed = calcSpeedFromCalibration(0, humiExcess, period);
-          const baseSpeed = humi > 85 ? 100 : Math.min(calSpeed > 0 ? calSpeed : 40, 60);
+          // Initial activation — capture state for the role record. baseSpeed stores the
+          // proportional speed for future cycles to fall back to if the activation branch is
+          // skipped.
           vpdEscalationState.roles['extractor_humi'] = {
             activatedAt: now, metricAtActivation: humi,
-            baseSpeed, speedBoost: 0, lastCheckTime: now,
-            metricEma: humi, lastAction: 'init', capacityClearedAt: now
+            baseSpeed: propSpeed, speedBoost: 0, lastCheckTime: now,
+            metricEma: humi, lastAction: 'init', capacityClearedAt: now,
+            committedFloor: propSpeed
           };
-          newBlowerFloor = Math.max(newBlowerFloor, baseSpeed);
-          console.log(`[VPD] Blower floor ${newBlowerFloor}% — humidity extraction (${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}%, ${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
-        } else {
-          // Target-anchored optimizer: drive humidity down toward idealHumiMax (the band
-          // ceiling). Absolute anchoring means a slow daytime creep is always caught; the
-          // capacity logic prevents flooring the blower against an unreachable target.
-          evaluateEscalation('extractor_humi', humi, idealHumiMax, true, ESCALATION_IMPROVE_HUMI);
+          console.log(`[VPD] Blower extraction ON @ ${propSpeed}% — humi ${humi.toFixed(0)}% (${errOverTarget.toFixed(1)} over target ${idealHumiTarget.toFixed(0)}%)`);
         }
+
+        // Keep the role's committedFloor live so the fallback at line ~3235 picks up the
+        // current proportional speed even on cycles where this block doesn't enter.
         const role = vpdEscalationState.roles['extractor_humi'];
-        const baseSpeed = role?.baseSpeed ?? 40;
-        let boost = role?.speedBoost || 0;
-        // Effective extraction speed clamped to [30, 100] while the role is active.
-        // Anti-windup: pin the stored boost back to whatever the clamp allows so it
-        // can't drift to a huge negative number that would take many cycles to climb
-        // back from when humidity finally rises. Eddie 2026-05-25: lifted floor from 20→30
-        // because the blower produces ~no measurable air movement below ~30%.
-        const BLOWER_MIN_EFFECTIVE_SPEED = 30;
-        let effFloor = baseSpeed + boost;
-        if (effFloor < BLOWER_MIN_EFFECTIVE_SPEED) { effFloor = BLOWER_MIN_EFFECTIVE_SPEED; boost = BLOWER_MIN_EFFECTIVE_SPEED - baseSpeed; }
-        if (effFloor > 100) { effFloor = 100; boost = 100 - baseSpeed; }
-        if (role) role.speedBoost = boost;
-        newBlowerFloor = Math.max(newBlowerFloor, effFloor);
-        // Commit the chosen speed onto the role so cycles that don't re-traverse
-        // this exact block (cooldown windows, momentary temp dips) keep driving the
-        // blower instead of letting newBlowerCeiling reset to 0 → spurious 0 % blips.
-        if (vpdEscalationState.roles['extractor_humi']) {
-          vpdEscalationState.roles['extractor_humi'].committedFloor = newBlowerFloor;
+        if (role) {
+          role.committedFloor = propSpeed;
+          role.baseSpeed = propSpeed;
         }
+        newBlowerFloor = Math.max(newBlowerFloor, propSpeed);
       } else {
         activateSocketRole('extractor', `Humi ${humi.toFixed(0)}% > ${humiHighThreshold.toFixed(0)}% (${hasDehumRole ? 'dehumidifier exhausted' : 'no dehumidifier'})`);
       }
     }
 
-  } else if (humi <= idealHumiMax) {
-    // Humidity reached target — stop ALL humidity extraction
+  } else if (humi <= idealHumiTarget - 6) {
+    // Only deactivate the role when humi is FAR below target (≥6 % under = 55 for target=61).
+    // The proportional controller above naturally tapers the blower to its MIN_SPEED (30 %)
+    // when humi is at target, so there's no benefit to deactivating earlier — and deactivating
+    // makes the blower drop fully to idle 30 % AND the optimizer state vanish, only for humi
+    // to rise back and the whole role be re-built from scratch. Eddie 2026-05-28: the user
+    // wants the blower to STAY ON and converge smoothly, not toggle. The cross-device mutex
+    // already disables the extractor if the humidifier wants ON (humi << target), so this
+    // late-deactivation is only a last-resort cleanup when nothing else has happened.
     if (humiExtractionActive) {
-      console.log(`[VPD] Humidity extraction done: ${humi.toFixed(0)}% reached target ${idealHumiMax.toFixed(0)}%`);
+      console.log(`[VPD] Humidity extraction done: ${humi.toFixed(0)}% far below target ${idealHumiTarget.toFixed(0)}%`);
       delete vpdEscalationState.roles['extractor_humi'];
       if (!needsCooling) {
         if (!extIsBlower) deactivateSocketRole('extractor', 'Humi OK');
@@ -3117,10 +3158,12 @@ function evaluateVpdIntelligent() {
   // blower exhausted whatever heat the heater added. The sequential phase machine
   // above replaces it: the system extracts first, then heats. Never simultaneously.
 
-  // When the phase is NOT 'extracting', make sure humidity-extraction blower state is
-  // cleared so Rule 1 (cooling) controls the blower cleanly. This also prevents the
-  // blower from staying at the humi-extraction floor after phase switches to 'heating'.
-  if (!phaseExtracting && humiExtractionActive) {
+  // When the phase switches to HEATING mid-extraction, stop the extractor — the heater
+  // can't compete with active extraction. Eddie 2026-05-28: previously this fired on ANY
+  // non-extracting phase including 'idle', so a single noisy 58.5 % humi reading kicked
+  // phase→idle and wiped the role mid-test. The 'idle' case is now handled exclusively
+  // by the asymmetric deactivation gate at line ~3145 (humi <= target - 3).
+  if (phaseHeating && humiExtractionActive) {
     delete vpdEscalationState.roles['extractor_humi'];
     if (!needsCooling) {
       newBlowerCeiling = 0;
@@ -3162,9 +3205,12 @@ function evaluateVpdIntelligent() {
     if (temp > idealTemp.min + 0.5) {
       lastCoolingStopTime = 0; // Well above min, no risk of heater-blower fight
     }
-    // Clean escalation state
+    // Clean escalation state. extractor_humi has its OWN dedicated lifecycle (activated at
+    // humi > target, deactivated at humi << target with hysteresis). Don't let RULE 6 wipe it
+    // mid-extraction the moment humi briefly touches target — that destroys the test the
+    // optimizer is running to gauge whether the chosen speed is enough.
     for (const key of Object.keys(vpdEscalationState.roles)) {
-      if (key !== 'circulator') delete vpdEscalationState.roles[key];
+      if (key !== 'circulator' && key !== 'extractor_humi') delete vpdEscalationState.roles[key];
     }
   }
 
