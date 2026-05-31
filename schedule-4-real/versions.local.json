@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-28T13:14:18.621Z",
+  "lastCheck": "2026-05-31T01:35:53.001Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.4",
-      "installedAt": "2026-05-27T22:18:09Z"
+      "version": "1.32.5",
+      "installedAt": "2026-05-31T01:37:15Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.146.0",
+        "changes": [
+          "Flip-to-Flower wizard now lets you link a grow room in-place or skip linking without leaving the dialog"
+        ]
+      },
       {
         "version": "1.145.1",
         "changes": [
@@ -403,13 +409,6 @@
           "Score wizard: Save now button saves partial scores without finishing all 9 steps",
           "Lab tabs stay in the same order \u2014 keyboard shortcuts no longer shift around",
           "Welcome screen now offers three paths (plant, strain, tour) instead of forcing one"
-        ]
-      },
-      {
-        "version": "1.129.0",
-        "changes": [
-          "Journal link on a plant now focuses just that plant in the hunt timeline",
-          "Allow renaming a plant's code from the Edit Plant form"
         ]
       }
     ],

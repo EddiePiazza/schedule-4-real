@@ -31,6 +31,15 @@ const QUESTDB_USER = process.env.QUESTDB_USER || 'spider';
 const QUESTDB_PASSWORD = process.env.QUESTDB_PASSWORD || 'spider123';
 const QUESTDB_DATABASE = process.env.QUESTDB_DATABASE || 'qdb';
 
+// ── MAC normalisation (CRITICAL, 2026-05-31) ──
+// The device/proxy publishes the SAME device's MAC in mixed case across messages — e.g. both
+// `80B54E8FFFF4` and `80b54e8ffff4`. Keying any map by the raw string splits ONE physical device
+// into TWO phantom devices: the merged sensor value alternated between the two stores (the
+// "humidity flap" 56↔63), and socket commands went to one casing while state was reported under
+// the other (`getSocketState` missed → humidifier showed "was 0" forever and was re-commanded
+// every cycle). Normalising every MAC key to lower-case collapses them back into one device.
+function normMac(mac) { return (typeof mac === 'string') ? mac.toLowerCase() : mac; }
+
 // Device registry (loaded from QuestDB)
 // Maps MAC -> { type: 'ps5'|'cb'|'lc', uid: string, mac: string }
 const deviceRegistry = new Map();
@@ -54,6 +63,10 @@ let mqttClient = null;
 let flows = [];
 let socketAiModes = {};  // socket -> boolean (combines device+socket for multi-device)
 let lastSensorValues = {};  // Legacy: merged sensor values from all devices
+// Liveness watchdog timestamp: bumped ONLY when a message carried REAL sensor data (temp/humi/soil),
+// NOT on the empty 10s schedule self-tick. The restart watchdog keys off this so a dead sensor feed
+// actually trips it (the old lastSensorProcessedTime was bumped by the self-tick → never fired).
+let lastRealSensorAt = Date.now();
 let lastActionTimes = {}; // Track last action time per device:socket for hysteresis cooldown
 let lastSocketStates = {}; // Legacy: socket states from default PS5
 let lastModuleConfigs = {}; // Full config cache per module (blower, fan, etc.) — preserves speed/level on ON/OFF
@@ -101,6 +114,15 @@ function enforceSafetyTimeouts() {
 
   for (const [deviceKey, onSince] of Object.entries(deviceOnSince)) {
     if (!onSince) continue; // Device is OFF
+    // If the device currently reports OFF, re-base its clock — the simple max-on timer must not
+    // accumulate across on→off→on cycles (audit P2 #7). The blower especially: its speed/OFF
+    // commands flow through sendBlowerCommand, which never cleared deviceOnSince, so the clock ran
+    // forever and force-OFFed a healthy exhaust every ~120 min (398 log lines observed).
+    if (lastSocketStates[deviceKey] === 0) { deviceOnSince[deviceKey] = null; continue; }
+    // The AI-speed-controlled blower has its OWN governance (futility self-test, heartbeat,
+    // mismatch-recovery, and a normal continuous idle 30 % exhaust). A blunt max-on force-OFF is
+    // both unnecessary and harmful for it — exempt it. Other modules/outlets keep their timeout.
+    if (deviceKey === 'blower' && socketAiModes['blower']) continue;
     const config = safetyTimeouts[deviceKey];
     if (!config || !config.enabled || config.maxOnMinutes <= 0) continue;
 
@@ -140,6 +162,7 @@ function enforceSafetyTimeouts() {
   return forceOffActions;
 }
 const HYSTERESIS_COOLDOWN_MS = 5000; // Minimum 5 seconds between state changes
+const SLOW_CLIMATE_DWELL_MS = 75 * 1000; // humidifier/dehumidifier: ≥75s between toggles (pump/compressor protection)
 // Leaf temperature offset below air temperature, depends on lighting:
 //   DAY:   1.0°C (moderate LED + airflow — leaves a hair cooler than air via transpiration)
 //   NIGHT: 0.3°C (lights off — leaves equilibrate with air within ~30 min)
@@ -243,19 +266,39 @@ const HEATER_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // skip heater for 30 min
 let humidifierEvalStartTime = 0;
 let humidifierEvalStartHumi = 0;
 let humidifierIneffectiveUntil = 0;
+let humidifierIneffectiveStartHumi = null; // humi at the moment we marked ineffective
+
+// ── Cooling "futility" self-test ──
+// When the room can't actually be cooled (exhaust vents to an ambient that's as warm as the
+// room — typical at night when the night target sits below ambient), slamming the blower does
+// nothing for temperature and only desiccates the air. Mirror the heater/humidifier self-tests:
+// if the blower runs high for COOLING_EFFECT_CHECK_MS without dropping temp by COOLING_EFFECT_MIN_DROP,
+// declare cooling futile for a cooldown and hold the blower at idle (preserve humidity, let temp
+// float above the unreachable target). Re-test after the cooldown — ambient load changes all day.
+let coolingEvalStartTime = 0;
+let coolingEvalStartTemp = 0;
+let coolingIneffectiveUntil = 0;
+let coolingFutileStartTemp = null; // temp at which futility was declared — for the rising-temp escape
+const COOLING_EFFECT_CHECK_MS = 4 * 60 * 1000;       // 4 min of high blower to prove it can cool
+const COOLING_EFFECT_MIN_DROP = 0.3;                 // °C drop expected in that window
+const COOLING_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // hold idle 30 min, then re-test
+// Escape hatches so a "futile" verdict can never trap a genuinely overheating tent (audit P0 #2):
+const COOLING_FUTILE_ESCAPE_RISE = 0.8;  // °C above the futility baseline → re-allow cooling immediately
+// Set true each evaluation when cooling is currently judged futile, so the blower-send path
+// (separate function) knows NOT to force the blower to 100 % for a temperature emergency that
+// cooling can't relieve anyway. Humidity emergencies (extraction works) are unaffected.
+let vpdTempCoolingFutile = false;
 const HUMIDIFIER_EFFECT_CHECK_MS = 10 * 60 * 1000; // 10 min — humidifiers are slower than heaters
 const HUMIDIFIER_EFFECT_MIN_RISE = 1.0;             // % humi rise expected in that window
 const HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS = 45 * 60 * 1000; // 45 min, then re-test (gives time to refill)
+// Early-clear threshold: if humi rises this much from the marked-ineffective value, the room is
+// recovering on its own — clear the lockout so we don't keep the humidifier suppressed past need.
+const HUMIDIFIER_INEFFECTIVE_RECOVERY_RISE = 3;
 
-// ── Manual override grace ──
-// Only one hold remains in the new model: detecting that a socket came ON outside the supervisor
-// (manual UI toggle, external MQTT publish, etc.) and suppressing the supervisor's routine OFFs
-// for a few minutes so the user's manual decision is respected.
-// All cross-cycle "mandatoryOn hold" semantics were removed in favour of in-cycle intent
-// resolution — see resolveSocketIntents().
-const manualOverrideUntil = {};      // key → epoch ms
-const lastRequestedSocketState = {}; // what we *asked* the device for last cycle
-const MANUAL_OVERRIDE_GRACE_MS = 10 * 60 * 1000;       // 10 min for manual UI ON
+// (Removed 2026-05-31 audit P3 #12: manualOverrideUntil / lastRequestedSocketState /
+// MANUAL_OVERRIDE_GRACE_MS were write-only dead state — the manual-override hold they fed was
+// deleted long ago in favour of in-cycle intent resolution (resolveSocketIntents). A future
+// manual-override detector should read per-device state via getSocketState, not a global mirror.)
 
 // ── Periodic ventilation ──
 // Even when retaining humidity (humi low, blower otherwise off), the room still needs a
@@ -321,6 +364,94 @@ let cycleTransitionLastTemp = 0;      // Temp at last trend check
 let cycleTransitionLastHumi = 0;      // Humi at last trend check
 let cycleTransitionGraceActive = false;
 let cycleTransitionDirection = '';    // 'cooling' (day→night) or 'warming' (night→day)
+let lastCycleTransitionAt = 0;        // Persisted across restarts — used for min-interval guard
+// Minimum interval between consecutive cycle transitions. Without this, a flapping schedule loader
+// (defaults reloaded then real values reloaded every 30 s) cascades 20+ transitions in minutes,
+// each one killing all roles and resetting blower min/max to 0. Incident 2026-05-30.
+const CYCLE_TRANSITION_MIN_INTERVAL_MS = 15 * 60 * 1000; // 15 min
+// Hard watchdog: even if eval never reaches the grace expiry path, force-clear after this much
+// real time so a sensor outage during grace can't lock the system out forever.
+const CYCLE_TRANSITION_GRACE_HARD_MAX_MS = CYCLE_TRANSITION_GRACE_MS + 5 * 60 * 1000;
+
+// ── Boot grace — ignore the first schedule reload after startup ──
+// The schedule defaults to { dayStart: '06:00', dayEnd: '00:00' } at boot, then loadDayNightSchedule
+// replaces it with the real DB row a few ms later. The "change" between defaults and real values
+// was being logged as a Day/Night schedule change AND interpreted as a cycle transition at certain
+// times of day. Suppress this initial difference: any change within BOOT_SCHEDULE_GRACE_MS of
+// process start is silently absorbed as the initial load, not a real change.
+const BOOT_SCHEDULE_GRACE_MS = 60 * 1000; // 60 s
+const SUPERVISOR_BOOT_AT = Date.now();
+let scheduleInitialised = false;       // becomes true after first non-default load is absorbed
+
+// ── Dual-authority resolution ──
+// validateVpdVsTriggers detects sockets claimed BOTH by a VPD role AND by a user trigger action.
+// Previously this was only a warning that flooded the error log hundreds of times a day. Now we
+// AUTHORITATIVELY drop the user trigger's claim on those sockets during action merging — the VPD
+// algorithm is the single source of truth. Without this the two controllers can fight every
+// cycle (O3 had 326 events in one day on 2026-05-30).
+let dualAuthorityVpdWins = new Set(); // socket IDs where the VPD role takes precedence
+let lastDualAuthorityWarnAt = 0;       // throttle the warning log to once per 10 min
+
+// ── Persisted supervisor state ──
+// lastKnownPeriod + lastCycleTransitionAt + humidifier/heater lockouts survive PM2 restarts.
+// Without this, every restart (24 in 31 h on 2026-05-30) wipes lastKnownPeriod, and the first
+// evaluation after restart may flip period → cycle transition cascade.
+const SUPERVISOR_STATE_PATH = path.resolve(__dirname, '../../data/appdata/supervisor-state.json');
+function loadSupervisorState() {
+  try {
+    if (!fs.existsSync(SUPERVISOR_STATE_PATH)) return;
+    const s = JSON.parse(fs.readFileSync(SUPERVISOR_STATE_PATH, 'utf8'));
+    if (s && typeof s === 'object') {
+      if (s.lastKnownPeriod === 'day' || s.lastKnownPeriod === 'night') {
+        lastKnownPeriod = s.lastKnownPeriod;
+      }
+      if (typeof s.lastCycleTransitionAt === 'number' && s.lastCycleTransitionAt > 0) {
+        lastCycleTransitionAt = s.lastCycleTransitionAt;
+      }
+      if (typeof s.humidifierIneffectiveUntil === 'number' && s.humidifierIneffectiveUntil > Date.now()) {
+        humidifierIneffectiveUntil = s.humidifierIneffectiveUntil;
+      }
+      if (typeof s.heaterIneffectiveUntil === 'number' && s.heaterIneffectiveUntil > Date.now()) {
+        heaterIneffectiveUntil = s.heaterIneffectiveUntil;
+      }
+      console.log(`[Supervisor] Loaded persisted state: period=${lastKnownPeriod}, lastTransition=${lastCycleTransitionAt ? new Date(lastCycleTransitionAt).toISOString() : 'never'}`);
+    }
+  } catch (err) {
+    console.warn('[Supervisor] Failed to load supervisor state:', err.message);
+  }
+}
+let _stateWriteScheduled = false;
+function saveSupervisorState() {
+  // Debounce writes so we don't hammer the disk every evaluation cycle.
+  if (_stateWriteScheduled) return;
+  _stateWriteScheduled = true;
+  setTimeout(() => {
+    _stateWriteScheduled = false;
+    try {
+      const dir = path.dirname(SUPERVISOR_STATE_PATH);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(SUPERVISOR_STATE_PATH, JSON.stringify({
+        lastKnownPeriod,
+        lastCycleTransitionAt,
+        humidifierIneffectiveUntil,
+        heaterIneffectiveUntil,
+        savedAt: Date.now()
+      }, null, 2));
+    } catch (err) {
+      console.warn('[Supervisor] Failed to save supervisor state:', err.message);
+    }
+  }, 2000);
+}
+
+// ── Anti-oscillation toggle guard ──
+// On 2026-05-30 socket O3 had 326 state-change events in one day (≈1 every 4 min sustained,
+// peaks every 6 s). Track recent toggles per socket and lock the state when toggling exceeds
+// the safety threshold — gives whatever oscillation source time to settle.
+const socketToggleHistory = {}; // socket -> [timestamps...]
+const socketLockedUntil = {};   // socket -> timestamp ms
+const TOGGLE_WINDOW_MS = 5 * 60 * 1000;
+const TOGGLE_MAX_PER_WINDOW = 6;
+const TOGGLE_LOCK_DURATION_MS = 5 * 60 * 1000;
 
 // Blower Curve Control State
 let blowerCurveConfig = null; // Parsed from flow blower_curve node
@@ -365,6 +496,14 @@ let lastHumiExtractionCrashHumi = null;
 // to let the heater stabilise. The previous 5 min left rooms stuck above target.
 const HUMI_EXTRACTION_CRASH_COOLDOWN_MS = 2 * 60 * 1000;
 let lastBlowerSpeed = null; // Last commanded speed to avoid redundant commands
+let lastBlowerSendAt = 0;   // ms of the last successful blower command send
+let lastBlowerEmergency = false; // tracks whether last sent speed was the emergency-100 path
+// Heartbeat re-send interval. After this many ms without any send, the supervisor proactively
+// re-publishes the current desired speed even if it hasn't changed. Protects against missed
+// MQTT messages and helps the device confirm it's tracking the supervisor's intent. 3 min is
+// well below the 5-min sensor watchdog and well above the per-cycle eval (~10 s) so we don't
+// flood the device.
+const BLOWER_HEARTBEAT_MS = 3 * 60 * 1000;
 
 // ── Sequential climate phase state ──
 // Running blower (humidity extraction) + heater simultaneously is wasteful: the heater
@@ -493,10 +632,26 @@ async function loadDayNightSchedule() {
         dayEnd: rows[0].day_end
       };
     }
-    // If schedule changed, force period re-evaluation (blower curves depend on period)
-    if (prev.dayStart !== dayNightSchedule.dayStart || prev.dayEnd !== dayNightSchedule.dayEnd) {
-      console.log('[Supervisor] Day/Night schedule changed:', dayNightSchedule);
-      lastBlowerSpeed = null; // Force blower re-evaluation with new period
+    const changed = prev.dayStart !== dayNightSchedule.dayStart || prev.dayEnd !== dayNightSchedule.dayEnd;
+    const withinBootGrace = (Date.now() - SUPERVISOR_BOOT_AT) < BOOT_SCHEDULE_GRACE_MS;
+    if (changed) {
+      if (!scheduleInitialised || withinBootGrace) {
+        // First non-default load (or anything within the boot grace) is just the initial DB row
+        // replacing the in-process defaults — NOT a real user schedule change. Absorb silently
+        // so we don't trigger a phantom cycle transition / blower reset.
+        scheduleInitialised = true;
+        if (changed && !withinBootGrace) {
+          console.log('[Supervisor] Day/Night schedule loaded:', dayNightSchedule);
+        }
+      } else {
+        // Genuine schedule change after the boot grace.
+        console.log('[Supervisor] Day/Night schedule changed:', dayNightSchedule);
+        lastBlowerSpeed = null; // Force blower re-evaluation with new period
+      }
+    } else if (!scheduleInitialised) {
+      // No DB row OR DB row matches defaults — still mark as initialised so a later genuine
+      // change is detected correctly.
+      scheduleInitialised = true;
     }
   } catch (err) {
     if (!err.message.includes('does not exist')) {
@@ -665,6 +820,7 @@ async function processLightCycleTransitions() {
 /**
  * Load VPD config from the flow's vpd_control node
  */
+let _lastVpdConfigSummary = '';
 function loadVpdFromFlow() {
   const prevConfig = vpdNodeConfig;
   vpdNodeConfig = null;
@@ -672,11 +828,15 @@ function loadVpdFromFlow() {
     for (const node of flow.flow.nodes) {
       if (node.type === 'vpd_control') {
         vpdNodeConfig = node.data.config;
-        console.log('[Supervisor] VPD Control node found:', {
-          mode: vpdNodeConfig.mode,
-          roles: vpdNodeConfig.roles?.length || 0,
-          timeout: vpdNodeConfig.escalationTimeoutSeconds
-        });
+        const _summary = `${vpdNodeConfig.mode}|${vpdNodeConfig.roles?.length || 0}|${vpdNodeConfig.escalationTimeoutSeconds || 0}`;
+        if (_summary !== _lastVpdConfigSummary) {
+          _lastVpdConfigSummary = _summary;
+          console.log('[Supervisor] VPD Control node found:', {
+            mode: vpdNodeConfig.mode,
+            roles: vpdNodeConfig.roles?.length || 0,
+            timeout: vpdNodeConfig.escalationTimeoutSeconds
+          });
+        }
         // Audit dual-authority: a socket assigned to a VPD role AND targeted by a user action.
         validateVpdVsTriggers(vpdNodeConfig, flow.flow);
 
@@ -1014,11 +1174,17 @@ async function loadSocketAiModes() {
       if (socketAiModes[mod] === undefined) socketAiModes[mod] = false;
     }
 
-    console.log('[Supervisor] AI modes:', socketAiModes);
+    // Only log AI modes on actual change — was flooding every 30 s with identical lines.
+    const _aiSummary = JSON.stringify(socketAiModes);
+    if (_aiSummary !== _lastAiModeSummary) {
+      _lastAiModeSummary = _aiSummary;
+      console.log('[Supervisor] AI modes:', socketAiModes);
+    }
   } catch (err) {
     console.error('[Supervisor] Failed to load AI modes:', err.message);
   }
 }
+let _lastAiModeSummary = '';
 
 /**
  * Compare a sensor value against a threshold with an operator
@@ -1312,6 +1478,9 @@ function validateFlowGraph(flow) {
  * either remove the VPD role or remove the user trigger.
  */
 function validateVpdVsTriggers(vpdCfg, flow) {
+  // Reset the resolution set each time the flow is reloaded — the user may have fixed the
+  // conflict in the editor.
+  dualAuthorityVpdWins = new Set();
   if (!vpdCfg || !Array.isArray(vpdCfg.roles)) return;
   const roleSockets = new Set();
   for (const r of vpdCfg.roles) {
@@ -1325,7 +1494,16 @@ function validateVpdVsTriggers(vpdCfg, flow) {
   }
   const both = [...roleSockets].filter(s => userActionSockets.has(s));
   if (both.length > 0) {
-    console.warn(`[Supervisor] Config audit: socket(s) ${both.join(', ')} are claimed BOTH by a VPD role and by user trigger action(s). This is dual-authority and conflicts will be auto-resolved each cycle, but the cleaner setup is to remove the socket from the VPD role assignment OR remove the user trigger so only one controller manages it.`);
+    // Authoritatively pick the VPD role as the winner for these sockets. The action merger in
+    // processSensorData() drops any user trigger actions targeting them, so the VPD algorithm
+    // is the single source of truth and the two controllers cannot fight cycle after cycle.
+    for (const s of both) dualAuthorityVpdWins.add(s);
+    // Throttle the audit warning so it doesn't flood the error log every 30 s on reload.
+    const now = Date.now();
+    if (now - lastDualAuthorityWarnAt > 10 * 60 * 1000) {
+      lastDualAuthorityWarnAt = now;
+      console.warn(`[Supervisor] Config audit: socket(s) ${both.join(', ')} are claimed BOTH by a VPD role and by user trigger action(s). RESOLVED automatically — VPD role wins, user trigger actions for these sockets are dropped this cycle. To fully fix, remove the socket from the VPD role assignment OR remove the user trigger so only one controller manages it.`);
+    }
   }
 }
 
@@ -1905,11 +2083,29 @@ async function executeActions(actions) {
   const resolvedActions = resolveSocketIntents(actions);
 
   for (const action of resolvedActions) {
-    const { deviceMac, socket, action: targetAction, reason, moduleSpeedMode, moduleSpeed } = action;
+    const { socket, action: targetAction, reason, moduleSpeedMode, moduleSpeed } = action;
+    // Normalise the action's MAC so cooldown keys, state writes and the defaultPrimaryMac
+    // comparison all line up with the (lower-cased) registry + per-device stores.
+    const deviceMac = normMac(action.deviceMac);
 
     // Use device-specific key for cooldown tracking
     const actionKey = deviceMac ? `${deviceMac}:${socket}` : socket;
     const lastTime = lastActionTimes[actionKey] || 0;
+
+    // ── Anti-oscillation toggle guard ──
+    // Track recent state-changes per socket. If a socket has toggled more than TOGGLE_MAX_PER_WINDOW
+    // times within TOGGLE_WINDOW_MS, lock its current state for TOGGLE_LOCK_DURATION_MS. This breaks
+    // pathological fast oscillation (O3 had 326 events in one day on 2026-05-30) and gives the
+    // upstream cause time to settle (typically a controller fighting another controller). Safety/
+    // emergency actions bypass the lock — we never block a forced OFF.
+    const toggleKey = actionKey;
+    const isSafetyOrEmergency = action.mandatoryOff === true
+      || (reason && (reason.includes('SAFETY') || reason.includes('EMERGENCY') || reason.includes('cycle transition')));
+    const lockedUntil = socketLockedUntil[toggleKey] || 0;
+    if (!isSafetyOrEmergency && now < lockedUntil) {
+      // Locked — skip this action; the previous logic-storm will resolve in the lock window
+      continue;
+    }
 
     // SAFETY check: only execute if we're authorized to control this socket.
     //  - VPD / SAFETY / cycle-transition actions: always execute (validated upstream).
@@ -1937,25 +2133,10 @@ async function executeActions(actions) {
     // and explicit mandatoryOff still pass through — only "routine" VPD/automation OFFs are held.
     const isHardOff = action.mandatoryOff === true
       || (reason && (reason.includes('SAFETY') || reason.includes('cycle transition') || reason.includes('EMERGENCY')));
-    // User triggers may store the action without a deviceMac (saved before multi-device), while
-    // the supervisor's VPD/role actions always include the deviceMac of the role assignment. We
-    // need both forms to match for the hold to honor user intent — otherwise the trigger fires
-    // ON under one key, the supervisor checks for hold under another, finds nothing, sends OFF.
-    // Eddie 2026-05-25: safety triggers were turning off "instantly" because of this mismatch.
-    const altActionKey = deviceMac ? socket : null; // bare socket variant (for lastRequestedSocketState mirroring)
-
-    // (Removed: the auto-detected manualOverride hold. Logic was: "currentState=1 + lastReq=0
-    // ⇒ user must have toggled it on, hold OFFs 10 min." But after a supervisor restart, lastReq
-    // is reset; the first OFF we send sets lastReq=0; if the DEVICE doesn't comply (real issue!)
-    // the next cycle sees state=1+lastReq=0 and triggers the hold — locking the supervisor out
-    // of fixing its OWN unacknowledged OFF for 10 minutes. Eddie 2026-05-27.
-    //
-    // The device-non-compliance case is handled by ROLE_UNRESPONSIVE_BACKOFF_MS (10-min back-off
-    // after N failed retries) in activate/deactivateSocketRole. That's the correct mechanism.
-    //
-    // True manual UI toggles will be re-OFF'd by the supervisor within seconds; that's fine —
-    // the user can always switch the outlet to a non-AI/non-trigger firmware mode if they want
-    // to retain manual control. Better than the algorithm gaslighting itself.)
+    // (The auto-detected manualOverride hold was removed long ago; device non-compliance is
+    // handled by ROLE_UNRESPONSIVE_BACKOFF_MS in activate/deactivateSocketRole. True manual UI
+    // toggles get re-OFF'd within seconds — switch the outlet to a non-AI firmware mode to retain
+    // manual control. The dead mirror state that fed the old hold was deleted in the P3 #12 audit.)
 
     // Skip if already in desired state
     if (currentState === targetState) {
@@ -1967,9 +2148,17 @@ async function executeActions(actions) {
     }
     console.log(`[Supervisor] Executing: ${socket} → ${targetAction} (was ${currentState}) | ${reason || 'no reason'}`);
 
-    // Check cooldown
-    if (now - lastTime < HYSTERESIS_COOLDOWN_MS) {
-      console.log(`[Supervisor] Cooldown active for ${actionKey}, skipping`);
+    // Check cooldown. Climate hardware (humidifier/dehumidifier — usually a pump or compressor)
+    // must not be cycled every few seconds: inrush current and short-cycling damage the device.
+    // The 5 s global floor is fine for solid-state outlets but far too short for these, so apply
+    // a longer per-role dwell to the humidifier/dehumidifier role sockets (audit P1 #5). A genuine
+    // mandatoryOff / safety brake still passes (it's handled before this point only for the lock,
+    // but the dwell here is a routine guard — emergencies use the verified path regardless).
+    const isSlowClimateSocket = vpdNodeConfig && Array.isArray(vpdNodeConfig.roles)
+      && vpdNodeConfig.roles.some(r => (r.role === 'humidifier' || r.role === 'dehumidifier') && r.socket === socket);
+    const dwellMs = (isSlowClimateSocket && !action.mandatoryOff) ? SLOW_CLIMATE_DWELL_MS : HYSTERESIS_COOLDOWN_MS;
+    if (now - lastTime < dwellMs) {
+      if (now % 60000 < 1000) console.log(`[Supervisor] Dwell active for ${actionKey} (${Math.round((dwellMs - (now - lastTime)) / 1000)}s left), skipping`);
       continue;
     }
 
@@ -1995,10 +2184,20 @@ async function executeActions(actions) {
 
     if (success) {
       lastActionTimes[actionKey] = now;
-      // Record what we asked the device for — drives manualOverrideUntil detection (lastReq=0 + state ON = manual).
-      // Mirror under both keys for the same reason as the holds above (user-trigger / VPD-action mismatch).
-      lastRequestedSocketState[actionKey] = targetState;
-      if (altActionKey) lastRequestedSocketState[altActionKey] = targetState;
+      // ── Anti-oscillation: track this toggle and lock if storm detected ──
+      // We're only tracking ACTUAL state changes here (we passed the "skip if already in
+      // desired state" gate above). The toggleHistory keeps the last TOGGLE_WINDOW_MS of
+      // change timestamps, and we engage a lock as soon as it overflows.
+      const hist = socketToggleHistory[toggleKey] || [];
+      while (hist.length && (now - hist[0]) > TOGGLE_WINDOW_MS) hist.shift();
+      hist.push(now);
+      socketToggleHistory[toggleKey] = hist;
+      if (hist.length > TOGGLE_MAX_PER_WINDOW) {
+        socketLockedUntil[toggleKey] = now + TOGGLE_LOCK_DURATION_MS;
+        console.warn(`[Supervisor] Anti-oscillation: ${toggleKey} toggled ${hist.length} times in ${(TOGGLE_WINDOW_MS / 60000).toFixed(0)} min — LOCKING at "${targetAction}" for ${(TOGGLE_LOCK_DURATION_MS / 60000).toFixed(0)} min. Investigate the controllers fighting over this socket.`);
+        // Clear history so we don't re-trigger immediately after the lock expires.
+        socketToggleHistory[toggleKey] = [];
+      }
 
       // Track ON/OFF time for safety timeouts
       if (targetState === 1) {
@@ -2040,12 +2239,44 @@ async function executeActions(actions) {
  * 6. Everything in range → all devices OFF, blower OFF. Let environment settle.
  */
 function evaluateVpdIntelligent() {
+  // Default to "cooling not futile" so any early return below leaves a genuine thermal emergency
+  // free to drive the blower to 100 % in the send path. Only the full evaluation can set it true.
+  vpdTempCoolingFutile = false;
   if (!vpdNodeConfig || !vpdNodeConfig.roles || vpdNodeConfig.roles.length === 0) return [];
 
-  const sensorValues = getSensorValues(vpdNodeConfig.sensorDeviceMac);
+  // Use the explicitly-configured sensor device if set; otherwise lock onto a STABLE primary
+  // climate sensor (resolvePrimarySensorMac) instead of the merged last-writer blob, which
+  // alternates between multiple devices' readings and destabilises the entire control loop.
+  const sensorMac = vpdNodeConfig.sensorDeviceMac || resolvePrimarySensorMac();
+  const sensorValues = getSensorValues(sensorMac);
   const temp = sensorValues.temp;
   const humi = sensorValues.humi;
   if (temp == null || humi == null) return [];
+
+  // ── Sensor freshness guard ──
+  // If sensor data is stale (>90 s old), the values may not reflect reality. Suppress any NEW
+  // role activations — we don't want to escalate / activate based on a snapshot of conditions
+  // that no longer exists. Existing roles continue to run (the device is already in a state;
+  // abrupt deactivation on a missed reading is worse than over-shooting briefly). The sensor
+  // watchdog at 5 min still triggers full restart if data is truly dead.
+  const sensorAge = sensorValues._lastUpdate ? (Date.now() - sensorValues._lastUpdate) : 0;
+  if (sensorAge > 120 * 1000) {
+    if (sensorAge > 5 * 60 * 1000) {
+      // Truly stale → drive the blower to a SAFE OFF state and skip. Leaving vpdBlowerMin/MaxSpeed
+      // at their last values would let the 3-min heartbeat keep re-publishing a stale speed (e.g.
+      // a stale 100% cooling) for as long as the feed is dead — acting on conditions that no longer
+      // exist. 0 % is the safe default (no extraction of a room we can't measure); the watchdog
+      // will restart us shortly and recover fresh state. Eddie 2026-05-31 audit (P0 #1).
+      vpdBlowerMinSpeed = 0;
+      vpdBlowerMaxSpeed = 0;
+      return [];
+    }
+    // Mild staleness: continue evaluating to keep existing roles ticking, but don't open new
+    // activations. Implement by short-circuiting the activate* helpers further down — flag here.
+    vpdEscalationState._suppressNewActivations = true;
+  } else {
+    vpdEscalationState._suppressNewActivations = false;
+  }
 
   // Feed the trend buffer so anticipatory logic below has recent history.
   pushTrendSample(temp, humi);
@@ -2059,10 +2290,12 @@ function evaluateVpdIntelligent() {
   const { min: targetMin, max: targetMax } = target;
   const actions = [];
   const now = Date.now();
-  // Ideal temperature range (day/night)
-  const isDaytime = getCurrentPeriod() === 'day';
-  const currentPeriod = isDaytime ? 'day' : 'night';
-  const idealTemp = isDaytime
+  // Ideal temperature range (day/night). These are `let` because a suppressed cycle transition
+  // (cooldown guard below) FREEZES the effective period to the previous one so control parameters
+  // don't flap every cycle while a spurious schedule/clock oscillation settles.
+  let currentPeriod = getCurrentPeriod();
+  let isDaytime = currentPeriod === 'day';
+  let idealTemp = isDaytime
     ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
     : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
 
@@ -2072,50 +2305,89 @@ function evaluateVpdIntelligent() {
   // The old code only suppressed NEW actions but didn't stop RUNNING devices.
   // Now: on transition, we actively turn OFF everything, reset blower, and wait.
   if (lastKnownPeriod !== null && lastKnownPeriod !== currentPeriod) {
-    // Transition just detected — STOP ALL devices immediately
-    cycleTransitionTime = now;
-    cycleTransitionTempAtStart = temp;
-    cycleTransitionHumiAtStart = humi;
-    cycleTransitionLastCheck = now;
-    cycleTransitionLastTemp = temp;
-    cycleTransitionLastHumi = humi;
-    cycleTransitionGraceActive = true;
-    cycleTransitionDirection = (currentPeriod === 'night') ? 'cooling' : 'warming';
-    console.log(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod}: STOPPING all devices, grace period started (${cycleTransitionDirection}, ${temp.toFixed(1)}°C → ${idealTemp.min}-${idealTemp.max}°C)`);
+    // ── Cooldown guard ──
+    // A flapping schedule loader (defaults vs DB row oscillating at boot or whenever the row
+    // changes timestamp) used to cascade 20+ transitions in minutes. Reject any transition that
+    // arrives less than CYCLE_TRANSITION_MIN_INTERVAL_MS after the previous one — that pattern
+    // is impossible in real life (day/night flips at most twice per 24 h, separated by hours).
+    const sinceLast = lastCycleTransitionAt > 0 ? (now - lastCycleTransitionAt) : Infinity;
+    if (sinceLast < CYCLE_TRANSITION_MIN_INTERVAL_MS) {
+      console.warn(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod} SUPPRESSED: only ${(sinceLast / 60000).toFixed(1)} min since last transition (min ${CYCLE_TRANSITION_MIN_INTERVAL_MS / 60000} min). Probable schedule/clock flapping. Freezing to previous period.`);
+      // FREEZE: revert the effective period to the previous one for the REST of this evaluation,
+      // so idealTemp / humidity targets / cooling thresholds stay consistent instead of flapping
+      // every 30 s. Critically, we do NOT advance lastKnownPeriod — the fall-through guard below
+      // sees currentPeriod === lastKnownPeriod and leaves it untouched. (Previous bug: the
+      // fall-through advanced lastKnownPeriod anyway, silently defeating the freeze and letting
+      // idealTemp swing day↔night every cycle.)
+      currentPeriod = lastKnownPeriod;
+      isDaytime = currentPeriod === 'day';
+      idealTemp = isDaytime
+        ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
+        : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
+    } else {
+      // Transition just detected — STOP ALL devices immediately
+      cycleTransitionTime = now;
+      cycleTransitionTempAtStart = temp;
+      cycleTransitionHumiAtStart = humi;
+      cycleTransitionLastCheck = now;
+      cycleTransitionLastTemp = temp;
+      cycleTransitionLastHumi = humi;
+      cycleTransitionGraceActive = true;
+      cycleTransitionDirection = (currentPeriod === 'night') ? 'cooling' : 'warming';
+      lastCycleTransitionAt = now;
+      console.log(`[VPD] Cycle transition ${lastKnownPeriod}→${currentPeriod}: STOPPING all devices, grace period started (${cycleTransitionDirection}, ${temp.toFixed(1)}°C → ${idealTemp.min}-${idealTemp.max}°C)`);
 
-    // Kill all active roles — devices must stop to let environment settle
-    for (const key of Object.keys(vpdEscalationState.roles)) {
-      delete vpdEscalationState.roles[key];
-    }
-    // Reset blower to OFF
-    vpdBlowerMinSpeed = 0;
-    vpdBlowerMaxSpeed = 0; // Ceiling 0 = blower OFF
-    // Set thermal inertia timestamps so grace periods work correctly after transition
-    lastHeaterOffTime = now;
-    lastHumidifierOffTime = now;
-    // Reset all grace/timeout state from previous period
-    lastCoolingStopTime = 0;
-    coolingBelowMaxSince = 0;
-    coolingGraceStableStart = 0;
-    lastVpdLogKey = '';
+      // Kill all active roles — devices must stop to let environment settle
+      for (const key of Object.keys(vpdEscalationState.roles)) {
+        delete vpdEscalationState.roles[key];
+      }
+      // Reset blower to OFF
+      vpdBlowerMinSpeed = 0;
+      vpdBlowerMaxSpeed = 0; // Ceiling 0 = blower OFF
+      // Set thermal inertia timestamps so grace periods work correctly after transition
+      lastHeaterOffTime = now;
+      lastHumidifierOffTime = now;
+      // Reset all grace/timeout state from previous period
+      lastCoolingStopTime = 0;
+      coolingBelowMaxSince = 0;
+      coolingGraceStableStart = 0;
+      lastVpdLogKey = '';
 
-    // Build OFF actions for all assigned roles
-    const transitionOffActions = [];
-    for (const role of (vpdNodeConfig.roles || [])) {
-      if (role.socket && role.socket !== 'blower') {
-        const aiModeKey = role.deviceMac ? `${role.deviceMac}:${role.socket}` : role.socket;
-        if (socketAiModes[aiModeKey] || socketAiModes[role.socket]) {
-          transitionOffActions.push({ deviceMac: role.deviceMac, socket: role.socket, action: 'off', reason: 'VPD: cycle transition — letting environment settle' });
-          console.log(`[VPD] Cycle transition: → ${role.role} OFF (${role.socket})`);
+      // Build OFF actions for all assigned roles
+      const transitionOffActions = [];
+      for (const role of (vpdNodeConfig.roles || [])) {
+        if (role.socket && role.socket !== 'blower') {
+          const aiModeKey = role.deviceMac ? `${role.deviceMac}:${role.socket}` : role.socket;
+          if (socketAiModes[aiModeKey] || socketAiModes[role.socket]) {
+            transitionOffActions.push({ deviceMac: role.deviceMac, socket: role.socket, action: 'off', reason: 'VPD: cycle transition — letting environment settle' });
+            console.log(`[VPD] Cycle transition: → ${role.role} OFF (${role.socket})`);
+          }
         }
       }
+      lastKnownPeriod = currentPeriod;
+      saveSupervisorState();
+      return transitionOffActions; // Send OFF commands, then suppress until grace ends
     }
-    lastKnownPeriod = currentPeriod;
-    return transitionOffActions; // Send OFF commands, then suppress until grace ends
   }
-  lastKnownPeriod = currentPeriod;
+  if (lastKnownPeriod !== currentPeriod) {
+    lastKnownPeriod = currentPeriod;
+    saveSupervisorState();
+  }
 
   // Evaluate grace period if active
+  if (cycleTransitionGraceActive) {
+    // ── Hard watchdog ──
+    // If grace was somehow set without a fresh cycleTransitionTime (e.g. state corruption,
+    // bug elsewhere), or if grace lasts longer than the hard ceiling for any reason, force
+    // it clear. Otherwise a stuck grace locks the blower at 0 indefinitely while the room
+    // overheats — Eddie 2026-05-30, blower OFF for 3 h after a cycle transition cascade.
+    const graceAge = cycleTransitionTime > 0 ? (now - cycleTransitionTime) : Infinity;
+    if (graceAge > CYCLE_TRANSITION_GRACE_HARD_MAX_MS || cycleTransitionTime === 0) {
+      cycleTransitionGraceActive = false;
+      vpdBlowerMaxSpeed = 100;
+      console.warn(`[VPD] Cycle transition grace watchdog: force-cleared after ${(graceAge / 60000).toFixed(1)} min (hard max ${CYCLE_TRANSITION_GRACE_HARD_MAX_MS / 60000} min). Resuming normal control.`);
+    }
+  }
   if (cycleTransitionGraceActive) {
     // Keep blower OFF during grace
     vpdBlowerMinSpeed = 0;
@@ -2196,10 +2468,14 @@ function evaluateVpdIntelligent() {
   const tempHighThreshold = idealTemp.max; // Cooling starts immediately when temp exceeds max (no hysteresis — continuation logic prevents oscillation)
   const tempLowThreshold = idealTemp.min - TEMP_LOW_HYSTERESIS;  // e.g., 24-0.5=23.5°C
 
-  // Humidity thresholds
+  // Humidity thresholds. The humidifier turns ON below humiLowThreshold and OFF at/above target+1
+  // (see RULE 2). The ON edge is target−2 (was target−1): a 1 %-wide ON/OFF band flapped the
+  // humidifier relay on ±1-2 % sensor noise (45-47 toggles/2h — audit P1 #5). target−2 ON + target+1
+  // OFF gives a 3 % band that rides out the noise, and it matches the humidity-yield engage point
+  // (target−2) so the blower-yield and the humidifier turn on together.
   const humiLowThreshold = humidifierRecentlyOff
-    ? idealHumiTarget - 3  // After humidifier off: wider tolerance, moisture still settling
-    : idealHumiTarget - 1; // Normal: 1% below target
+    ? idealHumiTarget - 4  // After humidifier off: wider tolerance, moisture still settling
+    : idealHumiTarget - 2; // Normal: 2 % below target (was 1 %)
   const humiHighThreshold = idealHumiMax + 4; // 4% above ideal max (absorbs post-humidifier overshoot)
 
   // Emergency humidity flag — critically above max, overrides safety margins
@@ -2251,15 +2527,13 @@ function evaluateVpdIntelligent() {
 
   // ── DEACTIVATION thresholds (at target, instant, no hysteresis) ──
   const tempInRange = temp >= idealTemp.min && temp <= idealTemp.max;
-  // humiOk = humi is in the COMFORT BAND below target (humidifier off, extractor off zone).
-  // The natural shape:
-  //   • humi << target → humidifier wants to fire (humiLow).
-  //   • humi > target  → extractor wants to fire (push it back down).
-  //   • humi in [min, target] → nobody acts. THAT's RULE 6's "full comfort".
-  // Eddie 2026-05-28: the old definitions (`target..max` and then `target ± 1`) flagged humi
-  // ABOVE target as "OK", which constantly wiped the extractor_humi role Eddie had just
-  // activated to push humi down. Now the role survives until humi actually reaches target.
-  const humiOk = humi >= idealHumiMin && humi <= idealHumiTarget;
+  // humiOk = humi is genuinely at the sweet spot. Only inside [target-1, target+1] does
+  // RULE 6 conclude "nobody needs to do anything". Eddie 2026-05-29: a wider `min..target`
+  // window flagged humi at min as "OK" and RULE 6 deactivated the humidifier that had just
+  // turned on to reach target — humi never converged, just bounced between min and target.
+  // Now both controllers (humidifier driving humi UP, extractor driving humi DOWN) keep
+  // running until humi is genuinely at the sweet spot.
+  const humiOk = humi >= idealHumiTarget - 1 && humi <= idealHumiTarget + 1;
 
   // ── SEQUENTIAL CLIMATE PHASE ──
   // Pick exactly one of {extracting, heating, idle} for the heater/extractor pair.
@@ -2298,33 +2572,79 @@ function evaluateVpdIntelligent() {
   // the humidifier is ON, assume an empty tank → suspend humidifier for a cooldown, and let the
   // plants' transpiration + reduced blower extraction recover humi naturally. Re-test after the
   // cooldown so a refilled tank gets picked up automatically.
+  //
+  // CRITICAL HARDENING (Eddie 2026-05-30 incident): the previous code reset the eval window
+  // when extractor became active, which caught contemporaneous extraction but NOT a window
+  // where extractor activated and deactivated within the 10-min interval (leaving stale data
+  // for the rise check). Now we track an explicit "contaminated" flag that survives until the
+  // window is rebuilt from scratch with extractor confirmed off the entire time.
   const humidifierRoleActive = !!vpdEscalationState.roles['humidifier'];
-  const extractorRoleActiveNow = !!vpdEscalationState.roles['extractor_humi'] || !!vpdEscalationState.roles['extractor'];
+  // Treat extraction-flavoured roles as contaminating the DRY test — they pull humidity out and
+  // would mask the humidifier's rise, producing a false "DRY tank" verdict (Eddie 2026-05-30:
+  // humi 41% post-cooling). extractor_humi / extractor (socket) always contaminate. extractor_temp
+  // (proportional cooling) ONLY contaminates when the blower was ACTUALLY running high — during a
+  // humidity-yield hold the cooling role lingers nominally but the blower sits at idle 30 %, which
+  // is gentle enough that a working humidifier still raises humi, so the DRY test should run (so an
+  // empty tank during a yield is still caught and releases the yield).
+  const extractorRoleActiveNow = !!vpdEscalationState.roles['extractor_humi']
+    || !!vpdEscalationState.roles['extractor']
+    || (!!vpdEscalationState.roles['extractor_temp'] && (lastBlowerSpeed ?? 0) > VPD_BLOWER_IDLE_SPEED + 5);
   if (humidifierRoleActive && humidifierEvalStartTime === 0) {
-    humidifierEvalStartTime = now;
-    humidifierEvalStartHumi = humi;
+    // Only start a fresh eval window if extraction is OFF right now — otherwise wait until it's off.
+    if (!extractorRoleActiveNow) {
+      humidifierEvalStartTime = now;
+      humidifierEvalStartHumi = humi;
+      vpdEscalationState.humidifierEvalContaminated = false;
+    }
   } else if (!humidifierRoleActive && humidifierEvalStartTime !== 0) {
     humidifierEvalStartTime = 0;
+    vpdEscalationState.humidifierEvalContaminated = false;
   }
-  // INVALIDATE the test if extraction is also running — the blower will counteract the
-  // humidifier and any "no humi rise" result is meaningless. Eddie 2026-05-27 incident:
-  // humidifier ran while blower extracted at 85 % → humi didn't rise → false "DRY tank"
-  // verdict locked the humidifier out for 45 min while humi crashed to 48 %.
+  // Mark the window as contaminated if extraction is active at ANY point. Once contaminated,
+  // the verdict is invalid no matter what happens later in the same window — we must wait for
+  // extraction to clear, then start a fresh window from scratch.
   if (humidifierEvalStartTime > 0 && extractorRoleActiveNow) {
+    if (!vpdEscalationState.humidifierEvalContaminated) {
+      console.log('[VPD] Humidifier DRY self-test: window contaminated by concurrent extraction — will restart fresh once extraction clears');
+    }
+    vpdEscalationState.humidifierEvalContaminated = true;
+    // Push the start forward so we don't accidentally end the window while extraction is running
     humidifierEvalStartTime = now;
     humidifierEvalStartHumi = humi;
   }
   if (humidifierRoleActive && humidifierEvalStartTime > 0
       && (now - humidifierEvalStartTime) >= HUMIDIFIER_EFFECT_CHECK_MS) {
-    const rise = humi - humidifierEvalStartHumi;
-    if (rise < HUMIDIFIER_EFFECT_MIN_RISE) {
-      humidifierIneffectiveUntil = now + HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS;
-      console.log(`[VPD] Humidifier INEFFECTIVE: +${rise.toFixed(2)}% humi in ${(HUMIDIFIER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HUMIDIFIER_EFFECT_MIN_RISE}%). Tank likely empty. Skipping humidifier for ${(HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — letting plant transpiration raise humi (refill the tank to resume).`);
-      humidifierEvalStartTime = 0;
-    } else {
+    if (vpdEscalationState.humidifierEvalContaminated) {
+      // Window was contaminated by extraction — restart it fresh now (extractor is currently off
+      // since extractorRoleActiveNow check above would have pushed start forward otherwise).
       humidifierEvalStartTime = now;
       humidifierEvalStartHumi = humi;
+      vpdEscalationState.humidifierEvalContaminated = false;
+      console.log('[VPD] Humidifier DRY self-test: previous window discarded (contaminated). New window starting fresh.');
+    } else {
+      const rise = humi - humidifierEvalStartHumi;
+      if (rise < HUMIDIFIER_EFFECT_MIN_RISE) {
+        humidifierIneffectiveUntil = now + HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS;
+        humidifierIneffectiveStartHumi = humi;
+        saveSupervisorState();
+        console.log(`[VPD] Humidifier INEFFECTIVE: +${rise.toFixed(2)}% humi in ${(HUMIDIFIER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HUMIDIFIER_EFFECT_MIN_RISE}%). Tank likely empty. Skipping humidifier for ${(HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — letting plant transpiration raise humi (refill the tank to resume).`);
+        humidifierEvalStartTime = 0;
+      } else {
+        humidifierEvalStartTime = now;
+        humidifierEvalStartHumi = humi;
+      }
     }
+  }
+  // Early-clear: if humi has recovered substantially from the marked-ineffective value, the
+  // lockout is no longer warranted — clear it so the humidifier can resume work if needed.
+  // This also covers the case where the user refilled the tank during the cooldown.
+  if (now < humidifierIneffectiveUntil
+      && humidifierIneffectiveStartHumi != null
+      && humi >= humidifierIneffectiveStartHumi + HUMIDIFIER_INEFFECTIVE_RECOVERY_RISE) {
+    console.log(`[VPD] Humidifier lockout CLEARED early: humi recovered ${humi.toFixed(0)}% from ${humidifierIneffectiveStartHumi.toFixed(0)}% — re-test allowed.`);
+    humidifierIneffectiveUntil = 0;
+    humidifierIneffectiveStartHumi = null;
+    saveSupervisorState();
   }
   const humidifierIneffective = now < humidifierIneffectiveUntil;
 
@@ -2583,6 +2903,12 @@ function evaluateVpdIntelligent() {
     }
     const deviceState = getSocketState(deviceMac, socket);
     const roleWasActive = !!vpdEscalationState.roles[roleName];
+    // Sensor-staleness suppression: don't OPEN a new activation while sensors are stale —
+    // we may be acting on a snapshot that no longer reflects reality. Existing role continues.
+    if (!roleWasActive && vpdEscalationState._suppressNewActivations) {
+      if (curState !== prevState) console.log(`[VPD] ${roleName} activation suppressed — sensor data stale`);
+      return;
+    }
     const deviceIsOff = deviceState === 0;
     // Reset re-issue tracking on a successful ON observation — the device is alive.
     if (deviceState === 1 && roleReissueState[roleName]) {
@@ -2693,8 +3019,18 @@ function evaluateVpdIntelligent() {
   // there is no on/off bang-bang and no need for the tempHigh trigger or the saturation
   // timeout (both caused cycling). The only suppressor is the heater grace / emergency.
   const coolingStopTarget = idealTemp.max - 0.5;
+  // VPD-aware cooling gate (2026-05-31). Cooling lowers air temperature, which lowers VPD.
+  //   • When VPD is ABOVE target (room too dry / VPD high): cooling moves VPD toward target → good.
+  //   • When VPD is AT/BELOW target (room humid / VPD low): cooling moves VPD further BELOW target
+  //     → counterproductive. The right lever there is drying (extraction), not cooling.
+  // Without this gate, after the humidifier raised humi to target the blower would slam into
+  // temperature-cooling (e.g. 82 %) the instant humidity-yield released at the band top, crashing
+  // humidity and VPD and oscillating humi 57↔69 / blower 0↔82 (observed 2026-05-31). A true
+  // thermal emergency (temp > max + 1.5) overrides — heat danger outranks the VPD nicety.
+  const vpdAllowsCooling = currentVpd > vpdTarget || tempEmergency;
   const needsCooling = temp > coolingStopTarget
-    && (!heaterRecentlyOff || tempEmergency);
+    && (!heaterRecentlyOff || tempEmergency)
+    && vpdAllowsCooling;
 
   if (needsCooling) {
     // Cooling needed — lift ceiling
@@ -2725,10 +3061,15 @@ function evaluateVpdIntelligent() {
     // Temp too high → no heater needed
     deactivateSocketRole('heater', 'Temp too high');
 
-  } else if (temp <= coolingStopTarget) {
-    // Cooled back into range (≤ idealMax − 0.5) — release cooling; baseline keeps air moving.
+  } else {
+    // Not cooling this cycle — either temp is back in range (≤ idealMax − 0.5) OR cooling was
+    // VPD-gated off (temp still high but VPD ≤ target, so drying not cooling is the right lever).
+    // Either way, release the cooling role so it can't linger; the baseline / humidity logic
+    // governs the blower from here.
     if (coolingActive) {
-      const reason = `back in range at ${temp.toFixed(1)}°C (≤ ${coolingStopTarget.toFixed(1)}°C)`;
+      const reason = temp <= coolingStopTarget
+        ? `back in range at ${temp.toFixed(1)}°C (≤ ${coolingStopTarget.toFixed(1)}°C)`
+        : `cooling yielded — VPD ${currentVpd.toFixed(2)} ≤ target ${vpdTarget.toFixed(2)} (drying, not cooling, raises VPD)`;
       console.log(`[VPD] Cooling done: ${reason} — starting post-cooling grace`);
       lastCoolingStopTime = now;
       coolingGraceLastTemp = temp;
@@ -2777,12 +3118,18 @@ function evaluateVpdIntelligent() {
     // two levers to lower VPD are heat (which is gated by temperature ceiling and may be
     // unauthorised — Eddie disconnected his heater) or humidity. Activate the humidifier even
     // if absolute humi is "within" the stage range — the goal at this point is VPD, not humi.
-    activateSocketRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} above band ${targetMin.toFixed(2)}-${targetMax.toFixed(2)} (air ${(svpAir - svpAir * humi / 100).toFixed(2)}, humi ${humi.toFixed(0)}%) — raising humi to lower VPD`);
+    activateSocketRole('humidifier', `Leaf VPD ${currentVpd.toFixed(2)} above band ${targetMin.toFixed(2)}-${targetMax.toFixed(2)} (air ${(svpAir - svpAir * humi / 100).toFixed(2)}, humi ${humi.toFixed(0)}% → target ${idealHumiTarget.toFixed(0)}%) — raising humi toward VPD-chart target`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
     deactivateSocketRole('dehumidifier', 'VPD too high — pulling moisture out would worsen it');
-    deactivateSocketRole('extractor_humi', 'VPD too high — extraction would worsen it');
+    // extractor_humi is a virtual blower role (no socket) — deactivateSocketRole early-returns on
+    // it, so clear it directly (audit P1 #4 dead-no-op fix). And drop the blower floor so the
+    // exhaust isn't fighting the humidifier we just turned on.
+    if (vpdEscalationState.roles['extractor_humi']) {
+      delete vpdEscalationState.roles['extractor_humi'];
+      if (!needsCooling) { newBlowerFloor = 0; newBlowerCeiling = 0; }
+    }
   } else if (humiLow && !humidifierIneffective) {
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${humiLowThreshold.toFixed(0)}% (target ${idealHumiTarget.toFixed(0)}%)`);
     if (!vpdEscalationState.roles['humidifier']) {
@@ -2795,12 +3142,12 @@ function evaluateVpdIntelligent() {
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
-  } else if (humi >= idealHumiTarget && !leafVpdAboveTargetHyst) {
-    // Humidity reached TARGET (VPD midpoint) AND VPD is in/under band — turn off humidifier.
-    // (Don't shut off purely on humi when VPD is still above the upper band — the VPD branch
-    // above re-activated humidifier precisely to drag VPD down, and humi 44% may not be enough
-    // to satisfy VPD at the current temperature.)
-    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target ${idealHumiTarget.toFixed(0)}% (VPD ${currentVpd.toFixed(2)} in band)`);
+  } else if (humi >= idealHumiTarget + 1 && !leafVpdAboveTargetHyst) {
+    // Humidity reached target+1 AND VPD is in/under band — turn off humidifier. OFF at target+1
+    // (not exactly target) so the ON(target−2)/OFF(target+1) band is 3 % wide and can't flap on
+    // ±1-2 % noise (audit P1 #5). (Don't shut off purely on humi when VPD is still above the upper
+    // band — the VPD branch above re-activated humidifier precisely to drag VPD down.)
+    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target+1 ${(idealHumiTarget + 1).toFixed(0)}% (VPD ${currentVpd.toFixed(2)} in band)`);
     delete vpdEscalationState.roles['humidifier'];
   }
   // Between humiLow and idealHumiTarget: humidifier stays in whatever state it's in (keeps pushing)
@@ -2945,8 +3292,24 @@ function evaluateVpdIntelligent() {
   // was preventing extraction whenever the humidifier had just been off — even at humi=62 well
   // above target. That created the on/off oscillation he kept seeing. The cross-device mutex
   // already blocks simultaneous humidifier+blower, so the grace is redundant here.
+  // ── UNCONDITIONAL extractor_humi teardown (audit P1 #4) ──
+  // The role activates at humi>target but its normal release lives in the `else` of
+  // `if (needsHumiAction)`, which is gated by `!isRoleActive('humidifier')`. So once the
+  // humidifier re-engages in the same band, the release path is unreachable and the latched role
+  // keeps the blower extracting WHILE the humidifier adds moisture — they fight. Tear it down
+  // here, unconditionally, the moment the humidifier is driving OR humi is back at/below target.
+  if (extIsBlower && vpdEscalationState.roles['extractor_humi']
+      && (isRoleActive('humidifier') || humi <= idealHumiTarget)) {
+    delete vpdEscalationState.roles['extractor_humi'];
+    if (!needsCooling) { newBlowerFloor = 0; newBlowerCeiling = 0; }
+  }
+
+  // Arm extraction only when humi is CLEARLY above target (+2), but once armed keep running until
+  // the teardown above clears it at humi<=target — a 2 % arm/release hysteresis band. Arming
+  // exactly at target (the old gate) gave a zero-width band: as humi jittered ±1 % the proportional
+  // speed stepped 30↔36 forever (audit P1 #6). Emergencies bypass the +2 margin.
   const needsHumiAction = (phaseExtracting || humiEmergency)
-    && (humi > idealHumiTarget || isRoleActive('extractor_humi'))
+    && (humi > idealHumiTarget + 2 || humiEmergency || isRoleActive('extractor_humi'))
     && !isRoleActive('humidifier');
 
   if (needsHumiAction) {
@@ -3130,17 +3493,16 @@ function evaluateVpdIntelligent() {
       }
     }
 
-  } else if (humi <= idealHumiTarget - 6) {
-    // Only deactivate the role when humi is FAR below target (≥6 % under = 55 for target=61).
-    // The proportional controller above naturally tapers the blower to its MIN_SPEED (30 %)
-    // when humi is at target, so there's no benefit to deactivating earlier — and deactivating
-    // makes the blower drop fully to idle 30 % AND the optimizer state vanish, only for humi
-    // to rise back and the whole role be re-built from scratch. Eddie 2026-05-28: the user
-    // wants the blower to STAY ON and converge smoothly, not toggle. The cross-device mutex
-    // already disables the extractor if the humidifier wants ON (humi << target), so this
-    // late-deactivation is only a last-resort cleanup when nothing else has happened.
+  } else if (humi <= idealHumiTarget - 6 || (humi < idealHumiMin && !humiEmergency)) {
+    // Deactivate when humi is FAR below target (≥6 % under) OR has crashed below the stage's
+    // ideal minimum. The second condition is the 2026-05-30 safety: extraction shouldn't keep
+    // a role "active" once humi has fallen below the stage min — humidity is no longer the
+    // problem, plant transpiration is.
     if (humiExtractionActive) {
-      console.log(`[VPD] Humidity extraction done: ${humi.toFixed(0)}% far below target ${idealHumiTarget.toFixed(0)}%`);
+      const reason = humi < idealHumiMin
+        ? `humi crashed to ${humi.toFixed(0)}% < idealMin ${idealHumiMin.toFixed(0)}% (extraction stops, plants need moisture)`
+        : `${humi.toFixed(0)}% far below target ${idealHumiTarget.toFixed(0)}%`;
+      console.log(`[VPD] Humidity extraction done: ${reason}`);
       delete vpdEscalationState.roles['extractor_humi'];
       if (!needsCooling) {
         if (!extIsBlower) deactivateSocketRole('extractor', 'Humi OK');
@@ -3205,12 +3567,13 @@ function evaluateVpdIntelligent() {
     if (temp > idealTemp.min + 0.5) {
       lastCoolingStopTime = 0; // Well above min, no risk of heater-blower fight
     }
-    // Clean escalation state. extractor_humi has its OWN dedicated lifecycle (activated at
-    // humi > target, deactivated at humi << target with hysteresis). Don't let RULE 6 wipe it
-    // mid-extraction the moment humi briefly touches target — that destroys the test the
-    // optimizer is running to gauge whether the chosen speed is enough.
+    // Full comfort (temp in range AND humi at target±1) → clear ALL roles except the circulator.
+    // We used to preserve extractor_humi here to protect a mid-extraction optimizer test, but the
+    // optimizer was replaced by proportional control and the unconditional teardown above now owns
+    // extractor_humi's lifecycle (it's gone by the time humi reaches target). Preserving it let the
+    // blower keep extracting during "everything's fine" (audit P1 #4). Clear it.
     for (const key of Object.keys(vpdEscalationState.roles)) {
-      if (key !== 'circulator' && key !== 'extractor_humi') delete vpdEscalationState.roles[key];
+      if (key !== 'circulator') delete vpdEscalationState.roles[key];
     }
   }
 
@@ -3247,16 +3610,16 @@ function evaluateVpdIntelligent() {
   // heated (temp low / heater on) — a baseline exhaust would pull out the very warmth
   // the heater is adding, wasting energy. Also skipped during a cycle-transition stop.
   //
-  // ALSO skipped when humidity needs to RISE (low humi / high leaf VPD / humidifier active /
-  // dehumidifier explicitly OFF in this cycle): a 20% extraction baseline pulls moisture out
-  // and pushes VPD even higher — directly contradicting the humidifier's job. User report:
-  // temp 21.5°C, humi 47%, leaf VPD 1.21 kPa → blower should be 0, not the 20% baseline.
+  // Skipped during heating (heater + extractor fight each other heat-wise) and during a
+  // genuine humidity emergency (VPD critical, humi very low — even a 30 % baseline pulls
+  // moisture out faster than a small humidifier can restore). At MILD humidification (humi
+  // just under target, humidifier on for a top-up), keep the baseline running — Eddie
+  // 2026-05-29: at humi=58 with VPD=1.12, the blower turning fully off let humi rise
+  // unevenly and the humidifier overshot. 30 % baseline distributes humidity through the
+  // room while the humidifier adds it, smoother and faster convergence to target.
   const heatingNow = tempLow || isRoleActive('heater') || temp < idealTemp.min;
-  const humidifyingNow = humiLow
-    || isRoleActive('humidifier')
-    || currentVpd > targetMax
-    || leafVpdCritical;
-  if (extIsBlower && !cycleTransitionGraceActive && !heatingNow && !humidifyingNow) {
+  const humiCritical = humiLow || leafVpdCritical || (currentVpd > targetMax + 0.10);
+  if (extIsBlower && !cycleTransitionGraceActive && !heatingNow && !humiCritical) {
     if (newBlowerCeiling < VPD_BLOWER_IDLE_SPEED) newBlowerCeiling = VPD_BLOWER_IDLE_SPEED;
     if (newBlowerFloor < VPD_BLOWER_IDLE_SPEED) newBlowerFloor = VPD_BLOWER_IDLE_SPEED;
   }
@@ -3300,6 +3663,196 @@ function evaluateVpdIntelligent() {
     // Pulse just ended — clear it so the next interval can fire.
     ventilationPulseStart = 0;
     lastBlowerActiveAt = now;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // HUMIDITY-PROTECTION & COOLING-FUTILITY SAFETY (2026-05-30 redesign)
+  //
+  // Root cause of the 2026-05-30 catastrophe: when the night target (e.g. ≤23 °C) sits BELOW
+  // the ambient the exhaust vents into (~24 °C), the blower can never reach the target. Cooling
+  // is futile — it just desiccates the air. The proportional cooling rule kept slamming the
+  // blower to 90-100 %, crashing humidity to 40 % and spiking leaf VPD to 1.8 for hours.
+  //
+  // A naive "stop the blower when humidifier is active" patch only moves the problem: it
+  // creates a NEW oscillation at the engage/disengage threshold (blower 0↔94 %, humi 61↔64).
+  //
+  // The robust fix is TWO mechanisms with WIDE hysteresis, applied as the final blower authority:
+  //
+  //   A. COOLING FUTILITY self-test — if the blower runs high for COOLING_EFFECT_CHECK_MS and
+  //      temp doesn't drop COOLING_EFFECT_MIN_DROP, the room can't be cooled at this ambient.
+  //      Mark cooling futile for a cooldown → hold idle, stop wasting the blower on temperature.
+  //      Only evaluated while the blower is cooling for TEMPERATURE (humi below target); when
+  //      humi is high the blower's job is humidity removal, which succeeds regardless of temp.
+  //
+  //   B. STICKY HUMIDITY-YIELD — when cooling is wanted but humi is below target and the
+  //      humidifier can do the job, the exhaust yields: holds a steady gentle idle while the
+  //      humidifier raises humi, temp floats above the unreachable target. Engages at humi <
+  //      target, releases only at humi >= idealHumiMax (genuine natural excess) — wide hysteresis
+  //      so the blower never oscillates at a threshold. A relievable heat emergency breaks it; a
+  //      futile one does not (slamming wouldn't cool → preserve humidity, let temp float).
+  //
+  // Net effect on the incident ambient: the system learns "can't cool to 23 °C", holds the
+  // blower at a steady 30 %, lets the humidifier hold humi at target, and temp floats at ~24 °C
+  // (perfectly safe). Stable equilibrium, no oscillation, no humidity crash.
+  // ═══════════════════════════════════════════════════════
+  const ABSOLUTE_HUMI_FLOOR_PCT = 42;
+  const truthTempEmergency = temp > idealTemp.max + 1.5;
+  const truthHumiEmergency = humi > idealHumiMax + 15 || humi > 85;
+
+  // ── A. Cooling futility self-test ──
+  // "Trying to cool for temperature" = cooling is wanted, humidity is at/below target (so the
+  // blower isn't doing useful humidity-EXTRACTION work — at/under target the proportional
+  // extractor speed is just idle), and the blower actually ran high last cycle. Using <= target
+  // (not < target) lets the test run during a thermal emergency that holds humi right at target.
+  const coolingTryingForTemp = needsCooling && humi <= idealHumiTarget && !truthHumiEmergency;
+  if (coolingTryingForTemp && (lastBlowerSpeed ?? 0) > VPD_BLOWER_IDLE_SPEED + 10) {
+    if (coolingEvalStartTime === 0) {
+      coolingEvalStartTime = now;
+      coolingEvalStartTemp = temp;
+    } else if (now - coolingEvalStartTime >= COOLING_EFFECT_CHECK_MS) {
+      const drop = coolingEvalStartTemp - temp;
+      if (drop < COOLING_EFFECT_MIN_DROP) {
+        coolingIneffectiveUntil = now + COOLING_INEFFECTIVE_COOLDOWN_MS;
+        coolingFutileStartTemp = temp; // baseline for the rising-temp escape
+        console.log(`[VPD] Cooling FUTILE: only −${drop.toFixed(2)}°C in ${(COOLING_EFFECT_CHECK_MS / 60000).toFixed(0)} min at high blower — ambient too warm to reach ${idealTemp.max}°C. Holding idle ${(COOLING_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min, preserving humidity; temp will float above target.`);
+        coolingEvalStartTime = 0;
+      } else {
+        // still dropping — keep measuring from the new baseline (cooling is working)
+        coolingEvalStartTime = now;
+        coolingEvalStartTemp = temp;
+      }
+    }
+  } else {
+    coolingEvalStartTime = 0;
+  }
+  // ── Rising-temp / hard-ceiling escape (audit P0 #2) ──
+  // A futile verdict must NEVER trap a tent that then overheats. If temp climbs past the futility
+  // baseline by COOLING_FUTILE_ESCAPE_RISE, OR exceeds an absolute danger ceiling (idealMax+2.5),
+  // drop the lockout immediately and force a fresh re-test — cooling, even if marginal, beats
+  // letting temp run away. Mirrors the humidifier/heater ineffective self-tests' early-clear.
+  const coolingFutileHardCeiling = idealTemp.max + 2.5;
+  if (now < coolingIneffectiveUntil
+      && (
+        (coolingFutileStartTemp != null && temp >= coolingFutileStartTemp + COOLING_FUTILE_ESCAPE_RISE)
+        || temp >= coolingFutileHardCeiling
+      )) {
+    console.log(`[VPD] Cooling-futility lockout CLEARED early: temp ${temp.toFixed(1)}°C rose from baseline ${coolingFutileStartTemp != null ? coolingFutileStartTemp.toFixed(1) : '?'}°C (or ≥ hard ceiling ${coolingFutileHardCeiling.toFixed(1)}°C) — re-allowing cooling.`);
+    coolingIneffectiveUntil = 0;
+    coolingFutileStartTemp = null;
+    coolingEvalStartTime = 0; // force a fresh measurement
+  }
+  const coolingFutile = now < coolingIneffectiveUntil;
+  vpdTempCoolingFutile = coolingFutile; // export to the blower-send emergency logic
+  // A genuine, RELIEVABLE heat emergency breaks the futility hold. AND an unambiguous overheat
+  // (temp ≥ idealMax+2.5) always cools even if a prior verdict called it futile — heat danger
+  // outranks the "don't waste the blower" optimisation.
+  const emergencyCanCool = truthTempEmergency && (!coolingFutile || temp >= coolingFutileHardCeiling);
+
+  // ── B. Sticky humidity-yield (the primary stabiliser) ──
+  // The night conflict: cooling is wanted (temp above stop target) but humidity is below target.
+  // Exhaust cooling would dry the air, fighting the humidifier, and at this ambient barely cools
+  // anyway. Per Eddie's directive ("la temperatura no puede bajar más → subir humedad según la
+  // tabla VPD"), the exhaust YIELDS to the humidifier: it holds a steady gentle idle (mixing +
+  // mild cooling) while the humidifier raises humi, and temp is allowed to float above the
+  // unreachable target. The humidifier is the humidity authority.
+  //
+  // WIDE hysteresis is the whole point — this is why the earlier naive guards oscillated:
+  //   • ENGAGE when humi < idealHumiTarget (cooling wanted, humidifier can help).
+  //   • RELEASE only when humi >= idealHumiMax (humidity reached genuine EXCESS on its own — now
+  //     extraction is actually warranted), OR temp fell back into range, OR a relievable heat
+  //     emergency, OR the humidifier can't help (then cooling is the only VPD lever — let it run).
+  // Engage target−2, release at target (2 % hysteresis). While engaged the exhaust is 0 so the
+  // humidifier can win; on release the gentle baseline resumes and trims any overshoot, so humi
+  // settles around target with at most a mild 0↔baseline ripple — never the violent swing.
+  const _humRoleAssign = vpdNodeConfig.roles.find(r => r.role === 'humidifier');
+  const humidifierAuthorised = !!(_humRoleAssign && _humRoleAssign.socket && (
+    socketAiModes[_humRoleAssign.deviceMac ? `${_humRoleAssign.deviceMac}:${_humRoleAssign.socket}` : _humRoleAssign.socket]
+    || socketAiModes[_humRoleAssign.socket]
+  ));
+  const humidifierCanHelp = humidifierAuthorised && !humidifierIneffective;
+  const coolingWantedNow = temp > coolingStopTarget;
+  if (vpdEscalationState.humidityYield === undefined) vpdEscalationState.humidityYield = false;
+  if (!vpdEscalationState.humidityYield) {
+    // Engage a couple % BELOW target so there's a real hysteresis band (engage target−2,
+    // release target). Engaging exactly at target and releasing at idealHumiMax (the earlier
+    // design) let the humidifier overshoot to idealHumiMax+ with the exhaust held at 0 — humi
+    // climbed to ~69 % then extraction yanked it back, oscillating humi 61↔69 (2026-05-31).
+    if (coolingWantedNow && humi < idealHumiTarget - 2 && humidifierCanHelp && !emergencyCanCool) {
+      vpdEscalationState.humidityYield = true;
+    }
+  } else {
+    // Release once humidity REACHES target: at that point the exhaust should resume (gentle
+    // baseline) so it removes the humidifier's overshoot instead of letting humi keep climbing
+    // with zero exhaust. Cooling can't slam here because the VPD-aware cooling gate suppresses
+    // temperature-cooling while VPD ≤ target.
+    if (humi >= idealHumiTarget || !coolingWantedNow || emergencyCanCool || !humidifierCanHelp) {
+      vpdEscalationState.humidityYield = false;
+    }
+  }
+  const humidityYield = vpdEscalationState.humidityYield;
+
+  // Hold idle when (a) we're yielding to the humidifier, or (b) cooling has been proven futile
+  // and there's no humidity excess to extract (covers the no-/dead-humidifier case where yield
+  // can't engage but slamming the blower is still pointless).
+  const holdIdle = humidityYield || (coolingFutile && humi < idealHumiMax && !truthHumiEmergency);
+
+  // ── Apply final blower authority (priority order) ──
+  if (truthHumiEmergency) {
+    // Humidity dangerously high → extraction is correct AND effective; never cap it here.
+  } else if (emergencyCanCool) {
+    // Genuine, relievable heat emergency → let cooling run hard (do not cap).
+  } else if (holdIdle) {
+    // Hold speed:
+    //   • humidity-yield (actively raising humi): exhaust FULLY OFF. Verified 2026-05-31 that
+    //     even a 30 % exhaust out-paced the humidifier in this dry ambient (humi fell 60→48 %),
+    //     whereas at 0 % the humidifier raised humi 43→64 %. So while we're trying to RAISE
+    //     humidity, the exhaust must not fight it at all. Internal air movement is the
+    //     circulator's job, not the exhaust's.
+    //   • cooling futile but NO humidifier helping (yield couldn't engage): a gentle idle 30 %
+    //     for air exchange — there's no humidifier to out-pace, and some airflow is better than
+    //     none when the room can't be cooled.
+    //   • active heating: fully OFF (don't vent the heat).
+    const holdSpeed = (heatingNow || humidityYield) ? 0 : VPD_BLOWER_IDLE_SPEED;
+    const why = humidityYield
+      ? `humidity-yield (humi ${humi.toFixed(0)}% < target ${idealHumiTarget.toFixed(0)}%, temp ${temp.toFixed(1)}°C floating — humidifier raising humi per VPD chart, exhaust off so it isn't fought)`
+      : `cooling futile (ambient ${temp.toFixed(1)}°C can't reach ${idealTemp.max}°C) — gentle air exchange`;
+    const oldF = newBlowerFloor, oldC = newBlowerCeiling;
+    newBlowerFloor = holdSpeed;
+    newBlowerCeiling = holdSpeed;
+    if ((oldF !== newBlowerFloor || oldC !== newBlowerCeiling) && curState !== prevState) {
+      console.log(`[VPD] BLOWER HOLD @ ${holdSpeed}% — ${why} (was ${oldF}-${oldC}%)`);
+    }
+  } else if (humi < ABSOLUTE_HUMI_FLOOR_PCT) {
+    // Defensive backstop (rarely reached given the yield above): never slam a desiccated room.
+    newBlowerFloor = Math.min(newBlowerFloor, VPD_BLOWER_IDLE_SPEED);
+    newBlowerCeiling = Math.min(newBlowerCeiling, 50);
+  }
+
+  // ── BLOWER-AWARE HUMIDIFIER MUTEX (audit P1 #3) ──
+  // The cross-device mutex in resolveSocketIntents() only inspects socket on/off winners, but when
+  // the extractor role IS the blower it is driven by vpdBlowerMin/MaxSpeed and NEVER appears as an
+  // action — so that mutex is blind to it and the humidifier could pump water while the blower
+  // exhausts above idle (drives humi DOWN / VPD UP — the opposite of intent). humidityYield catches
+  // the humi<target−2 case, but a humidifier left ON by its own hysteresis in the [target−2, target+1]
+  // band while cooling wants the blower high slips through. Reconcile explicitly, here, after the
+  // final floor is known:
+  if (extIsBlower && isRoleActive('humidifier') && newBlowerFloor > VPD_BLOWER_IDLE_SPEED && !truthHumiEmergency) {
+    if (emergencyCanCool) {
+      // Genuine relievable heat emergency → cooling wins; a high exhaust nullifies humidification
+      // anyway, so stop wasting water and stop fighting.
+      deactivateSocketRole('humidifier', 'High exhaust nullifies humidification — emergency cooling wins');
+      delete vpdEscalationState.roles['humidifier'];
+      lastHumidifierOffTime = now;
+    } else {
+      // Non-emergency → humidifier wins; clamp the blower so it isn't fighting it. 0 while actively
+      // raising humi (humi<target), gentle idle otherwise.
+      const clamp = (heatingNow || humi < idealHumiTarget) ? 0 : VPD_BLOWER_IDLE_SPEED;
+      if (curState !== prevState) {
+        console.log(`[VPD] BLOWER↔HUMIDIFIER mutex: humidifier active + blower floor ${newBlowerFloor}% — clamping blower to ${clamp}% (humidifier wins, non-emergency).`);
+      }
+      newBlowerFloor = clamp;
+      newBlowerCeiling = clamp;
+    }
   }
 
   // Apply blower overrides
@@ -3504,6 +4057,11 @@ async function sendBlowerCommand(speed, on = true) {
  * @param {string} deviceMac - Source device MAC
  */
 async function processSensorData(sensorData, deviceMac) {
+  // Single canonical timestamp for this evaluation cycle. Used by the blower heartbeat,
+  // mismatch recovery, and any later guard that needs to compare wall-clock progress
+  // against state set earlier in the same function.
+  const now = Date.now();
+
   // Initialize device sensor storage
   if (deviceMac && !sensorValuesByDevice.has(deviceMac)) {
     sensorValuesByDevice.set(deviceMac, {});
@@ -3534,6 +4092,7 @@ async function processSensorData(sensorData, deviceMac) {
   const hasRealData = sensorData.temp !== undefined || sensorData.humi !== undefined || sensorData.tempSoil !== undefined;
   if (hasRealData) {
     lastSensorValues._lastUpdate = Date.now();
+    lastRealSensorAt = Date.now(); // liveness watchdog keys off THIS, not every processSensorData call
     if (deviceMac && sensorValuesByDevice.has(deviceMac)) {
       sensorValuesByDevice.get(deviceMac)._lastUpdate = Date.now();
     }
@@ -3561,6 +4120,19 @@ async function processSensorData(sensorData, deviceMac) {
   // Pure duplicates (same action) are collapsed silently. Contradictions are logged.
   const actionMap = new Map();
   for (const action of allActions) {
+    // Dual-authority resolution (2026-05-31, re-confirmed): the user wired humidity triggers on
+    // O3 ("humi<55 → on", "humi>70 → off") AND assigned O3 as the VPD humidifier role. Both
+    // resolve to the SAME physical outlet (PS5:O3 — confirmed via socket_events). They fight: the
+    // user trigger's auto-release emits O3 OFF whenever humi is between 55 and the VPD target, and
+    // the merge's "user trigger wins" rule then OVERRIDES the VPD's ON — capping humidity at ~55 %
+    // and blocking the VPD from reaching its chart target (~66 %). Resolution: the VPD is the
+    // intelligent controller the user asked to drive humidity per the VPD chart, so it gets sole
+    // authority — drop the routine user O3 actions (including the synthesised auto-release OFF).
+    // An explicit mandatoryOff (a user safety brake) still survives. The VPD role targets the
+    // same device, so dropping the user action does NOT strand the humidifier.
+    if (action && action.socket && dualAuthorityVpdWins.has(action.socket) && !action.mandatoryOff) {
+      continue;
+    }
     const key = action.deviceMac ? `${action.deviceMac}:${action.socket}` : action.socket;
     const existing = actionMap.get(key);
     if (!existing) { actionMap.set(key, action); continue; }
@@ -3589,8 +4161,13 @@ async function processSensorData(sensorData, deviceMac) {
   // never activates) must never be able to block a safety shutdown/activation.
   const vpdActions = evaluateVpdIntelligent();
   const vpdRoleSockets = new Set((vpdNodeConfig?.roles || []).map(r => r.socket));
-  const tempNow = lastSensorValues.temp;
-  const humiNow = lastSensorValues.humi;
+  // Use the SAME stable sensor the VPD controller acted on (not the merged blob), so the
+  // emergency override decision is consistent with the control decision.
+  const _emergSensor = vpdNodeConfig
+    ? getSensorValues(vpdNodeConfig.sensorDeviceMac || resolvePrimarySensorMac())
+    : lastSensorValues;
+  const tempNow = _emergSensor.temp;
+  const humiNow = _emergSensor.humi;
   const idealT = vpdNodeConfig && (getCurrentPeriod() === 'day'
     ? (vpdNodeConfig.idealDayTemp || { max: 26 })
     : (vpdNodeConfig.idealNightTemp || { max: 23 }));
@@ -3677,8 +4254,20 @@ async function processSensorData(sensorData, deviceMac) {
     // (Eddie 2026-05-26 calibration). 0 % stays 0 % (off). Belt-and-suspenders against curve
     // points calibrated at 25 % and other historical sources of sub-30 % values.
     if (effectiveSpeed > 0 && effectiveSpeed < 30) effectiveSpeed = 30;
-    // In emergency, force the blower ON at 100% even if curve/floor say otherwise
-    if (emergTempHigh || emergHumiHigh) {
+    // Emergency blower override — but distinguish the two emergency types:
+    //   • Humidity emergency (humi > 85 / far over max): extraction REMOVES the excess and is
+    //     always effective → force 100 %.
+    //   • Temperature emergency (temp > max + 1.5): cooling helps ONLY if the room can actually
+    //     be cooled. When the VPD evaluator has judged cooling FUTILE (ambient too warm to reach
+    //     target — the 2026-05-30 night incident), slamming the blower to 100 % would not lower
+    //     temp and would crash humidity for nothing. In that case we leave the speed at the
+    //     evaluator's idle hold. EXCEPT above an absolute danger ceiling (idealMax+2.5): there we
+    //     ALWAYS run 100 % even if a prior verdict called cooling futile — marginal airflow beats
+    //     letting temp run away (audit P0 #2).
+    const tempHardCeiling = (idealT && typeof idealT.max === 'number') ? idealT.max + 2.5 : 999;
+    if (emergHumiHigh) {
+      effectiveSpeed = 100;
+    } else if (emergTempHigh && (!vpdTempCoolingFutile || (tempNow != null && tempNow >= tempHardCeiling))) {
       effectiveSpeed = 100;
     }
     // Debounce: only re-issue a command when the speed actually changes by a
@@ -3687,10 +4276,34 @@ async function processSensorData(sensorData, deviceMac) {
     // this guard the device was spammed with a new command every 2 s.
     const lastSpeed = lastBlowerSpeed ?? -1;
     const crossedOnOff = (effectiveSpeed > 0) !== (lastSpeed > 0);
-    const changedEnough = Math.abs(effectiveSpeed - lastSpeed) >= 5;
-    if (crossedOnOff || changedEnough) {
-      console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)${(emergTempHigh || emergHumiHigh) ? ' EMERGENCY' : ''}`);
+    // ≥8 % step to re-issue (was 5 %). The proportional extractor moves in ~6 %/1%-humi steps, so a
+    // 5 % threshold let single-percent humi noise transmit a 30↔36 limit cycle to the device
+    // (audit P1 #6). 8 % filters that quantisation step while still tracking real load changes.
+    const changedEnough = Math.abs(effectiveSpeed - lastSpeed) >= 8;
+    // Emergency rising edge — always re-send so the operator/device can't miss it.
+    const emergencyNow = !!(emergTempHigh || emergHumiHigh);
+    const emergencyRisingEdge = emergencyNow && !lastBlowerEmergency;
+    // Heartbeat — if we haven't sent a command in BLOWER_HEARTBEAT_MS, re-publish the current
+    // desired speed even if nothing changed. Closes the gap where a single missed MQTT message
+    // could leave the device stuck at a stale speed indefinitely.
+    const heartbeatDue = (now - lastBlowerSendAt) > BLOWER_HEARTBEAT_MS;
+    // Mismatch recovery — if the supervisor's lastBlowerSpeed > 0 but device state reports
+    // module off, the device probably missed a previous command. Force a re-send.
+    const deviceModuleState = lastSocketStates['blower'];
+    const mismatchedOnOff = (effectiveSpeed > 0)
+      && (deviceModuleState === 0)
+      && (now - lastBlowerSendAt) > 30 * 1000; // cooldown so we don't spam during normal startup
+    if (crossedOnOff || changedEnough || emergencyRisingEdge || heartbeatDue || mismatchedOnOff) {
+      const tags = [];
+      if (emergencyNow) tags.push('EMERGENCY');
+      if (emergencyRisingEdge) tags.push('emergency-edge');
+      if (heartbeatDue) tags.push('heartbeat');
+      if (mismatchedOnOff) tags.push('device-mismatch-recovery');
+      const tagStr = tags.length ? ` [${tags.join(',')}]` : '';
+      console.log(`[BlowerCurve] Speed: ${effectiveSpeed}% (curve=${curveSpeed ?? 'n/a'}, floor=${vpdBlowerMinSpeed}%, ceil=${vpdBlowerMaxSpeed}%)${tagStr}`);
       lastBlowerSpeed = effectiveSpeed;
+      lastBlowerSendAt = now;
+      lastBlowerEmergency = emergencyNow;
       await sendBlowerCommand(effectiveSpeed, effectiveSpeed > 0);
     }
   }
@@ -3754,7 +4367,7 @@ function handleMessage(topic, payload) {
     const parts = topic.split('/');
     // Topic format: ggs/{deviceType}/{mac}/{messageType}
     const deviceType = parts[1];  // ps5, lc
-    const deviceMac = parts[2];   // MAC address
+    const deviceMac = normMac(parts[2]);   // MAC address — normalised to lower-case (see normMac)
     const messageType = parts[3]; // status, sensors, etc.
 
     if (messageType === 'status') {
@@ -3777,7 +4390,11 @@ function handleMessage(topic, payload) {
             if (!socketStatesByDevice.has(deviceMac)) socketStatesByDevice.set(deviceMac, {});
             socketStatesByDevice.get(deviceMac)[mk] = isOn;
           }
-          lastSocketStates[mk] = isOn;
+          // Gate the merged-store write to the primary device, mirroring the outlet path (audit
+          // P2 #8). Unconditional writes let two module-capable strips overwrite each other's
+          // blower/module state every ~0.4 s in the merged store → spurious mismatch re-sends.
+          // Per-device reads (getSocketState(mac,...)) remain authoritative for the actual owner.
+          if (!deviceMac || deviceMac === defaultPrimaryMac) lastSocketStates[mk] = isOn;
           // Cache full config so triggers can preserve speed/level when toggling ON/OFF
           lastModuleConfigs[mk] = { ...mod };
         }
@@ -3895,6 +4512,7 @@ async function refreshData() {
 /**
  * Load device info (MAC, UID) from QuestDB into device registry
  */
+let _lastDeviceLoadSummary = '';
 async function loadDeviceInfo() {
   try {
     const result = await pool.query(`
@@ -3906,7 +4524,7 @@ async function loadDeviceInfo() {
     if (result.rows) {
       for (const row of result.rows) {
         const type = (row.device_type || '').toLowerCase();
-        const mac = row.mac;
+        const mac = normMac(row.mac); // normalise so registry keys match the normalised topic MACs
 
         if (!mac) continue;
 
@@ -3927,7 +4545,11 @@ async function loadDeviceInfo() {
       }
     }
 
-    console.log(`[Supervisor] Loaded ${deviceRegistry.size} devices, primary: ${defaultPrimaryType}/${defaultPrimaryMac || 'none'}`);
+    const summary = `${deviceRegistry.size}|${defaultPrimaryType}|${defaultPrimaryMac || 'none'}`;
+    if (summary !== _lastDeviceLoadSummary) {
+      _lastDeviceLoadSummary = summary;
+      console.log(`[Supervisor] Loaded ${deviceRegistry.size} devices, primary: ${defaultPrimaryType}/${defaultPrimaryMac || 'none'}`);
+    }
   } catch (err) {
     if (!err.message.includes('does not exist')) {
       console.error('[Supervisor] Error loading device info:', err.message);
@@ -3939,6 +4561,7 @@ async function loadDeviceInfo() {
  * Get device info by MAC, with fallback to primary device
  */
 function getDevice(mac) {
+  mac = normMac(mac);
   if (mac && deviceRegistry.has(mac)) {
     return deviceRegistry.get(mac);
   }
@@ -3992,11 +4615,54 @@ function findDeviceForSocket(socketId) {
  * Get sensor values for a specific device (or merged values if no device specified)
  */
 function getSensorValues(deviceMac) {
+  deviceMac = normMac(deviceMac);
   if (deviceMac && sensorValuesByDevice.has(deviceMac)) {
     return sensorValuesByDevice.get(deviceMac);
   }
   // Fallback to legacy merged values
   return lastSensorValues;
+}
+
+/**
+ * Resolve the STABLE primary climate-sensor device MAC for VPD control.
+ *
+ * Root-cause fix (2026-05-31): when the VPD node has no explicit sensorDeviceMac, the controller
+ * was reading `lastSensorValues` — the MERGED, last-writer-wins sensor blob. With more than one
+ * device reporting temp/humi (here a CB and an LC with differently-calibrated/placed probes,
+ * ~56 % vs ~63 % RH), every incoming message overwrote the blob, so the controller saw humidity
+ * ALTERNATING 56↔63 % every few seconds. That fed the whole loop (VPD, humidifier, phase machine,
+ * blower) garbage and was a major driver of the erratic behaviour.
+ *
+ * Fix: lock onto ONE device's per-device store and keep using it (stability) unless it goes stale.
+ * Preference order matches the web dashboard's primary (CB first — "full sensor suite") so the
+ * supervisor controls on the SAME reading the user sees. The user can still override per VPD node
+ * via sensorDeviceMac.
+ */
+let _lockedSensorMac = '';
+function resolvePrimarySensorMac() {
+  const FRESH_MS = 3 * 60 * 1000;
+  const hasFresh = (mac) => {
+    const s = sensorValuesByDevice.get(mac);
+    return !!(s && typeof s.temp === 'number' && typeof s.humi === 'number'
+      && s._lastUpdate && (Date.now() - s._lastUpdate) < FRESH_MS);
+  };
+  // Stability first: keep the current lock while it's still delivering fresh data.
+  if (_lockedSensorMac && hasFresh(_lockedSensorMac)) return _lockedSensorMac;
+  // Re-select by type priority (CB matches the web's primary), then power strips, then LC.
+  for (const wantType of ['cb', 'ps10', 'ps5', 'lc']) {
+    for (const [mac, dev] of deviceRegistry) {
+      if ((dev.type || '').toLowerCase() === wantType && hasFresh(mac)) {
+        if (_lockedSensorMac !== mac) {
+          console.log(`[VPD] Primary climate sensor → ${wantType.toUpperCase()} ${mac} (stable single source; set the VPD node's sensorDeviceMac to override). Was reading the merged multi-device blob, which alternates between sensors.`);
+          _lockedSensorMac = mac;
+        }
+        return mac;
+      }
+    }
+  }
+  // Nothing fresh per-device — return '' so getSensorValues() falls back to the merged blob
+  // (legacy behaviour; never returns undefined).
+  return '';
 }
 
 /**
@@ -4016,6 +4682,7 @@ function calculateLeafVpd(airTemp, humi) {
  * Get socket state for a specific device:socket
  */
 function getSocketState(deviceMac, socket) {
+  deviceMac = normMac(deviceMac);
   if (deviceMac && socketStatesByDevice.has(deviceMac)) {
     const deviceStates = socketStatesByDevice.get(deviceMac);
     if (deviceStates[socket] !== undefined) {
@@ -4127,6 +4794,12 @@ function checkAutoBackupSchedule() {
  */
 async function start() {
   console.log('[Supervisor] Starting supervisor agent...');
+
+  // Load persisted supervisor state (lastKnownPeriod, lastCycleTransitionAt, ineffective lockouts).
+  // Done BEFORE the first refreshData so the cycle-transition guard has the previous period to
+  // compare against — otherwise the first eval after restart would treat any period as a fresh
+  // transition cascade (the 2026-05-30 incident pattern: 24 restarts × cascade per restart).
+  loadSupervisorState();
 
   // Load device MACs from database
   await loadDeviceInfo();
@@ -4319,24 +4992,18 @@ async function start() {
   }, 60000);
 
   // ═══════════════════════════════════════════════════════
-  // WATCHDOG: Self-monitoring — if no sensor data is processed
-  // for 5 minutes, the supervisor is effectively dead (hung MQTT,
-  // frozen event loop, etc.). Force-exit so PM2 restarts us.
+  // WATCHDOG: Self-monitoring — if no REAL sensor data arrives for 5 minutes, the feed is dead
+  // (device offline, proxy/MQTT hung). Force-exit so PM2 restarts us and re-subscribes.
+  // CRITICAL: this keys off lastRealSensorAt (bumped only on genuine temp/humi/soil messages),
+  // NOT a per-call timestamp — the old version was bumped by the empty 10s schedule self-tick, so
+  // it NEVER fired even during a real 27-min sensor outage (2026-05-21). The blower would otherwise
+  // sit frozen at its last speed indefinitely while emergencies read a stale value.
   // ═══════════════════════════════════════════════════════
-  let lastSensorProcessedTime = Date.now();
-
-  // Patch processSensorData to track liveness
-  const _originalProcessSensorData = processSensorData;
-  processSensorData = async function (...args) {
-    lastSensorProcessedTime = Date.now();
-    return _originalProcessSensorData.apply(this, args);
-  };
-
-  const WATCHDOG_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes without sensor data = dead
+  const WATCHDOG_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes without REAL sensor data = dead feed
   setInterval(() => {
-    const silenceMs = Date.now() - lastSensorProcessedTime;
+    const silenceMs = Date.now() - lastRealSensorAt;
     if (silenceMs > WATCHDOG_TIMEOUT_MS) {
-      console.error(`[Supervisor] WATCHDOG: No sensor data processed in ${Math.round(silenceMs / 1000)}s — forcing restart`);
+      console.error(`[Supervisor] WATCHDOG: No REAL sensor data in ${Math.round(silenceMs / 1000)}s — forcing restart`);
       process.exit(1); // PM2 will restart us
     }
   }, 60000);
@@ -4351,7 +5018,7 @@ async function start() {
       mqttClient.publish('s4r/supervisor/health', JSON.stringify({
         status: 'alive',
         uptime: Math.round(process.uptime()),
-        lastSensorAge: Math.round((Date.now() - lastSensorProcessedTime) / 1000),
+        lastSensorAge: Math.round((Date.now() - lastRealSensorAt) / 1000),
         mem: Math.round(process.memoryUsage().rss / 1024 / 1024),
         devices: deviceRegistry.size,
         flows: flows.length,
