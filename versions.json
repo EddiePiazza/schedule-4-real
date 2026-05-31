@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-31T21:31:39Z",
+  "generatedAt": "2026-05-31T22:01:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2924,11 +2924,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.32.6",
-      "archive": "s4r-supervisor-1.32.6.tar.gz",
-      "sha256": "4ea8721fdfb3e0361c292c2f4db34fc049f96afefbb00c6b0aed498947dfec82",
-      "size": 123565,
+      "version": "1.33.0",
+      "archive": "s4r-supervisor-1.33.0.tar.gz",
+      "sha256": "071244199b2cc9b7ed141049fc8876bef00b9d48d4e24b601f112ba8011c3c2d",
+      "size": 124338,
       "changelog": [
+        {
+          "version": "1.33.0",
+          "changes": [
+            "Cap humidity at 80% to avoid mold risk at warmer temperatures",
+            "Manage temperature with automatic safe bands, prioritizing VPD via humidity"
+          ]
+        },
         {
           "version": "1.32.6",
           "changes": [

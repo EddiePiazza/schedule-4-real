@@ -186,6 +186,20 @@ function getLeafOffset() {
   }
 }
 
+// ── Algorithm-owned temperature bands (2026-05-31, Eddie) ──
+// Temperature is NOT a manual setpoint to chase — it is a safety/comfort band the algorithm OWNS.
+// Inside the band the temperature floats freely and VPD is achieved entirely via HUMIDITY
+// (humidifier / dehumidifier); the blower (cool) and heater only act when temp leaves the band.
+// This is the fix for the chronic problem: a hand-set night max of 23 °C (below the room's real
+// ~24 °C ambient) made the system fight an unreachable target, spiking the blower and crashing
+// humidity (incidents 2026-05-30/31). Cannabis norms: absolute-safe 18-30 °C, ideal ~21-26 with a
+// healthy day→night drop. The manual idealDayTemp / idealNightTemp from the VPD node are now
+// IGNORED for control (kept in config only for display / backward-compat).
+const TEMP_SAFE_MIN = 18;   // hard floor — force HEAT below this regardless of grace/phase
+const TEMP_SAFE_MAX = 30;   // hard ceiling — force COOL above this regardless of futility
+const TEMP_BAND_DAY = { min: 22, max: 27 };    // lights ON:  float 22-27, cool>27 / heat<22
+const TEMP_BAND_NIGHT = { min: 19, max: 24 };   // lights OFF: float 19-24, cool>24 / heat<19
+
 // Activation hysteresis — dead band to prevent oscillation
 // Devices activate when EXCEEDING target + hysteresis, deactivate at target (no hysteresis)
 const TEMP_HIGH_HYSTERESIS = 0.5; // °C above idealTemp.max before cooling activates (blower ON at max+0.5)
@@ -2296,9 +2310,9 @@ function evaluateVpdIntelligent() {
   // don't flap every cycle while a spurious schedule/clock oscillation settles.
   let currentPeriod = getCurrentPeriod();
   let isDaytime = currentPeriod === 'day';
-  let idealTemp = isDaytime
-    ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
-    : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
+  // Algorithm-owned band (NOT the manual config — see TEMP_BAND_* rationale). Float within it,
+  // VPD via humidity; cool/heat only outside it; hard safety at TEMP_SAFE_MIN/MAX.
+  let idealTemp = isDaytime ? TEMP_BAND_DAY : TEMP_BAND_NIGHT;
 
   // ── Cycle Transition Grace Period ──
   // When day↔night changes, STOP ALL active devices and let the environment adjust naturally.
@@ -2322,9 +2336,7 @@ function evaluateVpdIntelligent() {
       // idealTemp swing day↔night every cycle.)
       currentPeriod = lastKnownPeriod;
       isDaytime = currentPeriod === 'day';
-      idealTemp = isDaytime
-        ? (vpdNodeConfig.idealDayTemp || { min: 24, max: 25 })
-        : (vpdNodeConfig.idealNightTemp || { min: 20, max: 22 });
+      idealTemp = isDaytime ? TEMP_BAND_DAY : TEMP_BAND_NIGHT;
     } else {
       // Transition just detected — STOP ALL devices immediately
       cycleTransitionTime = now;
@@ -2400,8 +2412,7 @@ function evaluateVpdIntelligent() {
     // ── Emergency override: if temp or humi drift into danger during grace,
     // bail out of grace immediately and resume normal control. Grace is a
     // convenience for smooth transitions, not a safety lock.
-    const earlyTempEmerg = temp > (vpdNodeConfig.idealDayTemp?.max || 26) + 1.5
-      || temp > (vpdNodeConfig.idealNightTemp?.max || 23) + 1.5;
+    const earlyTempEmerg = temp >= TEMP_SAFE_MAX || temp <= TEMP_SAFE_MIN;
     const earlyHumiEmerg = humi > 85;
     if (earlyTempEmerg || earlyHumiEmerg) {
       cycleTransitionGraceActive = false;
@@ -2451,7 +2462,13 @@ function evaluateVpdIntelligent() {
   const leafTemp = temp - getLeafOffset();
   const svpLeaf = svp(leafTemp);
   const svpAir = svp(temp);
-  const idealHumiMax = Math.min(90, (svpLeaf - targetMin) / svpAir * 100); // low VPD → high humi limit
+  // Mold-safety cap (80 %, was 90 %): now that temperature floats within a wider band, hitting a
+  // low-VPD stage target at the warm end could otherwise demand 80 %+ RH — mold/bud-rot territory.
+  // 80 % is a safe universal ceiling: clones/seedlings (which want the highest RH) tolerate it, and
+  // flower stages stay well below it via their own higher VPD targets. If VPD can't be reached
+  // without exceeding 80 %, we accept a slightly higher (drier) VPD rather than a dangerous humidity.
+  const HUMI_MOLD_CAP = 80;
+  const idealHumiMax = Math.min(HUMI_MOLD_CAP, (svpLeaf - targetMin) / svpAir * 100); // low VPD → high humi limit
   const idealHumiMin = Math.max(30, (svpLeaf - targetMax) / svpAir * 100); // high VPD → low humi limit
   // Target humidity = midpoint VPD → this is WHERE we want humidity to converge
   const vpdTarget = (targetMin + targetMax) / 2;
@@ -2483,9 +2500,10 @@ function evaluateVpdIntelligent() {
   // In emergencies: skip humidifier grace period, skip tempSafeForBlower, skip dehumidifier wait
   const humiEmergency = humi > idealHumiMax + 15 || humi > 85;
 
-  // Emergency temperature flag — temp dangerously above max, overrides heater grace
-  // Without this, heater thermal inertia could push temp 2-3°C above max with no cooling response
-  const tempEmergency = temp > idealTemp.max + 1.5;
+  // Emergency temperature flag — temp at the HARD safety ceiling (30 °C). At this point cooling is
+  // forced regardless of futility/grace/VPD-gate (heat danger outranks every optimisation). The
+  // soft cooling zone (above the band but below this) is normal, futility-suppressible cooling.
+  const tempEmergency = temp >= TEMP_SAFE_MAX;
 
   // ── LEAF VPD GUARDS ──
   // Critical (mold risk territory): VPD is far below targetMin → force aggressive
@@ -3011,15 +3029,14 @@ function evaluateVpdIntelligent() {
   // ═══════════════════════════════════════════════════════
 
 
-  // Cool only to just INSIDE the range (idealMax − 0.5), not all the way down to idealMin.
-  // Driving temp to the bottom of the range over-cools, fights an often-unreachable target,
-  // and oscillated the blower 85↔0 % every few minutes (incident 2026-05-20). Stopping just
-  // inside range keeps temp stable near the top of the band (which also keeps VPD higher).
-  // Cooling is now CONTINUOUS + PROPORTIONAL: it engages whenever temp is above the stop
-  // target and the speed (computed below) tapers to the baseline exactly at the target, so
-  // there is no on/off bang-bang and no need for the tempHigh trigger or the saturation
-  // timeout (both caused cycling). The only suppressor is the heater grace / emergency.
-  const coolingStopTarget = idealTemp.max - 0.5;
+  // Cooling engages only ABOVE the band top (idealTemp.max), NOT inside it — temperature is
+  // allowed to float anywhere within the band with no active cooling (VPD is held via humidity).
+  // (Previously the stop target was max−0.5, which pulled cooling INTO the band and, with a
+  // too-tight hand-set max, caused the futile-cooling spikes of 2026-05-31.) Once engaged, the
+  // proportional speed tapers to the idle baseline exactly at the band top, so there's no
+  // bang-bang. Suppressors: heater grace, VPD gate, futility/unreachability; only the hard ceiling
+  // (TEMP_SAFE_MAX) forces it unconditionally.
+  const coolingStopTarget = idealTemp.max;
   // VPD-aware cooling gate (2026-05-31). Cooling lowers air temperature, which lowers VPD.
   //   • When VPD is ABOVE target (room too dry / VPD high): cooling moves VPD toward target → good.
   //   • When VPD is AT/BELOW target (room humid / VPD low): cooling moves VPD further BELOW target
@@ -3054,7 +3071,7 @@ function evaluateVpdIntelligent() {
   }
   const coolingUnreachable = vpdEscalationState.tempAboveCoolTargetSince > 0
     && (now - vpdEscalationState.tempAboveCoolTargetSince) > COOLING_UNREACHABLE_MS
-    && temp <= idealTemp.max + 1.5;  // mildly over only; a real emergency (>max+1.5) still cools
+    && temp < TEMP_SAFE_MAX;  // suppress futile cooling across the whole soft zone; only the hard ceiling forces it
 
   const needsCooling = temp > coolingStopTarget
     && (!heaterRecentlyOff || tempEmergency)
@@ -3725,7 +3742,7 @@ function evaluateVpdIntelligent() {
   // (perfectly safe). Stable equilibrium, no oscillation, no humidity crash.
   // ═══════════════════════════════════════════════════════
   const ABSOLUTE_HUMI_FLOOR_PCT = 42;
-  const truthTempEmergency = temp > idealTemp.max + 1.5;
+  const truthTempEmergency = temp >= TEMP_SAFE_MAX;
   const truthHumiEmergency = humi > idealHumiMax + 15 || humi > 85;
 
   // ── A. Cooling futility self-test ──
@@ -3759,7 +3776,7 @@ function evaluateVpdIntelligent() {
   // baseline by COOLING_FUTILE_ESCAPE_RISE, OR exceeds an absolute danger ceiling (idealMax+2.5),
   // drop the lockout immediately and force a fresh re-test — cooling, even if marginal, beats
   // letting temp run away. Mirrors the humidifier/heater ineffective self-tests' early-clear.
-  const coolingFutileHardCeiling = idealTemp.max + 2.5;
+  const coolingFutileHardCeiling = TEMP_SAFE_MAX;
   if (now < coolingIneffectiveUntil
       && (
         (coolingFutileStartTemp != null && temp >= coolingFutileStartTemp + COOLING_FUTILE_ESCAPE_RISE)
@@ -4199,10 +4216,10 @@ async function processSensorData(sensorData, deviceMac) {
     : lastSensorValues;
   const tempNow = _emergSensor.temp;
   const humiNow = _emergSensor.humi;
-  const idealT = vpdNodeConfig && (getCurrentPeriod() === 'day'
-    ? (vpdNodeConfig.idealDayTemp || { max: 26 })
-    : (vpdNodeConfig.idealNightTemp || { max: 23 }));
-  const emergTempHigh = tempNow != null && idealT && tempNow > idealT.max + 1.5;
+  // Temperature emergency = the HARD safety ceiling (algorithm-owned, NOT the manual config).
+  // The soft cooling zone (band top → 30 °C) is handled inside evaluateVpdIntelligent and is
+  // futility-suppressible; only at/above TEMP_SAFE_MAX does the send path force the blower to 100 %.
+  const emergTempHigh = tempNow != null && tempNow >= TEMP_SAFE_MAX;
   const emergHumiHigh = humiNow != null && humiNow > 85;
 
   for (const action of vpdActions) {
@@ -4288,17 +4305,11 @@ async function processSensorData(sensorData, deviceMac) {
     // Emergency blower override — but distinguish the two emergency types:
     //   • Humidity emergency (humi > 85 / far over max): extraction REMOVES the excess and is
     //     always effective → force 100 %.
-    //   • Temperature emergency (temp > max + 1.5): cooling helps ONLY if the room can actually
-    //     be cooled. When the VPD evaluator has judged cooling FUTILE (ambient too warm to reach
-    //     target — the 2026-05-30 night incident), slamming the blower to 100 % would not lower
-    //     temp and would crash humidity for nothing. In that case we leave the speed at the
-    //     evaluator's idle hold. EXCEPT above an absolute danger ceiling (idealMax+2.5): there we
-    //     ALWAYS run 100 % even if a prior verdict called cooling futile — marginal airflow beats
-    //     letting temp run away (audit P0 #2).
-    const tempHardCeiling = (idealT && typeof idealT.max === 'number') ? idealT.max + 2.5 : 999;
-    if (emergHumiHigh) {
-      effectiveSpeed = 100;
-    } else if (emergTempHigh && (!vpdTempCoolingFutile || (tempNow != null && tempNow >= tempHardCeiling))) {
+    //   • Temperature emergency = temp ≥ TEMP_SAFE_MAX (30 °C, the hard ceiling): ALWAYS force
+    //     100 %. The futility-suppression that keeps the blower idle on a warm-but-safe night all
+    //     happens inside evaluateVpdIntelligent for temp < 30; by the time the send path sees
+    //     emergTempHigh we're at the danger limit, where marginal airflow beats letting temp climb.
+    if (emergHumiHigh || emergTempHigh) {
       effectiveSpeed = 100;
     }
     // Debounce: only re-issue a command when the speed actually changes by a

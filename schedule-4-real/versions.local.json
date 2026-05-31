@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-31T21:31:02.408Z",
+  "lastCheck": "2026-05-31T22:00:38.176Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.6",
-      "installedAt": "2026-05-31T21:31:39Z"
+      "version": "1.33.0",
+      "installedAt": "2026-05-31T22:01:04Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -520,6 +520,12 @@
     ],
     "supervisor": [
       {
+        "version": "1.32.6",
+        "changes": [
+          "Stop recurring blower power surges when night temp can't be cooled"
+        ]
+      },
+      {
         "version": "1.32.5",
         "changes": [
           "Stop spurious blower shut-off after 2 hours of running",
@@ -848,12 +854,6 @@
         "version": "1.23.0",
         "changes": [
           "Add safety timeouts, NaN sensor detection, safe startup and configurable device protection"
-        ]
-      },
-      {
-        "version": "1.22.0",
-        "changes": [
-          "Add THEN/ELSE logic gate support and real-time trigger evaluation broadcast"
         ]
       }
     ],
