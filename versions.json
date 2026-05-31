@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-31T01:37:15Z",
+  "generatedAt": "2026-05-31T21:31:39Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2924,11 +2924,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.32.5",
-      "archive": "s4r-supervisor-1.32.5.tar.gz",
-      "sha256": "2b37d77d0d6960a5adf660f2242d4afffa806f93cafcd981bfe0e74ae8bd6119",
-      "size": 122789,
+      "version": "1.32.6",
+      "archive": "s4r-supervisor-1.32.6.tar.gz",
+      "sha256": "4ea8721fdfb3e0361c292c2f4db34fc049f96afefbb00c6b0aed498947dfec82",
+      "size": 123565,
       "changelog": [
+        {
+          "version": "1.32.6",
+          "changes": [
+            "Stop recurring blower power surges when night temp can't be cooled"
+          ]
+        },
         {
           "version": "1.32.5",
           "changes": [

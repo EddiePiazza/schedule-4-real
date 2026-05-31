@@ -282,6 +282,7 @@ let coolingFutileStartTemp = null; // temp at which futility was declared — fo
 const COOLING_EFFECT_CHECK_MS = 4 * 60 * 1000;       // 4 min of high blower to prove it can cool
 const COOLING_EFFECT_MIN_DROP = 0.3;                 // °C drop expected in that window
 const COOLING_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // hold idle 30 min, then re-test
+const COOLING_UNREACHABLE_MS = 12 * 60 * 1000; // temp sustained above stop target this long (mildly) → cooling unreachable, suppress
 // Escape hatches so a "futile" verdict can never trap a genuinely overheating tent (audit P0 #2):
 const COOLING_FUTILE_ESCAPE_RISE = 0.8;  // °C above the futility baseline → re-allow cooling immediately
 // Set true each evaluation when cooling is currently judged futile, so the blower-send path
@@ -3027,10 +3028,38 @@ function evaluateVpdIntelligent() {
   // temperature-cooling (e.g. 82 %) the instant humidity-yield released at the band top, crashing
   // humidity and VPD and oscillating humi 57↔69 / blower 0↔82 (observed 2026-05-31). A true
   // thermal emergency (temp > max + 1.5) overrides — heat danger outranks the VPD nicety.
-  const vpdAllowsCooling = currentVpd > vpdTarget || tempEmergency;
+  // Small VPD dead band (+0.08): cooling may only ENGAGE when VPD is meaningfully above target,
+  // not the instant it grazes it. Without this, at humi≈target / VPD≈target the cooling re-armed
+  // every time the humidifier turned off, fired the blower, dried the air, and the cycle repeated
+  // (2026-05-31 evening: 4 cycles, blower 0↔86 %, humi 62↔41). Emergency bypasses.
+  const vpdAllowsCooling = currentVpd > vpdTarget + 0.08 || tempEmergency;
+
+  // ── TIME-BASED COOLING-UNREACHABILITY (2026-05-31 evening incident) ──
+  // The 4-min blower-measurement futility self-test is DEFEATED by the blower↔humidifier mutex:
+  // the mutex clamps the blower to 0 the moment the humidifier engages (humi<target), so the
+  // blower never sustains a high speed for the full measurement window and futility never latches.
+  // Result on a night where ambient (~23.7°C) sits just above the night cooling target (23°C):
+  // cooling fires futilely whenever the humidifier is off, spiking the blower and drying the air,
+  // forever. This detector is BLOWER-STATE-INDEPENDENT: if temp has stayed above the cooling stop
+  // target for a sustained period but only MILDLY (not an emergency), the room floor is above the
+  // target (exhaust can't beat ambient) → cooling is unreachable → suppress it and let temp float
+  // while humidity holds VPD. Resets the instant temp drops to the stop target (cooled into range)
+  // or escalates into a real emergency (then cooling is forced regardless).
+  if (temp > coolingStopTarget) {
+    if (vpdEscalationState.tempAboveCoolTargetSince == null || vpdEscalationState.tempAboveCoolTargetSince === 0) {
+      vpdEscalationState.tempAboveCoolTargetSince = now;
+    }
+  } else {
+    vpdEscalationState.tempAboveCoolTargetSince = 0;
+  }
+  const coolingUnreachable = vpdEscalationState.tempAboveCoolTargetSince > 0
+    && (now - vpdEscalationState.tempAboveCoolTargetSince) > COOLING_UNREACHABLE_MS
+    && temp <= idealTemp.max + 1.5;  // mildly over only; a real emergency (>max+1.5) still cools
+
   const needsCooling = temp > coolingStopTarget
     && (!heaterRecentlyOff || tempEmergency)
-    && vpdAllowsCooling;
+    && vpdAllowsCooling
+    && (!coolingUnreachable || tempEmergency);
 
   if (needsCooling) {
     // Cooling needed — lift ceiling
@@ -3741,7 +3770,9 @@ function evaluateVpdIntelligent() {
     coolingFutileStartTemp = null;
     coolingEvalStartTime = 0; // force a fresh measurement
   }
-  const coolingFutile = now < coolingIneffectiveUntil;
+  // coolingFutile = the 4-min blower-measured verdict OR the time-based unreachability detector.
+  // The latter is what catches the night ambient-bound case the mutex hides from the former.
+  const coolingFutile = (now < coolingIneffectiveUntil) || coolingUnreachable;
   vpdTempCoolingFutile = coolingFutile; // export to the blower-send emergency logic
   // A genuine, RELIEVABLE heat emergency breaks the futility hold. AND an unambiguous overheat
   // (temp ≥ idealMax+2.5) always cools even if a prior verdict called it futile — heat danger

@@ -1,7 +1,7 @@
 {
-  "lastKnownPeriod": "day",
-  "lastCycleTransitionAt": 1780182000680,
-  "humidifierIneffectiveUntil": 0,
+  "lastKnownPeriod": "night",
+  "lastCycleTransitionAt": 1780225203048,
+  "humidifierIneffectiveUntil": 1780256664772,
   "heaterIneffectiveUntil": 0,
-  "savedAt": 1780182002681
+  "savedAt": 1780253966773
 }

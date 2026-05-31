@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-31T01:35:53.001Z",
+  "lastCheck": "2026-05-31T21:31:02.408Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.32.5",
-      "installedAt": "2026-05-31T01:37:15Z"
+      "version": "1.32.6",
+      "installedAt": "2026-05-31T21:31:39Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -520,6 +520,17 @@
     ],
     "supervisor": [
       {
+        "version": "1.32.5",
+        "changes": [
+          "Stop spurious blower shut-off after 2 hours of running",
+          "Fix humidity crashes and blower oscillation in VPD climate control",
+          "Prevent cooling lockout from blocking emergency cooling",
+          "Stop humidifier and exhaust fan fighting each other",
+          "Fix sensor humidity reading jumping between values",
+          "Restart on dead sensor feed instead of freezing the blower"
+        ]
+      },
+      {
         "version": "1.32.4",
         "changes": [
           "Installer auto-installs Docker and curl when missing instead of erroring out"
@@ -843,12 +854,6 @@
         "version": "1.22.0",
         "changes": [
           "Add THEN/ELSE logic gate support and real-time trigger evaluation broadcast"
-        ]
-      },
-      {
-        "version": "1.21.0",
-        "changes": [
-          "Smart module command routing with speed preservation and curve-controlled auto mode"
         ]
       }
     ],
