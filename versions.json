@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-06-01T11:09:04Z",
+  "generatedAt": "2026-06-01T11:17:38Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.146.1",
-      "archive": "s4r-web-1.146.1.tar.gz",
-      "sha256": "9871b9aefde9df5216f21850838708e3a9e2ec887fac4abacad25ca01bf6fd21",
-      "size": 11525973,
+      "version": "1.146.2",
+      "archive": "s4r-web-1.146.2.tar.gz",
+      "sha256": "0722162c3cbd31e79c308fc9ea6a25c226915b549597611d79909e9b6eef0a5d",
+      "size": 11526171,
       "changelog": [
+        {
+          "version": "1.146.2",
+          "changes": [
+            "Fix Lab wizards rendering behind the header"
+          ]
+        },
         {
           "version": "1.146.1",
           "changes": [

@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-01T11:01:19.589Z",
+  "lastCheck": "2026-06-01T11:11:19.570Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.146.1",
-      "installedAt": "2026-06-01T11:09:04Z"
+      "version": "1.146.2",
+      "installedAt": "2026-06-01T11:17:38Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.146.1",
+        "changes": [
+          "Auto-recover when a page section fails to load after an update",
+          "Fix Lab Quick Add menu not opening the plant/strain wizards",
+          "Show auto-managed temperature bands in VPD control panel"
+        ]
+      },
       {
         "version": "1.146.0",
         "changes": [
@@ -389,26 +397,6 @@
           "Plant wizard: Skip-strain button moved next to the search box",
           "Strain card empty plant list now has a one-click + Add plant shortcut",
           "Differentiate New Plant vs New Strain buttons with sprout / helix emoji"
-        ]
-      },
-      {
-        "version": "1.130.0",
-        "changes": [
-          "Distinguish Log Entry vs Add Plant in hunt header with different icons",
-          "Land on Strains tab by default if you don't have a pheno hunt set up",
-          "Use UUIDs for hunt checkpoints to prevent same-millisecond ID collisions",
-          "Journal/Pheno Hunt empty state explains pheno hunts are optional and links to plants",
-          "Overview inventory pills (Seeds/Pollen/Strains) are now clickable",
-          "Creating a plant from any tab no longer kicks you back to Strains",
-          "Male evaluation empty state links to where you actually mark a plant as male",
-          "Needs Attention card on Overview shows total count and expands beyond 5 items",
-          "Stop leaking keydown listener when closing a photo lightbox",
-          "Opening a plant pushes a URL \u2014 browser-back returns to the list instead of leaving the lab",
-          "Replace Quick Add with focused popover (plant / strain / quick log / full wizard)",
-          "Make Quick Log the primary hunt action and demote the detailed wizard",
-          "Score wizard: Save now button saves partial scores without finishing all 9 steps",
-          "Lab tabs stay in the same order \u2014 keyboard shortcuts no longer shift around",
-          "Welcome screen now offers three paths (plant, strain, tour) instead of forcing one"
         ]
       }
     ],
