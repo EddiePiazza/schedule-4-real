@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-05-31T22:00:38.176Z",
+  "lastCheck": "2026-06-01T11:01:19.589Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.146.0",
-      "installedAt": "2026-05-28T13:14:50Z"
+      "version": "1.146.1",
+      "installedAt": "2026-06-01T11:09:04Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -520,6 +520,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.33.0",
+        "changes": [
+          "Cap humidity at 80% to avoid mold risk at warmer temperatures",
+          "Manage temperature with automatic safe bands, prioritizing VPD via humidity"
+        ]
+      },
+      {
         "version": "1.32.6",
         "changes": [
           "Stop recurring blower power surges when night temp can't be cooled"
@@ -848,12 +855,6 @@
         "version": "1.23.1",
         "changes": [
           "Fix triggers not executing: user triggers now always override VPD, auto-create safety table"
-        ]
-      },
-      {
-        "version": "1.23.0",
-        "changes": [
-          "Add safety timeouts, NaN sensor detection, safe startup and configurable device protection"
         ]
       }
     ],

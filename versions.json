@@ -1,14 +1,22 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-05-31T22:01:04Z",
+  "generatedAt": "2026-06-01T11:09:04Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.146.0",
-      "archive": "s4r-web-1.146.0.tar.gz",
-      "sha256": "14805335daf9023d00afe80189a6b25f7904bed5cb0800a78ae9311b94046855",
-      "size": 11523633,
+      "version": "1.146.1",
+      "archive": "s4r-web-1.146.1.tar.gz",
+      "sha256": "9871b9aefde9df5216f21850838708e3a9e2ec887fac4abacad25ca01bf6fd21",
+      "size": 11525973,
       "changelog": [
+        {
+          "version": "1.146.1",
+          "changes": [
+            "Auto-recover when a page section fails to load after an update",
+            "Fix Lab Quick Add menu not opening the plant/strain wizards",
+            "Show auto-managed temperature bands in VPD control panel"
+          ]
+        },
         {
           "version": "1.146.0",
           "changes": [
