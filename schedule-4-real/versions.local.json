@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-06T01:42:49.878Z",
+  "lastCheck": "2026-06-06T01:52:49.848Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.147.0",
-      "installedAt": "2026-06-06T01:51:47Z"
+      "version": "1.147.1",
+      "installedAt": "2026-06-06T02:01:40Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -41,6 +41,13 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.147.0",
+        "changes": [
+          "Alert when the sensor feed goes silent for several minutes",
+          "Show disconnected state instead of stale sensor values as live"
+        ]
+      },
       {
         "version": "1.146.2",
         "changes": [
@@ -382,15 +389,6 @@
         "version": "1.132.1",
         "changes": [
           "Hunt: hide Compare/Keeper/Rankings tabs entirely until 2 plants scored (single hint instead)"
-        ]
-      },
-      {
-        "version": "1.132.0",
-        "changes": [
-          "Observation wizard: Save & finish escape hatch \u2014 save without clicking through every step",
-          "Label the plant timeline as \"Plant Journal\" \u2014 home growers don't need a Pheno Hunt to have one",
-          "Compare radar shows Score X buttons when fewer than 2 plants are scored",
-          "Score wizard refuses to save synthetic 5.0 scores when nothing was rated"
         ]
       }
     ],

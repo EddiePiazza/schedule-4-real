@@ -1,14 +1,20 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-06-06T01:51:47Z",
+  "generatedAt": "2026-06-06T02:01:40Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.147.0",
-      "archive": "s4r-web-1.147.0.tar.gz",
-      "sha256": "f9384deaaae8793cd79575a2d2fa744ece46e9f92bc95c855b037a509722424f",
-      "size": 11528585,
+      "version": "1.147.1",
+      "archive": "s4r-web-1.147.1.tar.gz",
+      "sha256": "e68944954f985519bfe67d90bf2fba1f78e070a5f972bf76df90b6781e2cd68a",
+      "size": 11528729,
       "changelog": [
+        {
+          "version": "1.147.1",
+          "changes": [
+            "Show last reading time when the sensor feed is offline"
+          ]
+        },
         {
           "version": "1.147.0",
           "changes": [
