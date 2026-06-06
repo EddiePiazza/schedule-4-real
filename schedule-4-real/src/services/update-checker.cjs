@@ -1547,6 +1547,138 @@ function ensureQuestdbLogRotation() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Boot resilience: repair the s4r-app.service systemd unit so the whole stack
+// (QuestDB, Mosquitto, proxy, every PM2 service) reliably comes back after a
+// machine/host reboot.
+//
+// Early installs generated the unit with `Type=forking` + `PIDFile=.../pm2.pid`
+// + `ExecStop=kill.sh all`. pm2-start.sh never forks a daemon that owns that
+// PIDFile, so systemd judged the unit "failed to start" and could fire ExecStop
+// (kill.sh all) — tearing down the services it had just launched. Net effect on
+// a reboot: no Mosquitto/proxy, devices stop reporting, climate control dead.
+//
+// Fix: rewrite to `Type=oneshot` + `RemainAfterExit=yes`, drop the PIDFile, and
+// make ExecStop a no-op. The services are owned by pm2 + pm2-root.service, so a
+// stray `systemctl stop` (or a daemon-reload-triggered restart) must never kill
+// live climate control; a reboot relaunches everything via ExecStart.
+//
+// Idempotent (returns early once the unit is already oneshot), atomic (writes a
+// temp file, validates it with systemd-analyze, then renames into place), and
+// best-effort (any failure is logged and the live unit is left untouched).
+// MUST be reachable from supervisor startup: the supervisor self-update path
+// restarts the process and returns before runPostUpdateMigrations() runs, so for
+// a supervisor-only release startup is the only trigger that fires.
+function ensureBootResilience() {
+  try {
+    const unitPath = '/etc/systemd/system/s4r-app.service';
+    // Only repair an existing unit. Fresh installs get the correct one from
+    // install.sh; hosts without it rely on pm2-root.service (pm2 resurrect).
+    if (!fs.existsSync(unitPath)) return;
+
+    let current = '';
+    try { current = fs.readFileSync(unitPath, 'utf-8'); } catch { return; }
+
+    // Already migrated (oneshot, no kill-on-stop) → nothing to do.
+    if (/^\s*Type=oneshot\s*$/m.test(current) && !/ExecStop=.*kill\.sh/.test(current)) {
+      return;
+    }
+
+    const nodeBinDir = path.dirname(process.execPath);
+    const pm2Home = process.env.PM2_HOME || '/root/.pm2';
+    const reloadLine = fs.existsSync(path.join(PROJECT_ROOT, 'reload.sh'))
+      ? `ExecReload=/bin/bash ${PROJECT_ROOT}/reload.sh\n`
+      : '';
+
+    const unit = `[Unit]
+Description=Schedule 4 Real - Plant Automation
+Documentation=https://schedule4real.com
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+Environment=PATH=${nodeBinDir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PM2_HOME=${pm2Home}
+WorkingDirectory=${PROJECT_ROOT}
+Restart=on-failure
+RestartSec=5
+
+# pm2-start.sh handles everything: QuestDB, Mosquitto, all services, pm2 save
+ExecStart=/bin/bash ${PROJECT_ROOT}/pm2-start.sh
+# No-op stop: services are owned by pm2 + pm2-root.service. A stray systemctl stop
+# (or a daemon-reload-triggered restart) must NOT kill live climate control;
+# a reboot relaunches everything via ExecStart.
+ExecStop=/bin/true
+${reloadLine}
+# Safety limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+`;
+
+    // Validate the content we generated before touching the live unit.
+    if (!unit.includes('Type=oneshot') ||
+        !unit.includes(`ExecStart=/bin/bash ${PROJECT_ROOT}/pm2-start.sh`) ||
+        !fs.existsSync(path.join(PROJECT_ROOT, 'pm2-start.sh'))) {
+      console.warn('[Updater] Boot resilience: generated unit failed sanity check, skipping');
+      return;
+    }
+
+    // Validate with systemd-analyze (when present) BEFORE touching the live unit. The tool
+    // rejects any filename without a unit suffix, so it must verify a `.service`-named copy —
+    // we use a throwaway one in /tmp (the install temp below must instead live in the unit's
+    // own dir for an atomic rename). systemd-analyze loads the whole dependency graph, so a
+    // non-zero exit can come from UNRELATED broken units on the host — only abort when it flags
+    // OUR file specifically (a clean unit produces no line mentioning its own path).
+    const verifyPath = `/tmp/s4r-app-verify-${process.pid}.service`;
+    let analyzeAvailable = true;
+    try { execSync('command -v systemd-analyze', { stdio: 'pipe' }); }
+    catch { analyzeAvailable = false; }
+    if (analyzeAvailable) {
+      try {
+        fs.writeFileSync(verifyPath, unit, { mode: 0o644 });
+        let verifyOut = '';
+        try {
+          verifyOut = execSync(`systemd-analyze verify ${verifyPath} 2>&1`, { encoding: 'utf-8', timeout: 15000 });
+        } catch (verifyErr) {
+          verifyOut = ((verifyErr.stdout || '') + (verifyErr.stderr || '')).toString();
+        }
+        const ownIssues = verifyOut.split('\n').filter(l => l.includes(verifyPath));
+        if (ownIssues.length) {
+          console.warn('[Updater] Boot resilience: systemd-analyze flagged the generated unit, leaving the existing one:\n'
+            + ownIssues.join('\n'));
+          return;
+        }
+      } finally {
+        try { fs.unlinkSync(verifyPath); } catch {}
+      }
+    }
+
+    // Atomic replace via a same-directory temp file (rename is atomic only within one fs),
+    // then reload + ensure enabled. The .s4r-tmp suffix keeps systemd from treating it as a unit.
+    const tmpPath = unitPath + '.s4r-tmp';
+    fs.writeFileSync(tmpPath, unit, { mode: 0o644 });
+    fs.renameSync(tmpPath, unitPath);
+    try { execSync('systemctl daemon-reload', { stdio: 'pipe', timeout: 15000 }); } catch {}
+    try { execSync('systemctl enable s4r-app.service', { stdio: 'pipe', timeout: 15000 }); } catch {}
+
+    try {
+      fs.mkdirSync(path.join(PROJECT_ROOT, 'data'), { recursive: true });
+      fs.writeFileSync(path.join(PROJECT_ROOT, 'data', '.systemd-oneshot-done'),
+        JSON.stringify({ date: new Date().toISOString() }));
+    } catch {}
+
+    console.log('[Updater] Boot resilience: migrated s4r-app.service to Type=oneshot (reboot auto-recovery fixed)');
+  } catch (err) {
+    console.warn('[Updater] Boot resilience migration warning:', err.message);
+  }
+}
+
 function runPostUpdateMigrations() {
   try {
     const envFile = path.join(PROJECT_ROOT, '.env');
@@ -1802,6 +1934,11 @@ rm -f "${migrateScript}"
     // supervisor startup so it fixes existing installs without waiting for the next update.
     ensureQuestdbLogRotation();
 
+    // Repair the systemd unit so the stack auto-recovers after a reboot. Also called
+    // on supervisor startup (the only trigger that fires on a supervisor-only release,
+    // since the supervisor self-update returns before this migration hook runs).
+    ensureBootResilience();
+
     // ═══════════════════════════════════════════════════════════════════
     // Migration: Enable tunnel + relay for existing installations
     // New installs get these defaults from install.sh; this handles upgrades.
@@ -1992,28 +2129,26 @@ function writeMosquittoConfig() {
   const port = parseInt(process.env.MQTT_PORT) || 1883;
   const lanPort = parseInt(process.env.MQTT_LAN_PORT) || 1884;
   const wsPort = parseInt(process.env.MQTT_WS_PORT) || 9001;
+  // Keep in sync with the canonical template in pm2-start.sh. Persistence is OFF: a persistence
+  // DB write under a relative path resolved against a root-owned working dir throws "mosquitto.db.new:
+  // Permission denied" and kills the broker on boot. allow_anonymous is GLOBAL (no per_listener_settings).
   const conf = `# Mosquitto Local Broker - Schedule 4 Real
-# Auto-generated by update-checker recovery
+# Auto-generated by update-checker recovery (matches pm2-start.sh)
+allow_anonymous true
+persistence false
+retain_available true
+log_type warning
+log_type notice
+log_dest stdout
 
 listener ${port} 127.0.0.1
 listener ${lanPort} 0.0.0.0
 
 listener ${wsPort} 0.0.0.0
 protocol websockets
-
-allow_anonymous true
-
-log_type all
-log_dest stdout
-
-persistence true
-persistence_location proxy/mosquitto_data/
-
-retain_available true
 `;
   const dir = path.join(PROJECT_ROOT, 'proxy');
   try { fs.mkdirSync(dir, { recursive: true }); } catch {}
-  try { fs.mkdirSync(path.join(dir, 'mosquitto_data'), { recursive: true }); } catch {}
   fs.writeFileSync(path.join(dir, 'mosquitto.conf'), conf);
 }
 
@@ -2283,5 +2418,6 @@ module.exports = {
   ensureMosquittoHealthy,
   ensureProxyHealthy,
   ensureQuestdbLogRotation,
+  ensureBootResilience,
   COMPONENT_DEFS
 };

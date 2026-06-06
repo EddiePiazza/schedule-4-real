@@ -1,13 +1,13 @@
 {
-  "generated": "2026-06-01T11:09:13Z",
+  "generated": "2026-06-06T00:32:41Z",
   "files": {
     "socket-chart-visibility.json": {
       "hash": "8fe23d59b6d9ef21af62186792413276",
       "size": 48
     },
     "supervisor-state.json": {
-      "hash": "58a35a186781b47936e3dd66e92f010f",
-      "size": 168
+      "hash": "8a36e0e2fe72e0b81d9f3a60f102fd60",
+      "size": 166
     },
     "appdata-index.json": {
       "hash": "009f15e792c9a92d42f9c68a07087326",

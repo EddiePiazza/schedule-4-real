@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-01T11:11:19.570Z",
+  "lastCheck": "2026-06-06T00:30:37.236Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.33.0",
-      "installedAt": "2026-05-31T22:01:04Z"
+      "version": "1.33.1",
+      "installedAt": "2026-06-06T00:32:33Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.146.2",
+        "changes": [
+          "Fix Lab wizards rendering behind the header"
+        ]
+      },
       {
         "version": "1.146.1",
         "changes": [
@@ -385,18 +391,6 @@
           "Label the plant timeline as \"Plant Journal\" \u2014 home growers don't need a Pheno Hunt to have one",
           "Compare radar shows Score X buttons when fewer than 2 plants are scored",
           "Score wizard refuses to save synthetic 5.0 scores when nothing was rated"
-        ]
-      },
-      {
-        "version": "1.131.0",
-        "changes": [
-          "Show streaming-engine error on Cameras tab even before any camera is added",
-          "Breeder Card button shows when locked, with a hint about the unlock criteria",
-          "Photo lightbox: Download button opens the photo full-size in a new tab",
-          "Rooms tab: toggle to hide 3D-scene info overlays for a clean view",
-          "Plant wizard: Skip-strain button moved next to the search box",
-          "Strain card empty plant list now has a one-click + Add plant shortcut",
-          "Differentiate New Plant vs New Strain buttons with sprout / helix emoji"
         ]
       }
     ],

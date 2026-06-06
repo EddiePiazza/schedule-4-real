@@ -168,24 +168,26 @@ fi
 # (the LiteSpeed reverse-proxy forwards /mqtt → port ${MQTT_WS_PORT:-9001}).
 mkdir -p proxy/mosquitto_data
 cat > proxy/mosquitto.conf << MOSQ_EOF
-# Mosquitto Local Broker - Schedule 4 Real
-# Auto-generated from .env ports
+# Mosquitto Local Broker - Schedule 4 Real (auto-generated from .env ports)
+# Persistence is OFF on purpose: this is a transient relay broker (the real data lives in QuestDB).
+# The actual reboot failure (2026-06-06) was the persistence DB write — "mosquitto.db.new:
+# Permission denied" (a relative path resolved against a root-owned working dir) — killing the
+# broker on boot; turning persistence off removes that failure mode entirely.
+# allow_anonymous is GLOBAL here: we deliberately do NOT set \`per_listener_settings true\`, so one
+# allow_anonymous applies to every listener regardless of its position in the file. Global options
+# are kept above the listeners by convention (and to keep per-listener scoping trivial to add later).
+allow_anonymous true
+persistence false
+retain_available true
+log_type warning
+log_type notice
+log_dest stdout
 
 listener ${MQTT_PORT} 127.0.0.1
 listener ${MQTT_LAN_PORT} 0.0.0.0
 
 listener ${MQTT_WS_PORT:-9001} 0.0.0.0
 protocol websockets
-
-allow_anonymous true
-
-log_type all
-log_dest stdout
-
-persistence true
-persistence_location proxy/mosquitto_data/
-
-retain_available true
 MOSQ_EOF
 
 # If mosquitto is already listening (probably PM2 restarted it for us) we leave
@@ -283,7 +285,10 @@ echo ""
 
 # Limpiar procesos PM2 previos de s4r
 info "Limpiando procesos PM2 previos..."
-pm2 delete s4r-web s4r-ingest s4r-retention s4r-supervisor s4r-mosquitto s4r-proxy s4r-cameras s4r-tunnel 2>/dev/null || true
+# NOTE: do NOT delete s4r-mosquitto / s4r-proxy here — they were started above and are NOT restarted
+# below, so listing them here killed the broker + proxy on every boot (2026-06-06). Only clean the
+# Node services that ARE restarted below.
+pm2 delete s4r-web s4r-ingest s4r-retention s4r-supervisor s4r-cameras s4r-tunnel 2>/dev/null || true
 sleep 2
 
 # ═══════════════════════════════════════════

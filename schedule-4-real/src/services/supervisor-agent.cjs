@@ -235,6 +235,11 @@ const COOLING_BELOW_MAX_TIMEOUT_MS = 5 * 60 * 1000; // 5 min below idealTemp.max
 // (no extraction, no heating, no humidifying). 30 % is the minimum speed at which the blower
 // produces measurable air movement; anything below is just current draw. Eddie 2026-05-26.
 const VPD_BLOWER_IDLE_SPEED = 30;
+// Blind/stale-data fail-safe extraction. When the sensor feed dies (>5 min) the supervisor can't
+// measure the room, so it can't run VPD control — but a flowering room must NOT have the exhaust
+// fully off for long (humidity builds → mould/botrytis). 40 % is a gentle, capped "keep venting"
+// speed: sheds moisture + exchanges air without acting on a stale snapshot. Eddie 2026-06-03.
+const STALE_SAFE_BLOWER_SPEED = 40;
 /** Saturation vapor pressure (Tetens formula) */
 function svp(t) { return 0.6108 * Math.exp((17.27 * t) / (t + 237.3)); }
 
@@ -2277,13 +2282,16 @@ function evaluateVpdIntelligent() {
   const sensorAge = sensorValues._lastUpdate ? (Date.now() - sensorValues._lastUpdate) : 0;
   if (sensorAge > 120 * 1000) {
     if (sensorAge > 5 * 60 * 1000) {
-      // Truly stale → drive the blower to a SAFE OFF state and skip. Leaving vpdBlowerMin/MaxSpeed
-      // at their last values would let the 3-min heartbeat keep re-publishing a stale speed (e.g.
-      // a stale 100% cooling) for as long as the feed is dead — acting on conditions that no longer
-      // exist. 0 % is the safe default (no extraction of a room we can't measure); the watchdog
-      // will restart us shortly and recover fresh state. Eddie 2026-05-31 audit (P0 #1).
-      vpdBlowerMinSpeed = 0;
-      vpdBlowerMaxSpeed = 0;
+      // Truly stale → clamp the blower to a MOULD-SAFE gentle extraction (not 0, not the last
+      // value). Leaving it at the last value would let the heartbeat re-publish a stale speed
+      // (e.g. a stale 100 % cooling) on conditions that no longer exist. But 0 % was WRONG for a
+      // flowering room: a long sensor gap with the exhaust fully OFF lets humidity build → mould /
+      // botrytis (Eddie 2026-06-03: a ~1.5 h MQTT dropout, 09:56-11:32, let humi climb 63→70 %
+      // unmonitored with the blower off). A fixed, moderate, CAPPED extraction keeps air moving and
+      // sheds moisture without acting on a stale snapshot — the safe blind default for a humid-
+      // prone room is "gently vent", not "seal it up". The watchdog still restarts us to recover.
+      vpdBlowerMinSpeed = STALE_SAFE_BLOWER_SPEED;
+      vpdBlowerMaxSpeed = STALE_SAFE_BLOWER_SPEED;
       return [];
     }
     // Mild staleness: continue evaluating to keep existing roles ticking, but don't open new
@@ -2486,14 +2494,18 @@ function evaluateVpdIntelligent() {
   const tempHighThreshold = idealTemp.max; // Cooling starts immediately when temp exceeds max (no hysteresis — continuation logic prevents oscillation)
   const tempLowThreshold = idealTemp.min - TEMP_LOW_HYSTERESIS;  // e.g., 24-0.5=23.5°C
 
-  // Humidity thresholds. The humidifier turns ON below humiLowThreshold and OFF at/above target+1
-  // (see RULE 2). The ON edge is target−2 (was target−1): a 1 %-wide ON/OFF band flapped the
-  // humidifier relay on ±1-2 % sensor noise (45-47 toggles/2h — audit P1 #5). target−2 ON + target+1
-  // OFF gives a 3 % band that rides out the noise, and it matches the humidity-yield engage point
-  // (target−2) so the blower-yield and the humidifier turn on together.
-  const humiLowThreshold = humidifierRecentlyOff
-    ? idealHumiTarget - 4  // After humidifier off: wider tolerance, moisture still settling
-    : idealHumiTarget - 2; // Normal: 2 % below target (was 1 %)
+  // Humidity thresholds — humidifier ON at humiLowThreshold, OFF at idealHumiMin+1 (see RULE 2).
+  // ON edge = idealHumiMin (the band FLOOR / VPD band max). This humidifier is powerful + laggy:
+  // one ~75 s pulse keeps raising humidity for minutes after it's commanded off, overshooting ~+7 %
+  // (Eddie 2026-06-02: ON at 61 → peaked 69 %). So we deliberately re-arm at the LOW edge of the
+  // band — the inevitable overshoot then lands near the HIGH edge (idealHumiMax) instead of sailing
+  // past it into too-humid/VPD-below-band. Net swing ≈ idealHumiMin→idealHumiMax = VPD inside the
+  // band on both ends. (re-arm at idealHumiMin−2 overshot to 69 % / VPD 0.92; idealHumiMin−4 dried
+  // to 59 % / VPD 1.24. idealHumiMin threads it.)
+  // The value band is intentionally narrow (~1 %) for that lag-compensation, so noise immunity is
+  // TIME-based instead: the humidifier is a slow-climate socket, so SLOW_CLIMATE_DWELL_MS bounds how
+  // often the relay can toggle (a wider value band would re-break the overshoot landing point).
+  const humiLowThreshold = idealHumiMin;
   const humiHighThreshold = idealHumiMax + 4; // 4% above ideal max (absorbs post-humidifier overshoot)
 
   // Emergency humidity flag — critically above max, overrides safety margins
@@ -2619,10 +2631,14 @@ function evaluateVpdIntelligent() {
     humidifierEvalStartTime = 0;
     vpdEscalationState.humidifierEvalContaminated = false;
   }
-  // Mark the window as contaminated if extraction is active at ANY point. Once contaminated,
-  // the verdict is invalid no matter what happens later in the same window — we must wait for
-  // extraction to clear, then start a fresh window from scratch.
-  if (humidifierEvalStartTime > 0 && extractorRoleActiveNow) {
+  // Mark the window as contaminated if ANY exhaust is moving air — even the idle baseline (~30%)
+  // vents the humidifier's vapour about as fast as it accumulates (verified 2026-05-31), so a
+  // "no rise" verdict while the blower runs is meaningless. The old guard only counted the
+  // extractor ROLE at >idle+5, so a baseline blower silently masked the rise and the test cried
+  // "tank empty" on a FULL tank (2026-06-02 — Eddie confirmed water present; humidity WAS rising
+  // from the humidifier, the exhaust just hid it). Only judge the pump when the exhaust is off.
+  const exhaustMaskingNow = extractorRoleActiveNow || (lastBlowerSpeed ?? 0) >= VPD_BLOWER_IDLE_SPEED;
+  if (humidifierEvalStartTime > 0 && exhaustMaskingNow) {
     if (!vpdEscalationState.humidifierEvalContaminated) {
       console.log('[VPD] Humidifier DRY self-test: window contaminated by concurrent extraction — will restart fresh once extraction clears');
     }
@@ -2642,11 +2658,17 @@ function evaluateVpdIntelligent() {
       console.log('[VPD] Humidifier DRY self-test: previous window discarded (contaminated). New window starting fresh.');
     } else {
       const rise = humi - humidifierEvalStartHumi;
-      if (rise < HUMIDIFIER_EFFECT_MIN_RISE) {
+      // A real empty tank makes humidity FALL while the pump runs (exhaust already excluded by the
+      // contamination guard above). A WORKING pump that's merely slow, or one already at its ceiling
+      // in dry ambient, holds or rises only a little — that is NOT "empty". The old test ("rise <
+      // 1%") false-flagged both cases (humidifier takes minutes to show, doubled if the blower ran —
+      // Eddie 2026-06-02 confirmed a full tank flagged empty). So only declare it empty on a clear
+      // DECLINE; otherwise keep trusting it.
+      if (rise < -HUMIDIFIER_EFFECT_MIN_RISE) {
         humidifierIneffectiveUntil = now + HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS;
         humidifierIneffectiveStartHumi = humi;
         saveSupervisorState();
-        console.log(`[VPD] Humidifier INEFFECTIVE: +${rise.toFixed(2)}% humi in ${(HUMIDIFIER_EFFECT_CHECK_MS / 60000).toFixed(0)} min (expected ≥ ${HUMIDIFIER_EFFECT_MIN_RISE}%). Tank likely empty. Skipping humidifier for ${(HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min — letting plant transpiration raise humi (refill the tank to resume).`);
+        console.log(`[VPD] Humidifier INEFFECTIVE: humi FELL ${rise.toFixed(2)}% in ${(HUMIDIFIER_EFFECT_CHECK_MS / 60000).toFixed(0)} min with exhaust off — tank likely empty. Resting it ${(HUMIDIFIER_INEFFECTIVE_COOLDOWN_MS / 60000).toFixed(0)} min (it still runs whenever humi is below target; refill to restore full effect).`);
         humidifierEvalStartTime = 0;
       } else {
         humidifierEvalStartTime = now;
@@ -3073,7 +3095,16 @@ function evaluateVpdIntelligent() {
     && (now - vpdEscalationState.tempAboveCoolTargetSince) > COOLING_UNREACHABLE_MS
     && temp < TEMP_SAFE_MAX;  // suppress futile cooling across the whole soft zone; only the hard ceiling forces it
 
-  const needsCooling = temp > coolingStopTarget
+  // ENGAGE HYSTERESIS (the missing deadband — root cause of the 2026-06-02 disaster). The cooling
+  // stop target is the band top, but to START cooling temp must exceed it by TEMP_HIGH_HYSTERESIS
+  // (0.5°C); once cooling (coolingActive latch), it continues until temp falls back to the stop
+  // target. The previous "cooling starts immediately at the band top, continuation logic prevents
+  // oscillation" was FALSE when ambient sits right at the band top (warm night ≈ 24°C = night max):
+  // temp micro-crossed 24.0 every cycle, so needsCooling flipped on/off 8642× in one day, each
+  // blower burst venting moisture the night humidifier couldn't replace → humidity spiralled
+  // 62→42 %, VPD ran away to 1.7+. The 0.5°C deadband makes temp hovering at the band top a no-op.
+  const coolEngageTemp = coolingActive ? coolingStopTarget : (coolingStopTarget + TEMP_HIGH_HYSTERESIS);
+  const needsCooling = temp > coolEngageTemp
     && (!heaterRecentlyOff || tempEmergency)
     && vpdAllowsCooling
     && (!coolingUnreachable || tempEmergency);
@@ -3152,14 +3183,25 @@ function evaluateVpdIntelligent() {
   // sabotaging the optimizer — capping the ceiling at 25% while the optimizer wanted 70% — so
   // humidity ran away to 70% (Eddie 2026-05-25, full daytime period at 25% blower). Removed.)
 
-  // Activate humidifier when humidity is low — UNLESS the dry-tank self-test flagged it as
-  // ineffective. In that case keep it off (no point burning the pump dry) and let plant
-  // transpiration recover humi. The cooldown will re-test automatically.
-  if (humidifierIneffective && humidifierRoleActive) {
+  // The dry-tank self-test ("ineffective") may only REST the pump while humidity is still adequate
+  // (≥ band floor) — it must NEVER starve the room during a real humidity crash. Below the band
+  // floor (VPD out of band on the dry side) the humidifier runs regardless of the flag: if the tank
+  // truly is empty it does no harm, and if it isn't — the usual FALSE POSITIVE, where a running
+  // blower vented the vapour so the self-test saw "no rise" and wrongly cried empty — it rescues the
+  // plant. Eddie 2026-06-02: the flag suspended the pump for 45 min while humi crashed to 46 % /
+  // VPD 1.62 with the blower simply masking a perfectly full tank. A running blower must never keep
+  // the humidifier off when humidity is low.
+  // The dry-tank suspension may ONLY rest the pump once humidity is at/above TARGET (genuinely
+  // fine) — never below it. A humidifier takes minutes to register a rise and the exhaust roughly
+  // doubles that lag (Eddie 2026-06-02), so the self-test false-flags easily; gating the block at
+  // target means even a false flag can't starve the room — the humidifier keeps running until humi
+  // actually reaches target. (Was idealHumiMin, which capped recovery at the band floor ~60 %.)
+  const humidifierBlocked = humidifierIneffective && humi >= idealHumiTarget;
+  if (humidifierBlocked && humidifierRoleActive) {
     deactivateSocketRole('humidifier', `Humidifier appears DRY (no humi rise during last self-test) — suspended for ${Math.round((humidifierIneffectiveUntil - now) / 60000)} min; refill tank`);
     delete vpdEscalationState.roles['humidifier'];
     lastHumidifierOffTime = now;
-  } else if (leafVpdAboveTargetHyst && !humidifierIneffective) {
+  } else if (leafVpdAboveTargetHyst && !humidifierBlocked) {
     // VPD-driven humidification: leaf VPD is ABOVE the upper band → room is too dry. The only
     // two levers to lower VPD are heat (which is gated by temperature ceiling and may be
     // unauthorised — Eddie disconnected his heater) or humidity. Activate the humidifier even
@@ -3176,24 +3218,27 @@ function evaluateVpdIntelligent() {
       delete vpdEscalationState.roles['extractor_humi'];
       if (!needsCooling) { newBlowerFloor = 0; newBlowerCeiling = 0; }
     }
-  } else if (humiLow && !humidifierIneffective) {
+  } else if (humiLow && !humidifierBlocked) {
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${humiLowThreshold.toFixed(0)}% (target ${idealHumiTarget.toFixed(0)}%)`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
     deactivateSocketRole('dehumidifier', 'Humi too low');
-  } else if (humi < idealHumiMin && !humidifierIneffective) {
+  } else if (humi < idealHumiMin && !humidifierBlocked) {
     // Humidity below ideal minimum — activate humidifier regardless of cooling state
     activateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% < ${idealHumiMin.toFixed(0)}%`);
     if (!vpdEscalationState.roles['humidifier']) {
       vpdEscalationState.roles['humidifier'] = { activatedAt: now, metricAtActivation: humi };
     }
-  } else if (humi >= idealHumiTarget + 1 && !leafVpdAboveTargetHyst) {
-    // Humidity reached target+1 AND VPD is in/under band — turn off humidifier. OFF at target+1
-    // (not exactly target) so the ON(target−2)/OFF(target+1) band is 3 % wide and can't flap on
-    // ±1-2 % noise (audit P1 #5). (Don't shut off purely on humi when VPD is still above the upper
-    // band — the VPD branch above re-activated humidifier precisely to drag VPD down.)
-    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% reached target+1 ${(idealHumiTarget + 1).toFixed(0)}% (VPD ${currentVpd.toFixed(2)} in band)`);
+  } else if (humi >= idealHumiMin + 1 && !leafVpdAboveTargetHyst) {
+    // LAG-COMPENSATED OFF (Eddie 2026-06-02). This humidifier keeps raising humidity for minutes
+    // after it's switched off (mist already airborne) — observed ≈ +5-6 % post-off. If we wait for
+    // target+1 to switch off, that tail sails humidity to ~69-71 % / VPD 0.92 (out of band, humid).
+    // So switch off as soon as humidity clears the band FLOOR (idealHumiMin+1); the post-off tail
+    // then lands near the band CEILING (idealHumiMax) instead of past it. Re-arms at idealHumiMin,
+    // giving a gentle idealHumiMin↔idealHumiMax swing that stays inside the VPD band both ways.
+    // (Don't shut off while VPD is still ABOVE the upper band — that branch is dragging VPD down.)
+    deactivateSocketRole('humidifier', `Humi ${humi.toFixed(0)}% ≥ band floor+1 (${(idealHumiMin + 1).toFixed(0)}%) — off early to let the lag tail settle at target (VPD ${currentVpd.toFixed(2)})`);
     delete vpdEscalationState.roles['humidifier'];
   }
   // Between humiLow and idealHumiTarget: humidifier stays in whatever state it's in (keeps pushing)
@@ -3344,8 +3389,13 @@ function evaluateVpdIntelligent() {
   // humidifier re-engages in the same band, the release path is unreachable and the latched role
   // keeps the blower extracting WHILE the humidifier adds moisture — they fight. Tear it down
   // here, unconditionally, the moment the humidifier is driving OR humi is back at/below target.
+  // Release the moment humidity is back INSIDE the band (≤ idealHumiMax−1), not when it reaches
+  // target. The job is only to undo the overshoot that pushed VPD below the band — overshooting all
+  // the way down to target meant the (sensor-lagged) blower kept extracting past the band ceiling
+  // and crashed humidity to ~58 % / VPD 1.28 (Eddie 2026-06-02). Arm at >idealHumiMax, release at
+  // ≤idealHumiMax−1 → a 1 % band that just nudges the overshoot back over the line and stops.
   if (extIsBlower && vpdEscalationState.roles['extractor_humi']
-      && (isRoleActive('humidifier') || humi <= idealHumiTarget)) {
+      && (isRoleActive('humidifier') || humi <= idealHumiMax - 1)) {
     delete vpdEscalationState.roles['extractor_humi'];
     if (!needsCooling) { newBlowerFloor = 0; newBlowerCeiling = 0; }
   }
@@ -3481,12 +3531,14 @@ function evaluateVpdIntelligent() {
       console.log(`[VPD] Humi extraction cooldown active (${Math.round((HUMI_EXTRACTION_CRASH_COOLDOWN_MS - (now - lastHumiExtractionCrashTime)) / 60000)}min remaining) — skipping reactivation`);
     }
 
-    // Activation gate — `humiHigh` (humi > idealHumiMax + 4) was the original trigger but it
-    // meant nothing happens until humi is 4 % over the ceiling. We now also trigger on
-    // `humi > idealHumiTarget` so the optimizer starts probing for the desaturation sweetspot
-    // as soon as humi drifts above the target band centre (Eddie 2026-05-28).
+    // Activation gate. Trigger on `humi > idealHumiMax` — i.e. only once humidity pushes VPD BELOW
+    // the band (genuinely too humid). The 2026-05-28 trigger `humi > idealHumiTarget` was far too
+    // eager: it dried the air the instant humidity drifted above target CENTRE while VPD was still
+    // perfectly in band, so it fought every overshoot of this powerful/laggy humidifier and produced
+    // the 60↔69 % / VPD 0.92↔1.22 saw-tooth (Eddie 2026-06-02). Above-target-but-in-band humidity is
+    // FINE — leave it alone and let it drift; only extract when it actually leaves the band.
     if (!crashCooldownActive && dehumExhausted && !blowerCrashingTemp
-        && (humiHigh || humiExtractionActive || humi > idealHumiTarget)
+        && (humiHigh || humiExtractionActive || humi > idealHumiMax)
         && tempSafeForBlower) {
       if (extIsBlower) {
         newBlowerCeiling = 100;
@@ -3510,8 +3562,12 @@ function evaluateVpdIntelligent() {
         // setting the blower actually moves air at.
         const PROP_MIN_SPEED = 30;
         const PROP_GAIN = 6;
-        const errOverTarget = Math.max(0, humi - idealHumiTarget);
-        const propSpeed = Math.min(100, PROP_MIN_SPEED + Math.round(errOverTarget * PROP_GAIN));
+        // Ramp from the band CEILING, not target: extraction only runs once humidity is over
+        // idealHumiMax, so the speed should be gentle right at the edge (a small overshoot needs a
+        // nudge, not a 48 % blast) and only grow for genuine excess. Basing it on humi−target made
+        // the very first extraction cycle slam ~48 % at humi=target+3 and crash humidity (2026-06-02).
+        const errOverMax = Math.max(0, humi - idealHumiMax);
+        const propSpeed = Math.min(100, PROP_MIN_SPEED + Math.round(errOverMax * PROP_GAIN));
 
         if (!humiExtractionActive) {
           // Initial activation — capture state for the role record. baseSpeed stores the
@@ -3523,7 +3579,7 @@ function evaluateVpdIntelligent() {
             metricEma: humi, lastAction: 'init', capacityClearedAt: now,
             committedFloor: propSpeed
           };
-          console.log(`[VPD] Blower extraction ON @ ${propSpeed}% — humi ${humi.toFixed(0)}% (${errOverTarget.toFixed(1)} over target ${idealHumiTarget.toFixed(0)}%)`);
+          console.log(`[VPD] Blower extraction ON @ ${propSpeed}% — humi ${humi.toFixed(0)}% (${errOverMax.toFixed(1)} over band ceiling ${idealHumiMax.toFixed(0)}%, VPD below band)`);
         }
 
         // Keep the role's committedFloor live so the fallback at line ~3235 picks up the
@@ -3817,7 +3873,11 @@ function evaluateVpdIntelligent() {
     socketAiModes[_humRoleAssign.deviceMac ? `${_humRoleAssign.deviceMac}:${_humRoleAssign.socket}` : _humRoleAssign.socket]
     || socketAiModes[_humRoleAssign.socket]
   ));
-  const humidifierCanHelp = humidifierAuthorised && !humidifierIneffective;
+  // "Can help" = the humidifier will actually run (so the blower should yield to it). Mirror the
+  // activation gate (humidifierBlocked): when humidity is below target the humidifier runs even if
+  // the dry-test flagged it, so the exhaust must yield then too — otherwise it keeps venting and the
+  // humidity rise the humidifier IS producing never becomes perceptible (Eddie 2026-06-02).
+  const humidifierCanHelp = humidifierAuthorised && !humidifierBlocked;
   const coolingWantedNow = temp > coolingStopTarget;
   if (vpdEscalationState.humidityYield === undefined) vpdEscalationState.humidityYield = false;
   if (!vpdEscalationState.humidityYield) {
@@ -3856,14 +3916,19 @@ function evaluateVpdIntelligent() {
     //     whereas at 0 % the humidifier raised humi 43→64 %. So while we're trying to RAISE
     //     humidity, the exhaust must not fight it at all. Internal air movement is the
     //     circulator's job, not the exhaust's.
-    //   • cooling futile but NO humidifier helping (yield couldn't engage): a gentle idle 30 %
-    //     for air exchange — there's no humidifier to out-pace, and some airflow is better than
-    //     none when the room can't be cooled.
+    //   • cooling futile WITH a humidifier present and humidity not in excess: fully OFF. Even a
+    //     30 % exhaust out-paces this humidifier (humi fell 60→48 % at 30 %, rose 43→64 % at 0 %),
+    //     so a "gentle air-exchange" baseline silently vents the vapour and drags humidity down,
+    //     re-arming the yield → the slow 59↔64 % / VPD 1.12↔1.23 ripple seen 2026-06-02. Air
+    //     movement is the circulator's job, not the exhaust's. Only run the 30 % baseline when there
+    //     is NO humidifier to out-pace (and humidity isn't in genuine excess, which has its own path).
     //   • active heating: fully OFF (don't vent the heat).
-    const holdSpeed = (heatingNow || humidityYield) ? 0 : VPD_BLOWER_IDLE_SPEED;
+    const holdSpeed = (heatingNow || humidityYield || (humidifierCanHelp && humi < idealHumiMax)) ? 0 : VPD_BLOWER_IDLE_SPEED;
     const why = humidityYield
       ? `humidity-yield (humi ${humi.toFixed(0)}% < target ${idealHumiTarget.toFixed(0)}%, temp ${temp.toFixed(1)}°C floating — humidifier raising humi per VPD chart, exhaust off so it isn't fought)`
-      : `cooling futile (ambient ${temp.toFixed(1)}°C can't reach ${idealTemp.max}°C) — gentle air exchange`;
+      : (humidifierCanHelp && humi < idealHumiMax)
+        ? `cooling futile + humidifier maintaining humi ${humi.toFixed(0)}% — exhaust fully off so it doesn't out-pace it`
+        : `cooling futile (ambient ${temp.toFixed(1)}°C can't reach ${idealTemp.max}°C) — gentle air exchange`;
     const oldF = newBlowerFloor, oldC = newBlowerCeiling;
     newBlowerFloor = holdSpeed;
     newBlowerCeiling = holdSpeed;
@@ -3901,6 +3966,25 @@ function evaluateVpdIntelligent() {
       newBlowerFloor = clamp;
       newBlowerCeiling = clamp;
     }
+  }
+
+  // ── EXHAUST OFF WHEN NOT COOLING AND HUMIDITY ISN'T IN EXCESS (Eddie 2026-06-02) ──
+  // The exhaust's only legitimate jobs are to COOL or to dump genuine humidity EXCESS. Any standing
+  // "baseline air-exchange" speed steadily vents moisture this room's marginal, lagging humidifier
+  // can't replace at night — it drags humidity below target and ping-pongs the humidifier (the slow
+  // 59↔64 % / VPD 1.12↔1.23 ripple). The earlier guards each had a hole: the blower↔humidifier mutex
+  // only fires above idle (the 30 % baseline slipped through), and the futile-cooling hold needs
+  // coolingUnreachable which takes 12 min to re-latch after a restart. This final clamp closes them
+  // all: unless we genuinely need cooling (or temp/humidity is an emergency), the exhaust is OFF for
+  // the whole in-band humidity range. Air circulation is the circulator's job, not the exhaust's.
+  // Exhaust OFF across the whole IN-BAND humidity range (humi ≤ idealHumiMax → VPD ≥ band min). The
+  // exhaust's only jobs are to cool or to dump genuine excess; a baseline "air-exchange" speed just
+  // vents moisture this marginal/laggy humidifier can't replace and ping-pongs it. Aligned with the
+  // extraction gate (which now fires only ABOVE idealHumiMax), so: in band → exhaust 0; above band →
+  // the gentle proportional extraction takes over. Air circulation is the circulator's job.
+  if (!needsCooling && !tempEmergency && !truthHumiEmergency && humi <= idealHumiMax) {
+    newBlowerFloor = 0;
+    newBlowerCeiling = 0;
   }
 
   // Apply blower overrides
@@ -4862,6 +4946,17 @@ async function start() {
       }
     } catch (err) {
       console.warn('[Supervisor] QuestDB log rotation check failed:', err.message);
+    }
+    // One-time: repair the s4r-app.service systemd unit (Type=forking → oneshot) so the
+    // whole stack auto-recovers after a reboot. Idempotent no-op once migrated. This is the
+    // ONLY reliable trigger on a supervisor-only release — the updater's self-update path
+    // restarts the supervisor before runPostUpdateMigrations() runs. Guarded for older builds.
+    try {
+      if (typeof updateChecker.ensureBootResilience === 'function') {
+        updateChecker.ensureBootResilience();
+      }
+    } catch (err) {
+      console.warn('[Supervisor] Boot resilience check failed:', err.message);
     }
   }, 8000);
 

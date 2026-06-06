@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-06-01T11:17:38Z",
+  "generatedAt": "2026-06-06T00:32:33Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2938,11 +2938,18 @@
       ]
     },
     "supervisor": {
-      "version": "1.33.0",
-      "archive": "s4r-supervisor-1.33.0.tar.gz",
-      "sha256": "071244199b2cc9b7ed141049fc8876bef00b9d48d4e24b601f112ba8011c3c2d",
-      "size": 124338,
+      "version": "1.33.1",
+      "archive": "s4r-supervisor-1.33.1.tar.gz",
+      "sha256": "12c6008434adf3b62b458f50efcafbd0da2bf474b65533a6b95fd10ed45bdcd1",
+      "size": 130182,
       "changelog": [
+        {
+          "version": "1.33.1",
+          "changes": [
+            "Fix services not auto-recovering after a reboot",
+            "Fix erratic VPD swings and unstable humidity control"
+          ]
+        },
         {
           "version": "1.33.0",
           "changes": [
