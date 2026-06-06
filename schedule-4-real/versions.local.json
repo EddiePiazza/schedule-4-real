@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-06T00:30:37.236Z",
+  "lastCheck": "2026-06-06T01:42:49.878Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.146.2",
-      "installedAt": "2026-06-01T11:17:38Z"
+      "version": "1.147.0",
+      "installedAt": "2026-06-06T01:51:47Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -502,6 +502,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.33.1",
+        "changes": [
+          "Fix services not auto-recovering after a reboot",
+          "Fix erratic VPD swings and unstable humidity control"
+        ]
+      },
+      {
         "version": "1.33.0",
         "changes": [
           "Cap humidity at 80% to avoid mold risk at warmer temperatures",
@@ -831,12 +838,6 @@
         "version": "1.24.0",
         "changes": [
           "Instant trigger execution on save, remove AI mode requirement for user triggers"
-        ]
-      },
-      {
-        "version": "1.23.1",
-        "changes": [
-          "Fix triggers not executing: user triggers now always override VPD, auto-create safety table"
         ]
       }
     ],

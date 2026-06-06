@@ -1,14 +1,21 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-06-06T00:32:33Z",
+  "generatedAt": "2026-06-06T01:51:47Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.146.2",
-      "archive": "s4r-web-1.146.2.tar.gz",
-      "sha256": "0722162c3cbd31e79c308fc9ea6a25c226915b549597611d79909e9b6eef0a5d",
-      "size": 11526171,
+      "version": "1.147.0",
+      "archive": "s4r-web-1.147.0.tar.gz",
+      "sha256": "f9384deaaae8793cd79575a2d2fa744ece46e9f92bc95c855b037a509722424f",
+      "size": 11528585,
       "changelog": [
+        {
+          "version": "1.147.0",
+          "changes": [
+            "Alert when the sensor feed goes silent for several minutes",
+            "Show disconnected state instead of stale sensor values as live"
+          ]
+        },
         {
           "version": "1.146.2",
           "changes": [
