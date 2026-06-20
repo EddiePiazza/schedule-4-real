@@ -1547,6 +1547,51 @@ function ensureQuestdbLogRotation() {
   }
 }
 
+/**
+ * Ensure pm2-logrotate is installed AND tightly capped, so no PM2 service's
+ * stdout/stderr can ever balloon a user's disk. The TLS proxy logs every device
+ * message, and in a recovery loop it spews KeyboardInterrupt tracebacks — together
+ * that took the proxy logs to ~11 GB on the dev box (2026-06-20). Uncapped, that
+ * silently fills small installs (Raspberry Pi). Idempotent + best-effort (the
+ * install step needs npm reachable; if offline it simply retries next process start).
+ */
+let _logrotateEnsured = false;
+function ensurePm2Logrotate() {
+  if (_logrotateEnsured) return;
+  try {
+    let installed = false;
+    try {
+      const mods = execSync('pm2 ls 2>/dev/null', { stdio: 'pipe', timeout: 10000, encoding: 'utf-8' });
+      installed = /pm2-logrotate/.test(mods);
+    } catch {}
+    if (!installed) {
+      console.log('[Updater] pm2-logrotate missing — installing to cap service logs...');
+      try {
+        execSync('pm2 install pm2-logrotate', { stdio: 'pipe', timeout: 120000 });
+      } catch (e) {
+        console.warn('[Updater] pm2-logrotate install failed (npm offline?), will retry:', e.message);
+        return; // not installed → leave _logrotateEnsured false so we retry next time
+      }
+    }
+    // Always (re)assert a tight, disk-safe config. Values quoted because rotateInterval
+    // contains '*' which the shell would otherwise glob-expand against the cwd.
+    const cfg = {
+      max_size: '30M',            // rotate any single log past 30 MB
+      retain: '5',                // keep 5 archives
+      compress: 'true',           // gzip them
+      workerInterval: '60',       // check every 60s so a fast spew is caught (not only daily)
+      rotateInterval: '0 0 * * *',
+    };
+    for (const [k, v] of Object.entries(cfg)) {
+      try { execSync(`pm2 set pm2-logrotate:${k} '${v}'`, { stdio: 'pipe', timeout: 8000 }); } catch {}
+    }
+    _logrotateEnsured = true;
+    console.log('[Updater] pm2-logrotate configured (per-log cap 30 MB × 5 compressed archives)');
+  } catch (err) {
+    console.warn('[Updater] ensurePm2Logrotate warning:', err.message);
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Boot resilience: repair the s4r-app.service systemd unit so the whole stack
 // (QuestDB, Mosquitto, proxy, every PM2 service) reliably comes back after a
@@ -2345,24 +2390,51 @@ async function ensureMosquittoHealthy() {
  * shares the same failure modes (orphan detached process, errored PM2 entry,
  * etc.) when updates land mid-restart.
  */
+let _proxyRecoveryHistory = []; // timestamps of recent proxy restarts (kill-loop guard)
 async function ensureProxyHealthy() {
   const port = parseInt(process.env.PROXY_PORT) || 8883;
-  if (await probePort('127.0.0.1', port, 1200)) return;
 
-  console.log(`[Recovery] Proxy not responding on 127.0.0.1:${port} — running remediation`);
-  // Kill orphan proxies (legacy daemon-mode might have detached them)
-  try { execSync(`pkill -f spiderproxy`, { stdio: 'pipe' }); } catch {}
-  try { execSync(`pkill -f mqtt_hybrid_proxy.py`, { stdio: 'pipe' }); } catch {}
-  await new Promise(r => setTimeout(r, 1500));
+  // Retry the probe before concluding the proxy is down. A SINGLE 1200ms timeout
+  // false-positives under load: the upstream TLS-EOF storm makes the proxy briefly
+  // slow to accept, and a false-positive here is catastrophic — the remediation
+  // kills+restarts the proxy, the fresh proxy is ALSO briefly slow, so it gets killed
+  // again → crash loop (2026-06-20: 468 MB of unhandled KeyboardInterrupt, ~1.5h sensor
+  // gap that only a full reboot cleared). Three probes over ~5s clears the transient.
+  for (let i = 0; i < 3; i++) {
+    if (await probePort('127.0.0.1', port, 1500)) return; // healthy
+    if (i < 2) await new Promise(r => setTimeout(r, 1500));
+  }
+
+  // Kill-loop circuit breaker: if we already restarted the proxy 2+ times in the last
+  // 15 min and it STILL probes down, BACK OFF. A proxy that keeps getting killed can
+  // never stabilise; leaving it alone lets it actually come up (the kills were the
+  // problem) — and a flapping-but-serving proxy beats a guaranteed-dead one.
+  const now = Date.now();
+  _proxyRecoveryHistory = _proxyRecoveryHistory.filter(t => now - t < 15 * 60 * 1000);
+  if (_proxyRecoveryHistory.length >= 2) {
+    console.error(`[Recovery] Proxy down on :${port} but already restarted ${_proxyRecoveryHistory.length}x/15min — backing off (kill-loop guard), NOT restarting`);
+    return;
+  }
+  _proxyRecoveryHistory.push(now);
+
+  console.log(`[Recovery] Proxy not responding on 127.0.0.1:${port} after 3 probes — running remediation`);
 
   const list = getPm2List();
   const existing = list && list.find(p => p.name === 's4r-proxy' || p.name === 'spiderapp-proxy');
   if (existing) {
+    // PM2-managed: restart via PM2 ONLY (one clean SIGINT). Do NOT also `pkill` it —
+    // pkill (SIGTERM) overlapping pm2's SIGINT delivers two signals the proxy can't
+    // unwind cleanly → unhandled KeyboardInterrupt crash, which is exactly what fed
+    // the 2026-06-20 loop. The orphan pkill belongs only in the no-PM2-entry branch.
     try { execSync(`pm2 reset ${existing.name}`, { stdio: 'pipe' }); } catch {}
     try { execSync(`pm2 restart ${existing.name}`, { stdio: 'pipe' }); } catch (err) {
       console.error(`[Recovery] Proxy restart failed:`, err.message);
     }
   } else {
+    // No PM2 entry — orphan cleanup is safe here (nothing PM2-managed to double-signal)
+    try { execSync(`pkill -f spiderproxy`, { stdio: 'pipe' }); } catch {}
+    try { execSync(`pkill -f mqtt_hybrid_proxy.py`, { stdio: 'pipe' }); } catch {}
+    await new Promise(r => setTimeout(r, 1500));
     // No PM2 entry — recreate from spiderproxy binary
     const binary = path.join(PROJECT_ROOT, 'proxy', 'spiderproxy');
     if (fs.existsSync(binary)) {
@@ -2418,6 +2490,7 @@ module.exports = {
   ensureMosquittoHealthy,
   ensureProxyHealthy,
   ensureQuestdbLogRotation,
+  ensurePm2Logrotate,
   ensureBootResilience,
   COMPONENT_DEFS
 };

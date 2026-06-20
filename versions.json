@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-06-06T02:01:40Z",
+  "generatedAt": "2026-06-20T01:21:08Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
@@ -2951,11 +2951,19 @@
       ]
     },
     "supervisor": {
-      "version": "1.33.1",
-      "archive": "s4r-supervisor-1.33.1.tar.gz",
-      "sha256": "12c6008434adf3b62b458f50efcafbd0da2bf474b65533a6b95fd10ed45bdcd1",
-      "size": 130182,
+      "version": "1.34.0",
+      "archive": "s4r-supervisor-1.34.0.tar.gz",
+      "sha256": "e55e05440d027b8f532838c322ef59922172064e238e32aa0afa41330272f37a",
+      "size": 136775,
       "changelog": [
+        {
+          "version": "1.34.0",
+          "changes": [
+            "Smooth adaptive blower cooling that finds minimum power for stable temp",
+            "Cap service logs so they can't fill the disk",
+            "Auto-recover sensor data when the pipeline stalls, without a reboot"
+          ]
+        },
         {
           "version": "1.33.1",
           "changes": [

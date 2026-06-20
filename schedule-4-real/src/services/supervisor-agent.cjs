@@ -17,6 +17,7 @@ const pg = require('pg');
 const fs = require('fs');
 const path = require('path');
 const { gzipSync } = require('zlib');
+const { execSync } = require('child_process');
 const dotenv = require('dotenv');
 const updateChecker = require('./update-checker.cjs');
 
@@ -197,7 +198,7 @@ function getLeafOffset() {
 // IGNORED for control (kept in config only for display / backward-compat).
 const TEMP_SAFE_MIN = 18;   // hard floor — force HEAT below this regardless of grace/phase
 const TEMP_SAFE_MAX = 30;   // hard ceiling — force COOL above this regardless of futility
-const TEMP_BAND_DAY = { min: 22, max: 27 };    // lights ON:  float 22-27, cool>27 / heat<22
+const TEMP_BAND_DAY = { min: 22, max: 25 };    // lights ON:  Eddie's goal = 24-25°C daytime → cool above 25
 const TEMP_BAND_NIGHT = { min: 19, max: 24 };   // lights OFF: float 19-24, cool>24 / heat<19
 
 // Activation hysteresis — dead band to prevent oscillation
@@ -304,6 +305,27 @@ const COOLING_INEFFECTIVE_COOLDOWN_MS = 30 * 60 * 1000; // hold idle 30 min, the
 const COOLING_UNREACHABLE_MS = 12 * 60 * 1000; // temp sustained above stop target this long (mildly) → cooling unreachable, suppress
 // Escape hatches so a "futile" verdict can never trap a genuinely overheating tent (audit P0 #2):
 const COOLING_FUTILE_ESCAPE_RISE = 0.8;  // °C above the futility baseline → re-allow cooling immediately
+
+// ── EQUILIBRIUM-SEARCH COOLING (Eddie 2026-06-20) ──
+// When the cooling target is UNREACHABLE (exhaust can't beat ambient — temp plateaus ABOVE the band),
+// pure proportional control pins the blower near 100 % forever chasing a temp it can't reach, and a
+// VPD wobble flipping cooling on/off slams it 100↔0. Instead, once temp has plateaued we hill-climb to
+// the MINIMUM blower speed that just HOLDS that achievable floor: step the speed DOWN until temp starts
+// to rise, then nudge it back UP — settling into a gentle limit cycle (Eddie's "potencia mínima de
+// desaturación": let temp drift 26.6→26.8, that's the floor, +step to hold). Quieter, far less drying,
+// the humidifier can keep up. Temperature stays the hard constraint (rising temp always raises speed).
+const COOL_EQ_START_SPEED = 50;            // % the blower ALWAYS starts at on cooling engage (never an abrupt 100% — Eddie)
+const COOL_EQ_STEP = 5;                    // % per adjustment (Eddie: ±5% steps)
+const COOL_EQ_PROBE_MS = 120 * 1000;       // 2 min between sweet-spot probes — let temp SETTLE before judging a step
+const COOL_EQ_RISE = 0.05;                 // °C rise above the last step → INSTANT +STEP (don't wait for the probe — temp is the hard constraint)
+const COOL_EQ_TOL = 0.15;                  // °C; a logged speed "achieves best temp" if within this of the buffer's min temp
+const COOL_HISTORY_MS = 10 * 60 * 1000;    // rolling (speed,temp,humi) window the sweet-spot search studies
+const COOL_TEMP_OVERRIDE_MARGIN = 1.0;     // temp this far above the band top = genuine heat → cool regardless of VPD
+const coolHistory = [];      // [{t,speed,temp,humi}] settled samples over the last 10 min — the buffer the sweet-spot search uses
+let coolEqSpeed = 0;         // current blower speed (0 = cooling not engaged this run)
+let coolEqRefTemp = 0;       // temp at the last step — a rise of >COOL_EQ_RISE above it triggers an instant +STEP
+let coolEqLastProbe = 0;     // last sweet-spot probe time (paces the buffer study)
+let coolEqProbeCount = 0;    // probes since engage — drives the periodic up/down exploration at the knee
 // Set true each evaluation when cooling is currently judged futile, so the blower-send path
 // (separate function) knows NOT to force the blower to 100 % for a temperature emergency that
 // cooling can't relieve anyway. Humidity emergencies (extraction works) are unaffected.
@@ -518,6 +540,12 @@ const HUMI_EXTRACTION_CRASH_COOLDOWN_MS = 2 * 60 * 1000;
 let lastBlowerSpeed = null; // Last commanded speed to avoid redundant commands
 let lastBlowerSendAt = 0;   // ms of the last successful blower command send
 let lastBlowerEmergency = false; // tracks whether last sent speed was the emergency-100 path
+// Minimum on/off DWELL for the blower (Eddie 2026-06-06 flap fix). The blower send path bypasses
+// executeActions, so neither the socket anti-oscillation lock nor the slow-climate dwell ever
+// governed it — it flapped 31↔0 every ~15 s on the humidity boundary (~735 toggles/20 h). This
+// caps an on/off CROSSING to one per BLOWER_MIN_DWELL_MS; emergencies/heartbeat/mismatch bypass it.
+let blowerToggleLockUntil = 0;
+const BLOWER_MIN_DWELL_MS = 90 * 1000;
 // Heartbeat re-send interval. After this many ms without any send, the supervisor proactively
 // re-publishes the current desired speed even if it hasn't changed. Protects against missed
 // MQTT messages and helps the device confirm it's tracking the supervisor's intent. 3 min is
@@ -3071,7 +3099,15 @@ function evaluateVpdIntelligent() {
   // not the instant it grazes it. Without this, at humi≈target / VPD≈target the cooling re-armed
   // every time the humidifier turned off, fired the blower, dried the air, and the cycle repeated
   // (2026-05-31 evening: 4 cycles, blower 0↔86 %, humi 62↔41). Emergency bypasses.
-  const vpdAllowsCooling = currentVpd > vpdTarget + 0.08 || tempEmergency;
+  // Temperature is the HARD constraint (Eddie): when temp is genuinely above the band — not merely
+  // grazing the top — cool REGARDLESS of VPD; the humidifier compensates the drying so blower+humidifier
+  // run together. The VPD gate (don't cool while VPD is already in-band, which over-dries) is the right
+  // call only for MILD overshoot near the band top. Without this override a VPD dip below target+0.08
+  // flipped cooling OFF at 26.9 °C and the blower slammed 100↔0 (Eddie 2026-06-20: "100% bajando a 95%
+  // luego parándose y volviendo al instante al 100%"). Preserves the night mild-overshoot fix: at
+  // 24.5 °C on a 19-24 band tempClearlyHigh is false → still VPD-gated; 25.5 °C+ cools. [[reference_vpd_softcool_night_regression]]
+  const tempClearlyHigh = temp > coolingStopTarget + COOL_TEMP_OVERRIDE_MARGIN;
+  const vpdAllowsCooling = currentVpd > vpdTarget + 0.08 || tempEmergency || tempClearlyHigh;
 
   // ── TIME-BASED COOLING-UNREACHABILITY (2026-05-31 evening incident) ──
   // The 4-min blower-measurement futility self-test is DEFEATED by the blower↔humidifier mutex:
@@ -3093,7 +3129,12 @@ function evaluateVpdIntelligent() {
   }
   const coolingUnreachable = vpdEscalationState.tempAboveCoolTargetSince > 0
     && (now - vpdEscalationState.tempAboveCoolTargetSince) > COOLING_UNREACHABLE_MS
-    && temp < TEMP_SAFE_MAX;  // suppress futile cooling across the whole soft zone; only the hard ceiling forces it
+    && !isDaytime;  // (Eddie 2026-06-17) Futile-cooling suppression is a NIGHT-only concept: a cool ambient
+    // sitting just above the tight night band means cooling can't win, so we suppress it to avoid venting/drying
+    // the night. In the DAY we must NEVER suppress — it once parked the blower OFF for >1h as the day heated past
+    // the band, a self-reinforcing trap (off → temp stays high → stays latched → off) that let temp climb toward
+    // the 30°C ceiling. By day the exhaust ALWAYS runs when above the band: even if it can't reach target it HOLDS
+    // temperature instead of giving up. (Was `temp < TEMP_SAFE_MAX`, which only forced cooling at the 30°C ceiling.)
 
   // ENGAGE HYSTERESIS (the missing deadband — root cause of the 2026-06-02 disaster). The cooling
   // stop target is the band top, but to START cooling temp must exceed it by TEMP_HIGH_HYSTERESIS
@@ -3103,7 +3144,22 @@ function evaluateVpdIntelligent() {
   // temp micro-crossed 24.0 every cycle, so needsCooling flipped on/off 8642× in one day, each
   // blower burst venting moisture the night humidifier couldn't replace → humidity spiralled
   // 62→42 %, VPD ran away to 1.7+. The 0.5°C deadband makes temp hovering at the band top a no-op.
-  const coolEngageTemp = coolingActive ? coolingStopTarget : (coolingStopTarget + TEMP_HIGH_HYSTERESIS);
+  // NOTE (Eddie 2026-06-17): REVERTED an earlier "soft cooling zone" experiment (engage 2°C below
+  // the band max, and cool on temperature alone with the vpdAllowsCooling gate dropped). With the
+  // tighter NIGHT band (19-24, max 24) that made cool-engage 22.5°C, so on a perfectly normal night
+  // at 24.5°C / VPD 1.22 (dead-centre in band) the blower slammed to ~50%, vented humidity 60→53%
+  // and pushed VPD out of band, forcing the humidifier — a self-inflicted night oscillation. Restored
+  // the band-max engage + the vpdAllowsCooling gate: cooling fires only when temp exceeds the band
+  // AND VPD is genuinely high, so a good-VPD night is left alone. (To cool earlier in the DAY, lower
+  // the day temp-band max in settings — that's the per-stage knob, not a global offset.)
+  // ENGAGE hysteresis. DAY: standard thermostat — engage AT the band ceiling, release TEMP_HIGH_HYSTERESIS below
+  // it, so the exhaust is ON whenever temp is at/over your configured day ceiling (Eddie 2026-06-17: the old
+  // "engage at ceiling+0.5" left the blower OFF at 27.5 above a 27°C band). NIGHT: keep engage at ceiling+0.5 /
+  // release at ceiling — at night the tight band + cool ambient means engaging AT the ceiling would vent/dry the
+  // room every time it grazes the band top; the +0.5 deadband + the night-only futility suppression keep it calm.
+  const coolEngageTemp = isDaytime
+    ? (coolingActive ? (coolingStopTarget - TEMP_HIGH_HYSTERESIS) : coolingStopTarget)
+    : (coolingActive ? coolingStopTarget : (coolingStopTarget + TEMP_HIGH_HYSTERESIS));
   const needsCooling = temp > coolEngageTemp
     && (!heaterRecentlyOff || tempEmergency)
     && vpdAllowsCooling
@@ -3120,17 +3176,55 @@ function evaluateVpdIntelligent() {
         vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp };
       }
     } else {
-      // Blower extractor: PROPORTIONAL cooling. Speed rises smoothly with how far temp
-      // exceeds the cooling stop target — gentle near the target (no 100 % slam to shave
-      // 0.1 °C), strong when genuinely hot. Recomputed each cycle, so it tracks the load
-      // continuously instead of bang-banging 100↔0/20 % (incident 2026-05-20). It blends
-      // seamlessly into the baseline at the stop target (need 0 → baseline speed).
-      const coolingNeed = Math.max(0, temp - coolingStopTarget);
-      const COOLING_GAIN = 40; // % blower per °C above the stop target
-      const coolingSpeed = Math.min(100, VPD_BLOWER_IDLE_SPEED + Math.round(coolingNeed * COOLING_GAIN));
+      // SWEET-SPOT POWER TRACKER (Eddie 2026-06-20). Don't blindly drop the blower (that just lets temp
+      // ratchet up in a cycle — the 50→37% → 27°C bug) and don't pin 100%. HUNT the power that gives the
+      // best temperature for the least power, learning from a rolling 10-min buffer of (speed,temp,humi):
+      //   • start at 50% (never an abrupt 100%);
+      //   • ANY real rise between probes → +STEP IMMEDIATELY (temp is the hard constraint — react at once);
+      //   • every COOL_EQ_PROBE_MS, after temp has SETTLED, log the held (speed→temp) and study the buffer:
+      //       bestTemp = coolest seen; targetSpeed = the LOWEST speed that reached within COOL_EQ_TOL of it
+      //       (the knee / sweet-spot). Warmer than achievable → +STEP; above the knee → trim toward it; AT
+      //       the knee → periodically probe UP (is a better temp reachable? Eddie: "sube a 55% a por 26.8")
+      //       and DOWN (did the knee drop?), else hold. Bounding steps by what the buffer PROVED is what
+      //       kills the drop-until-27°C cycle. A heat emergency (≥ TEMP_SAFE_MAX) still forces 100% downstream.
+      let coolingSpeed;
+      if (coolEqSpeed === 0) {
+        coolEqSpeed = COOL_EQ_START_SPEED;        // 50% — never an abrupt 100%
+        coolEqRefTemp = temp; coolEqLastProbe = now; coolEqProbeCount = 0;
+        coolHistory.length = 0;
+        console.log(`[VPD] Cooling engaged at ${coolEqSpeed}% (adaptive start, never a 100% slam) — temp ${temp.toFixed(1)}°C > ${coolingStopTarget.toFixed(1)}°C; hunting the power sweet-spot from the 10-min buffer.`);
+      } else if (temp > coolEqRefTemp + COOL_EQ_RISE) {
+        const rise = temp - coolEqRefTemp;
+        coolEqSpeed = Math.min(100, coolEqSpeed + COOL_EQ_STEP);
+        coolEqRefTemp = temp; coolEqLastProbe = now; // restart the settle window after a reactive step
+        console.log(`[VPD] Cooling ↑ ${coolEqSpeed}% @ ${temp.toFixed(1)}°C — temp rose +${rise.toFixed(2)}°, immediate +${COOL_EQ_STEP}%.`);
+      } else if (now - coolEqLastProbe >= COOL_EQ_PROBE_MS) {
+        // Record the SETTLED result of the speed we just held, then study the buffer.
+        coolHistory.push({ t: now, speed: coolEqSpeed, temp, humi });
+        while (coolHistory.length && now - coolHistory[0].t > COOL_HISTORY_MS) coolHistory.shift();
+        coolEqProbeCount++;
+        const bestTemp = Math.min(...coolHistory.map(h => h.temp));
+        const targetSpeed = Math.min(...coolHistory.filter(h => h.temp <= bestTemp + COOL_EQ_TOL).map(h => h.speed));
+        let next = coolEqSpeed, why;
+        if (temp > bestTemp + COOL_EQ_TOL) {
+          next = coolEqSpeed + COOL_EQ_STEP; why = `warmer (${temp.toFixed(1)}°) than best ${bestTemp.toFixed(1)}° → more power`;
+        } else if (coolEqSpeed > targetSpeed) {
+          next = Math.max(targetSpeed, coolEqSpeed - COOL_EQ_STEP); why = `at best temp but above the knee → trim toward ${targetSpeed}%`;
+        } else if (coolEqProbeCount % 3 === 0) {
+          next = coolEqSpeed + COOL_EQ_STEP; why = `at knee ${coolEqSpeed}% — probing UP for a better temp`;
+        } else if (coolEqProbeCount % 3 === 1) {
+          next = coolEqSpeed - COOL_EQ_STEP; why = `at knee ${coolEqSpeed}% — testing if it dropped`;
+        } else {
+          why = `holding sweet-spot ${coolEqSpeed}% (best ${bestTemp.toFixed(1)}°, ${coolHistory.length} pts)`;
+        }
+        coolEqSpeed = Math.max(VPD_BLOWER_IDLE_SPEED, Math.min(100, next));
+        coolEqRefTemp = temp; coolEqLastProbe = now;
+        console.log(`[VPD] Cooling sweet-spot: ${coolEqSpeed}% @ ${temp.toFixed(1)}° — ${why}.`);
+      }
+      coolingSpeed = coolEqSpeed;
+
       if (!vpdEscalationState.roles['extractor_temp']) {
         vpdEscalationState.roles['extractor_temp'] = { activatedAt: now, metricAtActivation: temp };
-        console.log(`[VPD] Cooling engaged — temp ${temp.toFixed(1)}°C > ${tempHighThreshold.toFixed(1)}°C, proportional speed ${coolingSpeed}% (toward ≤ ${coolingStopTarget.toFixed(1)}°C)`);
       }
       newBlowerFloor = Math.max(newBlowerFloor, coolingSpeed);
     }
@@ -3154,6 +3248,7 @@ function evaluateVpdIntelligent() {
       coolingGraceStableStart = 0;
     }
     coolingBelowMaxSince = 0;
+    coolEqSpeed = 0; // temp re-entered the band → reset the adaptive cooling (restarts at 50% next engage)
     delete vpdEscalationState.roles['extractor_temp'];
     deactivateSocketRole('cooler', 'Temp OK');
     if (!extIsBlower) deactivateSocketRole('extractor', 'Temp OK');
@@ -3389,23 +3484,26 @@ function evaluateVpdIntelligent() {
   // humidifier re-engages in the same band, the release path is unreachable and the latched role
   // keeps the blower extracting WHILE the humidifier adds moisture — they fight. Tear it down
   // here, unconditionally, the moment the humidifier is driving OR humi is back at/below target.
-  // Release the moment humidity is back INSIDE the band (≤ idealHumiMax−1), not when it reaches
-  // target. The job is only to undo the overshoot that pushed VPD below the band — overshooting all
-  // the way down to target meant the (sensor-lagged) blower kept extracting past the band ceiling
-  // and crashed humidity to ~58 % / VPD 1.28 (Eddie 2026-06-02). Arm at >idealHumiMax, release at
-  // ≤idealHumiMax−1 → a 1 % band that just nudges the overshoot back over the line and stops.
+  // Release when humidity is 2 % back inside the band (≤ idealHumiMax−2). The job is to undo the
+  // overshoot that pushed VPD below the band — overshooting down to target over-extracted and crashed
+  // humidity to ~58 % / VPD 1.28 (Eddie 2026-06-02), so we stay well above target. Paired with the
+  // arm-at-ceiling below, this gives a clean 2 % hysteresis (arm at idealHumiMax, release 2 % under)
+  // with real OFF-time between pulses — instead of the 1 %-overlap that toggled the blower 0↔30 %
+  // continuously while the room rested at the ceiling (Eddie 2026-06-17).
   if (extIsBlower && vpdEscalationState.roles['extractor_humi']
-      && (isRoleActive('humidifier') || humi <= idealHumiMax - 1)) {
+      && (isRoleActive('humidifier') || humi <= idealHumiMax - 2)) {
     delete vpdEscalationState.roles['extractor_humi'];
     if (!needsCooling) { newBlowerFloor = 0; newBlowerCeiling = 0; }
   }
 
-  // Arm extraction only when humi is CLEARLY above target (+2), but once armed keep running until
-  // the teardown above clears it at humi<=target — a 2 % arm/release hysteresis band. Arming
-  // exactly at target (the old gate) gave a zero-width band: as humi jittered ±1 % the proportional
-  // speed stepped 30↔36 forever (audit P1 #6). Emergencies bypass the +2 margin.
+  // Arm extraction only when humi exceeds the band CEILING (idealHumiMax — the VPD-band low edge);
+  // once armed keep running until the teardown above clears it at humi ≤ idealHumiMax−2 → a clean
+  // 2 % hysteresis. Eddie 2026-06-17: arming at idealHumiTarget+2 sat BELOW where the room rests
+  // (62-63 %), so extraction was permanently armed and toggled 0↔30 % every cycle against the 62 %
+  // release (the misleading "15 % average"). Arming at the ceiling fires the exhaust only when VPD
+  // genuinely leaves the band, and the 2 % band gives real off-time between pulses. Emergencies bypass.
   const needsHumiAction = (phaseExtracting || humiEmergency)
-    && (humi > idealHumiTarget + 2 || humiEmergency || isRoleActive('extractor_humi'))
+    && (humi > idealHumiMax || humiEmergency || isRoleActive('extractor_humi'))
     && !isRoleActive('humidifier');
 
   if (needsHumiAction) {
@@ -3902,7 +4000,9 @@ function evaluateVpdIntelligent() {
   // Hold idle when (a) we're yielding to the humidifier, or (b) cooling has been proven futile
   // and there's no humidity excess to extract (covers the no-/dead-humidifier case where yield
   // can't engage but slamming the blower is still pointless).
-  const holdIdle = humidityYield || (coolingFutile && humi < idealHumiMax && !truthHumiEmergency);
+  // Temperature priority (Eddie 2026-06-06): NEVER hold the exhaust idle while cooling is needed.
+  // The blower must run for temperature even while the humidifier raises humidity — they run together.
+  const holdIdle = !needsCooling && (humidityYield || (coolingFutile && humi < idealHumiMax && !truthHumiEmergency));
 
   // ── Apply final blower authority (priority order) ──
   if (truthHumiEmergency) {
@@ -3949,7 +4049,11 @@ function evaluateVpdIntelligent() {
   // the humi<target−2 case, but a humidifier left ON by its own hysteresis in the [target−2, target+1]
   // band while cooling wants the blower high slips through. Reconcile explicitly, here, after the
   // final floor is known:
-  if (extIsBlower && isRoleActive('humidifier') && newBlowerFloor > VPD_BLOWER_IDLE_SPEED && !truthHumiEmergency) {
+  // TEMPERATURE PRIORITY (Eddie 2026-06-06): when cooling is needed the blower and humidifier run
+  // SIMULTANEOUSLY — the mutex no longer clamps the exhaust just because the humidifier is on. The
+  // humidifier keeps raising humidity while the exhaust cools; we never trade temperature for humidity.
+  // The clamp below now only applies when we are NOT cooling (the resting/in-band case).
+  if (extIsBlower && isRoleActive('humidifier') && newBlowerFloor > VPD_BLOWER_IDLE_SPEED && !truthHumiEmergency && !needsCooling) {
     if (emergencyCanCool) {
       // Genuine relievable heat emergency → cooling wins; a high exhaust nullifies humidification
       // anyway, so stop wasting water and stop fighting.
@@ -4419,7 +4523,14 @@ async function processSensorData(sensorData, deviceMac) {
     const mismatchedOnOff = (effectiveSpeed > 0)
       && (deviceModuleState === 0)
       && (now - lastBlowerSendAt) > 30 * 1000; // cooldown so we don't spam during normal startup
-    if (crossedOnOff || changedEnough || emergencyRisingEdge || heartbeatDue || mismatchedOnOff) {
+    // Min on/off DWELL: suppress an on/off CROSSING within BLOWER_MIN_DWELL_MS of the last accepted
+    // crossing (the 31↔0 flap fix). Never suppress an emergency, device-mismatch recovery, or
+    // heartbeat — and never block a same-direction speed change (changedEnough without a crossing).
+    const dwellBlocksCrossing = crossedOnOff
+      && now < blowerToggleLockUntil
+      && !emergencyNow && !mismatchedOnOff && !heartbeatDue;
+    if (!dwellBlocksCrossing && (crossedOnOff || changedEnough || emergencyRisingEdge || heartbeatDue || mismatchedOnOff)) {
+      if (crossedOnOff) blowerToggleLockUntil = now + BLOWER_MIN_DWELL_MS;
       const tags = [];
       if (emergencyNow) tags.push('EMERGENCY');
       if (emergencyRisingEdge) tags.push('emergency-edge');
@@ -4947,6 +5058,15 @@ async function start() {
     } catch (err) {
       console.warn('[Supervisor] QuestDB log rotation check failed:', err.message);
     }
+    // Cap ALL PM2 service logs (install + configure pm2-logrotate) so no service —
+    // the verbose TLS proxy especially — can balloon a user's disk. Idempotent.
+    try {
+      if (typeof updateChecker.ensurePm2Logrotate === 'function') {
+        updateChecker.ensurePm2Logrotate();
+      }
+    } catch (err) {
+      console.warn('[Supervisor] pm2-logrotate check failed:', err.message);
+    }
     // One-time: repair the s4r-app.service systemd unit (Type=forking → oneshot) so the
     // whole stack auto-recovers after a reboot. Idempotent no-op once migrated. This is the
     // ONLY reliable trigger on a supervisor-only release — the updater's self-update path
@@ -5137,11 +5257,31 @@ async function start() {
   // sit frozen at its last speed indefinitely while emergencies read a stale value.
   // ═══════════════════════════════════════════════════════
   const WATCHDOG_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes without REAL sensor data = dead feed
+  let lastPipelineKickAt = 0;
+  const PIPELINE_KICK_COOLDOWN_MS = 4 * 60 * 1000; // don't restart the proxy more than ~once per 4 min
   setInterval(() => {
     const silenceMs = Date.now() - lastRealSensorAt;
     if (silenceMs > WATCHDOG_TIMEOUT_MS) {
-      console.error(`[Supervisor] WATCHDOG: No REAL sensor data in ${Math.round(silenceMs / 1000)}s — forcing restart`);
-      process.exit(1); // PM2 will restart us
+      // The data SOURCE is the proxy (device→proxy→local broker). When the proxy's local-publish
+      // client gets stuck disconnected, it silently drops every reading while staying PM2-"online",
+      // so restarting only the supervisor never recovered it (Eddie 2026-06-20: a ~1.5h sensor gap
+      // that only a full machine reboot fixed; the proxy/broker/ingest had NOT restarted during it).
+      // Kick the proxy (and let it re-establish its local-broker link) BEFORE we exit, so the feed
+      // actually resumes instead of the supervisor bouncing in place against a dead source.
+      const now = Date.now();
+      if (now - lastPipelineKickAt > PIPELINE_KICK_COOLDOWN_MS) {
+        lastPipelineKickAt = now;
+        console.error(`[Supervisor] WATCHDOG: No REAL sensor data in ${Math.round(silenceMs / 1000)}s — restarting the proxy (data source) before self-restart`);
+        try {
+          execSync('pm2 restart s4r-proxy', { stdio: 'pipe', timeout: 20000 });
+          console.error('[Supervisor] WATCHDOG: proxy restart issued');
+        } catch (e) {
+          console.error('[Supervisor] WATCHDOG: proxy restart failed:', e && e.message);
+        }
+      } else {
+        console.error(`[Supervisor] WATCHDOG: No REAL sensor data in ${Math.round(silenceMs / 1000)}s — proxy kicked recently, forcing self-restart only`);
+      }
+      process.exit(1); // PM2 will restart us; we re-subscribe to the now-fresh pipeline
     }
   }, 60000);
 

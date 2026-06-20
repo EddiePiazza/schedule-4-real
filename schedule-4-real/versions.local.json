@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-06T01:52:49.848Z",
+  "lastCheck": "2026-06-20T01:17:39.184Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.33.1",
-      "installedAt": "2026-06-06T00:32:33Z"
+      "version": "1.34.0",
+      "installedAt": "2026-06-20T01:21:08Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,12 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.147.1",
+        "changes": [
+          "Show last reading time when the sensor feed is offline"
+        ]
+      },
       {
         "version": "1.147.0",
         "changes": [
@@ -383,12 +389,6 @@
         "version": "1.133.0",
         "changes": [
           "Guided mode now hides breeder-only fields (node count, stem diameter, trichome %)"
-        ]
-      },
-      {
-        "version": "1.132.1",
-        "changes": [
-          "Hunt: hide Compare/Keeper/Rankings tabs entirely until 2 plants scored (single hint instead)"
         ]
       }
     ],
