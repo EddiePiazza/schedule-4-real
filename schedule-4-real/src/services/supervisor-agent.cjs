@@ -314,18 +314,24 @@ const COOLING_FUTILE_ESCAPE_RISE = 0.8;  // °C above the futility baseline → 
 // to rise, then nudge it back UP — settling into a gentle limit cycle (Eddie's "potencia mínima de
 // desaturación": let temp drift 26.6→26.8, that's the floor, +step to hold). Quieter, far less drying,
 // the humidifier can keep up. Temperature stays the hard constraint (rising temp always raises speed).
-const COOL_EQ_START_SPEED = 50;            // % the blower ALWAYS starts at on cooling engage (never an abrupt 100% — Eddie)
-const COOL_EQ_STEP = 5;                    // % per adjustment (Eddie: ±5% steps)
-const COOL_EQ_PROBE_MS = 120 * 1000;       // 2 min between sweet-spot probes — let temp SETTLE before judging a step
-const COOL_EQ_RISE = 0.05;                 // °C rise above the last step → INSTANT +STEP (don't wait for the probe — temp is the hard constraint)
-const COOL_EQ_TOL = 0.15;                  // °C; a logged speed "achieves best temp" if within this of the buffer's min temp
-const COOL_HISTORY_MS = 10 * 60 * 1000;    // rolling (speed,temp,humi) window the sweet-spot search studies
+const COOL_EQ_START_SPEED = 50;            // % seed at cooling engage
+const COOL_LEVEL_MS = 60 * 1000;           // 1-min avg for the CURRENT temp level (logging)
+const COOL_TREND_MS = 12 * 60 * 1000;      // LONG analysis window — catches the SLOW dawn→noon creep that a 5-min window missed (Eddie: it was imperceptible). Over 12 min even a 0.01°/min rise = +0.12°, well above noise.
+const COOL_STEP_MS = 90 * 1000;            // pace power changes to the thermal lag (each step's effect partly lands before the next)
+const COOL_RISE = 0.008;                   // °C/min (12-min) above this = RISING → add power. LOW so the slow curve is caught (noise averages out over 12 min).
+const COOL_FALL = 0.008;                   // °C/min below −this = FALLING → ease power down
+const COOL_UP_GAIN = 120;                  // up-step = clamp(rise_rate × this) — slow rise → small step, fast rise → bigger. Power tracks the curve PROPORTIONALLY, no emergency trigger.
+const COOL_UP_MIN = 2;                     // % min/max up-step while rising
+const COOL_UP_MAX = 10;
+const COOL_DOWN_STEP = 3;                   // % down-step when FLAT or FALLING (minimum-seek / ease as cooling capacity recovers)
+const COOL_MIN_OP = 40;                     // % operating FLOOR while cooling — Eddie's range 40-60, never ≤30% (humidifier, not blower, is the VPD bottleneck so diving lower is futile)
+const COOL_ABS_MAX = 90;                    // % sanity ceiling for normal control (the separate 30°C TEMP_SAFE_MAX emergency can still force 100%)
+const COOL_SAT_HIGH = 78;                   // % at/above this, a rise that ISN'T slowing despite more power = DESATURATION CAPACITY reached (intake/ambient-limited) → HOLD, don't climb futilely (more would only dry — Eddie 2026-06-22)
 const COOL_TEMP_OVERRIDE_MARGIN = 1.0;     // temp this far above the band top = genuine heat → cool regardless of VPD
-const coolHistory = [];      // [{t,speed,temp,humi}] settled samples over the last 10 min — the buffer the sweet-spot search uses
 let coolEqSpeed = 0;         // current blower speed (0 = cooling not engaged this run)
-let coolEqRefTemp = 0;       // temp at the last step — a rise of >COOL_EQ_RISE above it triggers an instant +STEP
-let coolEqLastProbe = 0;     // last sweet-spot probe time (paces the buffer study)
-let coolEqProbeCount = 0;    // probes since engage — drives the periodic up/down exploration at the knee
+let coolLastStep = 0;        // last paced power change
+let coolLastDt = 0;          // temp trend at the previous step — to tell if more power is SLOWING the rise (capacity check)
+let coolSatStreak = 0;       // consecutive high-power steps where the rise didn't slow → confirms capacity-limited (avoids a single-step false positive)
 // Set true each evaluation when cooling is currently judged futile, so the blower-send path
 // (separate function) knows NOT to force the blower to 100 % for a temperature emergency that
 // cooling can't relieve anyway. Humidity emergencies (extraction works) are unaffected.
@@ -508,12 +514,19 @@ const persistedConditionState = new Map(); // nodeId -> boolean (was active last
 // Rolling sensor-trend buffer: the last N (timestamp, temp, humi) samples.
 // Used to anticipate emergencies — if temp is rising fast toward the ideal max, we can
 // activate cooling a bit earlier to avoid triggering the strict emergency path.
-const TREND_BUFFER_SIZE = 10;
+// Pruned by TIME, not a fixed count, so a multi-minute trend window is ALWAYS fully populated.
+// (Was a fixed 10 samples; at the per-sensor-message cadence that was only ~1-2 min, so computeTrend's
+// 5-min default window — and the cooling controller's rise/fall detection — never had its full window of
+// data. Eddie 2026-06-21: the analysis window must be ≥5 min to robustly tell if temp is rising or falling.)
+const TREND_BUFFER_MS = 15 * 60 * 1000; // keep ~15 min of samples (covers the 5-min trend + headroom)
+const TREND_BUFFER_CAP = 1000;          // hard safety cap on sample count (cadence-independent backstop)
 const tempTrendBuffer = []; // [{ t, temp, humi }]
 function pushTrendSample(temp, humi) {
   const now = Date.now();
   tempTrendBuffer.push({ t: now, temp, humi });
-  while (tempTrendBuffer.length > TREND_BUFFER_SIZE) tempTrendBuffer.shift();
+  while (tempTrendBuffer.length && (now - tempTrendBuffer[0].t > TREND_BUFFER_MS || tempTrendBuffer.length > TREND_BUFFER_CAP)) {
+    tempTrendBuffer.shift();
+  }
 }
 function computeTrend(field = 'temp', windowMs = 5 * 60 * 1000) {
   // Returns {delta, perMin} for the given field over up to `windowMs` of history.
@@ -2455,6 +2468,15 @@ function evaluateVpdIntelligent() {
       console.log(`[VPD] Cycle transition: EMERGENCY override (temp=${temp.toFixed(1)}°C, humi=${humi.toFixed(0)}%) — grace aborted, resuming control`);
       vpdBlowerMaxSpeed = 100;
     }
+    // Past a band EDGE → cooling/heating is needed NOW; grace must not keep the blower off. A lights-ON
+    // transition sends the foco's heat straight up THROUGH the band top, and the grace's trend check treats
+    // a rising temp "favorable" (drifting toward the warm band) so it waited the full ~20 min while the room
+    // baked 25→26.6°C (Eddie 2026-06-21). Aborting on the band edge resumes cooling within one cycle (~30s).
+    if (cycleTransitionGraceActive && (temp > idealTemp.max || temp < idealTemp.min)) {
+      cycleTransitionGraceActive = false;
+      vpdBlowerMaxSpeed = 100;
+      console.log(`[VPD] Cycle transition: temp ${temp.toFixed(1)}°C past band [${idealTemp.min}-${idealTemp.max}] — grace aborted, resuming control now.`);
+    }
 
     if (elapsed >= CYCLE_TRANSITION_GRACE_MS) {
       cycleTransitionGraceActive = false;
@@ -3176,50 +3198,59 @@ function evaluateVpdIntelligent() {
         vpdEscalationState.roles['extractor'] = { activatedAt: now, metricAtActivation: temp };
       }
     } else {
-      // SWEET-SPOT POWER TRACKER (Eddie 2026-06-20). Don't blindly drop the blower (that just lets temp
-      // ratchet up in a cycle — the 50→37% → 27°C bug) and don't pin 100%. HUNT the power that gives the
-      // best temperature for the least power, learning from a rolling 10-min buffer of (speed,temp,humi):
-      //   • start at 50% (never an abrupt 100%);
-      //   • ANY real rise between probes → +STEP IMMEDIATELY (temp is the hard constraint — react at once);
-      //   • every COOL_EQ_PROBE_MS, after temp has SETTLED, log the held (speed→temp) and study the buffer:
-      //       bestTemp = coolest seen; targetSpeed = the LOWEST speed that reached within COOL_EQ_TOL of it
-      //       (the knee / sweet-spot). Warmer than achievable → +STEP; above the knee → trim toward it; AT
-      //       the knee → periodically probe UP (is a better temp reachable? Eddie: "sube a 55% a por 26.8")
-      //       and DOWN (did the knee drop?), else hold. Bounding steps by what the buffer PROVED is what
-      //       kills the drop-until-27°C cycle. A heat emergency (≥ TEMP_SAFE_MAX) still forces 100% downstream.
+      // TREND-FOLLOWING COOLING (Eddie 2026-06-21, v7). POWER TRACKS TEMPERATURE DIRECTION — the cardinal
+      // rule Eddie kept stating: "qué demonios hace bajando la potencia si la temperatura va subiendo". v6
+      // made trimming the DEFAULT and only raised power on a detected rebound, so during the foco warm-up it
+      // trimmed power WHILE temp climbed (hour-long 1° waves, never stabilising). v7 keys purely off the 5-min
+      // trend and NEVER reduces power while temp is rising:
+      //   • trend RISING (> RISE_THRESH) → power UP, step ∝ the rise rate (track the demand); ramps a smooth
+      //     increasing curve until temp stabilises — exactly Eddie's "ondulaciones suaves crecientes".
+      //   • trend slightly rising (0 < trend ≤ RISE_THRESH) → HOLD (don't trim into a developing rise, don't
+      //     over-react to a wiggle — wait to see if it develops).
+      //   • trend FLAT or FALLING (≤ 0) → −DOWN_STEP: minimise power / follow the cooling down. This is the
+      //     ONLY time power drops, and only when temp is NOT rising. → finds the min power that holds a stable
+      //     temp (probe down; if temp then rises, the rising branch adds it back → gentle limit cycle).
+      //   • paced one step per COOL_STEP_MS (thermal lag); SAFETY push every cycle if temp ≥ band+PUSH_MARGIN.
+      const _lvl = tempTrendBuffer.filter(s => now - s.t <= COOL_LEVEL_MS);
+      const levelTemp = _lvl.length ? _lvl.reduce((a, s) => a + s.temp, 0) / _lvl.length : temp;
+      const dT = computeTrend('temp', COOL_TREND_MS).perMin; // 12-min slope — catches even the SLOW dawn→noon creep
+      // v9 (Eddie 2026-06-22): blower power CONTINUOUSLY tracks the temperature curve and the desaturation
+      // CAPACITY — no fixed cap, no emergency trigger. The day's slow sun-driven rise was imperceptible to the
+      // old 5-min/0.03 detector, so the blower sat at 40% until temp crossed an emergency threshold and slammed.
+      // Now (12-min window, 0.008 threshold) even a slow creep is seen and power rises PROPORTIONALLY to meet it;
+      // when the exhaust hits its capacity (the rise won't slow despite more power = intake/ambient-limited) it
+      // HOLDS instead of climbing futilely (more would only dry); flat/falling → trims to the minimum that holds.
       let coolingSpeed;
       if (coolEqSpeed === 0) {
-        coolEqSpeed = COOL_EQ_START_SPEED;        // 50% — never an abrupt 100%
-        coolEqRefTemp = temp; coolEqLastProbe = now; coolEqProbeCount = 0;
-        coolHistory.length = 0;
-        console.log(`[VPD] Cooling engaged at ${coolEqSpeed}% (adaptive start, never a 100% slam) — temp ${temp.toFixed(1)}°C > ${coolingStopTarget.toFixed(1)}°C; hunting the power sweet-spot from the 10-min buffer.`);
-      } else if (temp > coolEqRefTemp + COOL_EQ_RISE) {
-        const rise = temp - coolEqRefTemp;
-        coolEqSpeed = Math.min(100, coolEqSpeed + COOL_EQ_STEP);
-        coolEqRefTemp = temp; coolEqLastProbe = now; // restart the settle window after a reactive step
-        console.log(`[VPD] Cooling ↑ ${coolEqSpeed}% @ ${temp.toFixed(1)}°C — temp rose +${rise.toFixed(2)}°, immediate +${COOL_EQ_STEP}%.`);
-      } else if (now - coolEqLastProbe >= COOL_EQ_PROBE_MS) {
-        // Record the SETTLED result of the speed we just held, then study the buffer.
-        coolHistory.push({ t: now, speed: coolEqSpeed, temp, humi });
-        while (coolHistory.length && now - coolHistory[0].t > COOL_HISTORY_MS) coolHistory.shift();
-        coolEqProbeCount++;
-        const bestTemp = Math.min(...coolHistory.map(h => h.temp));
-        const targetSpeed = Math.min(...coolHistory.filter(h => h.temp <= bestTemp + COOL_EQ_TOL).map(h => h.speed));
-        let next = coolEqSpeed, why;
-        if (temp > bestTemp + COOL_EQ_TOL) {
-          next = coolEqSpeed + COOL_EQ_STEP; why = `warmer (${temp.toFixed(1)}°) than best ${bestTemp.toFixed(1)}° → more power`;
-        } else if (coolEqSpeed > targetSpeed) {
-          next = Math.max(targetSpeed, coolEqSpeed - COOL_EQ_STEP); why = `at best temp but above the knee → trim toward ${targetSpeed}%`;
-        } else if (coolEqProbeCount % 3 === 0) {
-          next = coolEqSpeed + COOL_EQ_STEP; why = `at knee ${coolEqSpeed}% — probing UP for a better temp`;
-        } else if (coolEqProbeCount % 3 === 1) {
-          next = coolEqSpeed - COOL_EQ_STEP; why = `at knee ${coolEqSpeed}% — testing if it dropped`;
+        coolEqSpeed = Math.max(COOL_MIN_OP, Math.min(COOL_ABS_MAX, COOL_EQ_START_SPEED + Math.round(Math.max(0, levelTemp - coolingStopTarget) * 12)));
+        coolLastStep = now; coolLastDt = dT; coolSatStreak = 0;
+        console.log(`[VPD] Cooling engaged at ${coolEqSpeed}% — temp ${temp.toFixed(1)}°C > ${coolingStopTarget.toFixed(1)}°C; tracking the curve.`);
+      } else if (now - coolLastStep >= COOL_STEP_MS) {
+        if (dT > COOL_RISE) {
+          // RISING (even slowly) → add power ∝ the rise rate, tracking the curve. BUT check CAPACITY: at high
+          // power, if the rise is NOT slowing (more airflow isn't helping), the exhaust can't beat the intake
+          // air → HOLD (more would only dry). Needs 2 confirmations (coolSatStreak) to ignore a noise blip.
+          const riseSlowing = dT < coolLastDt - 0.003;
+          if (coolEqSpeed >= COOL_SAT_HIGH && !riseSlowing) coolSatStreak++; else coolSatStreak = 0;
+          if (coolSatStreak >= 2) {
+            console.log(`[VPD] Cooling ⚠ ${coolEqSpeed}% @ ${levelTemp.toFixed(2)}° (rising +${dT.toFixed(3)}/min, NOT slowing at ${coolEqSpeed}%) — DESATURATION CAPACITY reached / intake-limited: holding, more power would only dry. Needs cooler intake / AC.`);
+          } else {
+            const up = Math.max(COOL_UP_MIN, Math.min(COOL_UP_MAX, Math.round(dT * COOL_UP_GAIN)));
+            coolEqSpeed = Math.min(COOL_ABS_MAX, coolEqSpeed + up);
+            console.log(`[VPD] Cooling ↑ ${coolEqSpeed}% @ ${levelTemp.toFixed(2)}° (rising +${dT.toFixed(3)}/min over 12min) — +${up}% tracking the curve.`);
+          }
+        } else if (dT > 0) {
+          // Barely rising (below the act threshold) → HOLD. NEVER trim into a developing rise.
+          coolSatStreak = 0;
+          console.log(`[VPD] Cooling = ${coolEqSpeed}% @ ${levelTemp.toFixed(2)}° (+${dT.toFixed(3)}/min, barely rising) — holding.`);
         } else {
-          why = `holding sweet-spot ${coolEqSpeed}% (best ${bestTemp.toFixed(1)}°, ${coolHistory.length} pts)`;
+          // Flat or falling → minimise: trim toward the efficient power (floor COOL_MIN_OP). Only when NOT rising.
+          coolSatStreak = 0;
+          coolEqSpeed = Math.max(COOL_MIN_OP, coolEqSpeed - COOL_DOWN_STEP);
+          console.log(`[VPD] Cooling ↓ ${coolEqSpeed}% @ ${levelTemp.toFixed(2)}° (${dT >= 0 ? '+' : ''}${dT.toFixed(3)}/min, not rising) — trim −${COOL_DOWN_STEP}% toward minimum (floor ${COOL_MIN_OP}%).`);
         }
-        coolEqSpeed = Math.max(VPD_BLOWER_IDLE_SPEED, Math.min(100, next));
-        coolEqRefTemp = temp; coolEqLastProbe = now;
-        console.log(`[VPD] Cooling sweet-spot: ${coolEqSpeed}% @ ${temp.toFixed(1)}° — ${why}.`);
+        coolLastDt = dT;
+        coolLastStep = now;
       }
       coolingSpeed = coolEqSpeed;
 
@@ -3248,7 +3279,7 @@ function evaluateVpdIntelligent() {
       coolingGraceStableStart = 0;
     }
     coolingBelowMaxSince = 0;
-    coolEqSpeed = 0; // temp re-entered the band → reset the adaptive cooling (restarts at 50% next engage)
+    coolEqSpeed = 0; coolLastStep = 0; // temp re-entered band → reset adaptive cooling (re-seeds next engage)
     delete vpdEscalationState.roles['extractor_temp'];
     deactivateSocketRole('cooler', 'Temp OK');
     if (!extIsBlower) deactivateSocketRole('extractor', 'Temp OK');

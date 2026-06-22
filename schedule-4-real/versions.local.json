@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-20T01:17:39.184Z",
+  "lastCheck": "2026-06-22T18:46:05.672Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.34.0",
-      "installedAt": "2026-06-20T01:21:08Z"
+      "version": "1.34.1",
+      "installedAt": "2026-06-22T18:47:13Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -500,6 +500,14 @@
     ],
     "supervisor": [
       {
+        "version": "1.34.0",
+        "changes": [
+          "Smooth adaptive blower cooling that finds minimum power for stable temp",
+          "Cap service logs so they can't fill the disk",
+          "Auto-recover sensor data when the pipeline stalls, without a reboot"
+        ]
+      },
+      {
         "version": "1.33.1",
         "changes": [
           "Fix services not auto-recovering after a reboot",
@@ -830,12 +838,6 @@
         "version": "1.24.1",
         "changes": [
           "Fix device routing for multi-device setups: find correct device for each module"
-        ]
-      },
-      {
-        "version": "1.24.0",
-        "changes": [
-          "Instant trigger execution on save, remove AI mode requirement for user triggers"
         ]
       }
     ],

@@ -250,22 +250,42 @@ function isDevEnvironment() {
 // --- File helpers ---
 
 function readVersions() {
-  try {
-    return JSON.parse(fs.readFileSync(VERSIONS_FILE, 'utf-8'));
-  } catch {
-    return {
-      autoUpdate: false,
-      lastCheck: null,
-      lastUpdate: null,
-      schemaVersion: 1,
-      components: {},
-      updateHistory: []
-    };
+  // Try the live file, then the rolling .bak. A corrupt/truncated versions.local.json (e.g. a crash, OOM,
+  // disk-full, or web-restart mid-write) used to fall straight through to `components:{}` → EVERY component
+  // then read as 0.0.0 → the updater believed nothing was installed and tried to REINSTALL EVERYTHING, which
+  // hung on the web component (Eddie/cobra5118 2026-06-22). Recover from the .bak instead of nuking to 0.0.0.
+  for (const f of [VERSIONS_FILE, VERSIONS_FILE + '.bak']) {
+    try {
+      const data = JSON.parse(fs.readFileSync(f, 'utf-8'));
+      if (data && typeof data === 'object' && data.components && typeof data.components === 'object') {
+        if (f !== VERSIONS_FILE) {
+          console.error(`[Updater] versions.local.json was missing/corrupt — RECOVERED installed versions from ${f}`);
+          try { const tmp = VERSIONS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n'); fs.renameSync(tmp, VERSIONS_FILE); } catch {}
+        }
+        return data;
+      }
+    } catch { /* try next */ }
   }
+  // Both gone/corrupt: DO NOT silently report 0.0.0 (that triggers a destructive reinstall-all). Flag it +
+  // disable auto-update so a human restores from a backup rather than the app re-downloading everything.
+  console.error('[Updater] CRITICAL: versions.local.json AND .bak are missing/corrupt — cannot determine installed versions. Auto-update DISABLED; restore versions.local.json from a backup (see data backups / `rollback`).');
+  return { autoUpdate: false, lastCheck: null, lastUpdate: null, schemaVersion: 1, components: {}, updateHistory: [], _corrupt: true };
 }
 
 function writeVersions(data) {
-  fs.writeFileSync(VERSIONS_FILE, JSON.stringify(data, null, 2) + '\n');
+  // Roll the last-known-GOOD file to .bak first (only if it currently parses), so a future corruption can be
+  // recovered. Then write ATOMICALLY (temp + rename) — rename is atomic on the same fs, so an interrupted
+  // write can never leave a truncated versions.local.json (the bug that produced the all-0.0.0 state).
+  try {
+    if (fs.existsSync(VERSIONS_FILE)) {
+      const cur = fs.readFileSync(VERSIONS_FILE, 'utf-8');
+      JSON.parse(cur); // only back up a VALID current file
+      fs.writeFileSync(VERSIONS_FILE + '.bak', cur);
+    }
+  } catch { /* current file already bad — don't overwrite a good .bak with garbage */ }
+  const tmp = VERSIONS_FILE + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n');
+  fs.renameSync(tmp, VERSIONS_FILE);
 }
 
 // --- HTTP fetch helper ---
@@ -733,6 +753,14 @@ async function applyUpdates(components = [], onProgress = null) {
   if (isBackupRunning()) {
     console.log('[Updater] BLOCKED: Backup/restore in progress, cannot apply updates');
     return { success: false, error: 'Backup/restore in progress — updates blocked until it completes' };
+  }
+
+  // Refuse to apply from a CORRUPT versions state. readVersions() couldn't determine what's installed (both
+  // versions.local.json and its .bak are gone/corrupt), so every component reads 0.0.0 and an apply here would
+  // reinstall EVERYTHING and hang on the web component (the exact failure Eddie/cobra5118 hit). Recover first.
+  if (readVersions()._corrupt) {
+    console.error('[Updater] BLOCKED: versions.local.json is corrupt/unrecoverable — refusing to reinstall every component. Restore it from a backup (rollback) first.');
+    return { success: false, error: 'Installed-versions file is corrupt — restore it from a backup before updating (this avoids reinstalling everything and the web-update hang).' };
   }
 
   // Use file-based lock (works across module instances)
