@@ -1,6 +1,6 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-06-22T18:46:05.672Z",
+  "lastCheck": "2026-06-26T00:10:17.044Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.34.1",
-      "installedAt": "2026-06-22T18:47:13Z"
+      "version": "1.34.2",
+      "installedAt": "2026-06-26T00:14:38Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -500,6 +500,13 @@
     ],
     "supervisor": [
       {
+        "version": "1.34.1",
+        "changes": [
+          "Fix blower cooling jumping to 100% instead of tracking temperature",
+          "Fix version numbers showing 0.0.0 and updates getting stuck"
+        ]
+      },
+      {
         "version": "1.34.0",
         "changes": [
           "Smooth adaptive blower cooling that finds minimum power for stable temp",
@@ -832,12 +839,6 @@
         "version": "1.24.2",
         "changes": [
           "Add safety systems: safe shutdown turns OFF all devices, verified retry for critical commands, outlet runtime watchdog, startup recovery from DB"
-        ]
-      },
-      {
-        "version": "1.24.1",
-        "changes": [
-          "Fix device routing for multi-device setups: find correct device for each module"
         ]
       }
     ],

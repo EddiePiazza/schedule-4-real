@@ -348,15 +348,26 @@ const HUMIDIFIER_INEFFECTIVE_RECOVERY_RISE = 3;
 // deleted long ago in favour of in-cycle intent resolution (resolveSocketIntents). A future
 // manual-override detector should read per-device state via getSocketState, not a global mirror.)
 
-// ── Periodic ventilation ──
-// Even when retaining humidity (humi low, blower otherwise off), the room still needs a
-// regular air refresh to keep CO2 / O2 / stale-air pockets healthy. Pulse the blower at a
-// gentle speed for a few minutes whenever it has been idle for VENTILATION_INTERVAL_MS.
-let lastBlowerActiveAt = Date.now(); // any time blower ran at ≥ VENTILATION_SPEED counts
-let ventilationPulseStart = 0;       // > 0 while the pulse is active
-const VENTILATION_INTERVAL_MS = 60 * 60 * 1000;     // 60 min — pulse interval bumped from 30 to reduce nuisance pulses; natural extraction handles real load
-const VENTILATION_DURATION_MS = 3 * 60 * 1000;      // 3 min per pulse
-const VENTILATION_SPEED = 30;                        // % — gentle, just to swap the air
+// ── Periodic ventilation (rolling-window air-renewal guarantee) ──
+// Even when retaining humidity (humi low, blower otherwise off), the room still needs a regular air
+// refresh to keep CO2 / O2 / stale-air pockets healthy — at night the plants respire CO2 and the
+// EXHAUST is the only device that swaps tent air (the circulator merely stirs it).
+//
+// Eddie's rule (2026-06-26): "the blower must NEVER be off more than 30 min — within any trailing
+// 30-min window it must have run ≥5 min; if it hasn't, run it 5 min now." He explicitly warned NOT
+// to use a naive "time since last active" timer: e.g. a 2-min blip 28 min ago must NOT be read as
+// "ran recently" — what matters is the TRUE accumulated runtime inside the rolling window. So we keep
+// an exact log of blower run-intervals (≥ AIR_REFRESH_MIN_SPEED), integrate the runtime inside the
+// last 30 min, and pulse whenever that sum is below the 5-min minimum. The pulse counts toward the
+// sum, so right after a 5-min pulse the window holds ≥5 min and it can't immediately re-fire — no loop.
+let blowerRunIntervals = []; // [{start, end}] ms — exact log of blower run-intervals (≥ AIR_REFRESH_MIN_SPEED)
+let airLastEvalNow = 0;      // timestamp of the previous evaluation, to attribute each elapsed segment
+let ventilationPulseStart = 0;                       // > 0 while a pulse is active
+const AIR_REFRESH_WINDOW_MS = 30 * 60 * 1000;        // 30 min rolling window
+const AIR_REFRESH_MIN_MS = 5 * 60 * 1000;            // must accumulate ≥ 5 min of run inside the window
+const VENTILATION_DURATION_MS = 5 * 60 * 1000;       // 5 min per pulse (tops the window back up to the 5-min minimum)
+const VENTILATION_SPEED = 45;                        // % — a REAL air exchange (the old 30% token trickle barely moved air)
+const AIR_REFRESH_MIN_SPEED = 40;                    // % — only a run at/above this counts as a genuine air refresh; weak ~31% cooling blips do NOT (they masked the staleness all night)
 
 // Blower-off → heater grace. After extraction stops, the lamp + canopy / pot
 // mass naturally warm the room over a few minutes; don't fire the heater
@@ -3855,45 +3866,58 @@ function evaluateVpdIntelligent() {
     if (newBlowerFloor < VPD_BLOWER_IDLE_SPEED) newBlowerFloor = VPD_BLOWER_IDLE_SPEED;
   }
 
-  // ── Periodic ventilation pulse ──
-  // Even when we're deliberately keeping the blower OFF (humi too low — extraction would make
-  // VPD worse), the room still needs a regular air refresh. Force a gentle pulse every
-  // VENTILATION_INTERVAL_MS so CO2/O2/stale-air pockets stay healthy. Skip during cycle-
-  // transition grace (the supervisor deliberately stops everything there).
-  if ((lastBlowerSpeed ?? 0) >= VENTILATION_SPEED) {
-    lastBlowerActiveAt = now;
-  }
+  // ── Rolling-window air-renewal guarantee (Eddie 2026-06-26) ──
+  // Attribute the segment that just elapsed [airLastEvalNow, now] to "ran"/"off" by the blower speed
+  // that was actually in force over it, keep an EXACT interval log, integrate the TRUE runtime inside
+  // the trailing 30 min, and force a 5-min pulse whenever that runtime is below the 5-min minimum.
+  // We measure accumulated runtime IN THE WINDOW — not "time since last active" — so a 2-min blip 28
+  // min ago can't be mistaken for a fresh swap (Eddie's explicit warning). A finished 5-min pulse adds
+  // exactly 5 min to the window, so it can never immediately re-fire: no execution loop.
   const ventilationPulseActive = ventilationPulseStart > 0
     && (now - ventilationPulseStart) < VENTILATION_DURATION_MS;
-  // The pulse only makes sense if extracting won't make any conditions WORSE — that means humi
-  // and VPD must both already be inside their bands (or higher). Otherwise extraction crashes
-  // humi or pushes VPD further out. The natural extraction logic above runs the blower anyway
-  // when conditions actually need it; the pulse is purely a "stale air" safety check.
-  // (Eddie 2026-05-25: pulse was firing at humi=57 < target=59 while humidifier was actively
-  // trying to raise humi — directly fighting itself.)
-  const humidifierRunning = !!vpdEscalationState.roles['humidifier'];
-  const safeToPulse = humi >= idealHumiTarget
-    && currentVpd >= targetMin
-    && !humidifierRunning
-    && !humidifierRecentlyOff
-    && !leafVpdAboveTargetHyst;
+  // 1) Record the elapsed segment by the speed that was in force over it (lastBlowerSpeed reflects the
+  //    previous cycle's command, which includes any pulse that was running).
+  if (airLastEvalNow > 0 && now > airLastEvalNow) {
+    const segActive = ((lastBlowerSpeed ?? 0) >= AIR_REFRESH_MIN_SPEED) || ventilationPulseActive;
+    if (segActive) {
+      const last = blowerRunIntervals[blowerRunIntervals.length - 1];
+      if (last && last.end >= airLastEvalNow - 1500) last.end = now;      // contiguous → extend the run
+      else blowerRunIntervals.push({ start: airLastEvalNow, end: now });  // a fresh run starts
+    }
+  }
+  airLastEvalNow = now;
+  // 2) Drop intervals fully outside the window; integrate runtime inside [windowStart, now].
+  const airWindowStart = now - AIR_REFRESH_WINDOW_MS;
+  blowerRunIntervals = blowerRunIntervals.filter(iv => iv.end >= airWindowStart);
+  if (blowerRunIntervals.length > 400) blowerRunIntervals = blowerRunIntervals.slice(-400); // safety cap
+  let airRunMsInWindow = 0;
+  for (const iv of blowerRunIntervals) {
+    const s = Math.max(iv.start, airWindowStart);
+    const e = Math.min(iv.end, now);
+    if (e > s) airRunMsInWindow += e - s;
+  }
+  // 3) Pulse whenever the window holds LESS than the 5-min minimum (and we're not already pulsing,
+  //    nor in cycle-transition grace where everything is deliberately stopped). This single HARD rule
+  //    overrides humidity retention and cooling-futility: a tent that holds humidity but suffocates
+  //    its plants in CO2 is a failure. The pulse doubles as a cooling-effectiveness probe.
+  const airUndersupplied = airRunMsInWindow < AIR_REFRESH_MIN_MS;
   const needsVentilationPulse = !cycleTransitionGraceActive
     && !ventilationPulseActive
-    && safeToPulse
-    && (now - lastBlowerActiveAt) >= VENTILATION_INTERVAL_MS;
+    && airUndersupplied;
   if (needsVentilationPulse) {
     ventilationPulseStart = now;
-    console.log(`[VPD] Periodic ventilation pulse: blower → ${VENTILATION_SPEED}% for ${(VENTILATION_DURATION_MS / 60000).toFixed(0)} min (idle for ${((now - lastBlowerActiveAt) / 60000).toFixed(0)} min, max allowed ${(VENTILATION_INTERVAL_MS / 60000).toFixed(0)} min)`);
+    console.log(`[VPD] Air-renewal pulse: blower → ${VENTILATION_SPEED}% for ${(VENTILATION_DURATION_MS / 60000).toFixed(0)} min (only ${(airRunMsInWindow / 60000).toFixed(1)} min run in the last ${(AIR_REFRESH_WINDOW_MS / 60000).toFixed(0)} min — air renewal beats humidity).`);
   }
-  if (ventilationPulseStart > 0 && (now - ventilationPulseStart) < VENTILATION_DURATION_MS) {
-    // Inside the pulse: enforce a gentle airflow floor (and lift the ceiling so it's actually
-    // allowed to run). The pulse is a SAFETY refresh — don't let humi-conserving rules block it.
+  const inVentilationPulse = ventilationPulseStart > 0
+    && (now - ventilationPulseStart) < VENTILATION_DURATION_MS;
+  if (inVentilationPulse) {
+    // Inside the pulse: enforce the airflow floor (and lift the ceiling so it's actually allowed to
+    // run). The pulse is a SAFETY refresh — don't let humi-conserving rules block it.
     if (newBlowerCeiling < VENTILATION_SPEED) newBlowerCeiling = VENTILATION_SPEED;
     if (newBlowerFloor < VENTILATION_SPEED) newBlowerFloor = VENTILATION_SPEED;
   } else if (ventilationPulseStart > 0) {
-    // Pulse just ended — clear it so the next interval can fire.
+    // Pulse just ended — clear it so the next one can fire when the window next runs short.
     ventilationPulseStart = 0;
-    lastBlowerActiveAt = now;
   }
 
   // ═══════════════════════════════════════════════════════
@@ -4120,6 +4144,16 @@ function evaluateVpdIntelligent() {
   if (!needsCooling && !tempEmergency && !truthHumiEmergency && humi <= idealHumiMax) {
     newBlowerFloor = 0;
     newBlowerCeiling = 0;
+  }
+
+  // ── AIR-RENEWAL PULSE = HARD OVERRIDE (final word) ──
+  // Every humidity / futility / mutex authority above can pin the exhaust at 0 to preserve humidity.
+  // The air-renewal pulse must survive ALL of them, so re-assert it here — after the final clamps —
+  // so a dry room can never suppress the periodic fresh-air swap. Air renewal outranks humidity
+  // retention: a tent that holds humidity but suffocates its plants in CO2 is a failure (Eddie 2026-06-26).
+  if (inVentilationPulse) {
+    if (newBlowerCeiling < VENTILATION_SPEED) newBlowerCeiling = VENTILATION_SPEED;
+    if (newBlowerFloor < VENTILATION_SPEED) newBlowerFloor = VENTILATION_SPEED;
   }
 
   // Apply blower overrides
