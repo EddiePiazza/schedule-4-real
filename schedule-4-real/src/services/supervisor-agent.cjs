@@ -752,7 +752,11 @@ function readLightTransitions() {
 
 function writeLightTransitions(store) {
   try {
-    fs.writeFileSync(LIGHT_CYCLE_STORE, JSON.stringify(store, null, 2));
+    // Atomic write (temp + rename) so an interrupt can't truncate the store — same hardening as
+    // versions.local.json. A half-written transitions file could strand a flip mid-dark-period.
+    const tmp = LIGHT_CYCLE_STORE + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(store, null, 2));
+    fs.renameSync(tmp, LIGHT_CYCLE_STORE);
   } catch (err) {
     console.error('[LightCycle] write failed:', err.message);
   }
@@ -792,6 +796,99 @@ function publishLightCycleConfig(t, config, label) {
     } catch { /* best-effort cache refresh */ }
   }, 1500);
   return true;
+}
+
+// Sibling of publishLightCycleConfig for outlets on their own device-firmware TimeSlot schedule
+// (IR/UV/Far-Red…) that the user chose to suppress during the dark period. Unlike the light, an
+// outlet may live on a DIFFERENT device than the light (multi-device installs) — so this targets
+// outlet.deviceMac/outlet.deviceType, not t.deviceMac/t.deviceType. `t` is only used for the
+// transition id (logging) and as a uid fallback.
+function publishOutletOverride(t, outlet, config, label) {
+  if (!mqttClient || !mqttClient.connected) return false;
+  const dev = getDevice(outlet.deviceMac) || {};
+  const type = (outlet.deviceType || dev.type || '').toLowerCase();
+  const mac = outlet.deviceMac || dev.mac;
+  if (!type || !mac) {
+    console.error(`[LightCycle] No device for outlet ${outlet.socket} (transition ${t.lightId}, mac ${outlet.deviceMac})`);
+    return false;
+  }
+  const keyPath = ['outlet', outlet.socket];
+  const command = {
+    method: 'setConfigField',
+    pid: mac,
+    params: { keyPath, [outlet.socket]: config },
+    msgId: String(Date.now()),
+    uid: String(t.uid || dev.uid || '')
+  };
+  mqttClient.publish(`ggs/${type}/${mac}/cmd`, JSON.stringify(command), { qos: 1 });
+  console.log(`[LightCycle] ${label} — outlet ${outlet.socket} on ${type}/${mac} (transition ${t.lightId})`);
+
+  // Same cache-refresh nudge as publishLightCycleConfig, so the Sockets UI reflects the
+  // forced-off/restored state promptly instead of waiting for the outlet's next periodic report.
+  setTimeout(() => {
+    try {
+      mqttClient.publish(`ggs/${type}/${mac}/cmd`, JSON.stringify({
+        method: 'getConfigField',
+        pid: mac,
+        params: { keyPath },
+        msgId: String(Date.now()),
+        uid: String(t.uid || dev.uid || '')
+      }), { qos: 1 });
+    } catch { /* best-effort cache refresh */ }
+  }, 1500);
+  return true;
+}
+
+// Defensive safety net: NEVER let the flip's outlet suppression touch a socket that is under
+// active VPD or AI-trigger/manual control (humidifier/dehumidifier/extractor/circulator/blower
+// roles, or any socket the user has put in AI mode). The wizard only ever offers plain TimeSlot
+// (modeType 1) outlets, which are structurally exclusive with active VPD/AI control (those force
+// the socket to modeType 0), so this should never actually trigger in practice — but if a role
+// gets reassigned onto an outlet while a flip is already mid-dark-period, this stops the
+// suppression/restore logic from fighting the climate controller.
+function isClimateProtectedSocket(deviceMac, socket) {
+  const mac = normMac(deviceMac);
+  const aiModeKey = mac ? `${mac}:${socket}` : socket;
+  if (socketAiModes[aiModeKey] || socketAiModes[socket]) return true;
+  if (vpdNodeConfig && Array.isArray(vpdNodeConfig.roles)) {
+    return vpdNodeConfig.roles.some(r => r.socket === socket && (!r.deviceMac || !mac || normMac(r.deviceMac) === mac));
+  }
+  return false;
+}
+
+// Force every selected outlet OFF (manual) so its own TimeSlot schedule can't fire during the
+// dark period. Best-effort per outlet — a publish failure is logged and simply retried on the
+// next dark re-assert (same DARK_REASSERT_MS cadence as the light), never blocks the light flip.
+function suppressTransitionOutlets(t) {
+  for (const outlet of (t.outlets || [])) {
+    if (!outlet || !outlet.socket) continue;
+    if (isClimateProtectedSocket(outlet.deviceMac, outlet.socket)) {
+      console.warn(`[LightCycle] Skipping outlet ${outlet.socket} (${outlet.deviceMac || 'no-mac'}) — assigned to a VPD/AI climate role, leaving it untouched during dark suppression.`);
+      continue;
+    }
+    const offConfig = { ...(outlet.originalConfig || {}), modeType: 0, mOnOff: 0 };
+    if (!publishOutletOverride(t, outlet, offConfig, 'Dark: outlet forced OFF')) {
+      console.warn(`[LightCycle] Outlet OFF publish failed for ${outlet.socket} (${outlet.deviceMac}) — will retry on next dark re-assert.`);
+    }
+  }
+}
+
+// Restore every selected outlet to its saved originalConfig (its real TimeSlot schedule) once
+// flowering begins. One-shot, same as the light's own flowerConfig publish — mirrors the light's
+// existing precedent of not re-asserting after 'done', so a failure here is logged but not
+// auto-retried (matches how a failed flower publish for the light itself is handled today: it's
+// never re-pushed once the transition already advanced past that point).
+function restoreTransitionOutlets(t) {
+  for (const outlet of (t.outlets || [])) {
+    if (!outlet || !outlet.socket) continue;
+    if (isClimateProtectedSocket(outlet.deviceMac, outlet.socket)) {
+      console.warn(`[LightCycle] Skipping outlet ${outlet.socket} (${outlet.deviceMac || 'no-mac'}) — assigned to a VPD/AI climate role, leaving it untouched at flower restore.`);
+      continue;
+    }
+    if (!publishOutletOverride(t, outlet, outlet.originalConfig || { modeType: 1 }, 'Flower: outlet schedule restored')) {
+      console.warn(`[LightCycle] Outlet restore publish failed for ${outlet.socket} (${outlet.deviceMac}) — not auto-retried (one-shot, same as the light's flower publish).`);
+    }
+  }
 }
 
 // Tell the web API to flip the grow room's plants to early_flower + add a Journal entry.
@@ -836,45 +933,66 @@ async function processLightCycleTransitions() {
 
     if (t.status === 'scheduled') {
       if (now >= t.darkStartAt) {
-        publishLightCycleConfig(t, t.darkConfig, 'Dark period started (lights OFF)');
-        t.status = 'dark';
-        t.darkAppliedAt = now;
-        t.lastDarkAssertAt = now;
-        anyDark = true;
-        changed = true;
+        anyDark = true; // the dark window is active regardless of publish success (climate → night)
+        // Only advance to 'dark' once the OFF payload is actually published — otherwise a momentary
+        // MQTT disconnect would silently mark the transition started while the light stays ON. Staying
+        // 'scheduled' retries every tick (this grow has documented proxy/mosquitto restarts).
+        if (publishLightCycleConfig(t, t.darkConfig, 'Dark period started (lights OFF)')) {
+          t.status = 'dark';
+          t.darkAppliedAt = now;
+          t.lastDarkAssertAt = now;
+          changed = true;
+          if (t.outlets && t.outlets.length) suppressTransitionOutlets(t);
+        } else {
+          console.warn(`[LightCycle] Dark-start publish failed for ${t.lightId} — MQTT down? Staying 'scheduled', retrying next tick.`);
+        }
       }
     } else if (t.status === 'dark') {
       if (now >= t.flowerStartAt) {
-        publishLightCycleConfig(t, t.flowerConfig, `Flower 12/12 started (ON ${t.flowerOn}–${t.flowerOff})`);
-        t.status = 'done';
-        t.flowerAppliedAt = now;
-        changed = true;
-        if (t.syncDayNight) {
-          try {
-            await query(
-              `INSERT INTO day_night_schedule (timestamp, day_start, day_end, source) VALUES (now(), $1, $2, 'flip')`,
-              [t.flowerOn, t.flowerOff]
-            );
-            await loadDayNightSchedule();
-            console.log(`[LightCycle] Climate day/night synced to ${t.flowerOn}–${t.flowerOff}`);
-          } catch (err) {
-            console.error('[LightCycle] day/night sync failed:', err.message);
+        // Terminal flip. Only advance to 'done' (and run the one-shot day/night + Lab sync) once the
+        // flower payload is CONFIRMED published — otherwise the device never receives 12/12, the UI
+        // unlocks, Lab flips, but the light stays stuck OFF forever. Staying 'dark' retries next tick.
+        if (publishLightCycleConfig(t, t.flowerConfig, `Flower 12/12 started (ON ${t.flowerOn}–${t.flowerOff})`)) {
+          t.status = 'done';
+          t.flowerAppliedAt = now;
+          changed = true;
+          if (t.outlets && t.outlets.length) restoreTransitionOutlets(t);
+          if (t.syncDayNight) {
+            try {
+              await query(
+                `INSERT INTO day_night_schedule (timestamp, day_start, day_end, source) VALUES (now(), $1, $2, 'flip')`,
+                [t.flowerOn, t.flowerOff]
+              );
+              await loadDayNightSchedule();
+              console.log(`[LightCycle] Climate day/night synced to ${t.flowerOn}–${t.flowerOff}`);
+            } catch (err) {
+              console.error('[LightCycle] day/night sync failed:', err.message);
+            }
           }
-        }
-        // Sync the Lab: flip the grow room's plants to early_flower + add a Journal entry.
-        // Done via the authenticated Nitro endpoint so we reuse the lab data-model logic.
-        if (t.roomId) {
-          const synced = await syncLabRoomToFlower(t.roomId);
-          if (synced) { t.labSyncedAt = now; }
+          // Sync the Lab: flip the grow room's plants to early_flower + add a Journal entry.
+          // Done via the authenticated Nitro endpoint so we reuse the lab data-model logic.
+          if (t.roomId) {
+            const synced = await syncLabRoomToFlower(t.roomId);
+            if (synced) { t.labSyncedAt = now; }
+          }
+        } else {
+          anyDark = true; // still in the dark window until the flip is confirmed
+          console.warn(`[LightCycle] Flower-start publish failed for ${t.lightId} — MQTT down? Staying 'dark', light stays OFF, retrying next tick.`);
         }
       } else {
         anyDark = true;
         // Re-assert the OFF payload periodically so a device reboot or a missed message can't
-        // accidentally let the lights come back on mid-transition.
+        // accidentally let the lights come back on mid-transition. Outlet suppression rides the
+        // SAME cadence (fast retry every tick while failing, then every DARK_REASSERT_MS once
+        // stable) rather than its own — matches the light's philosophy of not spamming MQTT once
+        // things are confirmed OFF, and gives a failed outlet publish a bounded retry window.
         if (!t.lastDarkAssertAt || (now - t.lastDarkAssertAt) >= DARK_REASSERT_MS) {
-          publishLightCycleConfig(t, t.darkConfig, 'Dark re-assert (lights OFF)');
-          t.lastDarkAssertAt = now;
-          changed = true;
+          if (publishLightCycleConfig(t, t.darkConfig, 'Dark re-assert (lights OFF)')) {
+            t.lastDarkAssertAt = now;
+            changed = true;
+          }
+          // publish failed → leave lastDarkAssertAt unchanged so we retry on the next tick
+          if (t.outlets && t.outlets.length) suppressTransitionOutlets(t);
         }
       }
     }
@@ -2181,20 +2299,21 @@ async function executeActions(actions) {
 
     // SAFETY check: only execute if we're authorized to control this socket.
     //  - VPD / SAFETY / cycle-transition actions: always execute (validated upstream).
-    //  - Climate modules (blower, fan, heater, humidifier, dehumidifier): always execute
-    //    when the user explicitly targeted them in a trigger action. There's no user-set
-    //    firmware mode to protect for modules — the user wouldn't have added them to a
-    //    trigger unless they wanted the trigger to control them.
+    //  - HEATER / HUMIDIFIER / DEHUMIDIFIER modules: always execute when a trigger targets them —
+    //    no user-facing manual firmware mode to protect, and they're driven by the VPD controller.
+    //  - BLOWER / FAN: gated like outlets (2026-06-28). Unlike the three above, they DO have a user
+    //    manual mode + their own blower_ai_mode / fan_ai_mode flag, so a forgotten/old trigger action
+    //    must NOT override a manual dashboard command — require the flag, exactly like an outlet.
     //  - Outlets (O1-O10): require the socket to be in AI/trigger mode. Prevents a
     //    forgotten/old trigger from overriding an outlet the user put in Environment or
     //    TimeSlot mode manually.
     //  - mandatoryOff/mandatoryOn actions: always execute (explicit user intent).
     const isVpdOrSafety = reason && (reason.startsWith('VPD:') || reason.includes('SAFETY') || reason.includes('cycle transition'));
-    const isModule = ['blower', 'fan', 'heater', 'humidifier', 'dehumidifier'].includes(socket);
+    const isModule = ['heater', 'humidifier', 'dehumidifier'].includes(socket);
     const aiModeKey = deviceMac ? `${deviceMac}:${socket}` : socket;
     const authorizedOutlet = socketAiModes[aiModeKey] || socketAiModes[socket];
     if (!isVpdOrSafety && !isModule && !action.mandatoryOff && !action.mandatoryOn && !authorizedOutlet) {
-      continue; // Outlet not in AI mode — don't touch the user's manual config
+      continue; // Not authorized: outlet, or blower/fan not in AI/Trigger mode — don't touch manual config
     }
 
     // Get current state from device-specific storage or legacy
@@ -4531,14 +4650,25 @@ async function processSensorData(sensorData, deviceMac) {
   // target — after a stage change (e.g. veg → flowering shifts humi target up) the calibrated
   // curve over-extracts based on stale absolute humi values, fighting the VPD algorithm and
   // crashing humidity. The VPD optimizer's min/max already drive the blower; skip the curve.
-  const curveSpeed = vpdNodeConfig ? null : evaluateBlowerCurve();
+  // ALSO skip the curve when the blower is NOT in Trigger/AI mode (blower_ai_mode off). The curve +
+  // 3-min heartbeat is an automation authority; in Manual/TimeSlot/Cycle/Environment mode the device
+  // firmware or the user's dashboard toggle owns the blower, and the heartbeat must NOT re-assert a
+  // saved curve/standby speed over a manual command (JoeGhost 2026-06-28: manual "off" → dashboard
+  // "on" was reverted within 3 min). Mirrors how outlets require their AI-mode flag.
+  const blowerAiEnabled = !!socketAiModes['blower'];
+  const curveSpeed = (vpdNodeConfig || !blowerAiEnabled) ? null : evaluateBlowerCurve();
+  // Manual hold: neither VPD (vpdNodeConfig) nor Trigger/AI mode is driving the blower → the user owns
+  // it completely; send nothing so the manual command stands indefinitely. VPD/AI installs are
+  // unaffected (blowerManualHold is false for them), so their existing emergency-100% override still
+  // applies exactly as before; a pure-manual user gets no override, which is the current behaviour too.
+  const blowerManualHold = !vpdNodeConfig && !blowerAiEnabled;
 
   // Enter the speed-send block whenever VPD has any opinion. The old guard skipped the block
   // entirely when both floor=0 and ceiling=100 (no demand), which left the blower stuck at its
   // last commanded value — Eddie 2026-05-27 saw blower stuck at 85 % long after humi had crashed
   // to 48 % and extraction was no longer wanted. With vpdNodeConfig present, the supervisor IS
   // the authority over the blower; if no extraction is needed, that means OFF, not "leave as is".
-  if (!blowerControlledByUserTrigger && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100 || vpdNodeConfig)) {
+  if (!blowerControlledByUserTrigger && !blowerManualHold && (curveSpeed !== null || vpdBlowerMinSpeed > 0 || vpdBlowerMaxSpeed < 100 || vpdNodeConfig)) {
     // Resolve the target speed.
     //  - When a curve demands a speed, the VPD floor can only RAISE it (and the
     //    ceiling caps it).
@@ -5239,14 +5369,11 @@ async function start() {
     }
   }, 10000);
 
-  // Drive flip-to-flower transitions (dark → 12/12). Runs every 30 s — plenty for multi-hour
-  // schedules, and the dark/flower instants are stored as absolute times so a tick boundary
-  // only adds at most 30 s of slack.
-  setInterval(() => {
-    processLightCycleTransitions().catch(err => {
-      console.error('[LightCycle] tick error:', err.message);
-    });
-  }, 30000);
+  // Flip-to-flower transitions (dark → 12/12) are driven inside refreshData() — startup, every 30 s,
+  // and on flow-update — so darkTransitionActive is set before each sensor eval in the same cycle.
+  // A separate 30 s setInterval here used to ALSO call processLightCycleTransitions(), double-ticking
+  // the transition and risking a double day/night INSERT + double Lab sync at the flip boundary
+  // (removed 2026-06-28). The dark/flower instants are absolute times, so a tick adds ≤30 s of slack.
 
   // Check for software updates every 10 minutes
   setInterval(() => {
