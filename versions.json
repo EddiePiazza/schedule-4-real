@@ -1,14 +1,34 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-07-04T21:09:43Z",
+  "generatedAt": "2026-07-29T18:49:41Z",
   "requiredNodeMajor": 22,
   "components": {
     "web": {
-      "version": "1.148.0",
-      "archive": "s4r-web-1.148.0.tar.gz",
-      "sha256": "2924f84f711a4c31293e98ffb277e58317923f797d6dd8ffc2ff0d82ebfa68f0",
-      "size": 11527009,
+      "version": "1.148.1",
+      "archive": "s4r-web-1.148.1.tar.gz",
+      "sha256": "6e31e7f7a5d152d9681e50dd0924cb81385f48c07ccb59f6e25c3cf9b6bbaf97",
+      "size": 11555411,
       "changelog": [
+        {
+          "version": "1.148.1",
+          "changes": [
+            "Fix trigger editor loading an outdated copy of your automation",
+            "Fix Lab harvest forecast, low-score insight scale and checkpoint badge colors",
+            "Fix Lab saving the wrong date and duplicating entries on retry",
+            "Stop plant filters emptying the plant list elsewhere",
+            "Save hunt checklists, pressure events and recovery scores properly",
+            "Stop filing every logged issue as a pest",
+            "Keep the keeper tier after saving a score and allow S-tier",
+            "Continue plant numbering instead of colliding on re-setup",
+            "Record the pollen protocol as a real inventory entry",
+            "Show only daily quests that can actually be completed",
+            "Show real plant scores instead of generated ones in Lab charts",
+            "Fix plant score colours always showing the lowest rating",
+            "Make the whole app usable on phones and tablets",
+            "Remove unused screens that were never reachable",
+            "Stop the trigger editor accepting invalid node connections"
+          ]
+        },
         {
           "version": "1.148.0",
           "changes": [
@@ -2959,11 +2979,17 @@
       ]
     },
     "supervisor": {
-      "version": "1.34.3",
-      "archive": "s4r-supervisor-1.34.3.tar.gz",
-      "sha256": "182bfe04114ef68a9a125c502940608588dd2a274f5de3d83b4ca38d543e4634",
-      "size": 142798,
+      "version": "1.34.4",
+      "archive": "s4r-supervisor-1.34.4.tar.gz",
+      "sha256": "62eef330223aaaef51e164e7adae723e148c30d220f388f33c7e786bd0bcf8c2",
+      "size": 143321,
       "changelog": [
+        {
+          "version": "1.34.4",
+          "changes": [
+            "Keep forced-OFF trigger actions at full priority"
+          ]
+        },
         {
           "version": "1.34.3",
           "changes": [

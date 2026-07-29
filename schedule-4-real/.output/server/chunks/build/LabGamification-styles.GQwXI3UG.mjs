@@ -1,0 +1,1 @@
+const a=["@keyframes shimmer-a6b37803{0%{transform:translate(-100%)}to{transform:translate(100%)}}.animate-shimmer[data-v-a6b37803]{animation:shimmer-a6b37803 2s infinite}"];export{a as default};

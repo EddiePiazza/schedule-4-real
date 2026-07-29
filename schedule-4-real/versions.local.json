@@ -1,12 +1,12 @@
 {
   "autoUpdate": false,
-  "lastCheck": "2026-07-04T21:09:42.523Z",
+  "lastCheck": "2026-07-29T18:41:20.663Z",
   "lastUpdate": "2026-01-24T04:29:52Z",
   "schemaVersion": 18,
   "components": {
     "web": {
-      "version": "1.148.0",
-      "installedAt": "2026-07-04T21:09:43Z"
+      "version": "1.148.1",
+      "installedAt": "2026-07-29T18:49:41Z"
     },
     "ingest": {
       "version": "1.9.1",
@@ -17,8 +17,8 @@
       "installedAt": "2026-02-19T21:36:55Z"
     },
     "supervisor": {
-      "version": "1.34.3",
-      "installedAt": "2026-07-04T21:09:43Z"
+      "version": "1.34.4",
+      "installedAt": "2026-07-29T18:49:41Z"
     },
     "proxy": {
       "version": "1.2.2",
@@ -41,6 +41,14 @@
   "pending": [],
   "manifestChangelogs": {
     "web": [
+      {
+        "version": "1.148.0",
+        "changes": [
+          "Turn off scheduled outlets during the flip-to-flower dark period",
+          "Fix plant stage day counter showing more days than the stage length",
+          "Add adjustable day/night leaf VPD offset in VPD control settings"
+        ]
+      },
       {
         "version": "1.147.1",
         "changes": [
@@ -384,12 +392,6 @@
           "Increase text size across settings, system and trigger pages for mobile readability",
           "Add option to skip timelapse photos during the lights-off period"
         ]
-      },
-      {
-        "version": "1.133.0",
-        "changes": [
-          "Guided mode now hides breeder-only fields (node count, stem diameter, trichome %)"
-        ]
       }
     ],
     "ingest": [
@@ -499,6 +501,13 @@
       }
     ],
     "supervisor": [
+      {
+        "version": "1.34.3",
+        "changes": [
+          "Keep blower and fan manual on/off from being auto-reverted",
+          "Harden flip-to-flower against missed commands and duplicate runs"
+        ]
+      },
       {
         "version": "1.34.2",
         "changes": [
@@ -833,12 +842,6 @@
         "version": "1.24.4",
         "changes": [
           "VPD audit: day/night leaf offset, extract humi when heater compensates, leaf-VPD emergency trigger, mandatoryOff/On semantics, module triggers restored"
-        ]
-      },
-      {
-        "version": "1.24.3",
-        "changes": [
-          "Fix blower de-escalation ignoring cumulative temperature rise, add safety shutdown, verified retry, outlet watchdog, trigger AI-mode guard"
         ]
       }
     ],

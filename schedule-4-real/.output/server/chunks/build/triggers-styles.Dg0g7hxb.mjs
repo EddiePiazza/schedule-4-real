@@ -1,1 +1,0 @@
-const a=["[data-v-b5abc5a5]::-webkit-scrollbar{height:6px;width:6px}[data-v-b5abc5a5]::-webkit-scrollbar-track{background:#1f2937}[data-v-b5abc5a5]::-webkit-scrollbar-thumb{background:#4b5563;border-radius:3px}[data-v-b5abc5a5]::-webkit-scrollbar-thumb:hover{background:#6b7280}"];export{a as default};

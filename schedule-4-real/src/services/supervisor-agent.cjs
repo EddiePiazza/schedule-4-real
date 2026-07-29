@@ -1795,9 +1795,18 @@ function evaluateFlow(flow) {
 
       case 'logic':
         // Get all input results for this logic gate
+        // Honour the ELSE handle here too. The action fan-in below inverts an 'else' edge
+        // (fires when the source is false), but this logic fan-in used to read the raw upstream
+        // value, so an ELSE edge feeding another IF delivered the NON-inverted result — while the
+        // canvas animated that edge as active. "IF NOT(x) AND y" chains silently misfired.
         const logicInputs = connections
           .filter(c => c.target === node.id)
-          .map(c => nodeResults.get(c.source))
+          .map(c => {
+            const r = nodeResults.get(c.source);
+            if (r === undefined) return undefined;
+            const isElseHandle = c.sourceHandle === 'else' || c.sourceHandle === 'else-top';
+            return isElseHandle ? r === false : r;
+          })
           .filter(r => r !== undefined);
         result = evaluateLogicGate(node.data.config, logicInputs);
 
@@ -4556,7 +4565,18 @@ async function processSensorData(sensorData, deviceMac) {
     const key = action.deviceMac ? `${action.deviceMac}:${action.socket}` : action.socket;
     const existing = actionMap.get(key);
     if (!existing) { actionMap.set(key, action); continue; }
-    if (existing.action === action.action) { continue; /* duplicate, keep first */ }
+    if (existing.action === action.action) {
+      // Same direction → keep the first intent, but MERGE the priority flags. Dropping them silently
+      // (the old behaviour) meant a user's explicit "Mandatory OFF" brake was lost whenever a
+      // same-direction non-mandatory OFF happened to be pushed earlier in the cycle — and the
+      // synthesised auto-release OFF almost always is. The surviving non-mandatory OFF is then
+      // blocked by the anti-oscillation lock and sent unverified, so the socket could stay ON for
+      // minutes while the user's brake was firing every cycle. Merging cannot switch anything ON:
+      // direction is identical, only the priority/verification of that same command improves.
+      if (action.mandatoryOff) existing.mandatoryOff = true;
+      if (action.mandatoryOn) existing.mandatoryOn = true;
+      continue;
+    }
     // Contradiction — choose winner by priority
     const chooseMandatoryOff = existing.mandatoryOff && !action.mandatoryOff ? existing
       : (!existing.mandatoryOff && action.mandatoryOff ? action : null);

@@ -1,0 +1,1 @@
+const a=[".scrollbar-hide[data-v-020a3f8c]{-ms-overflow-style:none;scrollbar-width:none}.scrollbar-hide[data-v-020a3f8c]::-webkit-scrollbar{display:none}"];export{a as default};
